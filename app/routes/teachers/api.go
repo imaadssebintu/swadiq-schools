@@ -51,16 +51,16 @@ func CreateTeacherAPI(c *fiber.Ctx) error {
 
 	if err := database.CreateTeacher(config.GetDB(), user); err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": "Failed to create teacher",
+			"error":   "Failed to create teacher",
 			"details": err.Error(),
 		})
 	}
 
 	return c.Status(201).JSON(fiber.Map{
-		"message": "Teacher created successfully",
-		"teacher": user,
+		"message":       "Teacher created successfully",
+		"teacher":       user,
 		"department_id": req.DepartmentID,
-		"subject_ids": req.SubjectIDs,
+		"subject_ids":   req.SubjectIDs,
 	})
 }
 
@@ -79,16 +79,24 @@ func GetDepartmentsAPI(c *fiber.Ctx) error {
 func SearchTeachersAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")
 	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
 
-	teachers, err := SearchTeachers(config.GetDB(), query, limit)
+	teachers, total, err := SearchTeachersWithPagination(config.GetDB(), query, limit, offset)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to search teachers"})
+		return c.Status(500).JSON(fiber.Map{
+			"error":   "Failed to search teachers",
+			"details": err.Error(),
+		})
 	}
 
 	return c.JSON(fiber.Map{
 		"teachers": teachers,
 		"count":    len(teachers),
+		"total":    total,
 		"query":    query,
+		"limit":    limit,
+		"offset":   offset,
+		"has_more": offset+len(teachers) < total,
 	})
 }
 

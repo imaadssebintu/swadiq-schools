@@ -993,10 +993,17 @@ func SearchParents(db *sql.DB, query string) ([]*models.Parent, error) {
 
 func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 	query := `SELECT c.id, c.name, c.teacher_id, c.is_active, c.created_at, c.updated_at,
-			  u.first_name, u.last_name, u.email
+			  u.first_name, u.last_name, u.email,
+			  COUNT(DISTINCT s.id) as student_count,
+			  COUNT(DISTINCT cs.subject_id) as subject_count
 			  FROM classes c
 			  LEFT JOIN users u ON c.teacher_id = u.id
-			  WHERE c.is_active = true ORDER BY c.name`
+			  LEFT JOIN students s ON c.id = s.class_id AND s.is_active = true
+			  LEFT JOIN class_subjects cs ON c.id = cs.class_id
+			  WHERE c.is_active = true
+			  GROUP BY c.id, c.name, c.teacher_id, c.is_active, c.created_at, c.updated_at,
+			           u.first_name, u.last_name, u.email
+			  ORDER BY c.name`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -1009,11 +1016,13 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 		class := &models.Class{}
 		var teacherID *int
 		var teacherFirstName, teacherLastName, teacherEmail *string
+		var studentCount, subjectCount int
 
 		err := rows.Scan(
 			&class.ID, &class.Name, &teacherID,
 			&class.IsActive, &class.CreatedAt, &class.UpdatedAt,
 			&teacherFirstName, &teacherLastName, &teacherEmail,
+			&studentCount, &subjectCount,
 		)
 		if err != nil {
 			continue
@@ -1033,6 +1042,14 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 					Email:     *teacherEmail,
 				}
 			}
+		}
+
+		// Create dummy slices for template compatibility
+		if studentCount > 0 {
+			class.Students = make([]*models.Student, studentCount)
+		}
+		if subjectCount > 0 {
+			class.Subjects = make([]*models.Subject, subjectCount)
 		}
 
 		classes = append(classes, class)

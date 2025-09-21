@@ -151,6 +151,20 @@ CREATE TABLE IF NOT EXISTS class_subjects (
     UNIQUE (class_id, subject_id)
 );
 
+-- Class Promotions table
+CREATE TABLE IF NOT EXISTS class_promotions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    from_class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+    to_class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+    academic_year_id UUID REFERENCES academic_years(id),
+    promotion_criteria TEXT, -- JSON string with promotion criteria
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE (from_class_id, academic_year_id)
+);
+
 -- Attendance table
 CREATE TABLE IF NOT EXISTS attendance (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
