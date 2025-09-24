@@ -200,6 +200,12 @@
                                 <i class="fas fa-book w-4 mr-2.5 {{if eq .CurrentPage "subjects"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
                                 Subjects
                             </a>
+
+                            <a href="/departments"
+                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "departments"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
+                                <i class="fas fa-building w-4 mr-2.5 {{if eq .CurrentPage "departments"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
+                                Departments
+                            </a>
                         </div>
                     </div>
 

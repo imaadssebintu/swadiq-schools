@@ -46,11 +46,15 @@ func ClassesPage(c *fiber.Ctx) error {
 		classes = []*models.Class{}
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("classes/index", fiber.Map{
 		"Title":       "Classes Management - Swadiq Schools",
 		"CurrentPage": "classes",
 		"classes":     classes,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }
 
@@ -67,11 +71,15 @@ func ClassDetailPage(c *fiber.Ctx) error {
 		return c.Status(404).SendString("Class not found")
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("classes/detail", fiber.Map{
 		"Title":       fmt.Sprintf("%s - Class Details", class.Name),
 		"CurrentPage": "classes",
 		"class":       class,
 		"classID":     classID,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }

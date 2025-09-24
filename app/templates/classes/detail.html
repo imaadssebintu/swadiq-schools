@@ -1,6 +1,3 @@
-{{template "layouts/main" .}}
-
-{{define "content"}}
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
@@ -14,7 +11,13 @@
                     </a>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">{{.class.Name}}</h1>
-                        <p class="text-sm text-gray-500">Class ID: {{.class.ID}}</p>
+                        <p class="text-sm text-gray-500">
+                            {{if .class.Teacher}}
+                                Class Teacher: {{.class.Teacher.FirstName}} {{.class.Teacher.LastName}}
+                            {{else}}
+                                Class Teacher: Not assigned
+                            {{end}}
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -227,6 +230,19 @@
     </div>
 </div>
 
+<!-- Student Detail Modal -->
+<div id="studentModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-900">Student Details</h2>
+            <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+        <div id="studentModalContent">
+            <!-- Student details will be loaded here -->
+        </div>
+    </div>
+</div>
+
 <script>
     const classID = '{{.classID}}';
     let classData = {
@@ -240,6 +256,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Class detail page loaded for class:', classID);
         loadClassDetails();
+        
+        const closeModal = document.getElementById('closeModal');
+        const studentModal = document.getElementById('studentModal');
+        closeModal.addEventListener('click', () => {
+            studentModal.classList.add('hidden');
+        });
     });
 
     // Load detailed class information
@@ -427,8 +449,44 @@
     });
 
     // Student actions
-    function viewStudent(studentId) {
-        window.location.href = `/students/${studentId}`;
+    async function viewStudent(studentId) {
+        const studentModal = document.getElementById('studentModal');
+        const studentModalContent = document.getElementById('studentModalContent');
+        studentModalContent.innerHTML = '<p>Loading...</p>';
+        studentModal.classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/api/students/${studentId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch student details');
+            }
+            const data = await response.json();
+            const student = data.student;
+            const parent = data.parent;
+
+            let parentInfo = '<p>No parent information available.</p>';
+            if (parent) {
+                parentInfo = `
+                    <h4 class="text-lg font-semibold mt-4">Parent Information</h4>
+                    <p><strong>Name:</strong> ${parent.first_name} ${parent.last_name}</p>
+                    <p><strong>Email:</strong> ${parent.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${parent.phone || 'N/A'}</p>
+                    <p><strong>Relationship:</strong> ${parent.relationship || 'N/A'}</p>
+                `;
+            }
+
+            studentModalContent.innerHTML = `
+                <p><strong>Name:</strong> ${student.first_name} ${student.last_name}</p>
+                <p><strong>Student ID:</strong> ${student.student_id}</p>
+                <p><strong>Date of Birth:</strong> ${student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : 'N/A'}</p>
+                <p><strong>Gender:</strong> ${student.gender || 'N/A'}</p>
+                <p><strong>Address:</strong> ${student.address || 'N/A'}</p>
+                ${parentInfo}
+            `;
+        } catch (error) {
+            studentModalContent.innerHTML = '<p class="text-red-500">Failed to load student details.</p>';
+            console.error('Error fetching student details:', error);
+        }
     }
 
     function removeStudent(studentId) {
@@ -472,4 +530,3 @@
         }, 5000);
     }
 </script>
-{{end}}

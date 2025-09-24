@@ -1,141 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <h1 class="text-xl font-semibold">Swadiq Schools</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-gray-700">{{.FirstName}} {{.LastName}}</span>
-                    <button onclick="logout()" class="text-red-600 hover:text-red-800">Logout</button>
-                </div>
-            </div>
+<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
         </div>
-    </nav>
-
-    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
-            </div>
-            
-            <div class="px-6 py-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">First Name</label>
-                        <p class="mt-1 text-sm text-gray-900">{{.FirstName}}</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Last Name</label>
-                        <p class="mt-1 text-sm text-gray-900">{{.LastName}}</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <p class="mt-1 text-sm text-gray-900">{{.Email}}</p>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Role</label>
-                        <span class="mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{.Role}}
-                        </span>
-                    </div>
+        
+        <div class="px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                    <p class="mt-1 text-sm text-gray-900">{{.FirstName}}</p>
                 </div>
-            </div>
-        </div>
-
-        <div class="mt-8 bg-white shadow rounded-lg">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-medium text-gray-900">Change Password</h2>
-            </div>
-            
-            <div class="px-6 py-4">
-                <form id="changePasswordForm" class="space-y-4">
-                    <div>
-                        <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current Password</label>
-                        <input type="password" id="currentPassword" name="currentPassword" required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div>
-                        <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
-                        <input type="password" id="newPassword" name="newPassword" required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    
-                    <div id="passwordMessage" class="hidden"></div>
-                    
-                    <button type="submit" id="changePasswordBtn"
-                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
-                        Change Password
-                    </button>
-                </form>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <p class="mt-1 text-sm text-gray-900">{{.LastName}}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <p class="mt-1 text-sm text-gray-900">{{.Email}}</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Role</label>
+                    <span class="mt-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {{.Role}}
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        async function logout() {
-            try {
-                await fetch('/auth/logout', { method: 'POST' });
-                window.location.href = '/auth/login';
-            } catch (error) {
-                console.error('Logout failed:', error);
-            }
-        }
+    <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Change Password</h2>
+        </div>
+        
+        <div class="px-6 py-4">
+            <form id="changePasswordForm" class="space-y-4">
+                <div>
+                    <label for="currentPassword" class="block text-sm font-medium text-gray-700">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div>
+                    <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div id="passwordMessage" class="hidden"></div>
+                
+                <button type="submit" id="changePasswordBtn"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                    Change Password
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
-        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('changePasswordBtn');
-            const message = document.getElementById('passwordMessage');
-            
-            btn.disabled = true;
-            btn.textContent = 'Changing...';
-            message.classList.add('hidden');
+<script>
+    document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('changePasswordBtn');
+        const message = document.getElementById('passwordMessage');
+        
+        btn.disabled = true;
+        btn.textContent = 'Changing...';
+        message.classList.add('hidden');
 
-            const formData = {
-                current_password: document.getElementById('currentPassword').value,
-                new_password: document.getElementById('newPassword').value
-            };
+        const formData = {
+            current_password: document.getElementById('currentPassword').value,
+            new_password: document.getElementById('newPassword').value
+        };
 
-            try {
-                const response = await fetch('/auth/change-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
+        try {
+            const response = await fetch('/auth/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (response.ok) {
-                    message.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded';
-                    message.textContent = 'Password changed successfully';
-                    document.getElementById('changePasswordForm').reset();
-                } else {
-                    message.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
-                    message.textContent = data.error || 'Failed to change password';
-                }
-                message.classList.remove('hidden');
-            } catch (error) {
+            if (response.ok) {
+                message.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded';
+                message.textContent = 'Password changed successfully';
+                document.getElementById('changePasswordForm').reset();
+            } else {
                 message.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
-                message.textContent = 'Network error. Please try again.';
-                message.classList.remove('hidden');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Change Password';
+                message.textContent = data.error || 'Failed to change password';
             }
-        });
-    </script>
-</body>
-</html>
+            message.classList.remove('hidden');
+        } catch (error) {
+            message.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+            message.textContent = 'Network error. Please try again.';
+            message.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Change Password';
+        }
+    });
+</script>

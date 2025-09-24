@@ -3,6 +3,7 @@ package students
 import (
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
+	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
 	"github.com/gofiber/fiber/v2"
@@ -46,10 +47,14 @@ func StudentsPage(c *fiber.Ctx) error {
 		})
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("students/index", fiber.Map{
 		"Title":       "Students - Swadiq Schools",
 		"CurrentPage": "students",
 		"students":    students,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }

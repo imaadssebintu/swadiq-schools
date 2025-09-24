@@ -37,10 +37,14 @@ func SubjectsPage(c *fiber.Ctx) error {
 		subjects = []*models.Subject{}
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("subjects/index", fiber.Map{
 		"Title":       "Subjects Management - Swadiq Schools",
 		"CurrentPage": "subjects",
 		"subjects":    subjects,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }

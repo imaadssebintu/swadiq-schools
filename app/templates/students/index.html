@@ -402,7 +402,7 @@
         <!-- Pagination -->
         <div class="bg-gray-50 px-4 py-3 border-t border-gray-200">
             <div class="flex items-center justify-between">
-                <div class="text-sm text-gray-700">
+                <div id="pagination-text" class="text-sm text-gray-700">
                     Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">1,234</span> results
                 </div>
                 <div class="flex items-center space-x-2">
@@ -1687,7 +1687,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update pagination info
     function updatePagination(totalCount) {
-        const paginationText = document.querySelector('.text-sm.text-gray-700');
+        const paginationText = document.getElementById('pagination-text');
         if (paginationText) {
             paginationText.innerHTML = `
                 Showing <span class="font-medium">1</span> to <span class="font-medium">${totalCount}</span> of <span class="font-medium">${totalCount}</span> results

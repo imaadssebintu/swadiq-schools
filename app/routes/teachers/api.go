@@ -64,17 +64,6 @@ func CreateTeacherAPI(c *fiber.Ctx) error {
 	})
 }
 
-func GetDepartmentsAPI(c *fiber.Ctx) error {
-	departments, err := database.GetAllDepartments(config.GetDB())
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch departments"})
-	}
-
-	return c.JSON(fiber.Map{
-		"departments": departments,
-		"count":       len(departments),
-	})
-}
 
 func SearchTeachersAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")

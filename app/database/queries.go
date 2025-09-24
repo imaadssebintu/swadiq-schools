@@ -1184,6 +1184,22 @@ func UpdateTeacher(db *sql.DB, user *models.User) error {
 	return nil
 }
 
+func GetTeacherByID(db *sql.DB, teacherID string) (*models.User, error) {
+	user := &models.User{}
+	query := `SELECT id, email, first_name, last_name, is_active, created_at, updated_at
+			  FROM users WHERE id = $1 AND is_active = true`
+
+	err := db.QueryRow(query, teacherID).Scan(
+		&user.ID, &user.Email, &user.FirstName,
+		&user.LastName, &user.IsActive, &user.CreatedAt, &user.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 // DeleteTeacher soft deletes a teacher (sets is_active = false)
 func DeleteTeacher(db *sql.DB, teacherID string) error {
 	query := `UPDATE users
@@ -1269,6 +1285,35 @@ func GetAllDepartments(db *sql.DB) ([]*models.Department, error) {
 	}
 
 	return departments, nil
+}
+
+func CreateDepartment(db *sql.DB, department *models.Department) error {
+	query := `INSERT INTO departments (name, code, head_of_department_id, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, true, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, department.Name, department.Code, department.HeadOfDepartmentID).Scan(
+		&department.ID, &department.CreatedAt, &department.UpdatedAt,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	department.IsActive = true
+	return nil
+}
+
+func UpdateDepartment(db *sql.DB, department *models.Department) error {
+	query := `UPDATE departments SET name = $1, code = $2, head_of_department_id = $3, updated_at = NOW() WHERE id = $4`
+	_, err := db.Exec(query, department.Name, department.Code, department.HeadOfDepartmentID, department.ID)
+	return err
+}
+
+func DeleteDepartment(db *sql.DB, departmentID string) error {
+	query := `UPDATE departments SET is_active = false, updated_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, departmentID)
+	return err
 }
 
 // Subject-related functions

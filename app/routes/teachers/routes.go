@@ -26,11 +26,6 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api.Put("/:id", UpdateTeacherAPI)
 	api.Delete("/:id", DeleteTeacherAPI)
 
-	// Additional API routes for departments and subjects
-	departmentsAPI := app.Group("/api/departments")
-	departmentsAPI.Use(auth.AuthMiddleware)
-	departmentsAPI.Get("/", GetDepartmentsAPI)
-
 	subjectsAPI := app.Group("/api/subjects")
 	subjectsAPI.Use(auth.AuthMiddleware)
 	subjectsAPI.Get("/", GetSubjectsAPI)
@@ -50,11 +45,15 @@ func TeachersPage(c *fiber.Ctx) error {
 		teachers = []*models.User{}
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("teachers/index", fiber.Map{
 		"Title":       "Teachers - Swadiq Schools",
 		"CurrentPage": "teachers",
 		"teachers":    teachers,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }
 

@@ -7,6 +7,7 @@ import (
 	"swadiq-schools/app/routes/auth"
 	"swadiq-schools/app/routes/classes"
 	"swadiq-schools/app/routes/dashboard"
+	"swadiq-schools/app/routes/departments"
 	"swadiq-schools/app/routes/parents"
 	"swadiq-schools/app/routes/students"
 	"swadiq-schools/app/routes/subjects"
@@ -121,6 +122,9 @@ func main() {
 
 	// Setup subjects routes
 	subjects.SetupSubjectsRoutes(app)
+
+	// Setup departments routes
+	departments.SetupDepartmentsRoutes(app)
 
 	// Setup attendance routes
 	attendance.SetupAttendanceRoutes(app)

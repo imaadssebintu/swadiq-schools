@@ -46,14 +46,16 @@ func ShowForgotPasswordPage(c *fiber.Ctx) error {
 }
 
 func ShowProfilePage(c *fiber.Ctx) error {
+	user := c.Locals("user").(*models.User)
 	return c.Render("auth/profile", fiber.Map{
-		"Title":     "Profile - Swadiq Schools",
-		"User":      c.Locals("user"),
-		"FirstName": c.Locals("user_first_name"),
-		"LastName":  c.Locals("user_last_name"),
-		"Email":     c.Locals("user_email"),
-		"Roles":     c.Locals("user_roles"),
-	}, "")
+		"Title":       "Profile - Swadiq Schools",
+		"CurrentPage": "profile",
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
+		"Role":        user.Roles[0].Name, // Assuming the first role is the primary one
+	})
 }
 
 // AuthMiddleware validates session and sets user context
