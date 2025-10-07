@@ -52,7 +52,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600">Departments</p>
-                        <p class="text-2xl font-bold text-purple-600">8</p>
+                        <p class="text-2xl font-bold text-purple-600">{{.departmentsCount}}</p>
                     </div>
                     <div class="bg-purple-100 p-3 rounded-lg">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,12 +64,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Core Subjects</p>
-                        <p class="text-2xl font-bold text-orange-600">5</p>
+                        <p class="text-sm font-medium text-gray-600">Papers</p>
+                        <p class="text-2xl font-bold text-orange-600">{{.papersCount}}</p>
                     </div>
                     <div class="bg-orange-100 p-3 rounded-lg">
                         <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
                     </div>
                 </div>
@@ -101,6 +101,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classes</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Papers</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
@@ -138,6 +139,15 @@
                                         <span class="text-gray-400">No classes</span>
                                     {{end}}
                                 </td>
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    {{if .Papers}}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{len .Papers}} papers
+                                        </span>
+                                    {{else}}
+                                        <span class="text-gray-400">No papers</span>
+                                    {{end}}
+                                </td>
                                 <td class="px-4 py-3">
                                     {{if .IsActive}}
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
@@ -149,6 +159,7 @@
                                     <div class="flex items-center gap-2">
                                         <button class="text-primary-600 hover:text-primary-800 text-sm font-medium">Edit</button>
                                         <button class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+                                        <a href="/papers" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Manage Papers</a>
                                     </div>
                                 </td>
                             </tr>
@@ -260,12 +271,24 @@
         }
     }
 
+    // Utility function to set button loading state
+    function setButtonLoading(button, loading, originalText) {
+        if (loading) {
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        } else {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    }
+
     // Form submission
     addSubjectForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const submitBtn = this.querySelector('button[type="submit"]');
-        setButtonLoading(submitBtn, true, '<i class="fas fa-plus mr-2"></i>Add Subject');
+        const originalText = submitBtn.innerHTML;
+        setButtonLoading(submitBtn, true, originalText);
 
         const formData = new FormData(addSubjectForm);
         const data = {
@@ -294,7 +317,7 @@
             console.error('Error creating subject:', error);
             alert('Error: Failed to create subject');
         } finally {
-            setButtonLoading(submitBtn, false, '<i class="fas fa-plus mr-2"></i>Add Subject');
+            setButtonLoading(submitBtn, false, originalText);
         }
     });
 

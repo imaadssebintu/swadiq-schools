@@ -350,6 +350,46 @@
     </div>
 </div>
 
+<script>
+// Function to open the view teacher modal
+function openViewModal(teacher) {
+    document.getElementById('viewTeacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
+    document.getElementById('viewTeacherEmail').textContent = teacher.email;
+    document.getElementById('viewTeacherID').textContent = `EMP-${teacher.id}`;
+    document.getElementById('viewTeacherPhone').textContent = teacher.phone || 'Not provided';
+    document.getElementById('viewTeacherDepartment').textContent = teacher.department ? teacher.department.name : 'Not Assigned';
+    
+    const statusElement = document.getElementById('viewTeacherStatus');
+    statusElement.textContent = teacher.is_active ? 'Active' : 'Inactive';
+    statusElement.className = `inline-flex px-2 py-1 text-xs font-medium rounded-full ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+    
+    const rolesElement = document.getElementById('viewTeacherRoles');
+    if (teacher.roles && teacher.roles.length > 0) {
+        rolesElement.innerHTML = teacher.roles.map(role => 
+            `<span class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">${role.name}</span>`
+        ).join('');
+    } else {
+        rolesElement.innerHTML = '<span class="text-gray-500">No roles assigned</span>';
+    }
+    
+    const classesElement = document.getElementById('viewTeacherClasses');
+    if (teacher.classes && teacher.classes.length > 0) {
+        classesElement.textContent = teacher.classes.map(cls => cls.name).join(', ');
+    } else {
+        classesElement.innerHTML = '<span class="text-gray-500">No classes assigned</span>';
+    }
+    
+    document.getElementById('viewTeacherModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close the view teacher modal
+function closeViewModal() {
+    document.getElementById('viewTeacherModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+</script>
+
 <!-- Edit Teacher Modal -->
 <div id="editTeacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -728,50 +768,14 @@ document.addEventListener('DOMContentLoaded', function() {
         addTeacherForm.reset();
     }
     
-    function openViewModal(teacher) {
-        document.getElementById('viewTeacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
-        document.getElementById('viewTeacherEmail').textContent = teacher.email;
-        document.getElementById('viewTeacherID').textContent = `EMP-${teacher.id}`;
-        document.getElementById('viewTeacherPhone').textContent = teacher.phone || 'Not provided';
-        document.getElementById('viewTeacherDepartment').textContent = teacher.department ? teacher.department.name : 'Not Assigned';
-        
-        const statusElement = document.getElementById('viewTeacherStatus');
-        statusElement.textContent = teacher.is_active ? 'Active' : 'Inactive';
-        statusElement.className = `inline-flex px-2 py-1 text-xs font-medium rounded-full ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-        
-        const rolesElement = document.getElementById('viewTeacherRoles');
-        if (teacher.roles && teacher.roles.length > 0) {
-            rolesElement.innerHTML = teacher.roles.map(role => 
-                `<span class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">${role.name}</span>`
-            ).join('');
-        } else {
-            rolesElement.innerHTML = '<span class="text-gray-500">No roles assigned</span>';
-        }
-        
-        const classesElement = document.getElementById('viewTeacherClasses');
-        if (teacher.classes && teacher.classes.length > 0) {
-            classesElement.textContent = teacher.classes.map(cls => cls.name).join(', ');
-        } else {
-            classesElement.innerHTML = '<span class="text-gray-500">No classes assigned</span>';
-        }
-        
-        viewTeacherModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeViewModal() {
-        viewTeacherModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
+    // Remove this duplicate code since event listeners are already defined
 
     // Event listeners for modal
     addTeacherBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
     
-    // View modal event listeners
-    closeViewModalBtn.addEventListener('click', closeViewModal);
-    closeViewModalBtn2.addEventListener('click', closeViewModal);
+    // Remove this duplicate code since event listeners are already defined
 
     // Close modal when clicking outside
     addTeacherModal.addEventListener('click', function(e) {

@@ -10,6 +10,7 @@ import (
 	"swadiq-schools/app/routes/dashboard"
 	"swadiq-schools/app/routes/departments"
 	"swadiq-schools/app/routes/fees"
+	"swadiq-schools/app/routes/papers"
 	"swadiq-schools/app/routes/parents"
 	"swadiq-schools/app/routes/students"
 	"swadiq-schools/app/routes/subjects"
@@ -134,8 +135,11 @@ func main() {
 	// Setup fees routes
 	fees.SetupFeesRoutes(app)
 
+	// Setup papers routes
+	papers.SetupPapersRoutes(app)
+
 	// Setup academic routes
-	academic.RegisterRoutes(app, config.GetDB()) // Add this line
+	academic.RegisterRoutes(app, config.GetDB())
 
 	// Setup parents API routes
 	api := app.Group("/api/parents")
@@ -155,6 +159,15 @@ func main() {
 	rolesAPI.Use(auth.AuthMiddleware)
 	rolesAPI.Get("/", teachers.GetRolesAPI)
 	rolesAPI.Post("/", teachers.CreateRoleAPI)
+
+	// Setup papers API routes
+	papersAPI := app.Group("/api/papers")
+	papersAPI.Use(auth.AuthMiddleware)
+	papersAPI.Get("/", papers.GetPapersAPI)
+	papersAPI.Get("/:id", papers.GetPaperAPI)
+	papersAPI.Post("/", papers.CreatePaperAPI)
+	papersAPI.Put("/:id", papers.UpdatePaperAPI)
+	papersAPI.Delete("/:id", papers.DeletePaperAPI)
 
 	// Catch-all route for 404 errors (must be last)
 	app.Use("*", func(c *fiber.Ctx) error {

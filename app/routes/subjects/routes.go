@@ -40,14 +40,40 @@ func SubjectsPage(c *fiber.Ctx) error {
 		subjects = []*models.Subject{}
 	}
 
+	// Get departments for count
+	departments, err := database.GetAllDepartments(config.GetDB())
+	if err != nil {
+		// Initialize empty slice if there's an error
+		departments = []*models.Department{}
+	}
+
+	// Ensure departments is never nil
+	if departments == nil {
+		departments = []*models.Department{}
+	}
+
+	// Get papers for count
+	papers, err := database.GetAllPapers(config.GetDB())
+	if err != nil {
+		// Initialize empty slice if there's an error
+		papers = []*models.Paper{}
+	}
+
+	// Ensure papers is never nil
+	if papers == nil {
+		papers = []*models.Paper{}
+	}
+
 	user := c.Locals("user").(*models.User)
 	return c.Render("subjects/index", fiber.Map{
-		"Title":       "Subjects Management - Swadiq Schools",
-		"CurrentPage": "subjects",
-		"subjects":    subjects,
-		"user":        user,
-		"FirstName":   user.FirstName,
-		"LastName":    user.LastName,
-		"Email":       user.Email,
+		"Title":            "Subjects Management - Swadiq Schools",
+		"CurrentPage":      "subjects",
+		"subjects":         subjects,
+		"departmentsCount": len(departments),
+		"papersCount":      len(papers),
+		"user":             user,
+		"FirstName":        user.FirstName,
+		"LastName":         user.LastName,
+		"Email":            user.Email,
 	})
 }
