@@ -27,4 +27,4 @@ jobs:
           docker build -t swadiq-schools .
           docker stop swadiq-app || true
           docker rm swadiq-app || true
-          docker run -d --name swadiq-app -p 8080:3000 swadiq-schools
+          docker run -d --name swadiq-app -p 8080:8080 swadiq-schools
