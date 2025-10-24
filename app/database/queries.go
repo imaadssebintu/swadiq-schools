@@ -238,7 +238,100 @@ func GetStudentsWithDetails(db *sql.DB) ([]models.Student, error) {
 	return students, nil
 }
 
-// GetStudentsWithFilters gets students with filtering, searching, and sorting support
+// GetStudentsForTable gets students optimized for table display (minimal data, fast query)
+func GetStudentsForTable(db *sql.DB, limit int, offset int) ([]models.Student, error) {
+	query := `SELECT s.id, s.student_id, s.first_name, s.last_name, s.gender, 
+			  s.is_active, s.created_at, c.name as class_name
+			  FROM students s
+			  LEFT JOIN classes c ON s.class_id = c.id
+			  ORDER BY s.created_at DESC
+			  LIMIT $1 OFFSET $2`
+	
+	rows, err := db.Query(query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var students []models.Student
+	for rows.Next() {
+		var student models.Student
+		var className sql.NullString
+		
+		err := rows.Scan(
+			&student.ID,
+			&student.StudentID,
+			&student.FirstName,
+			&student.LastName,
+			&student.Gender,
+			&student.IsActive,
+			&student.CreatedAt,
+			&className,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if className.Valid {
+			student.Class = &models.Class{Name: className.String}
+		}
+
+		students = append(students, student)
+	}
+
+	return students, nil
+}
+
+// SearchStudents searches for students by name or student ID
+func SearchStudents(db *sql.DB, query string) ([]models.Student, error) {
+	searchQuery := `SELECT s.id, s.student_id, s.first_name, s.last_name, s.gender, 
+					s.is_active, s.created_at, c.name as class_name
+					FROM students s
+					LEFT JOIN classes c ON s.class_id = c.id
+					WHERE s.is_active = true 
+					AND (LOWER(s.first_name) LIKE LOWER($1) 
+						OR LOWER(s.last_name) LIKE LOWER($1)
+						OR LOWER(s.student_id) LIKE LOWER($1)
+						OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE LOWER($1))
+					ORDER BY s.first_name, s.last_name
+					LIMIT 20`
+	
+	searchTerm := "%" + query + "%"
+	rows, err := db.Query(searchQuery, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var students []models.Student
+	for rows.Next() {
+		var student models.Student
+		var className sql.NullString
+		
+		err := rows.Scan(
+			&student.ID,
+			&student.StudentID,
+			&student.FirstName,
+			&student.LastName,
+			&student.Gender,
+			&student.IsActive,
+			&student.CreatedAt,
+			&className,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if className.Valid {
+			student.Class = &models.Class{Name: className.String}
+		}
+
+		students = append(students, student)
+	}
+
+	return students, nil
+}
+
 func GetStudentsWithFilters(db *sql.DB, filters StudentFilters) ([]models.Student, error) {
 	// Build the base query
 	baseQuery := `SELECT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth,
@@ -1022,7 +1115,7 @@ func SearchParents(db *sql.DB, query string) ([]*models.Parent, error) {
 }
 
 func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
-	query := `SELECT c.id, c.name, c.teacher_id, c.is_active, c.created_at, c.updated_at,
+	query := `SELECT c.id, c.name, c.code, c.teacher_id, c.is_active, c.created_at, c.updated_at,
 			  u.first_name, u.last_name, u.email
 			  FROM classes c
 			  LEFT JOIN users u ON c.teacher_id = u.id
@@ -1041,7 +1134,7 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 		var teacherFirstName, teacherLastName, teacherEmail sql.NullString
 
 		err := rows.Scan(
-			&class.ID, &class.Name, &class.TeacherID,
+			&class.ID, &class.Name, &class.Code, &class.TeacherID,
 			&class.IsActive, &class.CreatedAt, &class.UpdatedAt,
 			&teacherFirstName, &teacherLastName, &teacherEmail,
 		)
@@ -1083,11 +1176,11 @@ func CreateClass(db *sql.DB, class *models.Class) error {
 		teacherID = class.TeacherID
 	}
 
-	query := `INSERT INTO classes (name, teacher_id, is_active, created_at, updated_at)
-			  VALUES ($1, $2, true, NOW(), NOW())
+	query := `INSERT INTO classes (name, code, teacher_id, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, true, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, class.Name, teacherID).Scan(
+	err := db.QueryRow(query, class.Name, class.Code, teacherID).Scan(
 		&class.ID, &class.CreatedAt, &class.UpdatedAt,
 	)
 
@@ -1100,7 +1193,7 @@ func CreateClass(db *sql.DB, class *models.Class) error {
 }
 
 func GetClassByID(db *sql.DB, classID string) (*models.Class, error) {
-	query := `SELECT c.id, c.name, c.teacher_id, c.is_active, c.created_at, c.updated_at,
+	query := `SELECT c.id, c.name, c.code, c.teacher_id, c.is_active, c.created_at, c.updated_at,
 			  u.first_name, u.last_name, u.email
 			  FROM classes c
 			  LEFT JOIN users u ON c.teacher_id = u.id
@@ -1112,6 +1205,7 @@ func GetClassByID(db *sql.DB, classID string) (*models.Class, error) {
 	err := db.QueryRow(query, classID).Scan(
 		&class.ID,
 		&class.Name,
+		&class.Code,
 		&class.TeacherID,
 		&class.IsActive,
 		&class.CreatedAt,
@@ -1138,10 +1232,10 @@ func GetClassByID(db *sql.DB, classID string) (*models.Class, error) {
 }
 
 func UpdateClass(db *sql.DB, class *models.Class) error {
-	query := `UPDATE classes SET name = $1, teacher_id = $2, updated_at = NOW()
-			  WHERE id = $3`
+	query := `UPDATE classes SET name = $1, code = $2, teacher_id = $3, updated_at = NOW()
+			  WHERE id = $4`
 
-	_, err := db.Exec(query, class.Name, class.TeacherID, class.ID)
+	_, err := db.Exec(query, class.Name, class.Code, class.TeacherID, class.ID)
 	return err
 }
 

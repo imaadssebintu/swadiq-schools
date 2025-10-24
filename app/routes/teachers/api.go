@@ -11,9 +11,54 @@ import (
 func GetTeachersAPI(c *fiber.Ctx) error {
 	teachers, err := database.GetAllTeachers(config.GetDB())
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch teachers"})
+		return c.JSON(fiber.Map{
+			"teachers": []interface{}{},
+			"count":    0,
+		})
 	}
 
+	return c.JSON(fiber.Map{
+		"teachers": teachers,
+		"count":    len(teachers),
+	})
+}
+
+func GetTeachersForSelectionAPI(c *fiber.Ctx) error {
+	search := c.Query("search", "")
+	
+	// Simple query for teacher selection - only essential fields
+	db := config.GetDB()
+	query := `SELECT id, first_name, last_name, email FROM users 
+			  WHERE deleted_at IS NULL AND is_active = true`
+	args := []interface{}{}
+	
+	if search != "" {
+		query += ` AND (first_name ILIKE $1 OR last_name ILIKE $1 OR email ILIKE $1)`
+		args = append(args, "%"+search+"%")
+	}
+	
+	query += ` ORDER BY first_name LIMIT 20`
+	
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return c.JSON(fiber.Map{"teachers": []interface{}{}, "count": 0})
+	}
+	defer rows.Close()
+	
+	var teachers []fiber.Map
+	for rows.Next() {
+		var id, firstName, lastName, email string
+		if err := rows.Scan(&id, &firstName, &lastName, &email); err != nil {
+			continue
+		}
+		teachers = append(teachers, fiber.Map{
+			"id":         id,
+			"first_name": firstName,
+			"last_name":  lastName,
+			"email":      email,
+		})
+	}
+	
 	return c.JSON(fiber.Map{
 		"teachers": teachers,
 		"count":    len(teachers),

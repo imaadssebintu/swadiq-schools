@@ -38,78 +38,126 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full">
+                <table id="departmentsTable" class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Head of Department</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subjects</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Head of Department</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assistant Head</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        {{if .departments}}
-                            {{range .departments}}
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center">
-                                        <div class="bg-primary-100 p-2 rounded-lg mr-3">
-                                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-											</svg>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">{{.Name}}</p>
-                                        </div>
+                        <!-- Skeleton Loading -->
+                        <tr id="skeleton-loading">
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse flex items-center">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                                    <div class="flex flex-col">
+                                        <div class="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-16"></div>
                                     </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">{{.Code}}</span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-900">
-                                    {{if .HeadOfDepartment}}
-                                        {{.HeadOfDepartment.FirstName}} {{.HeadOfDepartment.LastName}}
-                                    {{else}}
-                                        <span class="text-gray-400">Not assigned</span>
-                                    {{end}}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-900">
-                                    {{if .Subjects}}
-                                        {{len .Subjects}} subjects
-                                    {{else}}
-                                        <span class="text-gray-400">No subjects</span>
-                                    {{end}}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{if .IsActive}}
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                                    {{else}}
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
-                                    {{end}}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button onclick="openEditModal('{{.ID}}', '{{.Name}}', '{{.Code}}', '{{if .HeadOfDepartment}}{{.HeadOfDepartment.ID}}{{end}}', '{{if .HeadOfDepartment}}{{.HeadOfDepartment.FirstName}} {{.HeadOfDepartment.LastName}}{{end}}')" class="text-primary-600 hover:text-primary-800 text-sm font-medium">Edit</button>
-                                        <button onclick="openDeleteModal('{{.ID}}', '{{.Name}}')" class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-28"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="animate-pulse flex justify-end space-x-2">
+                                    <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-12"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="skeleton-loading-2">
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse flex items-center">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                                    <div class="flex flex-col">
+                                        <div class="h-4 bg-gray-200 rounded w-36 mb-2"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-20"></div>
                                     </div>
-                                </td>
-                            </tr>
-                            {{end}}
-                        {{else}}
-                            <tr>
-                                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                                    <div class="flex flex-col items-center">
-                                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-										</svg>
-                                        <p class="text-lg font-medium text-gray-900 mb-1">No departments found</p>
-                                        <p class="text-sm text-gray-500">Get started by creating your first department</p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-32"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-28"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="animate-pulse flex justify-end space-x-2">
+                                    <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-12"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="skeleton-loading-3">
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse flex items-center">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-lg mr-3"></div>
+                                    <div class="flex flex-col">
+                                        <div class="h-4 bg-gray-200 rounded w-28 mb-2"></div>
+                                        <div class="h-3 bg-gray-200 rounded w-18"></div>
                                     </div>
-                                </td>
-                            </tr>
-                        {{end}}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-30"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-4 bg-gray-200 rounded w-26"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="animate-pulse">
+                                    <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="animate-pulse flex justify-end space-x-2">
+                                    <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                    <div class="h-4 bg-gray-200 rounded w-12"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Empty State -->
+                        <tr id="empty-state" style="display: none;">
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                    <p class="text-lg font-medium text-gray-900 mb-1">No departments found</p>
+                                    <p class="text-sm text-gray-500">Get started by creating your first department</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -353,6 +401,23 @@
 
         <div class="flex-1 overflow-y-auto px-6">
             <div id="teacherSearchResults" class="space-y-2">
+                <!-- Loading skeleton -->
+                <div id="teacher-skeleton" class="space-y-2">
+                    <div class="animate-pulse flex items-center p-3 border border-gray-200 rounded-lg">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                    <div class="animate-pulse flex items-center p-3 border border-gray-200 rounded-lg">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Search results will be populated here -->
             </div>
         </div>
@@ -381,6 +446,7 @@
     const teacherSearchResults = document.getElementById('teacherSearchResults');
 
     let isEditMode = false;
+    let selectionType = 'head'; // Track which field is being selected
 
     // Modal functionality
     function openModal() {
@@ -396,14 +462,19 @@
         clearTeacherSelection();
     }
 
-    function openEditModal(id, name, code, headId, headName) {
+    function openEditModal(id, name, code, description, headId, headName, assistantId, assistantName) {
         isEditMode = true;
         document.getElementById('editDepartmentId').value = id;
         document.getElementById('editDepartmentName').value = name;
         document.getElementById('editDepartmentCode').value = code;
+        document.getElementById('editDepartmentDescription').value = description || '';
         if (headId) {
             document.getElementById('editHeadOfDepartment').value = headId;
             document.getElementById('editSelectedTeacherDisplay').value = headName;
+        }
+        if (assistantId) {
+            document.getElementById('editAssistantHead').value = assistantId;
+            document.getElementById('editSelectedAssistantDisplay').value = assistantName;
         }
         editDepartmentModal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -413,7 +484,6 @@
         editDepartmentModal.classList.add('hidden');
         document.body.style.overflow = 'auto';
         editDepartmentForm.reset();
-        clearTeacherSelection();
     }
 
     function openDeleteModal(id, name) {
@@ -440,31 +510,86 @@
 
     function clearTeacherSelection() {
         if (isEditMode) {
-            document.getElementById('editSelectedTeacherDisplay').value = '';
-            document.getElementById('editHeadOfDepartment').value = '';
+            if (selectionType === 'assistant') {
+                document.getElementById('editSelectedAssistantDisplay').value = '';
+                document.getElementById('editAssistantHead').value = '';
+            } else {
+                document.getElementById('editSelectedTeacherDisplay').value = '';
+                document.getElementById('editHeadOfDepartment').value = '';
+            }
         } else {
-            document.getElementById('selectedTeacherDisplay').value = '';
-            document.getElementById('headOfDepartment').value = '';
+            if (selectionType === 'assistant') {
+                document.getElementById('selectedAssistantDisplay').value = '';
+                document.getElementById('assistantHead').value = '';
+            } else {
+                document.getElementById('selectedTeacherDisplay').value = '';
+                document.getElementById('headOfDepartment').value = '';
+            }
         }
         closeTeacherModal();
     }
 
     function selectTeacher(teacher) {
+        // Check if teacher is already selected for the other position
         if (isEditMode) {
-            document.getElementById('editSelectedTeacherDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
-            document.getElementById('editHeadOfDepartment').value = teacher.id;
+            const currentHead = document.getElementById('editHeadOfDepartment').value;
+            const currentAssistant = document.getElementById('editAssistantHead').value;
+            
+            if (selectionType === 'assistant' && teacher.id === currentHead) {
+                alert('This teacher is already selected as Head of Department');
+                return;
+            }
+            if (selectionType === 'head' && teacher.id === currentAssistant) {
+                alert('This teacher is already selected as Assistant Head');
+                return;
+            }
+            
+            if (selectionType === 'assistant') {
+                document.getElementById('editSelectedAssistantDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
+                document.getElementById('editAssistantHead').value = teacher.id;
+            } else {
+                document.getElementById('editSelectedTeacherDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
+                document.getElementById('editHeadOfDepartment').value = teacher.id;
+            }
         } else {
-            document.getElementById('selectedTeacherDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
-            document.getElementById('headOfDepartment').value = teacher.id;
+            const currentHead = document.getElementById('headOfDepartment').value;
+            const currentAssistant = document.getElementById('assistantHead').value;
+            
+            if (selectionType === 'assistant' && teacher.id === currentHead) {
+                alert('This teacher is already selected as Head of Department');
+                return;
+            }
+            if (selectionType === 'head' && teacher.id === currentAssistant) {
+                alert('This teacher is already selected as Assistant Head');
+                return;
+            }
+            
+            if (selectionType === 'assistant') {
+                document.getElementById('selectedAssistantDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
+                document.getElementById('assistantHead').value = teacher.id;
+            } else {
+                document.getElementById('selectedTeacherDisplay').value = `${teacher.first_name} ${teacher.last_name}`;
+                document.getElementById('headOfDepartment').value = teacher.id;
+            }
         }
         closeTeacherModal();
     }
 
     async function loadTeachers(query = '') {
-        const url = query ? `/api/teachers/search?q=${query}` : '/api/teachers';
+        const skeleton = document.getElementById('teacher-skeleton');
+        
+        // Show skeleton if it exists
+        if (skeleton) skeleton.style.display = 'block';
+        
+        // Use search endpoint since selection has 404
+        const url = `/api/teachers/search${query ? `?q=${query}` : ''}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
+            
+            // Hide skeleton if it exists
+            if (skeleton) skeleton.style.display = 'none';
+            
             teacherSearchResults.innerHTML = '';
             if (data.teachers) {
                 data.teachers.forEach(teacher => {
@@ -518,7 +643,7 @@
 
             if (response.ok) {
                 closeModal();
-                window.location.reload();
+                loadDepartments(); // Reload departments via API instead of page reload
             } else {
                 const errorData = await response.json();
                 alert('Error: ' + (errorData.error || 'Failed to create department'));
@@ -620,6 +745,123 @@
             closeTeacherModal();
         }
     });
+
+    // Load departments on page load
+    async function loadDepartments() {
+        try {
+            const response = await fetch('/api/departments');
+            const data = await response.json();
+            
+            const tbody = document.querySelector('#departmentsTable tbody');
+            const skeleton1 = document.getElementById('skeleton-loading');
+            const skeleton2 = document.getElementById('skeleton-loading-2');
+            const skeleton3 = document.getElementById('skeleton-loading-3');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Hide skeletons
+            if (skeleton1) skeleton1.style.display = 'none';
+            if (skeleton2) skeleton2.style.display = 'none';
+            if (skeleton3) skeleton3.style.display = 'none';
+            
+            // Clear existing content
+            tbody.innerHTML = '';
+            
+            if (data.departments && data.departments.length > 0) {
+                data.departments.forEach(dept => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 transition-colors duration-150';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="text-sm font-medium text-gray-900">${dept.name}</div>
+                                    <div class="text-xs text-gray-500 uppercase tracking-wide">${dept.code}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${dept.head_of_department ? 
+                                `<div class="flex items-center">
+                                    <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-xs font-medium text-primary-600">${dept.head_of_department.first_name.charAt(0)}${dept.head_of_department.last_name.charAt(0)}</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">${dept.head_of_department.first_name} ${dept.head_of_department.last_name}</div>
+                                        <div class="text-xs text-gray-500">${dept.head_of_department.email}</div>
+                                    </div>
+                                </div>` : 
+                                '<span class="text-gray-400 italic">Not assigned</span>'
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            ${dept.assistant_head ? 
+                                `<div class="flex items-center">
+                                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-xs font-medium text-gray-600">${dept.assistant_head.first_name.charAt(0)}${dept.assistant_head.last_name.charAt(0)}</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">${dept.assistant_head.first_name} ${dept.assistant_head.last_name}</div>
+                                        <div class="text-xs text-gray-500">${dept.assistant_head.email}</div>
+                                    </div>
+                                </div>` : 
+                                '<span class="text-gray-400 italic">Not assigned</span>'
+                            }
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${dept.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${dept.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                <button onclick="openEditModal('${dept.id}', '${dept.name}', '${dept.code}', '${dept.description || ''}', '${dept.head_of_department?.id || ''}', '${dept.head_of_department ? dept.head_of_department.first_name + ' ' + dept.head_of_department.last_name : ''}', '${dept.assistant_head?.id || ''}', '${dept.assistant_head ? dept.assistant_head.first_name + ' ' + dept.assistant_head.last_name : ''}')" 
+                                        class="text-indigo-600 hover:text-indigo-900 font-medium">
+                                    Edit
+                                </button>
+                                <button onclick="openDeleteModal('${dept.id}', '${dept.name}')" 
+                                        class="text-red-600 hover:text-red-900 font-medium">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                // Show empty state
+                tbody.appendChild(emptyState.cloneNode(true));
+                tbody.lastChild.style.display = '';
+            }
+        } catch (error) {
+            console.error('Error loading departments:', error);
+            // Show empty state on error
+            const tbody = document.querySelector('#departmentsTable tbody');
+            const skeleton1 = document.getElementById('skeleton-loading');
+            const skeleton2 = document.getElementById('skeleton-loading-2');
+            const skeleton3 = document.getElementById('skeleton-loading-3');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (skeleton1) skeleton1.style.display = 'none';
+            if (skeleton2) skeleton2.style.display = 'none';
+            if (skeleton3) skeleton3.style.display = 'none';
+            tbody.innerHTML = '';
+            tbody.appendChild(emptyState.cloneNode(true));
+            tbody.lastChild.style.display = '';
+        }
+    }
+
+    function openAssistantModal() {
+        selectionType = 'assistant';
+        openTeacherModal();
+    }
+
+    // Load departments when page loads
+    document.addEventListener('DOMContentLoaded', loadDepartments);
 
     function setButtonLoading(button, isLoading, originalText) {
         if (isLoading) {

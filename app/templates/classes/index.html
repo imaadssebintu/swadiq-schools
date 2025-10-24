@@ -148,6 +148,13 @@
             </div>
 
             <div>
+                <label for="classCode" class="block text-sm font-medium text-gray-700 mb-2">Class Code</label>
+                <input type="text" id="classCode" name="classCode" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       placeholder="e.g., P-1, S-1">
+            </div>
+
+            <div>
                 <label for="classTeacher" class="block text-sm font-medium text-gray-700 mb-2">Class Teacher (Optional)</label>
                 <div class="relative">
                     <input type="text" 
@@ -259,6 +266,13 @@
                 <input type="text" id="editClassName" name="editClassName" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                        placeholder="e.g., Grade 9-A, Form 1 Blue">
+            </div>
+
+            <div>
+                <label for="editClassCode" class="block text-sm font-medium text-gray-700 mb-2">Class Code</label>
+                <input type="text" id="editClassCode" name="editClassCode" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       placeholder="e.g., P-1, S-1">
             </div>
 
             <div>
@@ -1116,7 +1130,7 @@
         // Show loading
         tableBody.innerHTML = `
             <tr class="skeleton-row">
-                <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
                     <div class="flex items-center justify-center">
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                         <span class="ml-2">Loading classes...</span>
@@ -1168,7 +1182,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900">${classItem.name}</p>
-                            <p class="text-xs text-gray-500">ID: ${classItem.id}</p>
+                            <p class="text-xs text-gray-500">Code: ${classItem.code || 'N/A'}</p>
                         </div>
                     </div>
                 </td>
@@ -1193,7 +1207,7 @@
                 <td class="px-4 py-3">
                     <div class="flex items-center gap-2">
                         <a href="/classes/${classItem.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</a>
-                        <button onclick="openEditModal('${classItem.id}', '${classItem.name}', '${classItem.teacher ? classItem.teacher.id : ''}')"
+                        <button onclick="openEditModal('${classItem.id}', '${classItem.name}', '${classItem.code || ''}', '${classItem.teacher ? classItem.teacher.id : ''}')"
                                 class="text-primary-600 hover:text-primary-800 text-sm font-medium">Edit</button>
                         <button onclick="openDeleteModal('${classItem.id}', '${classItem.name}')"
                                 class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
@@ -1238,9 +1252,10 @@
     }
 
     // Edit Modal functionality
-    function openEditModal(classId, className, teacherId) {
+    function openEditModal(classId, className, classCode, teacherId) {
         document.getElementById('editClassId').value = classId;
         document.getElementById('editClassName').value = className;
+        document.getElementById('editClassCode').value = classCode;
 
         // Set teacher if exists
         if (teacherId) {
@@ -1322,6 +1337,7 @@
         const formData = new FormData(editClassForm);
         const data = {
             name: formData.get('editClassName'),
+            code: formData.get('editClassCode'),
             teacher_id: formData.get('editClassTeacher') || null
         };
 
@@ -1363,6 +1379,7 @@
         const formData = new FormData(addClassForm);
         const data = {
             name: formData.get('className'),
+            code: formData.get('classCode'),
             teacher_id: formData.get('classTeacher') || null
         };
 

@@ -5,6 +5,7 @@ import "time"
 type Class struct {
 	ID        string     `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()" validate:"required,uuid"`
 	Name      string     `json:"name" gorm:"uniqueIndex;not null" validate:"required"`
+	Code      string     `json:"code" gorm:"uniqueIndex;not null" validate:"required"`
 	TeacherID *string    `json:"teacher_id,omitempty" gorm:"index;type:uuid" validate:"omitempty,uuid"`
 	IsActive  bool       `json:"is_active" gorm:"default:true"`
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`

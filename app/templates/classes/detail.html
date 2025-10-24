@@ -11,13 +11,7 @@
                     </a>
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900">{{.class.Name}}</h1>
-                        <p class="text-sm text-gray-500">
-                            {{if .class.Teacher}}
-                                Class Teacher: {{.class.Teacher.FirstName}} {{.class.Teacher.LastName}}
-                            {{else}}
-                                Class Teacher: Not assigned
-                            {{end}}
-                        </p>
+                        <p class="text-xs text-gray-400 mb-1">Code: {{.class.Code}}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -26,6 +20,9 @@
                     </button>
                     <button id="editClassBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Edit Class
+                    </button>
+                    <button id="classSubjectsBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Class Subjects
                     </button>
                     <button id="addStudentBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Add Student
@@ -100,7 +97,7 @@
         </div>
 
         <!-- Subjects Section -->
-        <div class="mb-6">
+        <div class="mb-6" style="display: none;">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex justify-between items-center">
@@ -136,23 +133,16 @@
                         <!-- Subjects will be loaded here -->
                     </div>
                     <div id="noSubjects" class="text-center py-8 text-gray-500" style="display: none;">
-                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <p>No subjects assigned to this class yet.</p>
-                        <button onclick="openSubjectsModal()" class="mt-2 text-green-600 hover:text-green-700 font-medium">Add subjects to get started</button>
+                        <!-- Empty - will be handled by modal -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Students List -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
+        <!-- Students List -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
                             <h2 class="text-lg font-semibold text-gray-900">Students</h2>
                             <div class="flex items-center gap-3">
                                 <div class="relative">
@@ -172,17 +162,119 @@
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
                                 <!-- Loading skeleton -->
                                 <tr class="skeleton-row">
-                                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                                        <div class="flex items-center justify-center">
-                                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                                            <span class="ml-2">Loading students...</span>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex items-center">
+                                            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                                            <div class="flex flex-col">
+                                                <div class="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-20"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-28"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex gap-2">
+                                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                            <div class="h-4 bg-gray-200 rounded w-12"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex items-center">
+                                            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                                            <div class="flex flex-col">
+                                                <div class="h-4 bg-gray-200 rounded w-36 mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-28"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-32"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex gap-2">
+                                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                            <div class="h-4 bg-gray-200 rounded w-12"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="skeleton-row">
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex items-center">
+                                            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                                            <div class="flex flex-col">
+                                                <div class="h-4 bg-gray-200 rounded w-28 mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-26"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-22"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-5 bg-gray-200 rounded-full w-16"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse">
+                                            <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="animate-pulse flex gap-2">
+                                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                                            <div class="h-4 bg-gray-200 rounded w-12"></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -190,93 +282,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- Class Settings Sidebar -->
-            <div class="space-y-6">
-                <!-- Promotion Settings -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Promotion Settings</h3>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Promote to Class</label>
-                            <select id="promotionClass" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                <option value="">Select target class...</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Attendance (%)</label>
-                            <input type="number" id="minAttendance" min="0" max="100" value="75" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Grade</label>
-                            <select id="minGrade" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                <option value="D">D</option>
-                                <option value="C" selected>C</option>
-                                <option value="B">B</option>
-                                <option value="A">A</option>
-                            </select>
-                        </div>
-                        
-                        <div class="flex items-center">
-                            <input type="checkbox" id="autoPromote" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                            <label for="autoPromote" class="ml-2 block text-sm text-gray-900">Auto-promote eligible students</label>
-                        </div>
-                        
-                        <button id="savePromotionSettings" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                            Save Settings
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                    
-                    <div class="space-y-3">
-                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors duration-200">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                View Attendance Report
-                            </div>
-                        </button>
-                        
-                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors duration-200">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2-2z"/>
-                                </svg>
-                                Performance Analytics
-                            </div>
-                        </button>
-                        
-                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg border border-gray-200 transition-colors duration-200">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                Export Student List
-                            </div>
-                        </button>
-                        
-                        <button id="promoteStudentsBtn" class="w-full text-left px-4 py-3 text-sm text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors duration-200">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                </svg>
-                                Promote Students
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -373,7 +378,7 @@
 </div>
 
 <!-- Teacher Selection Modal -->
-<div id="teacherModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+<div id="teacherModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-[60]">
     <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-900">Select Teacher</h3>
@@ -431,7 +436,6 @@
                 classData = result;
                 updateStatistics(result.statistics);
                 displayStudents(result.students);
-                loadPromotionSettings(result.promotion_settings, result.available_promotion_classes);
             }
         } catch (error) {
             console.error('Error loading class details:', error);
@@ -450,10 +454,13 @@
     function displayStudents(students) {
         const tableBody = document.getElementById('studentsTableBody');
         
-        if (students.length === 0) {
+        // Hide skeleton rows
+        document.querySelectorAll('.skeleton-row').forEach(row => row.style.display = 'none');
+        
+        if (!students || students.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
                         <div class="flex flex-col items-center">
                             <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
@@ -476,11 +483,11 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900">${student.first_name} ${student.last_name}</p>
-                            <p class="text-xs text-gray-500">${student.email || 'No email'}</p>
                         </div>
                     </div>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-900">${student.student_id}</td>
+                <td class="px-4 py-3 text-sm text-gray-500">${student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : 'Not provided'}</td>
                 <td class="px-4 py-3 text-sm text-gray-900">
                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         student.gender === 'male' ? 'bg-blue-100 text-blue-800' : 
@@ -490,6 +497,7 @@
                         ${student.gender ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1) : 'Not specified'}
                     </span>
                 </td>
+                <td class="px-4 py-3 text-sm text-gray-500 max-w-xs truncate">${student.address || 'Not provided'}</td>
                 <td class="px-4 py-3">
                     <div class="flex items-center gap-2">
                         <button onclick="viewStudent('${student.id}')" class="text-primary-600 hover:text-primary-800 text-sm font-medium">View</button>
@@ -506,97 +514,16 @@
             <tr>
                 <td colspan="4" class="px-4 py-8 text-center text-gray-500">
                     <div class="flex flex-col items-center">
-                        <svg class="w-12 h-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
                         </svg>
-                        <p class="text-lg font-medium text-gray-900 mb-1">Error loading class details</p>
-                        <p class="text-sm text-gray-500">Please try refreshing the page</p>
+                        <p class="text-lg font-medium text-gray-900 mb-1">No students found</p>
+                        <p class="text-sm text-gray-500">This class doesn't have any students yet</p>
                     </div>
                 </td>
             </tr>
         `;
     }
-
-    // Load promotion settings
-    function loadPromotionSettings(promotionSettings, availableClasses) {
-        const promotionClassSelect = document.getElementById('promotionClass');
-
-        // Populate available classes
-        promotionClassSelect.innerHTML = '<option value="">Select target class...</option>';
-        availableClasses.forEach(cls => {
-            const option = document.createElement('option');
-            option.value = cls.id;
-            option.textContent = cls.name;
-            promotionClassSelect.appendChild(option);
-        });
-
-        // Load existing settings if available
-        if (promotionSettings) {
-            promotionClassSelect.value = promotionSettings.to_class_id;
-
-            // Parse promotion criteria if it exists
-            if (promotionSettings.promotion_criteria) {
-                try {
-                    const criteria = JSON.parse(promotionSettings.promotion_criteria);
-                    document.getElementById('minAttendance').value = criteria.minimum_attendance || 75;
-                    document.getElementById('minGrade').value = criteria.minimum_grade || 'C';
-                    document.getElementById('autoPromote').checked = criteria.auto_promote || false;
-                } catch (e) {
-                    console.error('Error parsing promotion criteria:', e);
-                }
-            }
-        }
-    }
-
-    // Save promotion settings
-    document.getElementById('savePromotionSettings').addEventListener('click', async function() {
-        const promotionClassId = document.getElementById('promotionClass').value;
-        const minAttendance = document.getElementById('minAttendance').value;
-        const minGrade = document.getElementById('minGrade').value;
-        const autoPromote = document.getElementById('autoPromote').checked;
-
-        if (!promotionClassId) {
-            alert('Please select a target class for promotion');
-            return;
-        }
-
-        const criteria = {
-            minimum_attendance: parseFloat(minAttendance),
-            minimum_grade: minGrade,
-            auto_promote: autoPromote,
-            required_subjects: [] // Can be expanded later
-        };
-
-        try {
-            const response = await fetch(`/api/classes/${classID}/promotion`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    to_class_id: promotionClassId,
-                    promotion_criteria: JSON.stringify(criteria)
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (result.success) {
-                // Show success message
-                showNotification('Promotion settings saved successfully!', 'success');
-            } else {
-                throw new Error(result.error || 'Failed to save promotion settings');
-            }
-        } catch (error) {
-            console.error('Error saving promotion settings:', error);
-            showNotification('Error saving promotion settings: ' + error.message, 'error');
-        }
-    });
 
     // Student actions
     async function viewStudent(studentId) {
@@ -691,23 +618,21 @@
             if (response.ok) {
                 const subjects = await response.json();
                 console.log('Subjects data:', subjects);
-                console.log('Subjects length:', subjects.length);
-                await displaySubjects(subjects);
+                console.log('Subjects length:', subjects ? subjects.length : 0);
+                await displaySubjects(subjects || []);
             } else {
                 console.error('Failed to load subjects, status:', response.status);
                 const text = await response.text();
                 console.error('Response text:', text.substring(0, 200));
-                // Show error state
+                // Show empty state instead of error
                 document.getElementById('subjectsLoading').style.display = 'none';
                 document.getElementById('noSubjects').style.display = 'block';
-                document.getElementById('noSubjects').innerHTML = '<p class="text-red-500">Failed to load subjects</p>';
             }
         } catch (error) {
             console.error('Error loading subjects:', error);
-            // Show error state
+            // Show empty state instead of error
             document.getElementById('subjectsLoading').style.display = 'none';
             document.getElementById('noSubjects').style.display = 'block';
-            document.getElementById('noSubjects').innerHTML = '<p class="text-red-500">Error loading subjects</p>';
         }
     }
 
@@ -761,6 +686,9 @@
         document.getElementById('subjectsModal').style.display = 'flex';
         document.getElementById('subjectsLoading').style.display = 'block';
         
+        // Load class subjects when modal opens
+        await loadClassSubjects();
+        
         try {
             const response = await fetch('/api/subjects');
             if (response.ok) {
@@ -770,7 +698,7 @@
             }
         } catch (error) {
             console.error('Error loading subjects:', error);
-            document.getElementById('subjectsLoading').innerHTML = '<p class="text-red-500 p-3">Failed to load subjects</p>';
+            document.getElementById('subjectsLoading').innerHTML = '<p class="text-gray-500 p-3">No subjects available</p>';
         }
     }
 
@@ -949,17 +877,38 @@
         currentPaperId = paperId;
         document.getElementById('teacherModal').classList.remove('hidden');
         
+        const teachersList = document.getElementById('teachersList');
+        
         if (allTeachers.length === 0) {
+            // Show loading skeleton
+            teachersList.innerHTML = `
+                <div class="space-y-2">
+                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                        <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                    </div>
+                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                        <div class="h-4 bg-gray-200 rounded w-4/5 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-2/5"></div>
+                    </div>
+                </div>
+            `;
+            
             try {
                 const response = await fetch('/api/teachers');
                 const data = await response.json();
                 allTeachers = data.teachers || [];
             } catch (error) {
                 console.error('Error loading teachers:', error);
+                teachersList.innerHTML = '<p class="text-red-500 p-3">Error loading teachers</p>';
+                return;
             }
         }
         
-        const teachersList = document.getElementById('teachersList');
         teachersList.innerHTML = allTeachers.map(teacher => `
             <button onclick="selectTeacher('${teacher.id}', '${teacher.first_name} ${teacher.last_name}')" 
                     class="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
@@ -972,9 +921,18 @@
     function closeTeacherModal() {
         document.getElementById('teacherModal').classList.add('hidden');
         currentPaperId = null;
+        selectionType = 'head'; // Reset to default
     }
 
     function selectTeacher(teacherId, teacherName) {
+        if (selectionType === 'class_teacher') {
+            // Handle class teacher selection
+            document.getElementById('selectedClassTeacherDisplay').value = teacherName;
+            document.getElementById('classTeacherId').value = teacherId;
+            closeTeacherModal();
+            return;
+        }
+        
         if (currentPaperId) {
             const btn = document.querySelector(`[data-paper-id="${currentPaperId}"]`);
             if (btn) {
@@ -1075,9 +1033,408 @@
     }
 
     // Event listeners
-    document.getElementById('addSubjectsBtn').addEventListener('click', openSubjectsModal);
-    document.getElementById('addSubjectsBtn2').addEventListener('click', openSubjectsModal);
+    document.getElementById('addSubjectsBtn').addEventListener('click', openNoSubjectsModal);
+    document.getElementById('addSubjectsBtn2').addEventListener('click', openNoSubjectsModal);
+    document.getElementById('classSubjectsBtn').addEventListener('click', openNoSubjectsModal);
+    document.getElementById('editClassBtn').addEventListener('click', openEditClassModal);
+    document.getElementById('addStudentBtn').addEventListener('click', openAddStudentModal);
+
+    // Edit Class Modal Functions
+    function openEditClassModal() {
+        document.getElementById('editClassModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Get data from page elements
+        const className = document.querySelector('h1').textContent.trim();
+        
+        // Get class code from the paragraph element that contains "Code: P-1"
+        const codeElement = document.querySelector('h1').nextElementSibling;
+        const classCode = codeElement ? codeElement.textContent.replace('Code: ', '').trim() : '';
+        
+        const teacherElement = document.getElementById('classTeacher');
+        const teacherText = teacherElement ? teacherElement.textContent.trim() : '';
+        
+        console.log('Class Name:', className);
+        console.log('Class Code:', classCode);
+        console.log('Teacher Text:', teacherText);
+        
+        // Populate form fields
+        document.getElementById('className').value = className;
+        document.getElementById('classCode').value = classCode;
+        
+        // Handle teacher assignment
+        if (teacherText && teacherText !== 'Not assigned') {
+            document.getElementById('selectedClassTeacherDisplay').value = teacherText;
+            document.getElementById('classTeacherId').value = '{{if .class.Teacher}}{{.class.Teacher.ID}}{{end}}';
+        } else {
+            document.getElementById('selectedClassTeacherDisplay').value = '';
+            document.getElementById('classTeacherId').value = '';
+        }
+    }
+
+    function closeEditClassModal() {
+        document.getElementById('editClassModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        document.getElementById('editClassForm').reset();
+    }
+
+    // Update class display without page reload
+    async function updateClassDisplay(data) {
+        // Update class name in header
+        const classNameElement = document.querySelector('h1');
+        if (classNameElement) {
+            classNameElement.textContent = data.name;
+        }
+        
+        // Update teacher display in the stats section
+        const teacherElement = document.getElementById('classTeacher');
+        if (teacherElement) {
+            const teacherDisplay = document.getElementById('selectedClassTeacherDisplay').value;
+            if (data.teacher_id && teacherDisplay) {
+                teacherElement.textContent = teacherDisplay;
+            } else {
+                teacherElement.textContent = 'Not assigned';
+            }
+        }
+        
+        // Optionally refresh the class details from API to ensure consistency
+        try {
+            const response = await fetch(`/api/classes/{{.classID}}/details`, {
+                credentials: 'include'
+            });
+            if (response.ok) {
+                const result = await response.json();
+                // Update any other elements that might need refreshing
+                console.log('Class details refreshed');
+            }
+        } catch (error) {
+            console.error('Error refreshing class details:', error);
+        }
+    }
+
+    function openClassTeacherModal() {
+        // Set selection type for class teacher
+        selectionType = 'class_teacher';
+        isEditMode = true; // Reuse edit mode logic
+        
+        // Open the existing teacher modal (it will load teachers automatically)
+        openTeacherModal(null);
+    }
+
+    // Edit Class Form Submission
+    const editClassForm = document.getElementById('editClassForm');
+    if (editClassForm) {
+        editClassForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Updating...';
+
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('className'),
+                code: formData.get('classCode'),
+                teacher_id: formData.get('classTeacherId') || null
+            };
+
+            console.log('Submitting data:', data); // Debug log
+
+            try {
+                const response = await fetch(`/api/classes/{{.classID}}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+
+                console.log('Response status:', response.status); // Debug log
+
+                if (response.ok) {
+                    alert('Class updated successfully');
+                    // Don't close modal - keep form open
+                    // Update the page display without reload
+                    updateClassDisplay(data);
+                } else {
+                    const error = await response.json();
+                    console.error('API Error:', error); // Debug log
+                    alert('Error: ' + (error.error || 'Failed to update class'));
+                }
+            } catch (error) {
+                console.error('Error updating class:', error);
+                alert('Error: Failed to update class');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    }
+
+    // No Subjects Modal Functions
+    function openNoSubjectsModal() {
+        document.getElementById('noSubjectsModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeNoSubjectsModal() {
+        document.getElementById('noSubjectsModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
     // Load subjects on page load
-    loadClassSubjects();
+    // loadClassSubjects(); // Removed - only load when modal opens
+
+    // Add Student Modal Functions
+    function openAddStudentModal() {
+        document.getElementById('addStudentModal').style.display = 'flex';
+        loadAvailableStudents();
+    }
+
+    function closeAddStudentModal() {
+        document.getElementById('addStudentModal').style.display = 'none';
+        document.getElementById('studentSearchInput').value = '';
+        document.getElementById('studentSearchResults').innerHTML = '';
+    }
+
+    async function loadAvailableStudents(query = '') {
+        const resultsContainer = document.getElementById('studentSearchResults');
+        
+        // Show loading skeleton
+        resultsContainer.innerHTML = `
+            <div class="space-y-2">
+                <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-4/5 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-2/5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        try {
+            const url = `/api/students/search${query ? `?q=${query}` : ''}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            resultsContainer.innerHTML = '';
+            
+            if (data.students && data.students.length > 0) {
+                data.students.forEach(student => {
+                    const studentElement = document.createElement('div');
+                    studentElement.className = 'p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 cursor-pointer transition-colors duration-200';
+                    studentElement.onclick = () => addStudentToClass(student);
+                    studentElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-sm font-medium text-primary-600">${student.first_name.charAt(0)}${student.last_name.charAt(0)}</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">${student.first_name} ${student.last_name}</p>
+                                <p class="text-xs text-gray-500">ID: ${student.student_id}</p>
+                            </div>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(studentElement);
+                });
+            } else {
+                resultsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No students found</p>';
+            }
+        } catch (error) {
+            console.error('Error loading students:', error);
+            resultsContainer.innerHTML = '<p class="text-red-500 text-center py-4">Error loading students</p>';
+        }
+    }
+
+    async function addStudentToClass(student) {
+        try {
+            const response = await fetch(`/api/classes/{{.classID}}/students`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ student_id: student.id })
+            });
+
+            if (response.ok) {
+                showNotification('Student added successfully', 'success');
+                closeAddStudentModal();
+                loadClassDetails(); // Refresh the page data
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.error || 'Failed to add student'));
+            }
+        } catch (error) {
+            console.error('Error adding student:', error);
+            alert('Error: Failed to add student');
+        }
+    }
+
+</script>
+
+<!-- No Subjects Modal -->
+<div id="noSubjectsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Class Subjects</h3>
+            <button onclick="closeNoSubjectsModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 text-center">
+            <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            <p class="text-gray-600 mb-4">No subjects assigned to this class yet.</p>
+            <p class="text-sm text-gray-500 mb-6">Add subjects to get started with this class.</p>
+            
+            <div class="flex justify-center gap-3">
+                <button onclick="closeNoSubjectsModal()" 
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                    Cancel
+                </button>
+                <button onclick="openSubjectsModal(); closeNoSubjectsModal();" 
+                        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                    Add Subjects
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Class Modal -->
+<div id="editClassModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Edit Class</h3>
+            <button onclick="closeEditClassModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="editClassForm" class="p-6 space-y-4">
+            <div>
+                <label for="className" class="block text-sm font-medium text-gray-700 mb-2">Class Name</label>
+                <input type="text" id="className" name="className" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       placeholder="e.g., Primary-1, Secondary-3">
+            </div>
+
+            <div>
+                <label for="classCode" class="block text-sm font-medium text-gray-700 mb-2">Class Code</label>
+                <input type="text" id="classCode" name="classCode" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       placeholder="e.g., P-1, S-1">
+            </div>
+
+            <div>
+                <label for="classTeacher" class="block text-sm font-medium text-gray-700 mb-2">Class Teacher (Optional)</label>
+                <div class="relative">
+                    <input type="text" 
+                           id="selectedClassTeacherDisplay" 
+                           name="selectedClassTeacherDisplay" 
+                           readonly 
+                           onclick="openClassTeacherModal()"
+                           class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white cursor-pointer"
+                           placeholder="Select a teacher">
+                    <button type="button" 
+                            onclick="openClassTeacherModal()"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <input type="hidden" id="classTeacherId" name="classTeacherId" value="">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeEditClassModal()" 
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                    Update Class
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div id="addStudentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Add Student to Class</h3>
+            <button onclick="closeAddStudentModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 pb-4">
+            <div class="relative">
+                <input type="text" 
+                       id="studentSearchInput" 
+                       placeholder="Search students by name or ID..."
+                       class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6">
+            <div id="studentSearchResults" class="space-y-2">
+                <p class="text-gray-500 text-center py-4">Start typing to search for students</p>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button type="button" onclick="closeAddStudentModal()" 
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add event listener after modal is defined
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('studentSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                loadAvailableStudents(e.target.value);
+            });
+        }
+    });
 </script>

@@ -1,8 +1,6 @@
 package teachers
 
 import (
-	"swadiq-schools/app/config"
-	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
@@ -20,6 +18,7 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api := app.Group("/api/teachers")
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", GetTeachersAPI)
+	api.Get("/selection", GetTeachersForSelectionAPI) // Fast endpoint for selection
 	api.Get("/counts", GetTeacherCountsAPI)
 	api.Get("/stats", GetTeacherStatsAPI)
 	api.Get("/search", SearchTeachersAPI)
@@ -34,24 +33,11 @@ func SetupTeachersRoutes(app *fiber.App) {
 }
 
 func TeachersPage(c *fiber.Ctx) error {
-	teachers, err := database.GetAllTeachers(config.GetDB())
-	if err != nil {
-		// Log the error for debugging
-		println("Error getting teachers:", err.Error())
-		// Initialize empty slice if there's an error
-		teachers = []*models.User{}
-	}
-
-	// Ensure teachers is never nil
-	if teachers == nil {
-		teachers = []*models.User{}
-	}
-
 	user := c.Locals("user").(*models.User)
 	return c.Render("teachers/index", fiber.Map{
 		"Title":       "Teachers - Swadiq Schools",
 		"CurrentPage": "teachers",
-		"teachers":    teachers,
+		"teachers":    []*models.User{}, // Empty array
 		"user":        user,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,

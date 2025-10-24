@@ -24,7 +24,7 @@ func InitDB() {
 		psqlInfo = "host=localhost port=5432 user=postgres dbname=swadiq sslmode=disable"
 		log.Println("Using local PostgreSQL database")
 	} else {
-		host := "129.80.199.242"
+		host := "129.80.85.203"
 		port := 5432
 		user := "imaad"
 		password := "Ertdfgxc"

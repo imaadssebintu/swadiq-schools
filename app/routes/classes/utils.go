@@ -11,7 +11,7 @@ import (
 // GetClassByID retrieves a single class by ID with teacher information
 func GetClassByID(db *sql.DB, classID string) (*models.Class, error) {
 	query := `
-		SELECT c.id, c.name, c.teacher_id, c.is_active, c.created_at, c.updated_at,
+		SELECT c.id, c.name, c.code, c.teacher_id, c.is_active, c.created_at, c.updated_at,
 		       u.id, u.first_name, u.last_name, u.email
 		FROM classes c
 		LEFT JOIN users u ON c.teacher_id = u.id
@@ -24,7 +24,7 @@ func GetClassByID(db *sql.DB, classID string) (*models.Class, error) {
 	var teacherUserID, teacherFirstName, teacherLastName, teacherEmail sql.NullString
 
 	err := db.QueryRow(query, classID).Scan(
-		&class.ID, &class.Name, &teacherID, &class.IsActive, &class.CreatedAt, &class.UpdatedAt,
+		&class.ID, &class.Name, &class.Code, &teacherID, &class.IsActive, &class.CreatedAt, &class.UpdatedAt,
 		&teacherUserID, &teacherFirstName, &teacherLastName, &teacherEmail,
 	)
 

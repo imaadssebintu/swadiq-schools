@@ -20,6 +20,7 @@ func SetupStudentsRoutes(app *fiber.App) {
 	api := app.Group("/api/students")
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", GetStudentsAPI)             // Get all students
+	api.Get("/search", SearchStudentsAPI)    // Search students
 	api.Get("/stats", GetStudentsStatsAPI)   // Get students statistics
 	api.Get("/table", GetStudentsTableAPI)   // Get students formatted for table
 	api.Get("/year", GetStudentsByYearAPI)   // Get students by year (?year=2025)
