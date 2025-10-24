@@ -1272,7 +1272,8 @@
 
     async function addStudentToClass(student) {
         try {
-            const response = await fetch(`/api/classes/{{.classID}}/students`, {
+            const classID = "{{js .classID}}";
+            const response = await fetch("/api/classes/" + classID + "/students", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student_id: student.id })
