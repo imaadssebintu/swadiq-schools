@@ -18,7 +18,11 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
-          cd ~/swadiq-schools
+          cd ~/docker
+          if [ ! -d "swadiq-schools" ]; then
+            git clone https://github.com/ImaadDean/swadiq-schools.git
+          fi
+          cd swadiq-schools
           git pull origin main
           docker build -t swadiq-schools .
           docker stop swadiq-app || true
