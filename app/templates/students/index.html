@@ -1654,12 +1654,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-gray-900">${student.full_name}</p>
-                        <p class="text-xs text-gray-500">${student.class_name ? `Class: ${student.class_name}` : 'No class assigned'}</p>
+                        <p class="text-xs text-gray-500">${student.class_name ? `Class: <a href="/classes/${student.class_id}" class="text-blue-600 hover:text-blue-800 hover:underline">${student.class_name}</a>` : 'No class assigned'}</p>
                     </div>
                 </div>
             </td>
             <td class="px-4 py-3 text-sm text-gray-900">${student.student_id}</td>
-            <td class="px-4 py-3 text-sm text-gray-900">${student.class_name || 'Not assigned'}</td>
+            <td class="px-4 py-3 text-sm text-gray-900">${student.class_name ? `<a href="/classes/${student.class_id}" class="text-blue-600 hover:text-blue-800 hover:underline">${student.class_name}</a>` : 'Not assigned'}</td>
             <td class="px-4 py-3">
                 <p class="text-sm text-gray-900">${student.parent_name || 'No parent assigned'}</p>
                 <p class="text-xs text-gray-500">${student.parent_phone || ''}</p>

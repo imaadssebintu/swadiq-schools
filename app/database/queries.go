@@ -3025,3 +3025,109 @@ func RemoveSubjectFromClass(db *sql.DB, classID, subjectID string) error {
 
 	return nil
 }
+
+// GetClassStatistics gets detailed statistics for a specific class
+func GetClassStatistics(db *sql.DB, classID string) (map[string]interface{}, error) {
+	stats := make(map[string]interface{})
+
+	// Get total students
+	var totalStudents int
+	err := db.QueryRow(`
+		SELECT COUNT(*) 
+		FROM students 
+		WHERE class_id = $1 AND is_active = true
+	`, classID).Scan(&totalStudents)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get male students
+	var maleStudents int
+	err = db.QueryRow(`
+		SELECT COUNT(*) 
+		FROM students 
+		WHERE class_id = $1 AND is_active = true AND gender = 'male'
+	`, classID).Scan(&maleStudents)
+	if err != nil {
+		maleStudents = 0
+	}
+
+	// Get female students
+	var femaleStudents int
+	err = db.QueryRow(`
+		SELECT COUNT(*) 
+		FROM students 
+		WHERE class_id = $1 AND is_active = true AND gender = 'female'
+	`, classID).Scan(&femaleStudents)
+	if err != nil {
+		femaleStudents = 0
+	}
+
+	stats["total_students"] = totalStudents
+	stats["male_students"] = maleStudents
+	stats["female_students"] = femaleStudents
+
+	return stats, nil
+}
+
+// GetClassStudents gets all active students for a specific class with accurate filtering
+func GetClassStudents(db *sql.DB, classID string) ([]map[string]interface{}, error) {
+	query := `
+		SELECT id, student_id, first_name, last_name, date_of_birth, gender, address 
+		FROM students 
+		WHERE class_id = $1 AND is_active = true 
+		ORDER BY first_name, last_name
+	`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var students []map[string]interface{}
+	for rows.Next() {
+		var id, studentID, firstName, lastName, gender *string
+		var dateOfBirth *time.Time
+		var address *string
+		
+		err := rows.Scan(&id, &studentID, &firstName, &lastName, &dateOfBirth, &gender, &address)
+		if err != nil {
+			continue
+		}
+		
+		// Skip students with missing required fields
+		if id == nil || firstName == nil || lastName == nil {
+			continue
+		}
+		
+		addressStr := ""
+		if address != nil {
+			addressStr = *address
+		}
+		
+		dateStr := ""
+		if dateOfBirth != nil {
+			dateStr = dateOfBirth.Format("2006-01-02")
+		}
+		
+		genderStr := ""
+		if gender != nil {
+			genderStr = *gender
+		}
+		
+		student := map[string]interface{}{
+			"id":            *id,
+			"student_id":    studentID,
+			"first_name":    *firstName,
+			"last_name":     *lastName,
+			"date_of_birth": dateStr,
+			"gender":        genderStr,
+			"address":       addressStr,
+		}
+		
+		students = append(students, student)
+	}
+
+	return students, nil
+}

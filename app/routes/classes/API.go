@@ -156,6 +156,43 @@ func GetClassAPI(c *fiber.Ctx) error {
 	})
 }
 
+// GetClassStatisticsAPI returns accurate statistics for a specific class
+func GetClassStatisticsAPI(c *fiber.Ctx) error {
+	classID := c.Params("id")
+	if classID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
+	}
+
+	stats, err := database.GetClassStatistics(config.GetDB(), classID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch class statistics"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    stats,
+	})
+}
+
+// GetClassStudentsAPI returns accurate list of students for a specific class
+func GetClassStudentsAPI(c *fiber.Ctx) error {
+	classID := c.Params("id")
+	if classID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
+	}
+
+	students, err := database.GetClassStudents(config.GetDB(), classID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch class students"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"students": students,
+		"count":   len(students),
+	})
+}
+
 // GetClassDetailsAPI returns detailed information about a specific class
 func GetClassDetailsAPI(c *fiber.Ctx) error {
 	classID := c.Params("id")

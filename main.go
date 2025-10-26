@@ -167,6 +167,8 @@ func main() {
 	classesAPI.Get("/:id/subjects/:subjectId/papers", classes.GetSubjectPapersForClassAPI)
 	classesAPI.Get("/:id", classes.GetClassAPI)
 	classesAPI.Get("/:id/details", classes.GetClassDetailsAPI)
+	classesAPI.Get("/:id/statistics", classes.GetClassStatisticsAPI)
+	classesAPI.Get("/:id/students", classes.GetClassStudentsAPI)
 	classesAPI.Put("/:id", classes.UpdateClassAPI)
 	classesAPI.Delete("/:id", classes.DeleteClassAPI)
 

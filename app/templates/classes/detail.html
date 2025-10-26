@@ -422,20 +422,26 @@
     // Load detailed class information
     async function loadClassDetails() {
         try {
-            const response = await fetch(`/api/classes/${classID}/details`, {
+            // Fetch statistics
+            const statsResponse = await fetch(`/api/classes/${classID}/statistics`, {
                 credentials: 'include'
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            // Fetch students
+            const studentsResponse = await fetch(`/api/classes/${classID}/students`, {
+                credentials: 'include'
+            });
+            
+            if (!statsResponse.ok || !studentsResponse.ok) {
+                throw new Error('Failed to fetch class data');
             }
             
-            const result = await response.json();
+            const statsResult = await statsResponse.json();
+            const studentsResult = await studentsResponse.json();
             
-            if (result.success) {
-                classData = result;
-                updateStatistics(result.statistics);
-                displayStudents(result.students);
+            if (statsResult.success && studentsResult.success) {
+                updateStatistics(statsResult.data);
+                displayStudents(studentsResult.students);
             }
         } catch (error) {
             console.error('Error loading class details:', error);
