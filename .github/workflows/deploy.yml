@@ -1,63 +1,48 @@
-name: 🚀 Deploy Go App to Server
+- name: 🚀 Deploy to Server via SSH (Password)
+  uses: appleboy/ssh-action@v0.1.5
+  with:
+    host: ${{ secrets.HOST }}
+    username: ${{ secrets.USERNAME }}
+    password: ${{ secrets.PASSWORD }}
+    port: 22
+    script_stop: false   # <---- THIS IS THE FIX
+    timeout: 2000s
+    envs: GITHUB_SHA
+    script: |
+      set -e
 
-on:
-  push:
-    branches: [ main ]
+      echo "📂 Moving to home directory..."
+      cd ~
 
-jobs:
-  deploy:
-    name: 🛠️ Build & Deploy
-    runs-on: ubuntu-latest
+      echo "🛑 Stopping existing application (if running)..."
+      pkill -f "./main" >/dev/null 2>&1 || true
 
-    steps:
-    - name: 📦 Checkout Repository
-      uses: actions/checkout@v3
+      echo "📥 Updating project..."
+      if [ -d "swadiq-schools" ]; then
+        cd swadiq-schools
+        git pull origin main
+      else
+        git clone https://github.com/ImaadDean/swadiq-schools.git
+        cd swadiq-schools
+      fi
 
-    - name: 🚀 Deploy to Server via SSH (Password)
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        timeout: 1200s
-        script: |
-          set -e
+      echo "📦 Installing Go dependencies..."
+      go mod tidy
 
-          echo "📂 Moving to home directory..."
-          cd ~
+      echo "🔨 Building Go binary..."
+      go build -o main .
 
-          echo "🛑 Stopping existing application (if running)..."
-          pkill -f "./main" >/dev/null 2>&1 || true
+      echo "🚀 Starting Go app..."
+      nohup ./main > app.log 2>&1 &
+      disown
 
-          echo "📥 Updating project..."
-          if [ -d "swadiq-schools" ]; then
-            cd swadiq-schools
-            git pull origin main
-          else
-            git clone https://github.com/ImaadDean/swadiq-schools.git
-            cd swadiq-schools
-          fi
+      echo "⏳ Waiting 3 seconds..."
+      sleep 3
 
-          echo "📦 Installing Go dependencies..."
-          go mod tidy
-
-          echo "🔨 Building Go binary..."
-          go build -o main .
-
-          echo "🚀 Starting Go app..."
-          nohup ./main > app.log 2>&1 &
-          disown
-
-          echo "⏳ Waiting 3 seconds for app to start..."
-          sleep 3
-
-          echo "✅ Verifying application is running..."
-          if pgrep -f "./main" > /dev/null; then
-            echo "🎉 Deployment successful"
-            echo "✅ App is running"
-          else
-            echo "❌ App failed to start"
-            echo "📄 Last logs:"
-            tail -20 app.log
-            exit 1
-          fi
+      if pgrep -f "./main" > /dev/null; then
+        echo "✅ Deployment successful"
+      else
+        echo "❌ App failed to start"
+        tail -20 app.log
+        exit 1
+      fi
