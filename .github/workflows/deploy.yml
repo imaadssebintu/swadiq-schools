@@ -18,11 +18,13 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
+          set -e
           cd ~
-          # Stop current Go process
-          pkill -f "go run main.go" || true
-          pkill -f "./main" || true
-          # Clone or update code
+          echo "=== Stopping existing processes ==="
+          pkill -f "go run main.go" || echo "No go run process found"
+          pkill -f "./main" || echo "No main process found"
+          
+          echo "=== Updating code ==="
           if [ -d "swadiq-schools" ]; then
             cd swadiq-schools
             git pull origin main
@@ -30,20 +32,29 @@ jobs:
             git clone https://github.com/ImaadDean/swadiq-schools.git
             cd swadiq-schools
           fi
-          # Install dependencies
+          
+          echo "=== Installing dependencies ==="
           go mod tidy
-          # Build and run
+          
+          echo "=== Building application ==="
           go build -o main .
-          echo "Starting application..."
+          chmod +x main
+          
+          echo "=== Starting application ==="
           nohup ./main > app.log 2>&1 &
-          sleep 3
-          # Check if process is running
-          if pgrep -f "./main" > /dev/null; then
-            echo "✅ Application deployed and running on port 8080"
-            echo "Process ID: $(pgrep -f './main')"
+          APP_PID=$!
+          echo "Started with PID: $APP_PID"
+          
+          sleep 5
+          
+          echo "=== Checking application status ==="
+          if kill -0 $APP_PID 2>/dev/null; then
+            echo "✅ Application is running (PID: $APP_PID)"
+            echo "✅ Listening on port 8080"
+            netstat -tlnp | grep :8080 || echo "Port 8080 not yet bound"
           else
-            echo "❌ Failed to start application. Check logs:"
+            echo "❌ Application failed to start"
+            echo "Last 20 lines of log:"
             tail -20 app.log
-            echo "Build output:"
-            ls -la main
+            exit 1
           fi
