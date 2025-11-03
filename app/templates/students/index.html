@@ -87,9 +87,14 @@
             <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <!-- Search -->
                 <div class="relative">
-                    <input id="searchInput" type="text" placeholder="Search students..."
+                    <input id="searchInput" type="text" placeholder="Search by name, student ID, or parent (min 3 chars)..."
                            class="w-full sm:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <!-- Search hint tooltip -->
+                    <div id="searchHint" class="absolute top-full left-0 mt-1 px-3 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-xs text-yellow-800 shadow-lg z-10 hidden">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Type at least 3 characters to search
+                    </div>
                 </div>
 
                 <!-- Status Filter -->
@@ -214,7 +219,6 @@
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parent/Guardian</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -374,7 +378,7 @@
                     </tr>
                     <!-- Empty state -->
                     <tr id="emptyRow" class="hidden">
-                        <td colspan="6" class="px-4 py-8 text-center">
+                        <td colspan="5" class="px-4 py-8 text-center">
                             <div class="text-gray-500">
                                 <i class="fas fa-users text-4xl mb-2"></i>
                                 <p class="text-lg font-medium">No students found</p>
@@ -384,7 +388,7 @@
                     </tr>
                     <!-- Error state -->
                     <tr id="errorRow" class="hidden">
-                        <td colspan="6" class="px-4 py-8 text-center">
+                        <td colspan="5" class="px-4 py-8 text-center">
                             <div class="text-red-500">
                                 <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
                                 <p class="text-lg font-medium">Error loading students</p>
@@ -859,14 +863,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Current filters state
     let currentFilters = {};
 
-    // Search input with debounce
+    // Search input with debounce and 3+ character requirement
     let searchTimeout;
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
+        const searchValue = this.value.trim();
+        
         searchTimeout = setTimeout(() => {
-            currentFilters.search = this.value.trim();
-            applyFilters();
+            if (searchValue.length === 0 || searchValue.length >= 3) {
+                currentFilters.search = searchValue;
+                applyFilters();
+            }
         }, 300); // 300ms debounce
+        
+        // Show search hint for less than 3 characters
+        if (searchValue.length > 0 && searchValue.length < 3) {
+            showSearchHint();
+        } else {
+            hideSearchHint();
+        }
     });
 
     // Status filter
@@ -1653,16 +1668,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="text-white text-sm font-medium">${student.initials}</span>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900">${student.full_name}</p>
-                        <p class="text-xs text-gray-500">${student.class_name ? `Class: <a href="/classes/${student.class_id}" class="text-blue-600 hover:text-blue-800 hover:underline">${student.class_name}</a>` : 'No class assigned'}</p>
+                        <p class="text-sm font-medium text-gray-900 whitespace-nowrap">${student.full_name}</p>
+                        <a href="/classes/${student.class_id || ''}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">${student.class_code || 'No class'}</a>
                     </div>
                 </div>
             </td>
-            <td class="px-4 py-3 text-sm text-gray-900">${student.student_id}</td>
-            <td class="px-4 py-3 text-sm text-gray-900">${student.class_name ? `<a href="/classes/${student.class_id}" class="text-blue-600 hover:text-blue-800 hover:underline">${student.class_name}</a>` : 'Not assigned'}</td>
+            <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">${student.student_id}</td>
             <td class="px-4 py-3">
-                <p class="text-sm text-gray-900">${student.parent_name || 'No parent assigned'}</p>
-                <p class="text-xs text-gray-500">${student.parent_phone || ''}</p>
+                <p class="text-sm text-gray-900 whitespace-nowrap">${student.parent_name || 'No parent assigned'}</p>
+                <a href="tel:${student.parent_phone || ''}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">${student.parent_phone || ''}</a>
             </td>
             <td class="px-4 py-3">
                 <span class="inline-flex px-2 py-1 text-xs font-medium ${statusClass} rounded-full">${student.status}</span>
@@ -2053,6 +2067,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Search hint functions
+    function showSearchHint() {
+        const searchHint = document.getElementById('searchHint');
+        if (searchHint) {
+            searchHint.classList.remove('hidden');
+        }
+    }
+
+    function hideSearchHint() {
+        const searchHint = document.getElementById('searchHint');
+        if (searchHint) {
+            searchHint.classList.add('hidden');
+        }
+    }
 
     // Make loadStudents available globally for retry button
     window.loadStudents = loadStudents;

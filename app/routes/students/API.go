@@ -80,6 +80,7 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 		FullName    string `json:"full_name"`
 		ClassID     string `json:"class_id,omitempty"`
 		ClassName   string `json:"class_name,omitempty"`
+		ClassCode   string `json:"class_code,omitempty"`
 		ParentName  string `json:"parent_name,omitempty"`
 		ParentPhone string `json:"parent_phone,omitempty"`
 		ParentEmail string `json:"parent_email,omitempty"`
@@ -117,11 +118,15 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 			}
 		}
 
-		// Get class name and ID
+		// Get class name, code and ID
 		className := ""
+		classCode := ""
 		classID := ""
 		if student.Class != nil {
 			className = student.Class.Name
+			if student.Class.Code != nil {
+				classCode = *student.Class.Code
+			}
 			classID = student.Class.ID
 		} else if student.ClassID != nil {
 			classID = *student.ClassID
@@ -159,6 +164,7 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 			FullName:    student.FirstName + " " + student.LastName,
 			ClassID:     classID,
 			ClassName:   className,
+			ClassCode:   classCode,
 			ParentName:  parentName,
 			ParentPhone: parentPhone,
 			ParentEmail: parentEmail,

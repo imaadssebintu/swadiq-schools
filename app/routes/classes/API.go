@@ -123,7 +123,7 @@ func CreateClassAPI(c *fiber.Ctx) error {
 
 	class := &models.Class{
 		Name: req.Name,
-		Code: req.Code,
+		Code: &req.Code,
 	}
 
 	if req.TeacherID != "" {
@@ -298,7 +298,7 @@ func UpdateClassAPI(c *fiber.Ctx) error {
 
 	// Update class data
 	existingClass.Name = req.Name
-	existingClass.Code = req.Code
+	existingClass.Code = &req.Code
 	if req.TeacherID != "" {
 		existingClass.TeacherID = &req.TeacherID
 	} else {

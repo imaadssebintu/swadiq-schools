@@ -884,7 +884,7 @@ func DeleteDepartment(db *sql.DB, id string) error {
 
 func GetStudentsWithDetails(db *sql.DB) ([]*models.Student, error) {
 	query := `SELECT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
-			  c.name as class_name,
+			  c.name as class_name, c.code as class_code,
 			  p.id as parent_id, p.first_name as parent_first_name, p.last_name as parent_last_name, p.phone as parent_phone, p.email as parent_email
 			  FROM students s
 			  LEFT JOIN classes c ON s.class_id = c.id
@@ -907,12 +907,12 @@ func GetStudentsWithDetails(db *sql.DB) ([]*models.Student, error) {
 		var address, classID *string
 		var isActive bool
 		var createdAt, updatedAt time.Time
-		var className *string
+		var className, classCode *string
 		var parentID, parentFirstName, parentLastName, parentPhone, parentEmail *string
 
 		err := rows.Scan(
 			&studentID, &studentIDCode, &firstName, &lastName, &dateOfBirth, &gender, &address, &classID, &isActive, &createdAt, &updatedAt,
-			&className, &parentID, &parentFirstName, &parentLastName, &parentPhone, &parentEmail,
+			&className, &classCode, &parentID, &parentFirstName, &parentLastName, &parentPhone, &parentEmail,
 		)
 		if err != nil {
 			continue
@@ -944,6 +944,7 @@ func GetStudentsWithDetails(db *sql.DB) ([]*models.Student, error) {
 				student.Class = &models.Class{
 					ID:   *classID,
 					Name: *className,
+					Code: classCode,
 				}
 			}
 
@@ -1005,8 +1006,185 @@ func GetStudentsStats(db *sql.DB) (map[string]interface{}, error) {
 }
 
 func GetStudentsWithFilters(db *sql.DB, filters StudentFilters) ([]*models.Student, error) {
-	// For now, just return the same as GetStudentsWithDetails to get it working
-	return GetStudentsWithDetails(db)
+	// Base query
+	baseQuery := `SELECT DISTINCT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
+			  c.name as class_name, c.code as class_code,
+			  p.id as parent_id, p.first_name as parent_first_name, p.last_name as parent_last_name, p.phone as parent_phone, p.email as parent_email
+			  FROM students s
+			  LEFT JOIN classes c ON s.class_id = c.id
+			  LEFT JOIN student_parents sp ON s.id = sp.student_id
+			  LEFT JOIN parents p ON sp.parent_id = p.id
+			  WHERE s.is_active = true`
+
+	var conditions []string
+	var args []interface{}
+	argIndex := 1
+
+	// Search filter
+	if filters.Search != "" && len(filters.Search) >= 3 {
+		searchPattern := "%" + strings.ToLower(filters.Search) + "%"
+		conditions = append(conditions, fmt.Sprintf(`(
+			LOWER(s.first_name) LIKE $%d
+			OR LOWER(s.last_name) LIKE $%d
+			OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE $%d
+			OR LOWER(s.student_id) LIKE $%d
+			OR LOWER(p.first_name) LIKE $%d
+			OR LOWER(p.last_name) LIKE $%d
+			OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE $%d
+		)`, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex))
+		args = append(args, searchPattern)
+		argIndex++
+	}
+
+	// Status filter
+	if filters.Status != "" {
+		if filters.Status == "active" {
+			conditions = append(conditions, "s.is_active = true")
+		} else if filters.Status == "inactive" {
+			conditions = append(conditions, "s.is_active = false")
+		}
+	}
+
+	// Class filter
+	if filters.ClassID != "" {
+		conditions = append(conditions, fmt.Sprintf("s.class_id = $%d", argIndex))
+		args = append(args, filters.ClassID)
+		argIndex++
+	}
+
+	// Gender filter
+	if filters.Gender != "" {
+		conditions = append(conditions, fmt.Sprintf("s.gender = $%d", argIndex))
+		args = append(args, filters.Gender)
+		argIndex++
+	}
+
+	// Date filters
+	if filters.DateFrom != "" {
+		conditions = append(conditions, fmt.Sprintf("s.created_at >= $%d", argIndex))
+		args = append(args, filters.DateFrom)
+		argIndex++
+	}
+
+	if filters.DateTo != "" {
+		conditions = append(conditions, fmt.Sprintf("s.created_at <= $%d", argIndex))
+		args = append(args, filters.DateTo)
+		argIndex++
+	}
+
+	// Add conditions to query
+	if len(conditions) > 0 {
+		baseQuery += " AND " + strings.Join(conditions, " AND ")
+	}
+
+	// Add sorting
+	sortBy := "s.first_name"
+	if filters.SortBy == "student_id" {
+		sortBy = "s.student_id"
+	} else if filters.SortBy == "class" {
+		sortBy = "c.name"
+	}
+
+	sortOrder := "ASC"
+	if filters.SortOrder == "desc" {
+		sortOrder = "DESC"
+	}
+
+	baseQuery += fmt.Sprintf(" ORDER BY %s %s, s.last_name ASC", sortBy, sortOrder)
+
+	rows, err := db.Query(baseQuery, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	studentMap := make(map[string]*models.Student)
+	for rows.Next() {
+		var studentID, studentIDCode, firstName, lastName string
+		var dateOfBirth *time.Time
+		var gender *string
+		var address, classID *string
+		var isActive bool
+		var createdAt, updatedAt time.Time
+		var className, classCode *string
+		var parentID, parentFirstName, parentLastName, parentPhone, parentEmail *string
+
+		err := rows.Scan(
+			&studentID, &studentIDCode, &firstName, &lastName, &dateOfBirth, &gender, &address, &classID, &isActive, &createdAt, &updatedAt,
+			&className, &classCode, &parentID, &parentFirstName, &parentLastName, &parentPhone, &parentEmail,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Get or create student
+		student, exists := studentMap[studentID]
+		if !exists {
+			student = &models.Student{
+				ID:        studentID,
+				StudentID: studentIDCode,
+				FirstName: firstName,
+				LastName:  lastName,
+				DateOfBirth: dateOfBirth,
+				Address:   address,
+				ClassID:   classID,
+				IsActive:  isActive,
+				CreatedAt: createdAt,
+				UpdatedAt: updatedAt,
+			}
+
+			if gender != nil {
+				g := models.Gender(*gender)
+				student.Gender = &g
+			}
+
+			// Set class if available
+			if className != nil && classID != nil {
+				student.Class = &models.Class{
+					ID:   *classID,
+					Name: *className,
+					Code: classCode,
+				}
+			}
+
+			studentMap[studentID] = student
+		}
+
+		// Add parent if available
+		if parentID != nil && parentFirstName != nil && parentLastName != nil {
+			// Check if parent already exists for this student
+			parentExists := false
+			for _, existingParent := range student.Parents {
+				if existingParent.ID == *parentID {
+					parentExists = true
+					break
+				}
+			}
+
+			if !parentExists {
+				parent := &models.Parent{
+					ID:        *parentID,
+					FirstName: *parentFirstName,
+					LastName:  *parentLastName,
+					Phone:     parentPhone,
+					Email:     parentEmail,
+				}
+				student.Parents = append(student.Parents, parent)
+			}
+		}
+	}
+
+	// Convert map to slice
+	var students []*models.Student
+	for _, student := range studentMap {
+		students = append(students, student)
+	}
+
+	if students == nil {
+		students = []*models.Student{}
+	}
+
+	return students, nil
 }
 
 func GetStudentByID(db *sql.DB, id string) (*models.Student, error) {
@@ -1160,7 +1338,89 @@ func GetParentsForSelection(db *sql.DB, search string) ([]*models.Parent, error)
 }
 
 func SearchStudents(db *sql.DB, query string) ([]*models.Student, error) {
-	return []*models.Student{}, nil
+	if len(query) < 3 {
+		return []*models.Student{}, nil
+	}
+
+	searchPattern := "%" + strings.ToLower(query) + "%"
+
+	sqlQuery := `SELECT DISTINCT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
+			  c.name as class_name, c.code as class_code
+			  FROM students s
+			  LEFT JOIN classes c ON s.class_id = c.id
+			  LEFT JOIN student_parents sp ON s.id = sp.student_id
+			  LEFT JOIN parents p ON sp.parent_id = p.id
+			  WHERE s.is_active = true
+			  AND (
+				  LOWER(s.first_name) LIKE $1
+				  OR LOWER(s.last_name) LIKE $1
+				  OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE $1
+				  OR LOWER(s.student_id) LIKE $1
+				  OR LOWER(p.first_name) LIKE $1
+				  OR LOWER(p.last_name) LIKE $1
+				  OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE $1
+			  )
+			  ORDER BY s.first_name, s.last_name
+			  LIMIT 50`
+
+	rows, err := db.Query(sqlQuery, searchPattern)
+	if err != nil {
+		return []*models.Student{}, err
+	}
+	defer rows.Close()
+
+	var students []*models.Student
+	for rows.Next() {
+		var studentID, studentIDCode, firstName, lastName string
+		var dateOfBirth *time.Time
+		var gender *string
+		var address, classID *string
+		var isActive bool
+		var createdAt, updatedAt time.Time
+		var className, classCode *string
+
+		err := rows.Scan(
+			&studentID, &studentIDCode, &firstName, &lastName, &dateOfBirth, &gender, &address, &classID, &isActive, &createdAt, &updatedAt,
+			&className, &classCode,
+		)
+		if err != nil {
+			continue
+		}
+
+		student := &models.Student{
+			ID:        studentID,
+			StudentID: studentIDCode,
+			FirstName: firstName,
+			LastName:  lastName,
+			DateOfBirth: dateOfBirth,
+			Address:   address,
+			ClassID:   classID,
+			IsActive:  isActive,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		}
+
+		if gender != nil {
+			g := models.Gender(*gender)
+			student.Gender = &g
+		}
+
+		if className != nil && classID != nil {
+			student.Class = &models.Class{
+				ID:   *classID,
+				Name: *className,
+				Code: classCode,
+			}
+		}
+
+		students = append(students, student)
+	}
+
+	if students == nil {
+		students = []*models.Student{}
+	}
+
+	return students, nil
 }
 
 
