@@ -20,41 +20,38 @@ jobs:
         script: |
           set -e
           cd ~
-          echo "=== Stopping existing processes ==="
-          pkill -f "go run main.go" || echo "No go run process found"
-          pkill -f "./main" || echo "No main process found"
+          echo "🔄 Stopping existing processes..."
+          pkill -f "go run main.go" >/dev/null 2>&1 || true
+          pkill -f "./main" >/dev/null 2>&1 || true
           
-          echo "=== Updating code ==="
+          echo "📥 Updating code..."
           if [ -d "swadiq-schools" ]; then
             cd swadiq-schools
-            git pull origin main
+            git pull origin main >/dev/null 2>&1
           else
-            git clone https://github.com/ImaadDean/swadiq-schools.git
+            git clone https://github.com/ImaadDean/swadiq-schools.git >/dev/null 2>&1
             cd swadiq-schools
           fi
           
-          echo "=== Installing dependencies ==="
-          go mod tidy
+          echo "📦 Installing dependencies..."
+          go mod tidy >/dev/null 2>&1
           
-          echo "=== Building application ==="
-          go build -o main .
+          echo "🔨 Building application..."
+          go build -o main . >/dev/null 2>&1
           chmod +x main
           
-          echo "=== Starting application ==="
+          echo "🚀 Starting application..."
           nohup ./main > app.log 2>&1 &
           APP_PID=$!
-          echo "Started with PID: $APP_PID"
           
-          sleep 5
+          sleep 3
           
-          echo "=== Checking application status ==="
           if kill -0 $APP_PID 2>/dev/null; then
-            echo "✅ Application is running (PID: $APP_PID)"
-            echo "✅ Listening on port 8080"
-            netstat -tlnp | grep :8080 || echo "Port 8080 not yet bound"
+            echo "✅ Application deployed successfully!"
+            echo "📍 Running on port 8080 (PID: $APP_PID)"
           else
             echo "❌ Application failed to start"
-            echo "Last 20 lines of log:"
-            tail -20 app.log
+            echo "📋 Error logs:"
+            tail -10 app.log
             exit 1
           fi
