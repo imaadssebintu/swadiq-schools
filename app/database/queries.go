@@ -20,6 +20,8 @@ type StudentFilters struct {
 	DateTo    string
 	SortBy    string
 	SortOrder string
+	Limit     int
+	Offset    int
 }
 
 // hashPassword hashes a password using bcrypt
@@ -1005,7 +1007,97 @@ func GetStudentsStats(db *sql.DB) (map[string]interface{}, error) {
 	return stats, nil
 }
 
+func GetStudentsWithFiltersAndPagination(db *sql.DB, filters StudentFilters) ([]*models.Student, int, error) {
+	// First get the total count
+	totalCount, err := getStudentsCountWithFilters(db, filters)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Then get the paginated results
+	students, err := getStudentsWithFiltersInternal(db, filters, true)
+	if err != nil {
+		return nil, totalCount, err
+	}
+
+	return students, totalCount, nil
+}
+
 func GetStudentsWithFilters(db *sql.DB, filters StudentFilters) ([]*models.Student, error) {
+	return getStudentsWithFiltersInternal(db, filters, false)
+}
+
+func getStudentsCountWithFilters(db *sql.DB, filters StudentFilters) (int, error) {
+	// Base count query
+	baseQuery := `SELECT COUNT(DISTINCT s.id)
+			  FROM students s
+			  LEFT JOIN classes c ON s.class_id = c.id
+			  LEFT JOIN student_parents sp ON s.id = sp.student_id
+			  LEFT JOIN parents p ON sp.parent_id = p.id
+			  WHERE s.is_active = true`
+
+	var conditions []string
+	var args []interface{}
+	argIndex := 1
+
+	// Apply the same filters as the main query
+	if filters.Search != "" && len(filters.Search) >= 3 {
+		searchPattern := "%" + strings.ToLower(filters.Search) + "%"
+		conditions = append(conditions, fmt.Sprintf(`(
+			LOWER(s.first_name) LIKE $%d
+			OR LOWER(s.last_name) LIKE $%d
+			OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE $%d
+			OR LOWER(s.student_id) LIKE $%d
+			OR LOWER(p.first_name) LIKE $%d
+			OR LOWER(p.last_name) LIKE $%d
+			OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE $%d
+		)`, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex))
+		args = append(args, searchPattern)
+		argIndex++
+	}
+
+	if filters.Status != "" {
+		if filters.Status == "active" {
+			conditions = append(conditions, "s.is_active = true")
+		} else if filters.Status == "inactive" {
+			conditions = append(conditions, "s.is_active = false")
+		}
+	}
+
+	if filters.ClassID != "" {
+		conditions = append(conditions, fmt.Sprintf("s.class_id = $%d", argIndex))
+		args = append(args, filters.ClassID)
+		argIndex++
+	}
+
+	if filters.Gender != "" {
+		conditions = append(conditions, fmt.Sprintf("s.gender = $%d", argIndex))
+		args = append(args, filters.Gender)
+		argIndex++
+	}
+
+	if filters.DateFrom != "" {
+		conditions = append(conditions, fmt.Sprintf("s.created_at >= $%d", argIndex))
+		args = append(args, filters.DateFrom)
+		argIndex++
+	}
+
+	if filters.DateTo != "" {
+		conditions = append(conditions, fmt.Sprintf("s.created_at <= $%d", argIndex))
+		args = append(args, filters.DateTo)
+		argIndex++
+	}
+
+	if len(conditions) > 0 {
+		baseQuery += " AND " + strings.Join(conditions, " AND ")
+	}
+
+	var count int
+	err := db.QueryRow(baseQuery, args...).Scan(&count)
+	return count, err
+}
+
+func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagination bool) ([]*models.Student, error) {
 	// Base query
 	baseQuery := `SELECT DISTINCT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
 			  c.name as class_name, c.code as class_code,
@@ -1091,6 +1183,11 @@ func GetStudentsWithFilters(db *sql.DB, filters StudentFilters) ([]*models.Stude
 	}
 
 	baseQuery += fmt.Sprintf(" ORDER BY %s %s, s.last_name ASC", sortBy, sortOrder)
+
+	// Add pagination if requested
+	if withPagination && filters.Limit > 0 {
+		baseQuery += fmt.Sprintf(" LIMIT %d OFFSET %d", filters.Limit, filters.Offset)
+	}
 
 	rows, err := db.Query(baseQuery, args...)
 	if err != nil {

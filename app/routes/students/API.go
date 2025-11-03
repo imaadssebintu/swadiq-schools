@@ -42,7 +42,7 @@ func GetStudentsStatsAPI(c *fiber.Ctx) error {
 	})
 }
 
-// GetStudentsTableAPI returns students formatted for table display with filtering support
+// GetStudentsTableAPI returns students formatted for table display with filtering support and pagination
 func GetStudentsTableAPI(c *fiber.Ctx) error {
 	// Get query parameters for filtering
 	search := c.Query("search")
@@ -53,6 +53,10 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 	dateTo := c.Query("date_to")
 	sortBy := c.Query("sort_by", "name")      // default to name
 	sortOrder := c.Query("sort_order", "asc") // default to ascending
+	
+	// Get pagination parameters
+	limit := c.QueryInt("limit", 10)  // default to 10 students per page
+	offset := c.QueryInt("offset", 0) // default to start from beginning
 
 	// Create filter parameters
 	filters := database.StudentFilters{
@@ -64,9 +68,11 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 		DateTo:    dateTo,
 		SortBy:    sortBy,
 		SortOrder: sortOrder,
+		Limit:     limit,
+		Offset:    offset,
 	}
 
-	students, err := database.GetStudentsWithFilters(config.GetDB(), filters)
+	students, totalCount, err := database.GetStudentsWithFiltersAndPagination(config.GetDB(), filters)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch students: " + err.Error()})
 	}
@@ -177,8 +183,11 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"students": tableData,
-		"count":    len(tableData),
+		"students":    tableData,
+		"count":       len(tableData),
+		"total_count": totalCount,
+		"has_more":    offset+limit < totalCount,
+		"next_offset": offset + limit,
 	})
 }
 
