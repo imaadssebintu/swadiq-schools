@@ -7,50 +7,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-    - name: 🚀 Deploy to Server via SSH
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to server
       uses: appleboy/ssh-action@v0.1.5
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        port: 22
-        script_stop: false
-        timeout: 2000s
         script: |
-          set -e
-          
-          echo "📂 Moving to home directory..."
-          cd ~
-          
-          echo "🛑 Stopping existing application..."
-          pkill -f "./main" >/dev/null 2>&1 || true
-          
-          echo "📥 Updating project..."
-          if [ -d "swadiq-schools" ]; then
-            cd swadiq-schools
-            git pull origin main
-          else
-            git clone https://github.com/ImaadDean/swadiq-schools.git
-            cd swadiq-schools
-          fi
-          
-          echo "📦 Installing dependencies..."
-          go mod tidy
-          
-          echo "🔨 Building application..."
-          go build -o main .
-          
-          echo "🚀 Starting application..."
-          nohup ./main > app.log 2>&1 &
-          disown
-          
-          sleep 3
-          
-          if pgrep -f "./main" > /dev/null; then
-            echo "✅ Deployment successful"
-          else
-            echo "❌ App failed to start"
-            tail -20 app.log
-            exit 1
-          fi
+          cd ~/docker
+          # Stop and remove existing container
+          docker stop swadiq-app || true
+          docker rm swadiq-app || true
+          # Remove old image
+          docker rmi swadiq-schools || true
+          # Clean up old files
+          rm -rf swadiq-schools
+          # Clone latest code
+          git clone https://github.com/ImaadDean/swadiq-schools.git
+          cd swadiq-schools
+          # Build new image
+          docker build --cache-from swadiq-schools:latest -t swadiq-schools .
+          # Run container with restart policy
+          docker run -d --name swadiq-app -p 8080:8080 --restart unless-stopped swadiq-schools
