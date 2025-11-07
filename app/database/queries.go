@@ -15,6 +15,7 @@ type StudentFilters struct {
 	Search    string
 	Status    string
 	ClassID   string
+	ClassIDs  string // Support multiple class IDs as comma-separated string
 	Gender    string
 	DateFrom  string
 	DateTo    string
@@ -442,12 +443,19 @@ func GetAllDepartments(db *sql.DB) ([]*models.Department, error) {
 	return departments, nil
 }
 
-// GetAllSubjects gets all subjects
+// GetAllSubjects gets all subjects with paper counts
 func GetAllSubjects(db *sql.DB) ([]*models.Subject, error) {
 	query := `SELECT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
-			  d.name as department_name
+			  d.name as department_name,
+			  COALESCE(p.paper_count, 0) as paper_count
 			  FROM subjects s
 			  LEFT JOIN departments d ON s.department_id = d.id
+			  LEFT JOIN (
+				  SELECT subject_id, COUNT(*) as paper_count 
+				  FROM papers 
+				  WHERE deleted_at IS NULL 
+				  GROUP BY subject_id
+			  ) p ON s.id = p.subject_id
 			  WHERE s.is_active = true ORDER BY s.name`
 
 	rows, err := db.Query(query)
@@ -460,9 +468,10 @@ func GetAllSubjects(db *sql.DB) ([]*models.Subject, error) {
 	for rows.Next() {
 		subject := &models.Subject{}
 		var departmentName *string
+		var paperCount int
 		err := rows.Scan(
 			&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
-			&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName,
+			&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName, &paperCount,
 		)
 		if err != nil {
 			continue
@@ -474,6 +483,11 @@ func GetAllSubjects(db *sql.DB) ([]*models.Subject, error) {
 				ID:   *subject.DepartmentID,
 				Name: *departmentName,
 			}
+		}
+
+		// Create dummy papers slice for template compatibility
+		if paperCount > 0 {
+			subject.Papers = make([]*models.Paper, paperCount)
 		}
 
 		subjects = append(subjects, subject)
@@ -740,11 +754,87 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 }
 
 func GetAllPapers(db *sql.DB) ([]*models.Paper, error) {
-	return []*models.Paper{}, nil
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at,
+			  s.name as subject_name, s.code as subject_code
+			  FROM papers p
+			  LEFT JOIN subjects s ON p.subject_id = s.id
+			  WHERE p.deleted_at IS NULL
+			  ORDER BY p.name, p.code`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []*models.Paper{}, err
+	}
+	defer rows.Close()
+
+	var papers []*models.Paper
+	for rows.Next() {
+		paper := &models.Paper{}
+		var subjectName, subjectCode *string
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory, &paper.IsActive,
+			&paper.CreatedAt, &paper.UpdatedAt, &subjectName, &subjectCode,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set subject if exists
+		if subjectName != nil {
+			paper.Subject = &models.Subject{
+				ID:   paper.SubjectID,
+				Name: *subjectName,
+				Code: *subjectCode,
+			}
+		}
+
+		papers = append(papers, paper)
+	}
+
+	if papers == nil {
+		papers = []*models.Paper{}
+	}
+
+	return papers, nil
 }
 
 func GetDashboardStats(db *sql.DB) (map[string]interface{}, error) {
 	return make(map[string]interface{}), nil
+}
+
+// GetPapersStats returns optimized stats for papers page
+func GetPapersStats(db *sql.DB) (map[string]interface{}, error) {
+	query := `
+		SELECT 
+			(SELECT COUNT(*) FROM papers WHERE deleted_at IS NULL) as total_papers,
+			(SELECT COUNT(*) FROM papers WHERE deleted_at IS NULL AND is_active = true) as active_papers,
+			(SELECT COUNT(*) FROM subjects WHERE is_active = true) as subjects_count,
+			(SELECT COUNT(DISTINCT u.id) FROM users u 
+			 INNER JOIN user_roles ur ON u.id = ur.user_id 
+			 INNER JOIN roles r ON ur.role_id = r.id 
+			 WHERE r.name IN ('admin', 'head_teacher', 'class_teacher', 'subject_teacher') 
+			 AND u.is_active = true) as teachers_count
+	`
+
+	var totalPapers, activePapers, subjectsCount, teachersCount int
+	err := db.QueryRow(query).Scan(&totalPapers, &activePapers, &subjectsCount, &teachersCount)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get subjects for dropdown
+	subjects, err := GetAllSubjects(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]interface{}{
+		"totalPapers":   totalPapers,
+		"activePapers":  activePapers,
+		"subjectsCount": subjectsCount,
+		"teachersCount": teachersCount,
+		"subjects":      subjects,
+	}, nil
 }
 
 func CreateClass(db *sql.DB, class *models.Class) error {
@@ -826,15 +916,305 @@ func AddSubjectsToClass(db *sql.DB, classID string, subjectIDs []string) error {
 	return nil
 }
 
+type SubjectAssignment struct {
+	SubjectID    string `json:"subject_id"`
+	IsCompulsory bool   `json:"is_compulsory"`
+}
+
+func AddSubjectsToClassWithCompulsory(db *sql.DB, classID string, subjects []SubjectAssignment) error {
+	if len(subjects) == 0 {
+		return nil
+	}
+
+	valueStrings := make([]string, 0, len(subjects))
+	valueArgs := make([]interface{}, 0, len(subjects)*3)
+	
+	for i, subject := range subjects {
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
+		valueArgs = append(valueArgs, classID, subject.SubjectID, subject.IsCompulsory)
+	}
+
+	query := fmt.Sprintf("INSERT INTO class_subjects (class_id, subject_id, is_compulsory) VALUES %s ON CONFLICT (class_id, subject_id) DO UPDATE SET is_compulsory = EXCLUDED.is_compulsory",
+		strings.Join(valueStrings, ","))
+
+	_, err := db.Exec(query, valueArgs...)
+	return err
+}
+
+func GetClassSubjects(db *sql.DB, classID string) ([]*models.Subject, error) {
+	// Query to get subjects with their papers and teachers
+	query := `SELECT DISTINCT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
+			  d.name as department_name, COALESCE(cs.is_compulsory, true) as is_compulsory
+			  FROM subjects s
+			  INNER JOIN class_subjects cs ON s.id = cs.subject_id
+			  LEFT JOIN departments d ON s.department_id = d.id
+			  WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
+			  ORDER BY s.name`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		// If the query fails (possibly due to missing is_compulsory column), try without it
+		fallbackQuery := `SELECT DISTINCT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
+					  d.name as department_name
+					  FROM subjects s
+					  INNER JOIN class_subjects cs ON s.id = cs.subject_id
+					  LEFT JOIN departments d ON s.department_id = d.id
+					  WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
+					  ORDER BY s.name`
+		
+		rows, err = db.Query(fallbackQuery, classID)
+		if err != nil {
+			return []*models.Subject{}, err
+		}
+		defer rows.Close()
+
+		var subjects []*models.Subject
+		for rows.Next() {
+			subject := &models.Subject{}
+			var departmentName *string
+			err := rows.Scan(
+				&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
+				&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName,
+			)
+			if err != nil {
+				continue
+			}
+
+			// Set department if exists
+			if departmentName != nil && subject.DepartmentID != nil {
+				subject.Department = &models.Department{
+					ID:   *subject.DepartmentID,
+					Name: *departmentName,
+				}
+			}
+
+			// Load papers and teachers for this subject - we'll handle this in the API response
+			// subject.Papers = loadSubjectPapersWithTeachers(db, classID, subject.ID)
+
+			subjects = append(subjects, subject)
+		}
+
+		return subjects, nil
+	}
+	defer rows.Close()
+
+	var subjects []*models.Subject
+	for rows.Next() {
+		subject := &models.Subject{}
+		var departmentName *string
+		var isCompulsory bool
+		err := rows.Scan(
+			&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
+			&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName, &isCompulsory,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set department if exists
+		if departmentName != nil && subject.DepartmentID != nil {
+			subject.Department = &models.Department{
+				ID:   *subject.DepartmentID,
+				Name: *departmentName,
+			}
+		}
+
+		// Load papers and teachers for this subject - we'll handle this in the API response
+		// subject.Papers = loadSubjectPapersWithTeachers(db, classID, subject.ID)
+
+		subjects = append(subjects, subject)
+	}
+
+	return subjects, nil
+}
+
+// ClassPaperWithTeacher represents a paper in a class with its assigned teacher
+type ClassPaperWithTeacher struct {
+	ID           string     `json:"id"`
+	SubjectID    string     `json:"subject_id"`
+	Name         string     `json:"name"`
+	Code         string     `json:"code"`
+	IsCompulsory bool       `json:"is_compulsory"`
+	IsActive     bool       `json:"is_active"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	Teacher      *models.User `json:"teacher,omitempty"`
+}
+
+// loadSubjectPapersWithTeachers loads papers for a specific subject in a class with teacher information
+func loadSubjectPapersWithTeachers(db *sql.DB, classID, subjectID string) []ClassPaperWithTeacher {
+	// First get all papers for the subject
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at,
+			  cp.teacher_id, u.first_name as teacher_first_name, u.last_name as teacher_last_name, u.email as teacher_email
+			  FROM papers p
+			  LEFT JOIN class_papers cp ON p.id = cp.paper_id AND cp.class_id = $1 AND cp.deleted_at IS NULL
+			  LEFT JOIN users u ON cp.teacher_id = u.id AND u.is_active = true
+			  WHERE p.subject_id = $2 AND p.deleted_at IS NULL
+			  ORDER BY p.code`
+
+	rows, err := db.Query(query, classID, subjectID)
+	if err != nil {
+		return []ClassPaperWithTeacher{}
+	}
+	defer rows.Close()
+
+	var papers []ClassPaperWithTeacher
+	for rows.Next() {
+		paper := ClassPaperWithTeacher{}
+		var teacherID, teacherFirstName, teacherLastName, teacherEmail *string
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory, &paper.IsActive,
+			&paper.CreatedAt, &paper.UpdatedAt, &teacherID, &teacherFirstName, &teacherLastName, &teacherEmail,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set teacher if exists
+		if teacherID != nil && teacherFirstName != nil && teacherLastName != nil {
+			paper.Teacher = &models.User{
+				ID:        *teacherID,
+				FirstName: *teacherFirstName,
+				LastName:  *teacherLastName,
+				Email:     *teacherEmail,
+			}
+		}
+
+		papers = append(papers, paper)
+	}
+
+	return papers
+}
+
+// SubjectWithPapers represents a subject with its papers and teachers for a specific class
+type SubjectWithPapers struct {
+	*models.Subject
+	Papers []ClassPaperWithTeacher `json:"papers"`
+}
+
+// GetClassSubjectsWithPapers gets subjects for a class with their papers and assigned teachers
+func GetClassSubjectsWithPapers(db *sql.DB, classID string) ([]SubjectWithPapers, error) {
+	// Get subjects assigned to the class
+	query := `SELECT DISTINCT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
+			  d.name as department_name
+			  FROM subjects s
+			  INNER JOIN class_subjects cs ON s.id = cs.subject_id
+			  LEFT JOIN departments d ON s.department_id = d.id
+			  WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
+			  ORDER BY s.name`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		return []SubjectWithPapers{}, err
+	}
+	defer rows.Close()
+
+	var result []SubjectWithPapers
+	for rows.Next() {
+		subject := &models.Subject{}
+		var departmentName *string
+		err := rows.Scan(
+			&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
+			&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set department if exists
+		if departmentName != nil && subject.DepartmentID != nil {
+			subject.Department = &models.Department{
+				ID:   *subject.DepartmentID,
+				Name: *departmentName,
+			}
+		}
+
+		// Load papers with teacher assignments for this subject
+		papers := loadSubjectPapersWithTeachers(db, classID, subject.ID)
+
+		subjectWithPapers := SubjectWithPapers{
+			Subject: subject,
+			Papers:  papers,
+		}
+		result = append(result, subjectWithPapers)
+	}
+
+	return result, nil
+}
+
 func GetClassPapers(db *sql.DB, classID string) ([]*models.Paper, error) {
-	return []*models.Paper{}, nil
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at,
+			  s.name as subject_name, s.code as subject_code
+			  FROM papers p
+			  INNER JOIN class_papers cp ON p.id = cp.paper_id
+			  LEFT JOIN subjects s ON p.subject_id = s.id
+			  WHERE cp.class_id = $1 AND p.deleted_at IS NULL AND cp.deleted_at IS NULL
+			  ORDER BY s.name, p.code`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		return []*models.Paper{}, err
+	}
+	defer rows.Close()
+
+	var papers []*models.Paper
+	for rows.Next() {
+		paper := &models.Paper{}
+		var subjectName, subjectCode *string
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory, &paper.IsActive,
+			&paper.CreatedAt, &paper.UpdatedAt, &subjectName, &subjectCode,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set subject if exists
+		if subjectName != nil {
+			paper.Subject = &models.Subject{
+				ID:   paper.SubjectID,
+				Name: *subjectName,
+				Code: *subjectCode,
+			}
+		}
+
+		papers = append(papers, paper)
+	}
+
+	return papers, nil
 }
 
 type PaperAssignment struct {
-	ID string `json:"id"`
+	PaperID   string  `json:"paper_id"`
+	TeacherID *string `json:"teacher_id"`
 }
 
-func AssignPapersToClass(db *sql.DB, classID, subjectID string, assignments []PaperAssignment) error {
+func AssignPapersToClass(db *sql.DB, classID string, assignments []PaperAssignment) error {
+	if len(assignments) == 0 {
+		return nil
+	}
+
+	// First delete existing assignments for this class
+	_, err := db.Exec("DELETE FROM class_papers WHERE class_id = $1", classID)
+	if err != nil {
+		return fmt.Errorf("failed to clear existing assignments: %v", err)
+	}
+
+	valueStrings := make([]string, 0, len(assignments))
+	valueArgs := make([]interface{}, 0, len(assignments)*3)
+	
+	for i, assignment := range assignments {
+		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
+		valueArgs = append(valueArgs, classID, assignment.PaperID, assignment.TeacherID)
+	}
+
+	query := fmt.Sprintf("INSERT INTO class_papers (class_id, paper_id, teacher_id) VALUES %s",
+		strings.Join(valueStrings, ","))
+
+	_, err = db.Exec(query, valueArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to insert paper assignments: %v", err)
+	}
 	return nil
 }
 
@@ -843,33 +1223,138 @@ func GetSubjectPapersForClass(db *sql.DB, classID, subjectID string) ([]*models.
 }
 
 func GetPapersBySubject(db *sql.DB, subjectID string) ([]*models.Paper, error) {
-	return []*models.Paper{}, nil
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at,
+			  s.name as subject_name, s.code as subject_code
+			  FROM papers p
+			  LEFT JOIN subjects s ON p.subject_id = s.id
+			  WHERE p.subject_id = $1 AND p.deleted_at IS NULL
+			  ORDER BY p.name, p.code`
+
+	rows, err := db.Query(query, subjectID)
+	if err != nil {
+		return []*models.Paper{}, err
+	}
+	defer rows.Close()
+
+	var papers []*models.Paper
+	for rows.Next() {
+		paper := &models.Paper{}
+		var subjectName, subjectCode *string
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory, &paper.IsActive,
+			&paper.CreatedAt, &paper.UpdatedAt, &subjectName, &subjectCode,
+		)
+		if err != nil {
+			continue
+		}
+
+		// Set subject if exists
+		if subjectName != nil {
+			paper.Subject = &models.Subject{
+				ID:   paper.SubjectID,
+				Name: *subjectName,
+				Code: *subjectCode,
+			}
+		}
+
+		papers = append(papers, paper)
+	}
+
+	return papers, nil
 }
 
 func GetPaperByID(db *sql.DB, id string) (*models.Paper, error) {
-	return &models.Paper{}, nil
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at,
+			  s.name as subject_name, s.code as subject_code
+			  FROM papers p
+			  LEFT JOIN subjects s ON p.subject_id = s.id
+			  WHERE p.id = $1 AND p.deleted_at IS NULL`
+
+	paper := &models.Paper{}
+	var subjectName, subjectCode *string
+	err := db.QueryRow(query, id).Scan(
+		&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory, &paper.IsActive,
+		&paper.CreatedAt, &paper.UpdatedAt, &subjectName, &subjectCode,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set subject if exists
+	if subjectName != nil {
+		paper.Subject = &models.Subject{
+			ID:   paper.SubjectID,
+			Name: *subjectName,
+			Code: *subjectCode,
+		}
+	}
+
+	return paper, nil
 }
 
 func GetSubjectByID(db *sql.DB, id string) (*models.Subject, error) {
-	return &models.Subject{}, nil
+	query := `SELECT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
+			  d.name as department_name
+			  FROM subjects s
+			  LEFT JOIN departments d ON s.department_id = d.id
+			  WHERE s.id = $1 AND s.is_active = true`
+
+	subject := &models.Subject{}
+	var departmentName *string
+	err := db.QueryRow(query, id).Scan(
+		&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
+		&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt, &departmentName,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set department if exists
+	if departmentName != nil && subject.DepartmentID != nil {
+		subject.Department = &models.Department{
+			ID:   *subject.DepartmentID,
+			Name: *departmentName,
+		}
+	}
+
+	return subject, nil
 }
 
 func RemoveSubjectFromClass(db *sql.DB, classID, subjectID string) error {
 	query := `DELETE FROM class_subjects WHERE class_id = $1 AND subject_id = $2`
 	_, err := db.Exec(query, classID, subjectID)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to remove subject from class: %v", err)
+	}
+	return nil
 }
 
 func CreatePaper(db *sql.DB, paper *models.Paper) error {
-	return nil
+	query := `INSERT INTO papers (subject_id, name, code, is_compulsory, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	paper.IsActive = true
+	paper.IsCompulsory = true // Default to compulsory
+	err := db.QueryRow(query, paper.SubjectID, paper.Name, paper.Code, paper.IsCompulsory, paper.IsActive).Scan(
+		&paper.ID, &paper.CreatedAt, &paper.UpdatedAt,
+	)
+	return err
 }
 
 func UpdatePaper(db *sql.DB, paper *models.Paper) error {
-	return nil
+	query := `UPDATE papers
+			  SET subject_id = $1, name = $2, code = $3, is_compulsory = $4, is_active = $5, updated_at = NOW()
+			  WHERE id = $6 AND deleted_at IS NULL`
+
+	_, err := db.Exec(query, paper.SubjectID, paper.Name, paper.Code, paper.IsCompulsory, paper.IsActive, paper.ID)
+	return err
 }
 
 func DeletePaper(db *sql.DB, id string) error {
-	return nil
+	query := `UPDATE papers SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
 }
 
 func CreateDepartment(db *sql.DB, dept *models.Department) error {
@@ -1028,12 +1513,10 @@ func GetStudentsWithFilters(db *sql.DB, filters StudentFilters) ([]*models.Stude
 }
 
 func getStudentsCountWithFilters(db *sql.DB, filters StudentFilters) (int, error) {
-	// Base count query
-	baseQuery := `SELECT COUNT(DISTINCT s.id)
+	// Base count query - simplified to avoid duplicates
+	baseQuery := `SELECT COUNT(s.id)
 			  FROM students s
 			  LEFT JOIN classes c ON s.class_id = c.id
-			  LEFT JOIN student_parents sp ON s.id = sp.student_id
-			  LEFT JOIN parents p ON sp.parent_id = p.id
 			  WHERE s.is_active = true`
 
 	var conditions []string
@@ -1048,10 +1531,7 @@ func getStudentsCountWithFilters(db *sql.DB, filters StudentFilters) (int, error
 			OR LOWER(s.last_name) LIKE $%d
 			OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE $%d
 			OR LOWER(s.student_id) LIKE $%d
-			OR LOWER(p.first_name) LIKE $%d
-			OR LOWER(p.last_name) LIKE $%d
-			OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE $%d
-		)`, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex))
+		)`, argIndex, argIndex, argIndex, argIndex))
 		args = append(args, searchPattern)
 		argIndex++
 	}
@@ -1068,6 +1548,18 @@ func getStudentsCountWithFilters(db *sql.DB, filters StudentFilters) (int, error
 		conditions = append(conditions, fmt.Sprintf("s.class_id = $%d", argIndex))
 		args = append(args, filters.ClassID)
 		argIndex++
+	} else if filters.ClassIDs != "" {
+		// Handle multiple class IDs
+		classIDList := strings.Split(filters.ClassIDs, ",")
+		if len(classIDList) > 0 {
+			placeholders := make([]string, len(classIDList))
+			for i, classID := range classIDList {
+				placeholders[i] = fmt.Sprintf("$%d", argIndex)
+				args = append(args, strings.TrimSpace(classID))
+				argIndex++
+			}
+			conditions = append(conditions, fmt.Sprintf("s.class_id IN (%s)", strings.Join(placeholders, ",")))
+		}
 	}
 
 	if filters.Gender != "" {
@@ -1098,21 +1590,18 @@ func getStudentsCountWithFilters(db *sql.DB, filters StudentFilters) (int, error
 }
 
 func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagination bool) ([]*models.Student, error) {
-	// Base query
-	baseQuery := `SELECT DISTINCT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
-			  c.name as class_name, c.code as class_code,
-			  p.id as parent_id, p.first_name as parent_first_name, p.last_name as parent_last_name, p.phone as parent_phone, p.email as parent_email
+	// Base query - simplified to avoid duplicates
+	baseQuery := `SELECT s.id, s.student_id, s.first_name, s.last_name, s.date_of_birth, s.gender, s.address, s.class_id, s.is_active, s.created_at, s.updated_at,
+			  c.name as class_name, c.code as class_code
 			  FROM students s
 			  LEFT JOIN classes c ON s.class_id = c.id
-			  LEFT JOIN student_parents sp ON s.id = sp.student_id
-			  LEFT JOIN parents p ON sp.parent_id = p.id
 			  WHERE s.is_active = true`
 
 	var conditions []string
 	var args []interface{}
 	argIndex := 1
 
-	// Search filter
+	// Search filter - simplified without parent search
 	if filters.Search != "" && len(filters.Search) >= 3 {
 		searchPattern := "%" + strings.ToLower(filters.Search) + "%"
 		conditions = append(conditions, fmt.Sprintf(`(
@@ -1120,10 +1609,7 @@ func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagi
 			OR LOWER(s.last_name) LIKE $%d
 			OR LOWER(CONCAT(s.first_name, ' ', s.last_name)) LIKE $%d
 			OR LOWER(s.student_id) LIKE $%d
-			OR LOWER(p.first_name) LIKE $%d
-			OR LOWER(p.last_name) LIKE $%d
-			OR LOWER(CONCAT(p.first_name, ' ', p.last_name)) LIKE $%d
-		)`, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex, argIndex))
+		)`, argIndex, argIndex, argIndex, argIndex))
 		args = append(args, searchPattern)
 		argIndex++
 	}
@@ -1137,11 +1623,23 @@ func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagi
 		}
 	}
 
-	// Class filter
+	// Class filter (single or multiple)
 	if filters.ClassID != "" {
 		conditions = append(conditions, fmt.Sprintf("s.class_id = $%d", argIndex))
 		args = append(args, filters.ClassID)
 		argIndex++
+	} else if filters.ClassIDs != "" {
+		// Handle multiple class IDs
+		classIDList := strings.Split(filters.ClassIDs, ",")
+		if len(classIDList) > 0 {
+			placeholders := make([]string, len(classIDList))
+			for i, classID := range classIDList {
+				placeholders[i] = fmt.Sprintf("$%d", argIndex)
+				args = append(args, strings.TrimSpace(classID))
+				argIndex++
+			}
+			conditions = append(conditions, fmt.Sprintf("s.class_id IN (%s)", strings.Join(placeholders, ",")))
+		}
 	}
 
 	// Gender filter
@@ -1195,7 +1693,7 @@ func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagi
 	}
 	defer rows.Close()
 
-	studentMap := make(map[string]*models.Student)
+	var students []*models.Student
 	for rows.Next() {
 		var studentID, studentIDCode, firstName, lastName string
 		var dateOfBirth *time.Time
@@ -1204,76 +1702,42 @@ func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagi
 		var isActive bool
 		var createdAt, updatedAt time.Time
 		var className, classCode *string
-		var parentID, parentFirstName, parentLastName, parentPhone, parentEmail *string
 
 		err := rows.Scan(
 			&studentID, &studentIDCode, &firstName, &lastName, &dateOfBirth, &gender, &address, &classID, &isActive, &createdAt, &updatedAt,
-			&className, &classCode, &parentID, &parentFirstName, &parentLastName, &parentPhone, &parentEmail,
+			&className, &classCode,
 		)
 		if err != nil {
 			continue
 		}
 
-		// Get or create student
-		student, exists := studentMap[studentID]
-		if !exists {
-			student = &models.Student{
-				ID:        studentID,
-				StudentID: studentIDCode,
-				FirstName: firstName,
-				LastName:  lastName,
-				DateOfBirth: dateOfBirth,
-				Address:   address,
-				ClassID:   classID,
-				IsActive:  isActive,
-				CreatedAt: createdAt,
-				UpdatedAt: updatedAt,
-			}
-
-			if gender != nil {
-				g := models.Gender(*gender)
-				student.Gender = &g
-			}
-
-			// Set class if available
-			if className != nil && classID != nil {
-				student.Class = &models.Class{
-					ID:   *classID,
-					Name: *className,
-					Code: classCode,
-				}
-			}
-
-			studentMap[studentID] = student
+		student := &models.Student{
+			ID:        studentID,
+			StudentID: studentIDCode,
+			FirstName: firstName,
+			LastName:  lastName,
+			DateOfBirth: dateOfBirth,
+			Address:   address,
+			ClassID:   classID,
+			IsActive:  isActive,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		}
 
-		// Add parent if available
-		if parentID != nil && parentFirstName != nil && parentLastName != nil {
-			// Check if parent already exists for this student
-			parentExists := false
-			for _, existingParent := range student.Parents {
-				if existingParent.ID == *parentID {
-					parentExists = true
-					break
-				}
-			}
+		if gender != nil {
+			g := models.Gender(*gender)
+			student.Gender = &g
+		}
 
-			if !parentExists {
-				parent := &models.Parent{
-					ID:        *parentID,
-					FirstName: *parentFirstName,
-					LastName:  *parentLastName,
-					Phone:     parentPhone,
-					Email:     parentEmail,
-				}
-				student.Parents = append(student.Parents, parent)
+		// Set class if available
+		if className != nil && classID != nil {
+			student.Class = &models.Class{
+				ID:   *classID,
+				Name: *className,
+				Code: classCode,
 			}
 		}
-	}
 
-	// Convert map to slice
-	var students []*models.Student
-	for _, student := range studentMap {
 		students = append(students, student)
 	}
 

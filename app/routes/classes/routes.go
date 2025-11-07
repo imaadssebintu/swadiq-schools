@@ -26,6 +26,7 @@ func SetupClassesRoutes(app *fiber.App) {
 	api.Get("/table", GetClassesTableAPI) // Get classes formatted for table
 	api.Post("/", CreateClassAPI)
 	api.Post("/:id/students", AddStudentToClassAPI) // Add student to class
+	api.Post("/:id/papers/:paperId/teacher", AssignTeacherToPaperAPI) // Assign teacher to specific paper
 }
 
 func ClassesPage(c *fiber.Ctx) error {

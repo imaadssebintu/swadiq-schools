@@ -15,9 +15,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button id="addSubjectsBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Add Subjects
-                    </button>
                     <button id="editClassBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Edit Class
                     </button>
@@ -97,12 +94,12 @@
         </div>
 
         <!-- Subjects Section -->
-        <div class="mb-6" style="display: none;">
+        <div class="mb-6">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex justify-between items-center">
                         <h2 class="text-lg font-semibold text-gray-900">Class Subjects</h2>
-                        <button id="addSubjectsBtn2" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200">
+                        <button id="addSubjectsBtn2" onclick="openSubjectsModal()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200">
                             Add Subjects
                         </button>
                     </div>
@@ -133,7 +130,14 @@
                         <!-- Subjects will be loaded here -->
                     </div>
                     <div id="noSubjects" class="text-center py-8 text-gray-500" style="display: none;">
-                        <!-- Empty - will be handled by modal -->
+                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <p class="text-lg font-medium text-gray-900 mb-1">No subjects assigned</p>
+                        <p class="text-sm text-gray-500 mb-4">Add subjects to get started with this class.</p>
+                        <button onclick="openSubjectsModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                            Add Subjects
+                        </button>
                     </div>
                 </div>
             </div>
@@ -379,13 +383,25 @@
 
 <!-- Teacher Selection Modal -->
 <div id="teacherModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-[60]">
-    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-900">Select Teacher</h3>
             <button onclick="closeTeacherModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         </div>
-        <div id="teachersList" class="space-y-2 max-h-60 overflow-y-auto">
+        <div class="mb-4">
+            <div class="relative">
+                <input type="text" id="teacherSearchInput" placeholder="Search teachers..." 
+                       class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="teachersList" class="space-y-2 flex-1 overflow-y-auto">
             <!-- Teachers will be loaded here -->
+        </div>
+        <div id="teachersLoading" class="hidden text-center py-2 text-gray-500">
+            Loading more teachers...
         </div>
         <div class="flex justify-end space-x-3 mt-4">
             <button onclick="closeTeacherModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -417,6 +433,9 @@
         closeModal.addEventListener('click', () => {
             studentModal.classList.add('hidden');
         });
+        
+        // Load class subjects immediately to check if there are any
+        loadClassSubjects();
     });
 
     // Load detailed class information
@@ -619,18 +638,16 @@
     async function loadClassSubjects() {
         console.log('Loading class subjects...');
         try {
-            const classID = "{{js .classID}}";
-            const response = await fetch("/api/classes/" + classID + "/subjects");
+            const response = await fetch(`/api/classes/${classID}/subjects`);
             console.log('Subjects response status:', response.status);
             if (response.ok) {
-                const subjects = await response.json();
-                console.log('Subjects data:', subjects);
-                console.log('Subjects length:', subjects ? subjects.length : 0);
-                await displaySubjects(subjects || []);
+                const data = await response.json();
+                console.log('Subjects data:', data);
+                const subjects = data.subjects || [];
+                console.log('Subjects length:', subjects.length);
+                await displaySubjects(subjects);
             } else {
                 console.error('Failed to load subjects, status:', response.status);
-                const text = await response.text();
-                console.error('Response text:', text.substring(0, 200));
                 // Show empty state instead of error
                 document.getElementById('subjectsLoading').style.display = 'none';
                 document.getElementById('noSubjects').style.display = 'block';
@@ -668,14 +685,23 @@
                             <p class="text-sm text-gray-600">${subject.code}</p>
                             ${papers.length > 0 ? `
                                 <div class="mt-2">
-                                    <p class="text-xs text-gray-500 mb-1">Papers:</p>
-                                    <div class="flex flex-wrap gap-1">
+                                    <p class="text-xs text-gray-500 mb-1">Papers & Teachers:</p>
+                                    <div class="space-y-1">
                                         ${papers.map(paper => `
-                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${paper.code}</span>
+                                            <div class="flex items-center justify-between bg-white rounded px-2 py-1 text-xs">
+                                                <span class="font-medium text-blue-800">${paper.code}</span>
+                                                <span class="text-gray-600">
+                                                    ${paper.teacher ? `${paper.teacher.first_name} ${paper.teacher.last_name}` : 'No teacher assigned'}
+                                                </span>
+                                            </div>
                                         `).join('')}
                                     </div>
                                 </div>
-                            ` : ''}
+                            ` : `
+                                <div class="mt-2">
+                                    <p class="text-xs text-gray-500">No papers assigned</p>
+                                </div>
+                            `}
                         </div>
                         <button onclick="removeSubject('${subject.id}')" class="text-red-600 hover:text-red-800 ml-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -715,13 +741,25 @@
         
         loading.style.display = 'none';
         container.innerHTML = availableSubjects.map(subject => `
-            <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                <input type="radio" name="subject" value="${subject.id}" class="subject-radio" onchange="handleSubjectSelection()">
-                <div>
-                    <div class="font-medium text-gray-900">${subject.name}</div>
-                    <div class="text-sm text-gray-600">${subject.code}</div>
+            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="radio" name="subject" value="${subject.id}" class="subject-radio" onchange="handleSubjectSelection()">
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">${subject.name}</div>
+                        <div class="text-sm text-gray-600">${subject.code}</div>
+                    </div>
+                </label>
+                <div class="mt-2 ml-6">
+                    <label class="flex items-center space-x-2">
+                        <input type="radio" name="compulsory_${subject.id}" value="true" checked class="compulsory-radio">
+                        <span class="text-sm text-blue-600">Compulsory</span>
+                    </label>
+                    <label class="flex items-center space-x-2 mt-1">
+                        <input type="radio" name="compulsory_${subject.id}" value="false" class="compulsory-radio">
+                        <span class="text-sm text-orange-600">Optional</span>
+                    </label>
                 </div>
-            </label>
+            </div>
         `).join('');
     }
 
@@ -748,15 +786,29 @@
                 if (response.ok) {
                     const data = await response.json();
                     papers.push(...(data.papers || []));
+                } else {
+                    const errorData = await response.json();
+                    console.error('Failed to load papers for subject:', subjectId, errorData);
                 }
             }
             
             if (papers.length > 0) {
                 container.innerHTML = papers.map(paper => `
-                    <label class="flex items-center space-x-2 text-sm">
-                        <input type="checkbox" value="${paper.id}" class="paper-checkbox">
-                        <span>${paper.code}</span>
-                    </label>
+                    <div class="border border-gray-200 rounded p-3 mb-2">
+                        <label class="flex items-center space-x-2 text-sm mb-2">
+                            <input type="checkbox" value="${paper.id}" class="paper-checkbox" ${paper.is_compulsory ? 'checked' : ''}>
+                            <span class="font-medium">${paper.code}</span>
+                            ${paper.is_compulsory ? '<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Compulsory</span>' : '<span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Optional</span>'}
+                        </label>
+                        <div class="ml-6">
+                            <label class="block text-xs text-gray-600 mb-1">Teacher:</label>
+                            <button type="button" onclick="openPaperTeacherModal('${paper.id}')" 
+                                    class="paper-teacher-btn w-full text-left text-sm border border-gray-300 rounded px-2 py-1 hover:bg-gray-50" 
+                                    data-paper-id="${paper.id}" data-teacher-id="">
+                                Select Teacher
+                            </button>
+                        </div>
+                    </div>
                 `).join('');
             } else {
                 container.innerHTML = '<div class="text-sm text-gray-500">No papers available for selected subjects</div>';
@@ -774,12 +826,18 @@
             return;
         }
 
+        const compulsoryRadio = document.querySelector(`input[name="compulsory_${selectedSubject}"]:checked`);
+        const isCompulsory = compulsoryRadio ? compulsoryRadio.value === 'true' : true;
+
         try {
-            const response = await fetch("/api/classes/" + classID + "/subjects", {
+            const response = await fetch(`/api/classes/${classID}/subjects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    subject_ids: [selectedSubject]
+                    subjects: [{
+                        subject_id: selectedSubject,
+                        is_compulsory: isCompulsory
+                    }]
                 })
             });
 
@@ -823,13 +881,16 @@
             // Load all papers for the subject
             const subjectResponse = await fetch(`/api/papers/by-subject/${subjectId}`);
             if (!subjectResponse.ok) {
-                throw new Error('Failed to load papers');
+                const errorData = await subjectResponse.json();
+                console.error('Papers API error:', errorData);
+                throw new Error(errorData.error || 'Failed to load papers');
             }
             const subjectData = await subjectResponse.json();
             const allPapers = subjectData.papers || [];
+            console.log('Loaded papers for subject:', subjectId, allPapers);
             
             // Load class papers
-            const classResponse = await fetch("/api/classes/" + classID + "/papers");
+            const classResponse = await fetch(`/api/classes/${classID}/papers`);
             classPapersCache = classResponse.ok ? await classResponse.json() : [];
             
             // Load teachers
@@ -843,7 +904,15 @@
                 .map(p => p.id);
             
             if (allPapers.length === 0) {
-                content.innerHTML = '<div class="text-center text-gray-500">No papers available for this subject</div>';
+                content.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p class="text-lg font-medium text-gray-900 mb-1">No papers available</p>
+                        <p class="text-sm text-gray-500">This subject doesn't have any papers created yet.</p>
+                    </div>
+                `;
                 return;
             }
             
@@ -878,76 +947,156 @@
 
     // Teacher Selection Modal
     let currentPaperId = null;
-    let allTeachers = [];
+    let teachersData = {
+        teachers: [],
+        currentPage: 1,
+        hasMore: true,
+        isLoading: false,
+        searchQuery: ''
+    };
 
     async function openTeacherModal(paperId) {
         currentPaperId = paperId;
         document.getElementById('teacherModal').classList.remove('hidden');
         
+        // Reset data
+        teachersData = {
+            teachers: [],
+            currentPage: 1,
+            hasMore: true,
+            isLoading: false,
+            searchQuery: ''
+        };
+        
+        document.getElementById('teacherSearchInput').value = '';
+        await loadTeachers();
+        setupTeacherModalEvents();
+    }
+
+    async function loadTeachers(reset = false) {
+        if (teachersData.isLoading || (!teachersData.hasMore && !reset)) return;
+        
+        teachersData.isLoading = true;
+        const loadingEl = document.getElementById('teachersLoading');
         const teachersList = document.getElementById('teachersList');
         
-        if (allTeachers.length === 0) {
-            // Show loading skeleton
-            teachersList.innerHTML = `
-                <div class="space-y-2">
-                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
-                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
-                        <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-                        <div class="h-3 bg-gray-200 rounded w-1/3"></div>
-                    </div>
-                    <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
-                        <div class="h-4 bg-gray-200 rounded w-4/5 mb-2"></div>
-                        <div class="h-3 bg-gray-200 rounded w-2/5"></div>
-                    </div>
-                </div>
-            `;
-            
-            try {
-                const response = await fetch('/api/teachers');
-                const data = await response.json();
-                allTeachers = data.teachers || [];
-            } catch (error) {
-                console.error('Error loading teachers:', error);
-                teachersList.innerHTML = '<p class="text-red-500 p-3">Error loading teachers</p>';
-                return;
-            }
+        if (reset) {
+            teachersData.currentPage = 1;
+            teachersData.teachers = [];
+            teachersList.innerHTML = '';
         }
         
-        teachersList.innerHTML = allTeachers.map(teacher => `
-            <button onclick="selectTeacher('${teacher.id}', '${teacher.first_name} ${teacher.last_name}')" 
-                    class="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+        loadingEl.classList.remove('hidden');
+        
+        try {
+            const params = new URLSearchParams({
+                q: teachersData.searchQuery,
+                limit: 10,
+                offset: (teachersData.currentPage - 1) * 10
+            });
+            
+            const response = await fetch(`/api/teachers/search?${params}`);
+            const data = await response.json();
+            
+            if (data.teachers) {
+                teachersData.teachers.push(...data.teachers);
+                teachersData.hasMore = data.has_more || false;
+                teachersData.currentPage++;
+                
+                renderTeachers();
+            }
+        } catch (error) {
+            console.error('Error loading teachers:', error);
+            if (teachersData.teachers.length === 0) {
+                teachersList.innerHTML = '<p class="text-red-500 p-3">Error loading teachers</p>';
+            }
+        } finally {
+            teachersData.isLoading = false;
+            loadingEl.classList.add('hidden');
+        }
+    }
+
+    function renderTeachers() {
+        const teachersList = document.getElementById('teachersList');
+        teachersList.innerHTML = teachersData.teachers.map(teacher => `
+            <button data-teacher-id="${teacher.id}" data-teacher-name="${teacher.first_name} ${teacher.last_name}" 
+                    class="teacher-select-btn w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
                 <div class="font-medium">${teacher.first_name} ${teacher.last_name}</div>
                 <div class="text-sm text-gray-600">${teacher.email}</div>
             </button>
         `).join('');
     }
 
+    function setupTeacherModalEvents() {
+        const searchInput = document.getElementById('teacherSearchInput');
+        const teachersList = document.getElementById('teachersList');
+        
+        // Search functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                teachersData.searchQuery = e.target.value;
+                loadTeachers(true);
+            }, 300);
+        });
+        
+        // Teacher selection using event delegation
+        teachersList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.teacher-select-btn');
+            if (btn) {
+                const teacherId = btn.getAttribute('data-teacher-id');
+                const teacherName = btn.getAttribute('data-teacher-name');
+                selectTeacher(teacherId, teacherName);
+            }
+        });
+        
+        // Infinite scroll
+        teachersList.addEventListener('scroll', () => {
+            if (teachersList.scrollTop + teachersList.clientHeight >= teachersList.scrollHeight - 5) {
+                loadTeachers();
+            }
+        });
+    }
+
     function closeTeacherModal() {
         document.getElementById('teacherModal').classList.add('hidden');
-        currentPaperId = null;
-        selectionType = 'head'; // Reset to default
+        
+        // Reset after modal is hidden
+        setTimeout(() => {
+            currentPaperId = null;
+            selectionType = 'head';
+        }, 200);
+        
+        // Clean up event listeners
+        const searchInput = document.getElementById('teacherSearchInput');
+        const teachersList = document.getElementById('teachersList');
+        if (searchInput) searchInput.removeEventListener('input', () => {});
+        if (teachersList) teachersList.removeEventListener('scroll', () => {});
     }
 
     function selectTeacher(teacherId, teacherName) {
-        if (selectionType === 'class_teacher') {
-            // Handle class teacher selection
-            document.getElementById('selectedClassTeacherDisplay').value = teacherName;
-            document.getElementById('classTeacherId').value = teacherId;
-            closeTeacherModal();
-            return;
-        }
+        console.log('Selecting teacher:', teacherId, teacherName, 'for paper:', currentPaperId);
         
         if (currentPaperId) {
             const btn = document.querySelector(`[data-paper-id="${currentPaperId}"]`);
+            console.log('Found button:', btn);
             if (btn) {
                 btn.textContent = teacherName;
                 btn.setAttribute('data-teacher-id', teacherId);
+                console.log('Updated button text to:', teacherName);
             }
         }
-        closeTeacherModal();
+        
+        // Close modal after a short delay to ensure the update is processed
+        setTimeout(() => {
+            closeTeacherModal();
+        }, 100);
+    }
+
+    function openPaperTeacherModal(paperId) {
+        currentPaperId = paperId;
+        openTeacherModal(paperId);
     }
 
     function clearTeacher() {
@@ -979,20 +1128,19 @@
         checkboxes.forEach(cb => {
             if (cb.checked) {
                 const teacherBtn = document.querySelector(`[data-paper-id="${cb.value}"]`);
-                const teacherId = teacherBtn ? teacherBtn.getAttribute('data-teacher-id') : '';
+                const teacherId = teacherBtn ? teacherBtn.getAttribute('data-teacher-id') : null;
                 paperAssignments.push({
                     paper_id: cb.value,
-                    teacher_id: teacherId || null
+                    teacher_id: teacherId && teacherId !== '' ? teacherId : null
                 });
             }
         });
         
         try {
-            const response = await fetch("/api/classes/" + classID + "/papers", {
+            const response = await fetch(`/api/classes/${classID}/papers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
-                    subject_id: currentSubjectId,
                     paper_assignments: paperAssignments
                 })
             });
@@ -1002,9 +1150,11 @@
                 closeSubjectPapersModal();
                 await loadClassSubjects(); // Refresh the display
             } else {
-                showNotification('Failed to update papers', 'error');
+                const errorData = await response.json();
+                showNotification('Failed to update papers: ' + (errorData.error || 'Unknown error'), 'error');
             }
         } catch (error) {
+            console.error('Error saving papers:', error);
             showNotification('Error updating papers', 'error');
         } finally {
             // Reset button state
@@ -1018,7 +1168,7 @@
         if (!confirm('Are you sure you want to remove this subject from the class?')) return;
 
         try {
-            const response = await fetch("/api/classes/" + classID + "/subjects/" + subjectId, {
+            const response = await fetch(`/api/classes/${classID}/subjects/${subjectId}`, {
                 method: 'DELETE'
             });
 
@@ -1040,8 +1190,6 @@
     }
 
     // Event listeners
-    document.getElementById('addSubjectsBtn').addEventListener('click', openNoSubjectsModal);
-    document.getElementById('addSubjectsBtn2').addEventListener('click', openNoSubjectsModal);
     document.getElementById('classSubjectsBtn').addEventListener('click', openNoSubjectsModal);
     document.getElementById('editClassBtn').addEventListener('click', openEditClassModal);
     document.getElementById('addStudentBtn').addEventListener('click', openAddStudentModal);
@@ -1106,7 +1254,7 @@
         
         // Optionally refresh the class details from API to ensure consistency
         try {
-            const response = await fetch("/api/classes/" + classID + "/details", {
+            const response = await fetch(`/api/classes/${classID}/details`, {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -1149,7 +1297,7 @@
             console.log('Submitting data:', data); // Debug log
 
             try {
-                const response = await fetch("/api/classes/" + classID, {
+                const response = await fetch(`/api/classes/${classID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1278,8 +1426,7 @@
 
     async function addStudentToClass(student) {
         try {
-            const classID = "{{js .classID}}";
-            const response = await fetch("/api/classes/" + classID + "/students", {
+            const response = await fetch(`/api/classes/${classID}/students`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student_id: student.id })

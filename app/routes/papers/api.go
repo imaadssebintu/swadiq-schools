@@ -12,12 +12,21 @@ import (
 func GetPapersBySubjectAPI(c *fiber.Ctx) error {
 	subjectID := c.Params("subjectId")
 	
+	if subjectID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Subject ID is required"})
+	}
+	
 	papers, err := database.GetPapersBySubject(config.GetDB(), subjectID)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch papers"})
+		return c.Status(500).JSON(fiber.Map{
+			"error": "Failed to fetch papers",
+			"details": err.Error(),
+			"subject_id": subjectID,
+		})
 	}
 
 	return c.JSON(fiber.Map{
+		"success": true,
 		"papers": papers,
 		"count":  len(papers),
 	})
@@ -56,6 +65,10 @@ func CreatePaperAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Subject ID is required"})
 	}
 
+	if paper.Name == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Paper name is required"})
+	}
+
 	// Always generate paper code based on subject code, ignoring any provided code
 	// Get the subject to get its code
 	subject, err := database.GetSubjectByID(config.GetDB(), paper.SubjectID)
@@ -69,16 +82,22 @@ func CreatePaperAPI(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch existing papers for subject"})
 	}
 
-	// Determine the next paper number by finding the highest existing number and incrementing
+	// Use first 3 characters of subject code
+	subjectPrefix := subject.Code
+	if len(subject.Code) > 3 {
+		subjectPrefix = subject.Code[:3]
+	}
+
+	// Determine the next paper number
 	nextPaperNumber := 1
 	for _, existingPaper := range existingPapers {
-		// Extract the number from the paper code (e.g., "MATH-2" -> 2)
-		if len(existingPaper.Code) > len(subject.Code)+1 {
-			// Check if the code starts with the subject code followed by a dash
-			if existingPaper.Code[:len(subject.Code)] == subject.Code && existingPaper.Code[len(subject.Code)] == '-' {
+		// Extract the number from the paper code (e.g., "ENG-2" -> 2)
+		if len(existingPaper.Code) > len(subjectPrefix)+1 {
+			// Check if the code starts with the subject prefix followed by a dash
+			if existingPaper.Code[:len(subjectPrefix)] == subjectPrefix && existingPaper.Code[len(subjectPrefix)] == '-' {
 				// Try to parse the number after the dash
 				var num int
-				_, err := fmt.Sscanf(existingPaper.Code[len(subject.Code)+1:], "%d", &num)
+				_, err := fmt.Sscanf(existingPaper.Code[len(subjectPrefix)+1:], "%d", &num)
 				if err == nil && num >= nextPaperNumber {
 					nextPaperNumber = num + 1
 				}
@@ -86,7 +105,7 @@ func CreatePaperAPI(c *fiber.Ctx) error {
 		}
 	}
 
-	paper.Code = fmt.Sprintf("%s-%d", subject.Code, nextPaperNumber)
+	paper.Code = fmt.Sprintf("%s-%d", subjectPrefix, nextPaperNumber)
 
 	if err := database.CreatePaper(config.GetDB(), &paper); err != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -117,11 +136,12 @@ func UpdatePaperAPI(c *fiber.Ctx) error {
 
 	// Update only the fields that can be changed, preserving the auto-generated code
 	paperToUpdate := &models.Paper{
-		ID:        paperID,
-		SubjectID: updatedPaper.SubjectID,
-		Code:      existingPaper.Code, // Preserve the auto-generated code
-		// TeacherID is now handled at the class level
-		IsActive:  updatedPaper.IsActive,
+		ID:           paperID,
+		SubjectID:    updatedPaper.SubjectID,
+		Name:         updatedPaper.Name,
+		Code:         existingPaper.Code, // Preserve the auto-generated code
+		IsCompulsory: updatedPaper.IsCompulsory,
+		IsActive:     updatedPaper.IsActive,
 	}
 
 	if err := database.UpdatePaper(config.GetDB(), paperToUpdate); err != nil {
@@ -142,4 +162,78 @@ func DeletePaperAPI(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{"message": "Paper deleted successfully"})
+}
+
+// GetPapersTableAPI returns papers data for table display
+func GetPapersTableAPI(c *fiber.Ctx) error {
+	papers, err := database.GetAllPapers(config.GetDB())
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch papers"})
+	}
+
+	return c.JSON(fiber.Map{
+		"papers": papers,
+		"count":  len(papers),
+	})
+}
+
+// GetPapersStatsAPI returns statistics for papers page
+func GetPapersStatsAPI(c *fiber.Ctx) error {
+	stats, err := database.GetPapersStats(config.GetDB())
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch stats"})
+	}
+
+	return c.JSON(stats)
+}
+
+// AssignTeacherToClassPaperAPI assigns a teacher to a class paper
+func AssignTeacherToClassPaperAPI(c *fiber.Ctx) error {
+	var req struct {
+		ClassID   string  `json:"class_id"`
+		PaperID   string  `json:"paper_id"`
+		TeacherID *string `json:"teacher_id"`
+	}
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	db := config.GetDB()
+
+	// Check if class paper already exists
+	var existingID string
+	checkQuery := `SELECT id FROM class_papers WHERE class_id = $1 AND paper_id = $2 AND deleted_at IS NULL`
+	err := db.QueryRow(checkQuery, req.ClassID, req.PaperID).Scan(&existingID)
+
+	if err != nil {
+		// Create new class paper
+		query := `INSERT INTO class_papers (class_id, paper_id, teacher_id, created_at, updated_at)
+				  VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id`
+		
+		var classPaperID string
+		err = db.QueryRow(query, req.ClassID, req.PaperID, req.TeacherID).Scan(&classPaperID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to create class paper"})
+		}
+
+		return c.Status(201).JSON(fiber.Map{
+			"success": true,
+			"message": "Teacher assigned to class paper successfully",
+			"id":      classPaperID,
+		})
+	}
+
+	// Update existing class paper
+	updateQuery := `UPDATE class_papers SET teacher_id = $1, updated_at = NOW() WHERE id = $2`
+	_, err = db.Exec(updateQuery, req.TeacherID, existingID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to update class paper"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Teacher assignment updated successfully",
+		"id":      existingID,
+	})
 }

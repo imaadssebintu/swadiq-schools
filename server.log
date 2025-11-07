@@ -1,14 +1,14 @@
-2025/10/08 20:21:36 Attempting to connect to remote database at 129.80.199.242:5432
-2025/10/08 20:21:36 Testing database connection...
-2025/10/08 20:21:38 Database connected successfully
-2025/10/08 20:21:38 Server starting on :8080
+2025/11/06 00:58:56 Attempting to connect to remote database at 129.80.85.203:5432
+2025/11/06 00:58:56 Testing database connection...
+2025/11/06 00:58:58 Database connected successfully
+2025/11/06 00:58:58 Server starting on :8080
 
  ┌───────────────────────────────────────────────────┐ 
  │                   Fiber v2.52.0                   │ 
  │               http://127.0.0.1:8080               │ 
  │       (bound on host 0.0.0.0 and port 8080)       │ 
  │                                                   │ 
- │ Handlers ............ 24  Processes ........... 1 │ 
- │ Prefork ....... Disabled  PID .............. 1131 │ 
+ │ Handlers ........... 235  Processes ........... 1 │ 
+ │ Prefork ....... Disabled  PID ............. 14288 │ 
  └───────────────────────────────────────────────────┘ 
 

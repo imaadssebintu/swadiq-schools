@@ -10,6 +10,29 @@ import (
 )
 
 func GetStudentsAPI(c *fiber.Ctx) error {
+	classID := c.Query("class_id")
+	limit := c.QueryInt("limit", 0)
+	offset := c.QueryInt("offset", 0)
+
+	// If class_id is provided, use filtered query
+	if classID != "" {
+		filters := database.StudentFilters{
+			ClassID: classID,
+			Limit:   limit,
+			Offset:  offset,
+		}
+		students, totalCount, err := database.GetStudentsWithFiltersAndPagination(config.GetDB(), filters)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch students"})
+		}
+		return c.JSON(fiber.Map{
+			"students":    students,
+			"count":       len(students),
+			"total_count": totalCount,
+		})
+	}
+
+	// Default behavior - get all students
 	students, err := database.GetStudentsWithDetails(config.GetDB())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch students"})
@@ -48,6 +71,7 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 	search := c.Query("search")
 	status := c.Query("status")
 	classID := c.Query("class_id")
+	classIDs := c.Query("class_ids") // Support multiple class IDs
 	gender := c.Query("gender")
 	dateFrom := c.Query("date_from")
 	dateTo := c.Query("date_to")
@@ -63,6 +87,7 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 		Search:    search,
 		Status:    status,
 		ClassID:   classID,
+		ClassIDs:  classIDs, // Add support for multiple class IDs
 		Gender:    gender,
 		DateFrom:  dateFrom,
 		DateTo:    dateTo,

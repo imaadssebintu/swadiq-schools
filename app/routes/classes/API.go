@@ -378,15 +378,22 @@ func UpdateClassPromotionSettingsAPI(c *fiber.Ctx) error {
 	})
 }
 
-// GetClassSubjectsAPI returns subjects assigned to a class
+// GetClassSubjectsAPI returns subjects assigned to a class with papers and teachers
 func GetClassSubjectsAPI(c *fiber.Ctx) error {
 	classID := c.Params("id")
 	if classID == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
 	}
 
-	// Return empty subjects immediately for fast loading
-	return c.JSON(nil)
+	subjects, err := database.GetClassSubjectsWithPapers(config.GetDB(), classID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch class subjects"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"subjects": subjects,
+	})
 }
 
 // AddClassSubjectsAPI adds subjects to a class
@@ -397,7 +404,7 @@ func AddClassSubjectsAPI(c *fiber.Ctx) error {
 	}
 
 	type AddSubjectsRequest struct {
-		SubjectIDs []string `json:"subject_ids"`
+		Subjects []database.SubjectAssignment `json:"subjects"`
 	}
 
 	var req AddSubjectsRequest
@@ -405,11 +412,11 @@ func AddClassSubjectsAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
-	if len(req.SubjectIDs) == 0 {
-		return c.Status(400).JSON(fiber.Map{"error": "At least one subject ID is required"})
+	if len(req.Subjects) == 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "At least one subject is required"})
 	}
 
-	if err := database.AddSubjectsToClass(config.GetDB(), classID, req.SubjectIDs); err != nil {
+	if err := database.AddSubjectsToClassWithCompulsory(config.GetDB(), classID, req.Subjects); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to add subjects to class"})
 	}
 
@@ -467,34 +474,63 @@ func GetClassPapersAPI(c *fiber.Ctx) error {
 	return c.JSON(papers)
 }
 
-// AssignPapersToClassAPI assigns papers to a class for a specific subject
+// AssignPapersToClassAPI assigns papers to a class using ClassPaper model
 func AssignPapersToClassAPI(c *fiber.Ctx) error {
 	classID := c.Params("id")
 	if classID == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
 	}
 
+	type PaperAssignment struct {
+		PaperID   string  `json:"paper_id"`
+		TeacherID *string `json:"teacher_id"`
+	}
+
 	type AssignPapersRequest struct {
-		SubjectID        string                        `json:"subject_id"`
-		PaperAssignments []database.PaperAssignment `json:"paper_assignments"`
+		PaperAssignments []PaperAssignment `json:"paper_assignments"`
 	}
 
 	var req AssignPapersRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request: " + err.Error()})
 	}
 
-	if req.SubjectID == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Subject ID is required"})
+	if len(req.PaperAssignments) == 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "No paper assignments provided"})
 	}
 
-	if err := database.AssignPapersToClass(config.GetDB(), classID, req.SubjectID, req.PaperAssignments); err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to assign papers to class"})
+	db := config.GetDB()
+	var createdIDs []string
+
+	// Process each paper assignment using ClassPaper model
+	for _, pa := range req.PaperAssignments {
+		var existingID string
+		checkQuery := `SELECT id FROM class_papers WHERE class_id = $1 AND paper_id = $2 AND deleted_at IS NULL`
+		err := db.QueryRow(checkQuery, classID, pa.PaperID).Scan(&existingID)
+
+		if err != nil {
+			// Create new class paper
+			query := `INSERT INTO class_papers (class_id, paper_id, teacher_id, created_at, updated_at)
+					  VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id`
+			
+			var classPaperID string
+			err = db.QueryRow(query, classID, pa.PaperID, pa.TeacherID).Scan(&classPaperID)
+			if err != nil {
+				continue
+			}
+			createdIDs = append(createdIDs, classPaperID)
+		} else {
+			// Update existing class paper
+			updateQuery := `UPDATE class_papers SET teacher_id = $1, updated_at = NOW() WHERE id = $2`
+			db.Exec(updateQuery, pa.TeacherID, existingID)
+			createdIDs = append(createdIDs, existingID)
+		}
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Papers assigned successfully",
+		"ids":     createdIDs,
 	})
 }
 
@@ -531,5 +567,62 @@ func RemoveClassSubjectAPI(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Subject removed from class successfully",
+	})
+}
+
+// AssignTeacherToPaperAPI assigns a teacher to a specific paper in a class
+func AssignTeacherToPaperAPI(c *fiber.Ctx) error {
+	classID := c.Params("id")
+	paperID := c.Params("paperId")
+	
+	if classID == "" || paperID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID and Paper ID are required"})
+	}
+
+	type AssignTeacherRequest struct {
+		TeacherID string `json:"teacher_id"`
+	}
+
+	var req AssignTeacherRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	}
+
+	db := config.GetDB()
+
+	// Check if class paper already exists
+	var existingID string
+	checkQuery := `SELECT id FROM class_papers WHERE class_id = $1 AND paper_id = $2 AND deleted_at IS NULL`
+	err := db.QueryRow(checkQuery, classID, paperID).Scan(&existingID)
+
+	if err != nil {
+		// Create new class paper
+		query := `INSERT INTO class_papers (class_id, paper_id, teacher_id, created_at, updated_at)
+				  VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id`
+		
+		var classPaperID string
+		err = db.QueryRow(query, classID, paperID, req.TeacherID).Scan(&classPaperID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to assign teacher to paper"})
+		}
+
+		return c.Status(201).JSON(fiber.Map{
+			"success": true,
+			"message": "Teacher assigned to paper successfully",
+			"id":      classPaperID,
+		})
+	}
+
+	// Update existing class paper
+	updateQuery := `UPDATE class_papers SET teacher_id = $1, updated_at = NOW() WHERE id = $2`
+	_, err = db.Exec(updateQuery, req.TeacherID, existingID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to update teacher assignment"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Teacher assignment updated successfully",
+		"id":      existingID,
 	})
 }

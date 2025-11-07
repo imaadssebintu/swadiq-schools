@@ -123,7 +123,7 @@ func CreateTerm(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Validate dates
-	if term.EndDate.Time.Before(term.StartDate.Time) {
+	if term.EndDate.Before(term.StartDate) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 	}
 
@@ -133,7 +133,7 @@ func CreateTerm(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 	}
 
-	if term.StartDate.Time.Before(academicYear.StartDate.Time) || term.EndDate.Time.After(academicYear.EndDate.Time) {
+	if term.StartDate.Before(academicYear.StartDate.Time) || term.EndDate.After(academicYear.EndDate.Time) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 	}
 
@@ -160,7 +160,7 @@ func UpdateTerm(c *fiber.Ctx, db *sql.DB) error {
 	term.ID = termID
 
 	// Validate dates
-	if term.EndDate.Time.Before(term.StartDate.Time) {
+	if term.EndDate.Before(term.StartDate) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 	}
 
@@ -170,7 +170,7 @@ func UpdateTerm(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 	}
 
-	if term.StartDate.Time.Before(academicYear.StartDate.Time) || term.EndDate.Time.After(academicYear.EndDate.Time) {
+	if term.StartDate.Before(academicYear.StartDate.Time) || term.EndDate.After(academicYear.EndDate.Time) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 	}
 

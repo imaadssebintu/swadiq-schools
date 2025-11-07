@@ -24,13 +24,4 @@ type Permission struct {
 	Roles     []*Role    `json:"roles,omitempty" gorm:"many2many:role_permissions;"`
 }
 
-// RolePermission is a join table linking roles and permissions
-type RolePermission struct {
-	ID           string     `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()" validate:"required,uuid"`
-	RoleID       string     `json:"role_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
-	PermissionID string     `json:"permission_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
-	CreatedAt    time.Time  `json:"created_at" gorm:"autoCreateTime"`
-	DeletedAt    *time.Time `json:"deleted_at,omitempty" gorm:"index"`
-	Role         *Role      `json:"role,omitempty" gorm:"foreignKey:RoleID;references:ID"`
-	Permission   *Permission `json:"permission,omitempty" gorm:"foreignKey:PermissionID;references:ID"`
-}
+

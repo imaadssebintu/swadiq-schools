@@ -35,7 +35,7 @@ type CreateFeeTypeRequest struct {
 // GetFeeTypesAPI returns all fee types
 func GetFeeTypesAPI(c *fiber.Ctx, db *sql.DB) error {
 	query := `SELECT id, name, code, description, payment_frequency, is_active, 
-		COALESCE(scope, 'manual') as scope, target_class_id, target_student_id, 
+		'manual' as scope, NULL as target_class_id, NULL as target_student_id, 
 		created_at, updated_at 
 			  FROM fee_types 
 			  WHERE deleted_at IS NULL 
@@ -89,8 +89,8 @@ func CreateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Name, code, and payment frequency are required")
 	}
 
-	query := `INSERT INTO fee_types (name, code, description, payment_frequency, scope, target_class_id, target_student_id, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''), NOW(), NOW()) 
+	query := `INSERT INTO fee_types (name, code, description, payment_frequency, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, NOW(), NOW()) 
 			  RETURNING id, created_at, updated_at`
 
 	var feeType FeeTypeResponse
@@ -103,7 +103,7 @@ func CreateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 	log.Printf("Inserting fee type with params: name=%s, code=%s, description=%s, payment_frequency=%s, scope=%s, target_class_id=%s, target_student_id=%s",
 		req.Name, req.Code, req.Description, req.PaymentFrequency, scope, req.TargetClassID, req.TargetStudentID)
 	
-	err := db.QueryRow(query, req.Name, req.Code, req.Description, req.PaymentFrequency, scope, req.TargetClassID, req.TargetStudentID).Scan(
+	err := db.QueryRow(query, req.Name, req.Code, req.Description, req.PaymentFrequency).Scan(
 		&feeType.ID, &feeType.CreatedAt, &feeType.UpdatedAt,
 	)
 	if err != nil {

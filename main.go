@@ -33,7 +33,16 @@ func customErrorHandler(c *fiber.Ctx, err error) error {
 		code = e.Code
 	}
 
-	// Handle different error codes
+	// Check if this is an API request
+	if len(c.Path()) >= 4 && c.Path()[:4] == "/api" {
+		return c.Status(code).JSON(fiber.Map{
+			"success": false,
+			"error":   err.Error(),
+			"code":    code,
+		})
+	}
+
+	// Handle different error codes for web requests
 	switch code {
 	case 404:
 		return c.Status(404).Render("404", fiber.Map{

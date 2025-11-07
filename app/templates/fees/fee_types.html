@@ -42,13 +42,14 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Frequency</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee Type</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="feeTypesTableBody" class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center">
                                     <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -65,90 +66,107 @@
 </div>
 
 <!-- Add Fee Type Modal -->
-<div id="addFeeTypeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Add Fee Type</h3>
-            <button id="closeAddFeeTypeModal" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+<div id="addFeeTypeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Add Fee Type</h2>
+            <button id="closeAddFeeTypeModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        <form id="addFeeTypeForm" class="p-6">
-            <div class="space-y-4">
+
+        <form id="addFeeTypeForm" class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                     <input type="text" id="feeTypeName" name="name" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           placeholder="Enter fee type name">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Code</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
                     <input type="text" id="feeTypeCode" name="code" required maxlength="20"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           placeholder="Enter fee code">
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea id="feeTypeDescription" name="description" rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                          placeholder="Enter description (optional)"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <textarea id="feeTypeDescription" name="description" rows="3"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency *</label>
                     <select id="feeTypeFrequency" name="payment_frequency" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="">Select frequency</option>
                         <option value="once">One-time payment</option>
                         <option value="per_term">Per term</option>
                         <option value="per_year">Per year</option>
-                        <option value="on_demand">On demand (e.g., school trips)</option>
+                        <option value="on_demand">On demand</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply To</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fee Type *</label>
+                    <select id="feeTypeRequired" name="is_required" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <option value="true">Must (Required)</option>
+                        <option value="false">Optional</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply To *</label>
                     <select id="feeTypeScope" name="scope" required onchange="handleScopeChange()"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="manual">Manual assignment</option>
                         <option value="all_students">All students</option>
                         <option value="all_classes">All classes</option>
-                        <option value="class">Specific class</option>
-                        <option value="student">Specific student</option>
+                        <option value="class">Specific classes</option>
+                        <option value="student">Specific students</option>
+                        <option value="class_and_student">Classes + Specific students</option>
                     </select>
                 </div>
-                <div id="classSelector" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Class</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="selectedClassName" readonly 
-                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" 
-                               placeholder="No class selected">
-                        <button type="button" onclick="openClassModal()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Select
-                        </button>
-                    </div>
-                    <input type="hidden" id="feeTypeClass" name="target_class_id">
-                </div>
-                <div id="studentSelector" class="hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="selectedStudentName" readonly 
-                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50" 
-                               placeholder="No student selected">
-                        <button type="button" onclick="openStudentModal()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Select
-                        </button>
-                    </div>
-                    <input type="hidden" id="feeTypeStudent" name="target_student_id">
-                </div>
             </div>
-            <div class="flex justify-end gap-3 mt-6">
+
+            <div id="classSelector" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Classes</label>
+                <div class="flex gap-2">
+                    <div id="selectedClassNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                        No classes selected
+                    </div>
+                    <button type="button" onclick="openClassModal()" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        Select
+                    </button>
+                </div>
+                <input type="hidden" id="feeTypeClasses" name="target_class_ids">
+            </div>
+            <div id="studentSelector" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Students</label>
+                <div class="flex gap-2">
+                    <div id="selectedStudentNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                        No students selected
+                    </div>
+                    <button type="button" id="selectStudentsBtn" onclick="openStudentModal()" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Select
+                    </button>
+                </div>
+                <input type="hidden" id="feeTypeStudents" name="target_student_ids">
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
                 <button type="button" id="cancelAddFeeType" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancel
                 </button>
                 <button type="submit" 
-                        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
-                    Add Fee Type
+                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    <i class="fas fa-plus mr-2"></i>Add Fee Type
                 </button>
             </div>
         </form>
@@ -163,104 +181,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelAddFeeType = document.getElementById('cancelAddFeeType');
     const addFeeTypeForm = document.getElementById('addFeeTypeForm');
 
-    // Load classes and students for selectors
-    let classes = [];
-    let students = [];
-
-    async function loadClassesAndStudents() {
-        try {
-            const [classesRes, studentsRes] = await Promise.all([
-                fetch('/api/classes'),
-                fetch('/api/students')
-            ]);
-            
-            if (classesRes.ok) {
-                const classesData = await classesRes.json();
-                classes = classesData.data || classesData.classes || [];
-                populateClassSelector();
-                populateClassModal(); // Populate class selection modal
-            }
-            
-            if (studentsRes.ok) {
-                const studentsData = await studentsRes.json();
-                students = studentsData.data || studentsData.students || [];
-                populateStudentSelector();
-                populateStudentModal(); // Populate student selection modal
-            }
-        } catch (error) {
-            console.error('Error loading classes and students:', error);
-        }
-    }
-
-    function populateClassSelector() {
-        const classSelect = document.getElementById('feeTypeClass');
-        classSelect.innerHTML = '<option value="">Select a class</option>';
-        classes.forEach(cls => {
-            classSelect.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
-        });
-    }
-
-    function populateStudentSelector() {
-        const studentSelect = document.getElementById('feeTypeStudent');
-        studentSelect.innerHTML = '<option value="">Select a student</option>';
-        students.forEach(student => {
-            studentSelect.innerHTML += `<option value="${student.id}">${student.first_name} ${student.last_name}</option>`;
-        });
-    }
-
-    // Populate class selection modal
-    function populateClassModal() {
-        const container = document.getElementById('classListContainer');
-        if (!container) return;
-        
-        if (classes.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 text-center col-span-2">No classes available</p>';
-            return;
-        }
-        
-        container.innerHTML = classes.map(cls => `
-            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                 onclick="selectClass('${cls.id}', '${cls.name}')">
-                <div class="font-medium text-gray-900">${cls.name}</div>
-                <div class="text-sm text-gray-500">${cls.code}</div>
-            </div>
-        `).join('');
-    }
-
-    // Populate student selection modal
-    function populateStudentModal() {
-        const container = document.getElementById('studentListContainer');
-        if (!container) return;
-        
-        if (students.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 text-center col-span-2">No students available</p>';
-            return;
-        }
-        
-        container.innerHTML = students.map(student => `
-            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                 onclick="selectStudent('${student.id}', '${student.first_name} ${student.last_name}')">
-                <div class="font-medium text-gray-900">${student.first_name} ${student.last_name}</div>
-                <div class="text-sm text-gray-500">ID: ${student.student_id}</div>
-                ${student.class_name ? `<div class="text-sm text-gray-500">Class: ${student.class_name}</div>` : ''}
-            </div>
-        `).join('');
-    }
-
-    // Load fee types and classes/students
+    // Load fee types on page load
     loadFeeTypes();
-    loadClassesAndStudents();
 
     // Modal handlers
     addFeeTypeBtn.addEventListener('click', () => {
         addFeeTypeModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     });
 
     [closeAddFeeTypeModal, cancelAddFeeType].forEach(btn => {
         btn.addEventListener('click', () => {
             addFeeTypeModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
             addFeeTypeForm.reset();
         });
+    });
+
+    // Close modal when clicking outside
+    addFeeTypeModal.addEventListener('click', function(e) {
+        if (e.target === addFeeTypeModal) {
+            addFeeTypeModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            addFeeTypeForm.reset();
+        }
     });
 
     // Form submission
@@ -270,16 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(addFeeTypeForm);
         const data = Object.fromEntries(formData);
         
-        // Clean up the data - remove empty values for target_class_id and target_student_id
-        if (data.target_class_id === '') {
-            delete data.target_class_id;
-        }
-        
-        if (data.target_student_id === '') {
-            delete data.target_student_id;
-        }
-        
-        // Also remove empty description
         if (data.description === '') {
             delete data.description;
         }
@@ -295,8 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 addFeeTypeModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
                 addFeeTypeForm.reset();
                 loadFeeTypes();
+                alert('Fee type added successfully!');
             } else {
                 const error = await response.json();
                 alert(error.message || 'Failed to add fee type');
@@ -321,16 +257,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/fee-types');
             const result = await response.json();
             
-            console.log('Fee types response:', result); // Debug log
-            
             if (result.success) {
                 displayFeeTypes(result.data);
             } else {
-                console.error('API returned error:', result.error); // Debug log
                 showError('Failed to load fee types: ' + (result.error || 'Unknown error'));
             }
         } catch (error) {
-            console.error('Fetch error:', error); // Debug log
             showError('Error loading fee types: ' + error.message);
         }
     }
@@ -341,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (feeTypes.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                         <div class="flex flex-col items-center">
                             <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -374,6 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feeType.is_required ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
+                        ${feeType.is_required ? 'Must' : 'Optional'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feeType.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                         ${feeType.is_active ? 'Active' : 'Inactive'}
                     </span>
@@ -390,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.getElementById('feeTypesTableBody');
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="px-6 py-8 text-center text-red-500">
+                <td colspan="7" class="px-6 py-8 text-center text-red-500">
                     <div class="flex flex-col items-center">
                         <svg class="w-12 h-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -417,89 +354,453 @@ function handleScopeChange() {
         classSelector.classList.remove('hidden');
     } else if (scope === 'student') {
         studentSelector.classList.remove('hidden');
+    } else if (scope === 'class_and_student') {
+        classSelector.classList.remove('hidden');
+        studentSelector.classList.remove('hidden');
+        updateStudentSelectorState();
     }
 }
 
-// Modal functions for class and student selection
-function openClassModal() {
-    // Refresh the class list in case new classes were added
-    populateClassModal();
+function updateStudentSelectorState() {
+    const scope = document.getElementById('feeTypeScope').value;
+    const selectStudentsBtn = document.getElementById('selectStudentsBtn');
+    
+    if (scope === 'class_and_student') {
+        if (selectedClasses.size === 0) {
+            selectStudentsBtn.disabled = true;
+            selectStudentsBtn.title = 'Please select at least one class first';
+        } else {
+            selectStudentsBtn.disabled = false;
+            selectStudentsBtn.title = '';
+        }
+    }
+}
+
+// Global variables
+let selectedClasses = new Set();
+let selectedStudents = new Set();
+let allClasses = [];
+let allStudents = [];
+let studentOffset = 0;
+let hasMoreStudents = true;
+
+// Modal functions
+async function openClassModal() {
     document.getElementById('classSelectionModal').classList.remove('hidden');
+    await loadClasses();
 }
 
 function closeClassModal() {
     document.getElementById('classSelectionModal').classList.add('hidden');
 }
 
-function openStudentModal() {
-    // Refresh the student list in case new students were added
-    populateStudentModal();
+async function openStudentModal() {
     document.getElementById('studentSelectionModal').classList.remove('hidden');
+    selectedStudents.clear(); // Clear previous selections
+    await loadStudents(true); // Always reset when opening
+    setupStudentInfiniteScroll();
 }
 
 function closeStudentModal() {
     document.getElementById('studentSelectionModal').classList.add('hidden');
+    if (window.studentScrollObserver) {
+        window.studentScrollObserver.disconnect();
+    }
 }
 
-function selectClass(classId, className) {
-    document.getElementById('selectedClassName').value = className;
-    document.getElementById('feeTypeClass').value = classId;
+async function loadClasses() {
+    try {
+        document.getElementById('classLoadingSkeleton').classList.remove('hidden');
+        document.getElementById('classListContainer').classList.add('hidden');
+        
+        const response = await fetch('/api/classes');
+        const data = await response.json();
+        allClasses = data.classes || [];
+        
+        document.getElementById('classLoadingSkeleton').classList.add('hidden');
+        document.getElementById('classListContainer').classList.remove('hidden');
+        displayClasses(allClasses);
+    } catch (error) {
+        console.error('Error loading classes:', error);
+        document.getElementById('classLoadingSkeleton').classList.add('hidden');
+        document.getElementById('classListContainer').classList.remove('hidden');
+    }
+}
+
+async function loadStudents(reset = true) {
+    try {
+        if (reset) {
+            studentOffset = 0;
+            allStudents = [];
+            hasMoreStudents = true;
+            document.getElementById('studentLoadingSkeleton').classList.remove('hidden');
+            document.getElementById('studentListContainer').classList.add('hidden');
+        } else {
+            // Show loading skeleton for infinite scroll
+            document.getElementById('studentInfiniteLoadingSkeleton').classList.remove('hidden');
+        }
+        
+        const scope = document.getElementById('feeTypeScope').value;
+        let url = '/api/students/table?limit=10&offset=' + studentOffset;
+        
+        // If in class_and_student mode and classes are selected, filter by classes
+        if (scope === 'class_and_student' && selectedClasses.size > 0) {
+            const classIds = Array.from(selectedClasses);
+            const searchTerm = document.getElementById('studentSearchInput')?.value.trim() || '';
+            url = `/api/fees/students-by-classes?class_ids=${classIds.join(',')}&limit=10&offset=${studentOffset}`;
+            if (searchTerm) {
+                url += `&search=${encodeURIComponent(searchTerm)}`;
+            }
+        }
+        
+        console.log('Loading students from:', url); // Debug log
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        const newStudents = data.students || [];
+        const totalStudents = data.total_count || data.total || 0;
+        
+        if (reset) {
+            allStudents = newStudents;
+            selectedStudents.clear(); // Clear selections when resetting
+            document.getElementById('studentLoadingSkeleton').classList.add('hidden');
+            document.getElementById('studentListContainer').classList.remove('hidden');
+        } else {
+            allStudents = [...allStudents, ...newStudents];
+            document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
+        }
+        
+        hasMoreStudents = newStudents.length === 10;
+        studentOffset += newStudents.length;
+        
+        displayStudents(reset ? allStudents : allStudents);
+        // Remove duplicates from allStudents array
+        const uniqueStudents = allStudents.filter((student, index, self) => 
+            index === self.findIndex(s => s.id === student.id)
+        );
+        allStudents = uniqueStudents;
+        
+        updateStudentCount(allStudents.length, totalStudents || allStudents.length);
+        updateLoadMoreButton();
+    } catch (error) {
+        console.error('Error loading students:', error);
+        if (reset) {
+            document.getElementById('studentLoadingSkeleton').classList.add('hidden');
+            document.getElementById('studentListContainer').classList.remove('hidden');
+        } else {
+            document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
+        }
+    }
+}
+
+async function loadMoreStudents() {
+    if (hasMoreStudents) {
+        await loadStudents(false);
+    }
+}
+
+function updateLoadMoreButton() {
+    const loadMoreBtn = document.getElementById('loadMoreStudents');
+    if (hasMoreStudents && allStudents.length > 0) {
+        loadMoreBtn.classList.remove('hidden');
+    } else {
+        loadMoreBtn.classList.add('hidden');
+    }
+}
+
+function setupStudentInfiniteScroll() {
+    const loadMoreBtn = document.getElementById('loadMoreStudents');
+    if (!loadMoreBtn) return;
+
+    if (window.studentScrollObserver) {
+        window.studentScrollObserver.disconnect();
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && hasMoreStudents) {
+                loadMoreStudents();
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '100px',
+        threshold: 0
+    });
+
+    observer.observe(loadMoreBtn);
+    window.studentScrollObserver = observer;
+}
+
+function displayClasses(classes) {
+    const container = document.getElementById('classListContainer');
+    container.innerHTML = classes.map(cls => `
+        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <label class="flex items-center cursor-pointer">
+                <input type="checkbox" class="mr-3" value="${cls.id}" 
+                       onchange="toggleClassSelection('${cls.id}', '${cls.name}')"
+                       ${selectedClasses.has(cls.id) ? 'checked' : ''}>
+                <div class="flex-1">
+                    <div class="font-medium text-gray-900">${cls.name}</div>
+                    <div class="text-sm text-gray-500">${cls.code || ''}</div>
+                </div>
+            </label>
+        </div>
+    `).join('');
+    updateClassSelectionCount();
+}
+
+function displayStudents(students) {
+    const container = document.getElementById('studentListContainer');
+    // Remove duplicates by ID
+    const uniqueStudents = students.filter((student, index, self) => 
+        index === self.findIndex(s => s.id === student.id)
+    );
+    
+    container.innerHTML = uniqueStudents.map(student => `
+        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <label class="flex items-center cursor-pointer">
+                <input type="checkbox" class="mr-3" value="${student.id}" 
+                       onchange="toggleStudentSelection('${student.id}', '${student.first_name} ${student.last_name}')"
+                       ${selectedStudents.has(student.id) ? 'checked' : ''}>
+                <div class="flex-1">
+                    <div class="font-medium text-gray-900">${student.first_name} ${student.last_name}</div>
+                    <div class="text-sm text-gray-500">ID: ${student.student_id}</div>
+                </div>
+            </label>
+        </div>
+    `).join('');
+    updateStudentSelectionCount();
+}
+
+function toggleClassSelection(classId, className) {
+    if (selectedClasses.has(classId)) {
+        selectedClasses.delete(classId);
+    } else {
+        selectedClasses.add(classId);
+    }
+    updateClassSelectionCount();
+}
+
+function toggleStudentSelection(studentId, studentName) {
+    if (selectedStudents.has(studentId)) {
+        selectedStudents.delete(studentId);
+    } else {
+        selectedStudents.add(studentId);
+    }
+    updateStudentSelectionCount();
+}
+
+function updateClassSelectionCount() {
+    const countEl = document.getElementById('selectedClassCount');
+    if (countEl) {
+        const count = selectedClasses.size;
+        countEl.textContent = `${count} class${count !== 1 ? 'es' : ''} selected`;
+    }
+    updateStudentSelectorState();
+}
+
+function updateStudentSelectionCount() {
+    const countEl = document.getElementById('selectedStudentCount');
+    if (countEl) {
+        const count = selectedStudents.size;
+        countEl.textContent = `${count} student${count !== 1 ? 's' : ''} selected`;
+    }
+}
+
+function updateStudentCount(displayed, total) {
+    const countEl = document.getElementById('studentCount');
+    if (countEl) {
+        countEl.textContent = `Showing ${displayed} of ${total} students`;
+    }
+}
+
+function confirmClassSelection() {
+    const selectedClassIds = Array.from(selectedClasses);
+    const selectedClassNames = selectedClassIds.map(id => {
+        const cls = allClasses.find(c => c.id === id);
+        return cls ? cls.name : '';
+    }).filter(name => name);
+    
+    document.getElementById('feeTypeClasses').value = selectedClassIds.join(',');
+    document.getElementById('selectedClassNames').innerHTML = selectedClassNames.length > 0 
+        ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+        : 'No classes selected';
+    
     closeClassModal();
 }
 
-function selectStudent(studentId, studentName) {
-    document.getElementById('selectedStudentName').value = studentName;
-    document.getElementById('feeTypeStudent').value = studentId;
+function confirmStudentSelection() {
+    const selectedStudentIds = Array.from(selectedStudents);
+    const selectedStudentNames = selectedStudentIds.map(id => {
+        const student = allStudents.find(s => s.id === id);
+        return student ? `${student.first_name} ${student.last_name}` : '';
+    }).filter(name => name);
+    
+    document.getElementById('feeTypeStudents').value = selectedStudentIds.join(',');
+    document.getElementById('selectedStudentNames').innerHTML = selectedStudentNames.length > 0 
+        ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+        : 'No students selected';
+    
     closeStudentModal();
+}
+
+let searchTimeout;
+function handleStudentSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        loadStudents(true); // Reset and search
+    }, 300);
 }
 </script>
 
 <!-- Class Selection Modal -->
-<div id="classSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Select a Class</h3>
+<div id="classSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
+            <h3 class="text-lg font-semibold text-gray-900">Select Classes</h3>
             <button onclick="closeClassModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="classListContainer">
+        <div class="p-6 flex-1 overflow-y-auto">
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="classSearchInput" placeholder="Search classes..."
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <div id="classLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-16"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-20"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden" id="classListContainer">
                 <!-- Class items will be populated here -->
             </div>
         </div>
-        <div class="flex justify-end p-6 border-t border-gray-200">
-            <button onclick="closeClassModal()" 
-                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                Cancel
-            </button>
+        <div class="flex justify-between p-6 border-t border-gray-200 flex-shrink-0">
+            <div>
+                <span id="selectedClassCount" class="text-sm text-gray-600">0 classes selected</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeClassModal()" 
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                    Cancel
+                </button>
+                <button onclick="confirmClassSelection()" 
+                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
+                    Confirm Selection
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Student Selection Modal -->
-<div id="studentSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Select a Student</h3>
+<div id="studentSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
+            <h3 class="text-lg font-semibold text-gray-900">Select Students</h3>
             <button onclick="closeStudentModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="studentListContainer">
+        <div class="p-6 flex-1 overflow-y-auto">
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="studentSearchInput" placeholder="Search students..."
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           oninput="handleStudentSearch()">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <div class="mt-2">
+                    <span id="studentCount" class="text-sm text-gray-500">Loading students...</span>
+                </div>
+            </div>
+            <div id="studentLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-32 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-24"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-20"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden" id="studentListContainer">
                 <!-- Student items will be populated here -->
             </div>
+            <div id="studentInfiniteLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-32 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-24"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
+                            <div class="h-3 bg-gray-200 rounded w-20"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="loadMoreStudents" class="text-center mt-4 hidden">
+                <button onclick="loadMoreStudents()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                    Load More Students
+                </button>
+            </div>
         </div>
-        <div class="flex justify-end p-6 border-t border-gray-200">
-            <button onclick="closeStudentModal()" 
-                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                Cancel
-            </button>
+        <div class="flex justify-between p-6 border-t border-gray-200 flex-shrink-0">
+            <div>
+                <span id="selectedStudentCount" class="text-sm text-gray-600">0 students selected</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeStudentModal()" 
+                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                    Cancel
+                </button>
+                <button onclick="confirmStudentSelection()" 
+                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
+                    Confirm Selection
+                </button>
+            </div>
         </div>
     </div>
 </div>

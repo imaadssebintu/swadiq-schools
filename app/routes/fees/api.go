@@ -3,6 +3,7 @@ package fees
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"swadiq-schools/app/models"
 	"time"
 
@@ -44,14 +45,13 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	status := c.Query("status") // "paid", "unpaid", "all"
 
 	// Build base query
-	baseQuery := `SELECT f.id, f.student_id, f.fee_type_id, f.title, f.amount, f.paid, 
+	baseQuery := `SELECT f.id, f.student_id, '', f.title, f.amount, f.paid, 
 				  f.due_date, f.paid_at, f.created_at, f.updated_at,
 				  s.first_name as student_first_name, s.last_name as student_last_name,
 				  s.student_id as student_code,
-				  ft.name as fee_type_name, ft.code as fee_type_code
+				  '' as fee_type_name, '' as fee_type_code
 				  FROM fees f
 				  JOIN students s ON f.student_id = s.id
-				  JOIN fee_types ft ON f.fee_type_id = ft.id
 				  WHERE s.is_active = true AND f.deleted_at IS NULL`
 
 	var conditions []string
@@ -311,25 +311,94 @@ func GetFeeStatsAPI(c *fiber.Ctx, db *sql.DB) error {
 		WHERE deleted_at IS NULL
 	`
 
-	var stats FeeStatsResponse
-	err := db.QueryRow(query).Scan(
+	stats := FeeStatsResponse{
+		TotalFees:        0,
+		PaidFees:         0,
+		UnpaidFees:       0,
+		TotalPaid:        0,
+		TotalUnpaid:      0,
+		StudentsWithFees: 0,
+	}
+
+	db.QueryRow(query).Scan(
 		&stats.TotalFees, &stats.PaidFees, &stats.UnpaidFees,
 		&stats.TotalPaid, &stats.TotalUnpaid, &stats.StudentsWithFees,
 	)
-	if err != nil {
-		// Return zero stats if no data found
-		stats = FeeStatsResponse{
-			TotalFees:        0,
-			PaidFees:         0,
-			UnpaidFees:       0,
-			TotalPaid:        0,
-			TotalUnpaid:      0,
-			StudentsWithFees: 0,
-		}
-	}
+	// Ignore errors and return zero stats - this ensures the frontend always gets valid data
 
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data":    stats,
+	})
+}
+
+// GetStudentsForClassesAPI returns students from specific classes with pagination and search
+func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
+	classIDsParam := c.Query("class_ids")
+	if classIDsParam == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "class_ids is required"})
+	}
+	
+	classIDs := strings.Split(classIDsParam, ",")
+	search := c.Query("search")
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
+	
+	// Build placeholders for class IDs
+	placeholders := make([]string, len(classIDs))
+	args := make([]interface{}, 0)
+	for i, classID := range classIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args = append(args, strings.TrimSpace(classID))
+	}
+	
+	// Simple query that works with basic student table structure
+	query := fmt.Sprintf(`SELECT id, first_name, last_name, student_id, class_id 
+						  FROM students 
+						  WHERE is_active = true AND class_id IN (%s)`, 
+						  strings.Join(placeholders, ","))
+	
+	// Add search conditions if provided
+	if search != "" {
+		searchPattern := "%" + strings.ToLower(search) + "%"
+		query += fmt.Sprintf(` AND (LOWER(student_id) LIKE $%d 
+							   OR LOWER(first_name) LIKE $%d 
+							   OR LOWER(last_name) LIKE $%d 
+							   OR LOWER(first_name || ' ' || last_name) LIKE $%d)`, 
+							   len(args)+1, len(args)+2, len(args)+3, len(args)+4)
+		args = append(args, searchPattern, searchPattern, searchPattern, searchPattern)
+	}
+	
+	// Add ordering and pagination
+	query += fmt.Sprintf(" ORDER BY first_name, last_name LIMIT $%d OFFSET $%d", len(args)+1, len(args)+2)
+	args = append(args, limit, offset)
+	
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch students")
+	}
+	defer rows.Close()
+	
+	students := make([]map[string]interface{}, 0)
+	for rows.Next() {
+		var id, firstName, lastName, studentID, classID string
+		if err := rows.Scan(&id, &firstName, &lastName, &studentID, &classID); err != nil {
+			continue
+		}
+		students = append(students, map[string]interface{}{
+			"id":         id,
+			"first_name": firstName,
+			"last_name":  lastName,
+			"student_id": studentID,
+			"class_id":   classID,
+		})
+	}
+	
+	return c.JSON(fiber.Map{
+		"success":     true,
+		"students":    students,
+		"total_count": len(students),
+		"has_more":    len(students) == limit,
+		"next_offset": offset + len(students),
 	})
 }
