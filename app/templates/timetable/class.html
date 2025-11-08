@@ -1,0 +1,705 @@
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/classes/{{.classID}}" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{{.class.Name}} - Timetable</h1>
+                        <p class="text-xs text-gray-400 mb-1">Code: {{.class.Code}}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="settingsBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Settings
+                    </button>
+                    <button id="editTimetableBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Edit Timetable
+                    </button>
+                    <button id="printTimetableBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Print Timetable
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Timetable Grid -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Weekly Timetable</h2>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="timetableLoading" class="p-6">
+                <div class="animate-pulse">
+                    <div class="grid grid-cols-6 gap-4">
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                        <div class="h-8 bg-gray-200 rounded"></div>
+                    </div>
+                    <div class="mt-4 space-y-3">
+                        <div class="grid grid-cols-6 gap-4">
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                        </div>
+                        <div class="grid grid-cols-6 gap-4">
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                            <div class="h-16 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timetable Content -->
+            <div id="timetableContent" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuesday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wednesday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thursday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friday</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Timetable rows will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyTimetable" class="hidden text-center py-12">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10m6-10v10m-6-4h6"/>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Timetable Created</h3>
+                <p class="text-gray-500 mb-6">Create a timetable for this class to get started.</p>
+                <button onclick="openEditTimetableModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                    Create Timetable
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timetable Settings Modal -->
+<div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Timetable Settings</h3>
+            <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <!-- Days Selection -->
+            <div>
+                <h4 class="font-medium text-gray-900 mb-3">School Days</h4>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_monday" value="monday" checked class="day-checkbox">
+                        <span>Monday</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_tuesday" value="tuesday" checked class="day-checkbox">
+                        <span>Tuesday</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_wednesday" value="wednesday" checked class="day-checkbox">
+                        <span>Wednesday</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_thursday" value="thursday" checked class="day-checkbox">
+                        <span>Thursday</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_friday" value="friday" checked class="day-checkbox">
+                        <span>Friday</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="day_saturday" value="saturday" class="day-checkbox">
+                        <span>Saturday</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Time Settings -->
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">School Start Time</label>
+                    <input type="time" id="schoolStartTime" value="08:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">School End Time</label>
+                    <input type="time" id="schoolEndTime" value="16:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Duration (minutes)</label>
+                <input type="number" id="lessonDuration" value="60" min="30" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+            </div>
+
+            <!-- Breaks Configuration -->
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-medium text-gray-900">Breaks</h4>
+                    <button onclick="addBreak()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+                        Add Break
+                    </button>
+                </div>
+                <div id="breaksContainer" class="space-y-3">
+                    <!-- Breaks will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button onclick="closeSettingsModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                Cancel
+            </button>
+            <button onclick="saveSettings()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg">
+                Save Settings
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Timetable Modal -->
+<div id="editTimetableModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">Edit Timetable</h3>
+            <button onclick="closeEditTimetableModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6">
+            <div id="editTimetableContent">
+                <!-- Edit timetable form will be loaded here -->
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button onclick="closeEditTimetableModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                Cancel
+            </button>
+            <button id="saveTimetableBtn" onclick="saveTimetable()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center">
+                <span id="saveTimetableBtnText">Save Timetable</span>
+                <svg id="saveTimetableSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const classID = '{{.classID}}';
+    let timetableSettings = {
+        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+        startTime: '08:00',
+        endTime: '16:00',
+        lessonDuration: 60,
+        breaks: [
+            { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
+            { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
+        ]
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTimetable();
+        loadSettings();
+        
+        document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
+        document.getElementById('editTimetableBtn').addEventListener('click', openEditTimetableModal);
+        document.getElementById('printTimetableBtn').addEventListener('click', printTimetable);
+    });
+
+    async function loadTimetable() {
+        const loading = document.getElementById('timetableLoading');
+        const content = document.getElementById('timetableContent');
+        const empty = document.getElementById('emptyTimetable');
+        
+        try {
+            const response = await fetch(`/api/timetable/class/${classID}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.timetable && data.timetable.length > 0) {
+                    displayTimetable(data.timetable);
+                    loading.classList.add('hidden');
+                    content.classList.remove('hidden');
+                } else {
+                    loading.classList.add('hidden');
+                    empty.classList.remove('hidden');
+                }
+            } else {
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading timetable:', error);
+            loading.classList.add('hidden');
+            empty.classList.remove('hidden');
+        }
+    }
+
+    function displayTimetable(timetable) {
+        const tbody = document.getElementById('timetableBody');
+        
+        // Group timetable by time slots
+        const timeSlots = {};
+        timetable.forEach(entry => {
+            if (!timeSlots[entry.time_slot]) {
+                timeSlots[entry.time_slot] = {};
+            }
+            timeSlots[entry.time_slot][entry.day] = entry;
+        });
+
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+        
+        tbody.innerHTML = Object.keys(timeSlots).map(timeSlot => {
+            return `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-4 font-medium text-gray-900">${timeSlot}</td>
+                    ${days.map(day => {
+                        const entry = timeSlots[timeSlot][day];
+                        if (entry) {
+                            return `
+                                <td class="px-4 py-4">
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                        <div class="font-medium text-blue-900">${entry.subject_name}</div>
+                                        <div class="text-sm text-blue-700">${entry.teacher_name || 'No teacher assigned'}</div>
+                                        <div class="text-xs text-blue-600">${entry.room || 'No room assigned'}</div>
+                                    </div>
+                                </td>
+                            `;
+                        } else {
+                            return `<td class="px-4 py-4 text-gray-400 text-center">-</td>`;
+                        }
+                    }).join('')}
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function openEditTimetableModal() {
+        document.getElementById('editTimetableModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        loadEditTimetableForm();
+    }
+
+    function closeEditTimetableModal() {
+        document.getElementById('editTimetableModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function loadEditTimetableForm() {
+        const content = document.getElementById('editTimetableContent');
+        content.innerHTML = '<div class="text-center py-4">Loading...</div>';
+        
+        try {
+            // Load subjects and teachers for this class
+            const [subjectsResponse, teachersResponse] = await Promise.all([
+                fetch(`/api/classes/${classID}/subjects`),
+                fetch('/api/teachers')
+            ]);
+            
+            const subjectsData = await subjectsResponse.json();
+            const teachersData = await teachersResponse.json();
+            
+            const subjects = subjectsData.subjects || [];
+            const teachers = teachersData.teachers || [];
+            
+            // Create edit form
+            content.innerHTML = createEditTimetableForm(subjects, teachers);
+        } catch (error) {
+            console.error('Error loading edit form:', error);
+            content.innerHTML = '<div class="text-red-500 text-center py-4">Error loading form</div>';
+        }
+    }
+
+    function generateSchedule() {
+        const schedule = [];
+        const startTime = new Date(`2000-01-01T${timetableSettings.startTime}:00`);
+        const endTime = new Date(`2000-01-01T${timetableSettings.endTime}:00`);
+        const lessonDuration = timetableSettings.lessonDuration * 60000; // Convert to milliseconds
+        
+        let currentTime = new Date(startTime);
+        
+        while (currentTime < endTime) {
+            const slotStart = currentTime.toTimeString().slice(0, 5);
+            const slotEnd = new Date(currentTime.getTime() + lessonDuration).toTimeString().slice(0, 5);
+            const timeSlot = `${slotStart} - ${slotEnd}`;
+            
+            // Check if this time slot is a break
+            const breakSlot = timetableSettings.breaks.find(b => 
+                slotStart >= b.startTime && slotStart < b.endTime
+            );
+            
+            if (breakSlot) {
+                schedule.push({
+                    time: `${breakSlot.startTime} - ${breakSlot.endTime}`,
+                    type: 'break',
+                    label: breakSlot.name
+                });
+                currentTime = new Date(`2000-01-01T${breakSlot.endTime}:00`);
+            } else {
+                schedule.push({
+                    time: timeSlot,
+                    type: 'lesson'
+                });
+                currentTime = new Date(currentTime.getTime() + lessonDuration);
+            }
+        }
+        
+        return schedule;
+    }
+
+    function createEditTimetableForm(subjects, teachers) {
+        const schedule = generateSchedule();
+
+        return `
+            <div class="overflow-x-auto">
+                <table class="w-full border border-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                            ${timetableSettings.days.map(day => `<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">${day}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${schedule.map(slot => {
+                            if (slot.type === 'break') {
+                                return `
+                                    <tr class="border-t bg-orange-50">
+                                        <td class="px-4 py-3 font-medium text-orange-800 bg-orange-100">${slot.time}</td>
+                                        ${timetableSettings.days.map(() => `
+                                            <td class="px-4 py-3 text-center text-orange-700 font-medium">
+                                                ${slot.label}
+                                            </td>
+                                        `).join('')}
+                                    </tr>
+                                `;
+                            } else {
+                                return `
+                                    <tr class="border-t">
+                                        <td class="px-4 py-3 font-medium text-gray-900 bg-gray-50">${slot.time}</td>
+                                        ${timetableSettings.days.map(day => `
+                                            <td class="px-4 py-3">
+                                                <div class="space-y-2">
+                                                    <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="subject">
+                                                        <option value="">Select Subject</option>
+                                                        ${subjects.map(subject => `<option value="${subject.id}">${subject.name}</option>`).join('')}
+                                                    </select>
+                                                    <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="teacher">
+                                                        <option value="">Select Teacher</option>
+                                                        ${teachers.map(teacher => `<option value="${teacher.id}">${teacher.first_name} ${teacher.last_name}</option>`).join('')}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        `).join('')}
+                                    </tr>
+                                `;
+                            }
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    function openSettingsModal() {
+        document.getElementById('settingsModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        loadSettingsForm();
+    }
+
+    function closeSettingsModal() {
+        document.getElementById('settingsModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function loadSettingsForm() {
+        // Load days
+        document.querySelectorAll('.day-checkbox').forEach(cb => {
+            cb.checked = timetableSettings.days.includes(cb.value);
+        });
+        
+        // Load times
+        document.getElementById('schoolStartTime').value = timetableSettings.startTime;
+        document.getElementById('schoolEndTime').value = timetableSettings.endTime;
+        document.getElementById('lessonDuration').value = timetableSettings.lessonDuration;
+        
+        // Load breaks
+        loadBreaks();
+    }
+
+    function loadBreaks() {
+        const container = document.getElementById('breaksContainer');
+        container.innerHTML = timetableSettings.breaks.map((breakItem, index) => `
+            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                <input type="text" value="${breakItem.name}" placeholder="Break name" 
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="name">
+                <input type="time" value="${breakItem.startTime}" 
+                       class="px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="startTime">
+                <input type="time" value="${breakItem.endTime}" 
+                       class="px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="endTime">
+                <button onclick="removeBreak(${index})" class="text-red-600 hover:text-red-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function addBreak() {
+        timetableSettings.breaks.push({
+            name: 'New Break',
+            startTime: '10:00',
+            endTime: '10:30'
+        });
+        loadBreaks();
+    }
+
+    function removeBreak(index) {
+        timetableSettings.breaks.splice(index, 1);
+        loadBreaks();
+    }
+
+    async function saveSettings() {
+        const saveBtn = document.querySelector('#settingsModal button[onclick="saveSettings()"]');
+        const originalText = saveBtn.textContent;
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        
+        try {
+            // Collect settings from form
+            const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+            const startTime = document.getElementById('schoolStartTime').value;
+            const endTime = document.getElementById('schoolEndTime').value;
+            const lessonDuration = parseInt(document.getElementById('lessonDuration').value);
+            
+            // Collect breaks
+            const breaks = [];
+            const breakInputs = document.querySelectorAll('#breaksContainer input');
+            const breaksByIndex = {};
+            
+            breakInputs.forEach(input => {
+                const index = parseInt(input.dataset.breakIndex);
+                const field = input.dataset.field;
+                if (!breaksByIndex[index]) {
+                    breaksByIndex[index] = {};
+                }
+                breaksByIndex[index][field] = input.value;
+            });
+            
+            Object.values(breaksByIndex).forEach(breakItem => {
+                if (breakItem.name && breakItem.start_time && breakItem.end_time) {
+                    breaks.push(breakItem);
+                }
+            });
+            
+            const response = await fetch(`/api/timetable/settings/class/${classID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    days,
+                    start_time: startTime,
+                    end_time: endTime,
+                    lesson_duration: lessonDuration,
+                    breaks
+                })
+            });
+            
+            if (response.ok) {
+                // Update local settings
+                timetableSettings = {
+                    days,
+                    startTime,
+                    endTime,
+                    lessonDuration,
+                    breaks: breaks.map(b => ({
+                        name: b.name,
+                        startTime: b.start_time,
+                        endTime: b.end_time
+                    }))
+                };
+                
+                closeSettingsModal();
+                showNotification('Settings saved successfully', 'success');
+            } else {
+                const error = await response.json();
+                showNotification(error.error || 'Failed to save settings', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            showNotification('Failed to save settings', 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
+    }
+
+    async function loadSettings() {
+        try {
+            const response = await fetch(`/api/timetable/settings/class/${classID}`, {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.settings) {
+                    const settings = data.settings;
+                    timetableSettings = {
+                        days: typeof settings.days === 'string' ? JSON.parse(settings.days) : settings.days,
+                        startTime: settings.start_time,
+                        endTime: settings.end_time,
+                        lessonDuration: settings.lesson_duration,
+                        breaks: typeof settings.breaks === 'string' ? JSON.parse(settings.breaks) : settings.breaks
+                    };
+                }
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        }
+    }
+
+    async function saveTimetable() {
+        const saveBtn = document.getElementById('saveTimetableBtn');
+        const btnText = document.getElementById('saveTimetableBtnText');
+        const spinner = document.getElementById('saveTimetableSpinner');
+        
+        saveBtn.disabled = true;
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('hidden');
+        
+        try {
+            const timetableData = [];
+            const selects = document.querySelectorAll('#editTimetableContent select');
+            
+            const entries = {};
+            selects.forEach(element => {
+                const time = element.dataset.time;
+                const day = element.dataset.day;
+                const field = element.dataset.field;
+                
+                // Skip if no time or day (break rows don't have these)
+                if (!time || !day) return;
+                
+                const key = `${time}-${day}`;
+                
+                if (!entries[key]) {
+                    entries[key] = { time_slot: time, day: day };
+                }
+                
+                if (field === 'subject') {
+                    entries[key].subject_id = element.value;
+                } else if (field === 'teacher') {
+                    entries[key].teacher_id = element.value;
+                }
+            });
+            
+            // Only include entries with at least a subject
+            Object.values(entries).forEach(entry => {
+                if (entry.subject_id) {
+                    timetableData.push(entry);
+                }
+            });
+            
+            const response = await fetch(`/api/timetable/class/${classID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ timetable: timetableData })
+            });
+            
+            if (response.ok) {
+                showNotification('Timetable saved successfully', 'success');
+                closeEditTimetableModal();
+                loadTimetable();
+            } else {
+                const error = await response.json();
+                showNotification(error.message || 'Failed to save timetable', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving timetable:', error);
+            showNotification('Failed to save timetable', 'error');
+        } finally {
+            saveBtn.disabled = false;
+            btnText.textContent = 'Save Timetable';
+            spinner.classList.add('hidden');
+        }
+    }
+
+    function printTimetable() {
+        window.print();
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white ${
+            type === 'success' ? 'bg-green-500' :
+            type === 'error' ? 'bg-red-500' :
+            'bg-blue-500'
+        }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+</script>
+
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        body {
+            background: white !important;
+        }
+        
+        .bg-gray-50 {
+            background: white !important;
+        }
+        
+        .shadow-sm, .shadow-xl {
+            box-shadow: none !important;
+        }
+    }
+</style>

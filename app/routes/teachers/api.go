@@ -381,3 +381,61 @@ func CreateRoleAPI(c *fiber.Ctx) error {
 		"message": "Role created successfully",
 	})
 }
+
+func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
+	db := config.GetDB()
+	
+	query := `SELECT d.id, d.name, d.code,
+		h.first_name as head_first_name, h.last_name as head_last_name,
+		a.first_name as assistant_first_name, a.last_name as assistant_last_name,
+		COUNT(DISTINCT ud.user_id) as teacher_count
+		FROM departments d
+		LEFT JOIN users h ON d.head_of_department_id = h.id AND h.is_active = true
+		LEFT JOIN users a ON d.assistant_head_id = a.id AND a.is_active = true
+		LEFT JOIN user_departments ud ON d.id = ud.department_id
+		LEFT JOIN users u ON ud.user_id = u.id AND u.is_active = true
+		WHERE d.is_active = true
+		GROUP BY d.id, d.name, d.code, h.first_name, h.last_name, a.first_name, a.last_name
+		ORDER BY d.name`
+	
+	rows, err := db.Query(query)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch department overview"})
+	}
+	defer rows.Close()
+
+	departments := make([]map[string]interface{}, 0)
+	for rows.Next() {
+		var deptID, deptName, deptCode string
+		var headFirstName, headLastName, assistantFirstName, assistantLastName *string
+		var teacherCount int
+		
+		if err := rows.Scan(&deptID, &deptName, &deptCode, &headFirstName, &headLastName, &assistantFirstName, &assistantLastName, &teacherCount); err == nil {
+			headName := "Not assigned"
+			if headFirstName != nil && headLastName != nil {
+				headName = *headFirstName + " " + *headLastName
+			}
+			
+			assistantName := "Not assigned"
+			if assistantFirstName != nil && assistantLastName != nil {
+				assistantName = *assistantFirstName + " " + *assistantLastName
+			}
+			
+			departments = append(departments, map[string]interface{}{
+				"id": deptID,
+				"name": deptName,
+				"code": deptCode,
+				"teacher_count": teacherCount,
+				"head_name": headName,
+				"assistant_name": assistantName,
+			})
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"departments": departments,
+		"count": len(departments),
+	})
+}
+
+

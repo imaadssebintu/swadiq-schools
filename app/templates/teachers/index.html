@@ -748,9 +748,9 @@ function loadTeacherStats() {
         });
 }
 
-// Load department overview via separate API
+// Load department overview via teachers API
 function loadDepartmentOverview() {
-    fetch('/api/departments/overview')
+    fetch('/api/teachers/department-overview')
         .then(response => response.json())
         .then(data => {
             const departmentOverview = document.getElementById('departmentOverview');
@@ -976,52 +976,7 @@ function loadTeachers() {
 }
 
 
-// Load roles and departments from API for edit modal
-async function loadEditRoles(currentRole = '') {
-    try {
-        const response = await fetch('/api/roles');
-        const data = await response.json();
 
-        const editRoleSelect = document.getElementById('editRole');
-        editRoleSelect.innerHTML = '<option value="">Select Role</option>';
-
-        data.roles.forEach(role => {
-            if (role.is_active) {
-                const option = document.createElement('option');
-                option.value = role.name;
-                option.textContent = role.name.replace('_', ' ');
-                if (role.name === currentRole) {
-                    option.selected = true;
-                }
-                editRoleSelect.appendChild(option);
-            }
-        });
-    } catch (error) {
-        console.error('Error loading roles for edit:', error);
-    }
-}
-
-async function loadEditDepartments(currentDepartmentId = '') {
-    try {
-        const response = await fetch('/api/departments');
-        const data = await response.json();
-
-        const editDepartmentSelect = document.getElementById('editDepartment');
-        editDepartmentSelect.innerHTML = '<option value="">Select Department</option>';
-
-        data.departments.forEach(department => {
-            const option = document.createElement('option');
-            option.value = department.id;
-            option.textContent = department.name;
-            if (department.id == currentDepartmentId) {
-                option.selected = true;
-            }
-            editDepartmentSelect.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error loading departments for edit:', error);
-    }
-}
 
 // Global modal functions
 function openEditModal(teacherId, firstName, lastName, teacherEmail, teacherPhone, teacherRole, teacherDepartment) {
@@ -1252,32 +1207,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } catch (error) {
             console.error('Error loading departments for edit:', error);
-        }
-    }
-    async function loadDepartments() {
-        try {
-            const response = await fetch('/api/departments');
-            const data = await response.json();
-
-            const departmentSelect = document.getElementById('department');
-            departmentSelect.innerHTML = '<option value="">Select Department</option>';
-
-            data.departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.id;
-
-                // Create department display text with head info
-                let displayText = department.name;
-                if (department.head_of_department) {
-                    displayText += ` (Head: ${department.head_of_department.first_name} ${department.head_of_department.last_name})`;
-                }
-
-                option.textContent = displayText;
-                option.title = `${department.description || ''}\nHead: ${department.head_of_department ? department.head_of_department.first_name + ' ' + department.head_of_department.last_name : 'Not assigned'}\nAssistant: ${department.assistant_head ? department.assistant_head.first_name + ' ' + department.assistant_head.last_name : 'Not assigned'}`;
-                departmentSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading departments:', error);
         }
     }
 

@@ -15,6 +15,7 @@ import (
 	"swadiq-schools/app/routes/students"
 	"swadiq-schools/app/routes/subjects"
 	"swadiq-schools/app/routes/teachers"
+	"swadiq-schools/app/routes/timetable"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -149,6 +150,9 @@ func main() {
 
 	// Setup academic routes
 	academic.RegisterRoutes(app, config.GetDB())
+
+	// Setup timetable routes
+	timetable.SetupTimetableRoutes(app)
 
 	// Setup parents API routes
 	api := app.Group("/api/parents")

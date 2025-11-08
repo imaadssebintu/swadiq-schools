@@ -18,6 +18,9 @@
                     <button id="editClassBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Edit Class
                     </button>
+                    <a href="/timetable/class/{{.classID}}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Timetable
+                    </a>
                     <button id="classSubjectsBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                         Class Subjects
                     </button>
@@ -303,54 +306,60 @@
 </div>
 
 <!-- Subjects Modal -->
-<div id="subjectsModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50" style="display: none;">
+<div id="subjectsModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-gray-900">Add Subjects to Class</h2>
+            <h2 class="text-xl font-bold text-gray-900">Add Subject to Class</h2>
             <button onclick="closeSubjectsModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
-        </div>
-        <div class="mb-4">
-            <p class="text-sm text-gray-600">Select subjects to add to this class:</p>
         </div>
         <div id="availableSubjects" class="space-y-2 mb-6 max-h-60 overflow-y-auto">
             <!-- Loading skeleton -->
             <div id="subjectsLoading" class="space-y-2">
-                <div class="animate-pulse flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                    <div class="w-4 h-4 bg-gray-300 rounded"></div>
-                    <div class="flex-1">
-                        <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                        <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                <div class="animate-pulse border border-gray-200 rounded-lg p-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-4 h-4 bg-gray-300 rounded"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="animate-pulse flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                    <div class="w-4 h-4 bg-gray-300 rounded"></div>
-                    <div class="flex-1">
-                        <div class="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
-                        <div class="h-3 bg-gray-300 rounded w-1/3"></div>
-                    </div>
-                </div>
-                <div class="animate-pulse flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                    <div class="w-4 h-4 bg-gray-300 rounded"></div>
-                    <div class="flex-1">
-                        <div class="h-4 bg-gray-300 rounded w-4/5 mb-2"></div>
-                        <div class="h-3 bg-gray-300 rounded w-2/5"></div>
+                <div class="animate-pulse border border-gray-200 rounded-lg p-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-4 h-4 bg-gray-300 rounded"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
+                            <div class="h-3 bg-gray-300 rounded w-1/3"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Available subjects will be loaded here -->
         </div>
         <div id="selectedPapers" class="mb-4" style="display: none;">
-            <h4 class="font-medium text-gray-900 mb-2">Select Papers for Selected Subjects:</h4>
+            <h4 class="font-medium text-gray-900 mb-2">Select Papers for Selected Subject:</h4>
             <div id="papersContainer" class="space-y-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-3">
                 <!-- Papers will be loaded here -->
+            </div>
+            <div id="papersLoading" class="hidden space-y-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                <div class="animate-pulse flex items-center space-x-3 p-2">
+                    <div class="w-4 h-4 bg-gray-300 rounded"></div>
+                    <div class="flex-1">
+                        <div class="h-3 bg-gray-300 rounded w-3/4 mb-1"></div>
+                        <div class="h-2 bg-gray-300 rounded w-1/2"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="flex justify-end space-x-3">
             <button onclick="closeSubjectsModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
                 Cancel
             </button>
-            <button onclick="addSelectedSubjects()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                Add Subject
+            <button id="addSubjectBtn" onclick="addSelectedSubjects()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
+                <span id="addSubjectBtnText">Add Subject</span>
+                <svg id="addSubjectSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
             </button>
         </div>
     </div>
@@ -716,11 +725,8 @@
     }
 
     async function openSubjectsModal() {
-        document.getElementById('subjectsModal').style.display = 'flex';
+        document.getElementById('subjectsModal').classList.remove('hidden');
         document.getElementById('subjectsLoading').style.display = 'block';
-        
-        // Load class subjects when modal opens
-        await loadClassSubjects();
         
         try {
             const response = await fetch('/api/subjects');
@@ -766,10 +772,23 @@
     async function handleSubjectSelection() {
         const selectedSubject = document.querySelector('.subject-radio:checked')?.value;
         const papersSection = document.getElementById('selectedPapers');
+        const papersContainer = document.getElementById('papersContainer');
+        const papersLoading = document.getElementById('papersLoading');
         
         if (selectedSubject) {
             papersSection.style.display = 'block';
-            await loadPapersForSubjects([selectedSubject]);
+            papersContainer.style.display = 'none';
+            papersLoading.style.display = 'block';
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                await loadPapersForSubjects([selectedSubject]);
+            } catch (error) {
+                console.error('Error loading papers:', error);
+                papersLoading.style.display = 'none';
+                papersContainer.innerHTML = '<div class="text-sm text-red-500">Failed to load papers</div>';
+                papersContainer.style.display = 'block';
+            }
         } else {
             papersSection.style.display = 'none';
         }
@@ -777,7 +796,7 @@
 
     async function loadPapersForSubjects(subjectIds) {
         const container = document.getElementById('papersContainer');
-        container.innerHTML = '<div class="text-sm text-gray-500">Loading papers...</div>';
+        const loading = document.getElementById('papersLoading');
         
         try {
             const papers = [];
@@ -786,11 +805,11 @@
                 if (response.ok) {
                     const data = await response.json();
                     papers.push(...(data.papers || []));
-                } else {
-                    const errorData = await response.json();
-                    console.error('Failed to load papers for subject:', subjectId, errorData);
                 }
             }
+            
+            loading.style.display = 'none';
+            container.style.display = 'block';
             
             if (papers.length > 0) {
                 container.innerHTML = papers.map(paper => `
@@ -811,37 +830,47 @@
                     </div>
                 `).join('');
             } else {
-                container.innerHTML = '<div class="text-sm text-gray-500">No papers available for selected subjects</div>';
+                container.innerHTML = '<div class="text-sm text-gray-500">No papers available for selected subject</div>';
             }
         } catch (error) {
+            loading.style.display = 'none';
             container.innerHTML = '<div class="text-sm text-red-500">Failed to load papers</div>';
+            container.style.display = 'block';
         }
     }
 
     async function addSelectedSubjects() {
-        const selectedSubject = document.querySelector('.subject-radio:checked')?.value;
+        const addBtn = document.getElementById('addSubjectBtn');
+        const btnText = document.getElementById('addSubjectBtnText');
+        const spinner = document.getElementById('addSubjectSpinner');
         
-        if (!selectedSubject) {
-            alert('Please select a subject');
-            return;
-        }
-
-        const compulsoryRadio = document.querySelector(`input[name="compulsory_${selectedSubject}"]:checked`);
-        const isCompulsory = compulsoryRadio ? compulsoryRadio.value === 'true' : true;
-
-        const paperAssignments = [];
-        const paperCheckboxes = document.querySelectorAll('#papersContainer .paper-checkbox:checked');
-        paperCheckboxes.forEach(checkbox => {
-            const paperId = checkbox.value;
-            const teacherBtn = document.querySelector(`.paper-teacher-btn[data-paper-id="${paperId}"]`);
-            const teacherId = teacherBtn ? teacherBtn.getAttribute('data-teacher-id') : null;
-            paperAssignments.push({
-                paper_id: paperId,
-                teacher_id: teacherId && teacherId !== '' ? teacherId : null,
-            });
-        });
-
+        addBtn.disabled = true;
+        btnText.textContent = 'Adding...';
+        spinner.classList.remove('hidden');
+        
         try {
+            const selectedSubject = document.querySelector('.subject-radio:checked')?.value;
+            
+            if (!selectedSubject) {
+                showNotification('Please select a subject', 'error');
+                return;
+            }
+
+            const compulsoryRadio = document.querySelector(`input[name="compulsory_${selectedSubject}"]:checked`);
+            const isCompulsory = compulsoryRadio ? compulsoryRadio.value === 'true' : true;
+
+            const paperAssignments = [];
+            const paperCheckboxes = document.querySelectorAll('#papersContainer .paper-checkbox:checked');
+            paperCheckboxes.forEach(checkbox => {
+                const paperId = checkbox.value;
+                const teacherBtn = document.querySelector(`.paper-teacher-btn[data-paper-id="${paperId}"]`);
+                const teacherId = teacherBtn ? teacherBtn.getAttribute('data-teacher-id') : null;
+                paperAssignments.push({
+                    paper_id: paperId,
+                    teacher_id: teacherId && teacherId !== '' ? teacherId : null,
+                });
+            });
+
             const response = await fetch(`/api/classes/${classID}/subjects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -860,12 +889,25 @@
                 loadClassSubjects();
             } else {
                 const error = await response.json();
-                alert('Error: ' + (error.error || 'Failed to add subject'));
+                showNotification('Error: ' + (error.error || 'Failed to add subject'), 'error');
             }
         } catch (error) {
             console.error('Error adding subject:', error);
-            alert('Error: Failed to add subject');
+            showNotification('Error: Failed to add subject', 'error');
+        } finally {
+            addBtn.disabled = false;
+            btnText.textContent = 'Add Subject';
+            spinner.classList.add('hidden');
         }
+    }
+
+    function closeSubjectsModal() {
+        document.getElementById('subjectsModal').classList.add('hidden');
+    }
+
+    function openPaperTeacherModal(paperId) {
+        currentPaperId = paperId;
+        openTeacherModal(paperId);
     }
 
     // Subject Papers Modal Functions
@@ -1198,9 +1240,7 @@
         }
     }
 
-    function closeSubjectsModal() {
-        document.getElementById('subjectsModal').style.display = 'none';
-    }
+
 
     // Event listeners
     document.getElementById('classSubjectsBtn').addEventListener('click', openNoSubjectsModal);

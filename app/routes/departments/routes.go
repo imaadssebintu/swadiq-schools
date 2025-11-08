@@ -19,7 +19,6 @@ func SetupDepartmentsRoutes(app *fiber.App) {
 	api := app.Group("/api/departments")
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", GetDepartmentsAPI)
-	api.Get("/overview", GetDepartmentOverviewAPI)
 	api.Get("/:id/teachers", GetDepartmentTeachersAPI)
 	api.Post("/:id/teachers", AddTeacherToDepartmentAPI)
 	api.Put("/:id/leadership", SetDepartmentLeadershipAPI)

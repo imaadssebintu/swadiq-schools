@@ -80,3 +80,5 @@ func ClassDetailPage(c *fiber.Ctx) error {
 		"Email":       user.Email,
 	})
 }
+
+
