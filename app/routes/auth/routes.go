@@ -1,10 +1,7 @@
 package auth
 
 import (
-	"database/sql"
 	"strings"
-	"swadiq-schools/app/config"
-	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,8 +25,8 @@ func SetupAuthRoutes(app *fiber.App) {
 
 func ShowLoginPage(c *fiber.Ctx) error {
 	// Check if already logged in
-	if sessionID := c.Cookies("session_id"); sessionID != "" {
-		if _, err := database.GetSessionByID(config.GetDB(), sessionID); err == nil {
+	if tokenString := c.Cookies("jwt_token"); tokenString != "" {
+		if _, err := ValidateJWT(tokenString); err == nil {
 			return c.Redirect("/dashboard")
 		}
 	}
@@ -66,66 +63,58 @@ func ShowProfilePage(c *fiber.Ctx) error {
 	})
 }
 
-// AuthMiddleware validates session and sets user context
+// AuthMiddleware validates JWT and sets user context
 func AuthMiddleware(c *fiber.Ctx) error {
-	sessionID := c.Cookies("session_id")
+	// Get JWT token from cookie or Authorization header
+	var tokenString string
+	
+	// First try cookie
+	tokenString = c.Cookies("jwt_token")
+	
+	// If no cookie, try Authorization header
+	if tokenString == "" {
+		auth := c.Get("Authorization")
+		if strings.HasPrefix(auth, "Bearer ") {
+			tokenString = strings.TrimPrefix(auth, "Bearer ")
+		}
+	}
 
 	// Check if this is an API request
 	isAPIRequest := strings.HasPrefix(c.Path(), "/api/")
 
-	if sessionID == "" {
+	if tokenString == "" {
 		if isAPIRequest {
-			return c.Status(401).JSON(fiber.Map{"error": "No session found"})
+			return c.Status(401).JSON(fiber.Map{"error": "No token found"})
 		}
 		// For web pages, redirect to login
 		return c.Redirect("/auth/login")
 	}
 
-	session, err := database.GetSessionByID(config.GetDB(), sessionID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			if isAPIRequest {
-				return c.Status(401).JSON(fiber.Map{"error": "Invalid session"})
-			}
-			// For web pages, redirect to login
-			return c.Redirect("/auth/login")
-		}
-		if isAPIRequest {
-			return c.Status(500).JSON(fiber.Map{"error": "Database error"})
-		}
-		// For web pages, show error page
-		return c.Status(500).Render("error", fiber.Map{
-			"Title":        "Error - Swadiq Schools",
-			"ErrorCode":    "500",
-			"ErrorTitle":   "Database Error",
-			"ErrorMessage": "Unable to verify your session. Please try logging in again.",
-		})
-	}
-
-	// Get user details by ID
-	user, err := database.GetUserByID(config.GetDB(), session.UserID)
+	// Validate JWT token
+	claims, err := ValidateJWT(tokenString)
 	if err != nil {
 		if isAPIRequest {
-			return c.Status(500).JSON(fiber.Map{"error": "User not found"})
+			return c.Status(401).JSON(fiber.Map{"error": "Invalid token"})
 		}
 		// For web pages, redirect to login
 		return c.Redirect("/auth/login")
 	}
 
-	// Get user roles
-	roles, err := database.GetUserRoles(config.GetDB(), session.UserID)
-	if err != nil {
-		if isAPIRequest {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to get user roles"})
-		}
-		// For web pages, show error page
-		return c.Status(500).Render("error", fiber.Map{
-			"Title":        "Error - Swadiq Schools",
-			"ErrorCode":    "500",
-			"ErrorTitle":   "Authorization Error",
-			"ErrorMessage": "Unable to load user permissions. Please try logging in again.",
-		})
+	// Create user object from claims
+	user := &models.User{
+		ID:        claims.UserID,
+		Email:     claims.Email,
+		FirstName: claims.FirstName,
+		LastName:  claims.LastName,
+		IsActive:  true,
 	}
+
+	// Convert role names to role objects
+	roles := make([]*models.Role, len(claims.Roles))
+	for i, roleName := range claims.Roles {
+		roles[i] = &models.Role{Name: roleName}
+	}
+	user.Roles = roles
 
 	// Set user context
 	c.Locals("user_id", user.ID)

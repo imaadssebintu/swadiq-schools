@@ -301,28 +301,6 @@ func DeleteTeacherAPI(c *fiber.Ctx) error {
 	})
 }
 
-func GetSubjectsAPI(c *fiber.Ctx) error {
-	departmentID := c.Query("department_id")
-
-	var subjects []*models.Subject
-	var err error
-
-	if departmentID != "" {
-		subjects, err = database.GetSubjectsByDepartment(config.GetDB(), departmentID)
-	} else {
-		subjects, err = database.GetAllSubjects(config.GetDB())
-	}
-
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch subjects"})
-	}
-
-	return c.JSON(fiber.Map{
-		"subjects": subjects,
-		"count":    len(subjects),
-	})
-}
-
 func GetRolesAPI(c *fiber.Ctx) error {
 	query := `SELECT id, name, is_active, created_at, updated_at FROM roles ORDER BY name`
 	rows, err := config.GetDB().Query(query)
@@ -437,5 +415,141 @@ func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
 		"count": len(departments),
 	})
 }
+
+func GetTeacherSubjectsAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	db := config.GetDB()
+
+	query := `
+		SELECT 
+			s.id as subject_id, 
+			s.name as subject_name, 
+			s.code as subject_code, 
+			s.department_id,
+			p.id as paper_id,
+			p.name as paper_name,
+			p.code as paper_code
+		FROM 
+			subjects s
+		JOIN 
+			teacher_subjects ts ON s.id = ts.subject_id
+		LEFT JOIN 
+			papers p ON ts.paper_id = p.id AND p.deleted_at IS NULL
+		WHERE 
+			ts.teacher_id = $1 AND s.deleted_at IS NULL
+		ORDER BY 
+			s.name, p.name;
+	`
+
+	rows, err := db.Query(query, teacherID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch teacher subjects"})
+	}
+	defer rows.Close()
+
+	subjectsMap := make(map[string]fiber.Map)
+	var subjectsOrder []string
+
+	for rows.Next() {
+		var subjectID, subjectName, subjectCode, departmentID string
+		var paperID, paperName, paperCode *string // Use pointers for nullable fields
+
+		if err := rows.Scan(&subjectID, &subjectName, &subjectCode, &departmentID, &paperID, &paperName, &paperCode); err != nil {
+			continue
+		}
+
+		if _, ok := subjectsMap[subjectID]; !ok {
+			subjectsMap[subjectID] = fiber.Map{
+				"id":            subjectID,
+				"name":          subjectName,
+				"code":          subjectCode,
+				"department_id": departmentID,
+				"papers":        []fiber.Map{},
+			}
+			subjectsOrder = append(subjectsOrder, subjectID)
+		}
+
+		if paperID != nil {
+			papers := subjectsMap[subjectID]["papers"].([]fiber.Map)
+			subjectsMap[subjectID]["papers"] = append(papers, fiber.Map{
+				"id":   *paperID,
+				"name": *paperName,
+				"code": *paperCode,
+			})
+		}
+	}
+
+	// Create the final subjects slice in order
+	subjects := make([]fiber.Map, len(subjectsOrder))
+	for i, subjectID := range subjectsOrder {
+		subjects[i] = subjectsMap[subjectID]
+	}
+
+	return c.JSON(fiber.Map{
+		"subjects": subjects,
+		"count":    len(subjects),
+	})
+}
+
+func AssignTeacherSubjectsAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	db := config.GetDB()
+	
+	type AssignSubjectsRequest struct {
+		SubjectIDs []string            `json:"subject_ids"`
+		Papers     map[string][]string `json:"papers"` // subject_id -> paper_ids
+	}
+	
+	var req AssignSubjectsRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	}
+	
+	// Start transaction
+	tx, err := db.Begin()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to start transaction"})
+	}
+	defer tx.Rollback()
+	
+	// Delete existing assignments
+	_, err = tx.Exec("DELETE FROM teacher_subjects WHERE teacher_id = $1", teacherID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing subjects"})
+	}
+	
+	// Insert assignments
+	for _, subjectID := range req.SubjectIDs {
+		if paperIDs, exists := req.Papers[subjectID]; exists && len(paperIDs) > 0 {
+			// Subject has papers, insert only paper assignments
+			for _, paperID := range paperIDs {
+				_, err = tx.Exec("INSERT INTO teacher_subjects (teacher_id, subject_id, paper_id) VALUES ($1, $2, $3)", teacherID, subjectID, paperID)
+				if err != nil {
+					return c.Status(500).JSON(fiber.Map{"error": "Failed to assign paper"})
+				}
+			}
+		} else {
+			// Subject has no papers, insert subject assignment
+			_, err = tx.Exec("INSERT INTO teacher_subjects (teacher_id, subject_id) VALUES ($1, $2)", teacherID, subjectID)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to assign subject"})
+			}
+		}
+	}
+	
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to commit changes"})
+	}
+	
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Subjects and papers assigned successfully",
+	})
+}
+
+
+
+
 
 

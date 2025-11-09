@@ -13,6 +13,7 @@ func SetupTeachersRoutes(app *fiber.App) {
 
 	// Routes
 	teachers.Get("/", TeachersPage)
+	teachers.Get("/:id", TeacherViewPage)
 
 	// API routes
 	api := app.Group("/api/teachers")
@@ -27,10 +28,8 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api.Get("/:id", GetTeacherAPI)
 	api.Put("/:id", UpdateTeacherAPI)
 	api.Delete("/:id", DeleteTeacherAPI)
-
-	subjectsAPI := app.Group("/api/subjects")
-	subjectsAPI.Use(auth.AuthMiddleware)
-	subjectsAPI.Get("/", GetSubjectsAPI)
+	api.Get("/:id/subjects", GetTeacherSubjectsAPI)
+	api.Post("/:id/subjects", AssignTeacherSubjectsAPI)
 }
 
 func TeachersPage(c *fiber.Ctx) error {
@@ -39,6 +38,21 @@ func TeachersPage(c *fiber.Ctx) error {
 		"Title":       "Teachers - Swadiq Schools",
 		"CurrentPage": "teachers",
 		"teachers":    []*models.User{}, // Empty array
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
+	})
+}
+
+func TeacherViewPage(c *fiber.Ctx) error {
+	user := c.Locals("user").(*models.User)
+	teacherID := c.Params("id")
+	
+	return c.Render("teachers/view", fiber.Map{
+		"Title":       "Teacher Details - Swadiq Schools",
+		"CurrentPage": "teachers",
+		"teacherID":   teacherID,
 		"user":        user,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,

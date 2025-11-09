@@ -83,6 +83,10 @@ func SetupFeesRoutes(app *fiber.App) {
 		return CreateFeeTypeAPI(c, config.GetDB())
 	})
 
+	feeTypesAPI.Get("/:id/assignments", func(c *fiber.Ctx) error {
+		return GetFeeTypeAssignmentsAPI(c, config.GetDB())
+	})
+
 	// Students by classes API route
 	feesAPI.Get("/students-by-classes", func(c *fiber.Ctx) error {
 		return GetStudentsForClassesAPI(c, config.GetDB())

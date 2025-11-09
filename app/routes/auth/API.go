@@ -38,17 +38,23 @@ func LoginAPI(c *fiber.Ctx) error {
 	}
 	user.Roles = roles
 
-	sessionID := GenerateSessionID()
-	expiresAt := GetSessionExpiry()
-
-	if err := database.CreateSession(config.GetDB(), sessionID, user.ID, expiresAt); err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to create session"})
+	// Convert roles to string slice
+	roleNames := make([]string, len(roles))
+	for i, role := range roles {
+		roleNames[i] = role.Name
 	}
 
+	// Generate JWT token
+	token, err := GenerateJWT(user.ID, user.Email, user.FirstName, user.LastName, roleNames)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate token"})
+	}
+
+	// Set JWT as HTTP-only cookie
 	c.Cookie(&fiber.Cookie{
-		Name:     "session_id",
-		Value:    sessionID.String(),
-		Expires:  expiresAt,
+		Name:     "jwt_token",
+		Value:    token,
+		Expires:  time.Now().Add(24 * time.Hour),
 		HTTPOnly: true,
 		Secure:   false, // Set to true in production with HTTPS
 		SameSite: "Lax",
@@ -61,13 +67,9 @@ func LoginAPI(c *fiber.Ctx) error {
 }
 
 func LogoutAPI(c *fiber.Ctx) error {
-	sessionID := c.Cookies("session_id")
-	if sessionID != "" {
-		database.DeleteSession(config.GetDB(), sessionID)
-	}
-
+	// Clear JWT cookie
 	c.Cookie(&fiber.Cookie{
-		Name:     "session_id",
+		Name:     "jwt_token",
 		Value:    "",
 		Expires:  time.Now().Add(-time.Hour),
 		HTTPOnly: true,

@@ -115,3 +115,75 @@ func DeleteSubjectAPI(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Subject deleted successfully"})
 }
+
+func GetSubjectsWithPapersAPI(c *fiber.Ctx) error {
+	db := config.GetDB()
+
+	query := `
+		SELECT 
+			s.id as subject_id, 
+			s.name as subject_name, 
+			s.code as subject_code, 
+			s.department_id,
+			p.id as paper_id,
+			p.name as paper_name,
+			p.code as paper_code
+		FROM 
+			subjects s
+		LEFT JOIN 
+			papers p ON s.id = p.subject_id AND p.deleted_at IS NULL
+		WHERE 
+			s.deleted_at IS NULL
+		ORDER BY 
+			s.name, p.name;
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch subjects with papers"})
+	}
+	defer rows.Close()
+
+	subjectsMap := make(map[string]fiber.Map)
+	var subjectsOrder []string
+
+	for rows.Next() {
+		var subjectID, subjectName, subjectCode, departmentID string
+		var paperID, paperName, paperCode *string // Use pointers for nullable fields from LEFT JOIN
+
+		if err := rows.Scan(&subjectID, &subjectName, &subjectCode, &departmentID, &paperID, &paperName, &paperCode); err != nil {
+			continue
+		}
+
+		if _, ok := subjectsMap[subjectID]; !ok {
+			subjectsMap[subjectID] = fiber.Map{
+				"id":            subjectID,
+				"name":          subjectName,
+				"code":          subjectCode,
+				"department_id": departmentID,
+				"papers":        []fiber.Map{},
+			}
+			subjectsOrder = append(subjectsOrder, subjectID)
+		}
+
+		if paperID != nil {
+			papers := subjectsMap[subjectID]["papers"].([]fiber.Map)
+			subjectsMap[subjectID]["papers"] = append(papers, fiber.Map{
+				"id":   *paperID,
+				"name": *paperName,
+				"code": *paperCode,
+			})
+		}
+	}
+
+	// Create the final subjects slice in order
+	subjects := make([]fiber.Map, len(subjectsOrder))
+	for i, subjectID := range subjectsOrder {
+		subjects[i] = subjectsMap[subjectID]
+	}
+
+	return c.JSON(fiber.Map{
+		"subjects": subjects,
+		"count":    len(subjects),
+	})
+}

@@ -8,11 +8,14 @@
                     <i class="fas fa-arrow-left text-xl"></i>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 mb-1">{{.teacher.FirstName}} {{.teacher.LastName}}</h1>
+                    <h1 id="teacherName" class="text-2xl font-bold text-gray-900 mb-1">Loading...</h1>
                     <p class="text-gray-600 text-sm">Teacher Details</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
+                <button id="assignSubjectsBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm">
+                    <i class="fas fa-book mr-2"></i>Assign Subjects
+                </button>
                 <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
                     <i class="fas fa-edit mr-2"></i>Edit
                 </button>
@@ -29,26 +32,42 @@
         <div class="lg:col-span-2">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                        <p class="text-gray-900">{{.teacher.FirstName}} {{.teacher.LastName}}</p>
+                <div id="teacherInfo" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Loading skeleton -->
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-16 mb-1"></div>
+                        <div class="h-5 bg-gray-200 rounded w-32"></div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Employee ID</label>
-                        <p class="text-gray-900">EMP-{{.teacher.ID}}</p>
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-20 mb-1"></div>
+                        <div class="h-5 bg-gray-200 rounded w-24"></div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                        <p class="text-gray-900">{{.teacher.Email}}</p>
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-24 mb-1"></div>
+                        <div class="h-5 bg-gray-200 rounded w-40"></div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
-                        {{if .teacher.IsActive}}
-                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Active</span>
-                        {{else}}
-                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Inactive</span>
-                        {{end}}
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-12 mb-1"></div>
+                        <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects Teaching -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">Subjects & Papers Teaching</h2>
+                    <button id="assignSubjectsBtn2" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm">
+                        <i class="fas fa-plus mr-1"></i>Assign
+                    </button>
+                </div>
+                <div id="teacherSubjects" class="space-y-4">
+                    <!-- Loading skeleton -->
+                    <div class="animate-pulse">
+                        <div class="h-16 bg-gray-200 rounded-lg"></div>
+                    </div>
+                    <div class="animate-pulse">
+                        <div class="h-16 bg-gray-200 rounded-lg"></div>
                     </div>
                 </div>
             </div>
@@ -68,23 +87,7 @@
             </div>
             {{end}}
 
-            <!-- Subjects Teaching -->
-            {{if .subjects}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Subjects Teaching</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {{range .subjects}}
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="font-medium text-gray-900">{{.Name}}</h3>
-                        <p class="text-sm text-gray-500 mt-1">{{.Code}}</p>
-                        {{if .Department}}
-                        <p class="text-xs text-gray-400 mt-1">{{.Department.Name}}</p>
-                        {{end}}
-                    </div>
-                    {{end}}
-                </div>
-            </div>
-            {{end}}
+
         </div>
 
         <!-- Quick Stats -->
@@ -101,18 +104,25 @@
             <!-- Statistics -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 class="font-semibold text-gray-900 mb-4">Statistics</h3>
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Classes</span>
-                        <span class="font-medium text-gray-900">{{if .classes}}{{len .classes}}{{else}}0{{end}}</span>
+                <div id="teacherStats" class="space-y-4">
+                    <!-- Loading skeleton -->
+                    <div class="animate-pulse">
+                        <div class="flex items-center justify-between">
+                            <div class="h-4 bg-gray-200 rounded w-16"></div>
+                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Subjects</span>
-                        <span class="font-medium text-gray-900">{{if .subjects}}{{len .subjects}}{{else}}0{{end}}</span>
+                    <div class="animate-pulse">
+                        <div class="flex items-center justify-between">
+                            <div class="h-4 bg-gray-200 rounded w-16"></div>
+                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Total Students</span>
-                        <span class="font-medium text-gray-900">{{.totalStudents}}</span>
+                    <div class="animate-pulse">
+                        <div class="flex items-center justify-between">
+                            <div class="h-4 bg-gray-200 rounded w-24"></div>
+                            <div class="h-4 bg-gray-200 rounded w-8"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,17 +130,384 @@
             <!-- Recent Activity -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <h3 class="font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                <div class="space-y-3">
-                    <div class="text-sm">
-                        <p class="text-gray-600">Joined on</p>
-                        <p class="font-medium text-gray-900">{{.teacher.CreatedAt.Format "Jan 2, 2006"}}</p>
+                <div id="teacherActivity" class="space-y-3">
+                    <!-- Loading skeleton -->
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-16 mb-1"></div>
+                        <div class="h-4 bg-gray-200 rounded w-24"></div>
                     </div>
-                    <div class="text-sm">
-                        <p class="text-gray-600">Last Updated</p>
-                        <p class="font-medium text-gray-900">{{.teacher.UpdatedAt.Format "Jan 2, 2006"}}</p>
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-20 mb-1"></div>
+                        <div class="h-4 bg-gray-200 rounded w-24"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+<!-- Assign Subjects & Papers Modal -->
+<div id="assignSubjectsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Assign Subjects & Papers</h2>
+            <button id="closeAssignSubjectsBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-6">
+            <form id="assignSubjectsForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Available Subjects & Papers</label>
+                    <div id="subjectsList" class="space-y-4 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                        <!-- Loading skeleton -->
+                        <div class="animate-pulse space-y-2">
+                            <div class="h-4 bg-gray-200 rounded w-full"></div>
+                            <div class="h-4 bg-gray-200 rounded w-full"></div>
+                            <div class="h-4 bg-gray-200 rounded w-full"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelAssignSubjects" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                        <i class="fas fa-save mr-2"></i>Assign
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const teacherID = '{{.teacherID}}';
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadTeacherData();
+    
+    // Modal event listeners
+    document.getElementById('assignSubjectsBtn').addEventListener('click', openAssignSubjectsModal);
+    document.getElementById('assignSubjectsBtn2').addEventListener('click', openAssignSubjectsModal);
+    document.getElementById('closeAssignSubjectsBtn').addEventListener('click', closeAssignSubjectsModal);
+    document.getElementById('cancelAssignSubjects').addEventListener('click', closeAssignSubjectsModal);
+    document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
+
+    // Event listener for paper and subject checkboxes
+    document.getElementById('subjectsList').addEventListener('change', function(e) {
+        // Handle paper checkboxes
+        if (e.target.matches('input[type="checkbox"][name^="papers_"]')) {
+            if (e.target.checked) {
+                const subjectId = e.target.dataset.subjectId;
+                const subjectCheckbox = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`);
+                if (subjectCheckbox) {
+                    subjectCheckbox.checked = true;
+                }
+            }
+        }
+
+        // Handle subject checkboxes
+        if (e.target.matches('input[type="checkbox"][name="subjects"]')) {
+            const subjectId = e.target.value;
+            const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
+            if (!e.target.checked) {
+                // Uncheck all papers for this subject
+                paperCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+        }
+    });
+});
+
+async function loadTeacherData() {
+    try {
+        const response = await fetch(`/api/teachers/${teacherID}`);
+        const data = await response.json();
+        
+        if (response.ok && data.teacher) {
+            const teacher = data.teacher;
+            
+            // Update header
+            document.getElementById('teacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
+            
+            // Update personal information
+            const teacherInfo = document.getElementById('teacherInfo');
+            teacherInfo.innerHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
+                    <p class="text-gray-900">${teacher.first_name} ${teacher.last_name}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Employee ID</label>
+                    <p class="text-gray-900">EMP-${teacher.id}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+                    <p class="text-gray-900">${teacher.email}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
+                    <span class="inline-flex px-2 py-1 text-xs font-medium ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full">
+                        ${teacher.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+            `;
+            
+            // Update statistics
+            const teacherStats = document.getElementById('teacherStats');
+            const classesCount = teacher.classes ? teacher.classes.length : 0;
+            const subjectsCount = teacher.subjects ? teacher.subjects.length : 0;
+            let totalStudents = 0;
+            if (teacher.classes) {
+                totalStudents = teacher.classes.reduce((sum, cls) => sum + (cls.students ? cls.students.length : 0), 0);
+            }
+            
+            teacherStats.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Classes</span>
+                    <span class="font-medium text-gray-900">${classesCount}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Subjects</span>
+                    <span class="font-medium text-gray-900">${subjectsCount}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Total Students</span>
+                    <span class="font-medium text-gray-900">${totalStudents}</span>
+                </div>
+            `;
+            
+            // Update recent activity
+            const teacherActivity = document.getElementById('teacherActivity');
+            const createdDate = new Date(teacher.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            const updatedDate = new Date(teacher.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            teacherActivity.innerHTML = `
+                <div class="text-sm">
+                    <p class="text-gray-600">Joined on</p>
+                    <p class="font-medium text-gray-900">${createdDate}</p>
+                </div>
+                <div class="text-sm">
+                    <p class="text-gray-600">Last Updated</p>
+                    <p class="font-medium text-gray-900">${updatedDate}</p>
+                </div>
+            `;
+            
+            // Load and display subjects
+            loadTeacherSubjects();
+        } else {
+            document.getElementById('teacherName').textContent = 'Teacher Not Found';
+            document.getElementById('teacherInfo').innerHTML = '<p class="text-red-500">Error loading teacher data</p>';
+        }
+    } catch (error) {
+        console.error('Error loading teacher:', error);
+        document.getElementById('teacherName').textContent = 'Error Loading Teacher';
+        document.getElementById('teacherInfo').innerHTML = '<p class="text-red-500">Error loading teacher data</p>';
+    }
+}
+
+async function loadTeacherSubjects() {
+    try {
+        const response = await fetch(`/api/teachers/${teacherID}/subjects`);
+        const data = await response.json();
+        
+        const teacherSubjects = document.getElementById('teacherSubjects');
+        
+        if (response.ok) {
+            const subjects = data.subjects || [];
+            
+            if (subjects.length > 0) {
+                teacherSubjects.innerHTML = subjects.map(subject => {
+                    const papers = subject.papers || [];
+                    const papersHtml = papers.length > 0 ? `
+                        <div class="mt-2 space-y-1">
+                            ${papers.map(paper => `
+                                <div class="flex items-center text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                                    <i class="fas fa-file-alt mr-1"></i>
+                                    ${paper.name} (${paper.code})
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '';
+                    
+                    return `
+                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-medium text-gray-900">${subject.name}</h3>
+                                    <p class="text-sm text-gray-500">${subject.code}</p>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    ${papers.length} paper${papers.length !== 1 ? 's' : ''}
+                                </div>
+                            </div>
+                            ${papersHtml}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                teacherSubjects.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-book text-gray-300 text-3xl mb-3"></i>
+                        <p class="text-gray-500">No subjects assigned</p>
+                        <p class="text-sm text-gray-400 mt-1">Click "Assign" to add subjects and papers</p>
+                    </div>
+                `;
+            }
+        } else {
+            teacherSubjects.innerHTML = '<div class="text-center text-red-500">Error loading subjects</div>';
+        }
+    } catch (error) {
+        console.error('Error loading teacher subjects:', error);
+        document.getElementById('teacherSubjects').innerHTML = '<div class="text-center text-red-500">Error loading subjects</div>';
+    }
+}
+
+
+
+function openAssignSubjectsModal() {
+    document.getElementById('assignSubjectsModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    loadSubjectsForAssignment();
+}
+
+function closeAssignSubjectsModal() {
+    document.getElementById('assignSubjectsModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+async function loadSubjectsForAssignment() {
+    try {
+        const [subjectsResponse, teacherSubjectsResponse] = await Promise.all([
+            fetch('/api/subjects/with-papers'),
+            fetch(`/api/teachers/${teacherID}/subjects`)
+        ]);
+        
+        const subjectsData = await subjectsResponse.json();
+        const teacherSubjectsData = await teacherSubjectsResponse.json();
+        
+        const allSubjects = subjectsData.subjects || [];
+        const teacherSubjects = teacherSubjectsData.subjects || [];
+        const teacherSubjectIds = teacherSubjects.map(s => s.id);
+        
+        // Create a map of teacher's assigned papers by subject
+        const teacherPapersBySubject = {};
+        teacherSubjects.forEach(subject => {
+            teacherPapersBySubject[subject.id] = (subject.papers || []).map(p => p.id);
+        });
+        
+        const subjectsList = document.getElementById('subjectsList');
+        subjectsList.innerHTML = allSubjects.map(subject => {
+            const papers = subject.papers || [];
+            const isSubjectAssigned = teacherSubjectIds.includes(subject.id);
+            const assignedPaperIds = teacherPapersBySubject[subject.id] || [];
+            
+            const papersHtml = papers.length > 0 ? `
+                <div class="ml-6 mt-2 space-y-1 border-l-2 border-gray-100 pl-3">
+                    ${papers.map(paper => `
+                        <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 rounded cursor-pointer">
+                            <input type="checkbox" name="papers_${subject.id}" value="${paper.id}" 
+                                   data-subject-id="${subject.id}"
+                                   ${assignedPaperIds.includes(paper.id) ? 'checked' : ''}
+                                   class="text-green-600 focus:ring-green-500 text-xs">
+                            <div class="flex-1">
+                                <span class="text-xs font-medium text-gray-700">${paper.name}</span>
+                                <span class="text-xs text-gray-400 ml-1">(${paper.code})</span>
+                            </div>
+                        </label>
+                    `).join('')}
+                </div>
+            ` : '';
+            
+            return `
+                <div class="border border-gray-200 rounded-lg p-3">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="checkbox" name="subjects" value="${subject.id}" 
+                               ${isSubjectAssigned ? 'checked' : ''}
+                               class="text-blue-600 focus:ring-blue-500">
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-gray-900">${subject.name}</span>
+                            <span class="text-xs text-gray-500 ml-2">(${subject.code})</span>
+                            ${papers.length > 0 ? `<span class="text-xs text-gray-400 ml-2">• ${papers.length} papers</span>` : ''}
+                        </div>
+                    </label>
+                    ${papersHtml}
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading subjects:', error);
+        document.getElementById('subjectsList').innerHTML = '<p class="text-red-500 text-sm">Error loading subjects</p>';
+    }
+}
+
+async function handleAssignSubjects(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Assigning...';
+    
+    const formData = new FormData(e.target);
+    const selectedSubjects = formData.getAll('subjects');
+
+    // Validation: At least one paper must be selected for subjects with papers
+    for (const subjectId of selectedSubjects) {
+        const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
+        if (paperCheckboxes.length > 0) {
+            const selectedPapers = formData.getAll(`papers_${subjectId}`);
+            if (selectedPapers.length === 0) {
+                const subjectName = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`).parentElement.querySelector('span').textContent;
+                alert(`Please select at least one paper for the subject: ${subjectName.trim()}`);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
+        }
+    }
+        
+    try {
+        
+        // Collect papers for each subject
+        const papers = {};
+        selectedSubjects.forEach(subjectId => {
+            const paperInputs = formData.getAll(`papers_${subjectId}`);
+            if (paperInputs.length > 0) {
+                papers[subjectId] = paperInputs;
+            }
+        });
+        
+        const response = await fetch(`/api/teachers/${teacherID}/subjects`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                subject_ids: selectedSubjects,
+                papers: papers
+            })
+        });
+        
+        if (response.ok) {
+            closeAssignSubjectsModal();
+            loadTeacherData(); // Reload teacher data to update subjects count
+            loadTeacherSubjects(); // Reload subjects section
+            alert('Subjects and papers assigned successfully!');
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to assign subjects and papers'));
+        }
+    } catch (error) {
+        console.error('Error assigning subjects:', error);
+        alert('Error assigning subjects and papers');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+}
+</script>

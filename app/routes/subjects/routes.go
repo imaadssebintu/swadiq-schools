@@ -21,6 +21,7 @@ func SetupSubjectsRoutes(app *fiber.App) {
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", GetSubjectsAPI)
 	api.Get("/search", SearchSubjectsAPI)
+	api.Get("/with-papers", GetSubjectsWithPapersAPI)
 	api.Get("/:id", GetSubjectAPI)
 	api.Post("/", CreateSubjectAPI)
 	api.Put("/:id", UpdateSubjectAPI)

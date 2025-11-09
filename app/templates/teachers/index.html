@@ -863,7 +863,7 @@ function loadTeachers() {
                                     <i class="fas fa-user text-white text-sm"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">${teacher.first_name} ${teacher.last_name}</p>
+                                    <a href="/teachers/${teacher.id}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200">${teacher.first_name} ${teacher.last_name}</a>
                                     <p class="text-xs text-gray-500">${teacher.email}</p>
                                 </div>
                             </div>

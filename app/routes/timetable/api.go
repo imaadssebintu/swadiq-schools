@@ -214,11 +214,14 @@ func SaveTimetableSettingsAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
 	
 	// Convert arrays to JSON strings for storage
-	daysJSON := `["` + req.Days[0]
-	for i := 1; i < len(req.Days); i++ {
-		daysJSON += `","` + req.Days[i]
+	daysJSON := `[]`
+	if len(req.Days) > 0 {
+		daysJSON = `["` + req.Days[0]
+		for i := 1; i < len(req.Days); i++ {
+			daysJSON += `","` + req.Days[i]
+		}
+		daysJSON += `"]`
 	}
-	daysJSON += `"]`
 	
 	breaksJSON := `[]`
 	if len(req.Breaks) > 0 {
@@ -227,7 +230,26 @@ func SaveTimetableSettingsAPI(c *fiber.Ctx) error {
 			if i > 0 {
 				breaksJSON += `,`
 			}
-			breaksJSON += `{"name":"` + b["name"].(string) + `","start_time":"` + b["start_time"].(string) + `","end_time":"` + b["end_time"].(string) + `"}`
+			// Safely get values with type assertion
+			name := ""
+			startTime := ""
+			endTime := ""
+			if nameVal, ok := b["name"]; ok && nameVal != nil {
+				if nameStr, ok := nameVal.(string); ok {
+					name = nameStr
+				}
+			}
+			if startVal, ok := b["start_time"]; ok && startVal != nil {
+				if startStr, ok := startVal.(string); ok {
+					startTime = startStr
+				}
+			}
+			if endVal, ok := b["end_time"]; ok && endVal != nil {
+				if endStr, ok := endVal.(string); ok {
+					endTime = endStr
+				}
+			}
+			breaksJSON += `{"name":"` + name + `","start_time":"` + startTime + `","end_time":"` + endTime + `"}`
 		}
 		breaksJSON += `]`
 	}
@@ -306,10 +328,10 @@ func GetDefaultTimetableSettingsAPI(c *fiber.Ctx) error {
 
 func SaveDefaultTimetableSettingsAPI(c *fiber.Ctx) error {
 	type SettingsRequest struct {
-		Days           []string `json:"days"`
-		StartTime      string   `json:"start_time"`
-		EndTime        string   `json:"end_time"`
-		LessonDuration int      `json:"lesson_duration"`
+		Days           []string    `json:"days"`
+		StartTime      string      `json:"start_time"`
+		EndTime        string      `json:"end_time"`
+		LessonDuration int         `json:"lesson_duration"`
 		Breaks         []fiber.Map `json:"breaks"`
 	}
 	
@@ -320,12 +342,15 @@ func SaveDefaultTimetableSettingsAPI(c *fiber.Ctx) error {
 	
 	db := config.GetDB()
 	
-	// Convert arrays to JSON strings
-	daysJSON := `["` + req.Days[0]
-	for i := 1; i < len(req.Days); i++ {
-		daysJSON += `","` + req.Days[i]
+	// Convert arrays to JSON strings safely
+	daysJSON := `[]`
+	if len(req.Days) > 0 {
+		daysJSON = `["` + req.Days[0]
+		for i := 1; i < len(req.Days); i++ {
+			daysJSON += `","` + req.Days[i]
+		}
+		daysJSON += `"]`
 	}
-	daysJSON += `"]`
 	
 	breaksJSON := `[]`
 	if len(req.Breaks) > 0 {
@@ -334,15 +359,34 @@ func SaveDefaultTimetableSettingsAPI(c *fiber.Ctx) error {
 			if i > 0 {
 				breaksJSON += `,`
 			}
-			breaksJSON += `{"name":"` + b["name"].(string) + `","start_time":"` + b["start_time"].(string) + `","end_time":"` + b["end_time"].(string) + `"}`
+			// Safely get values with type assertion and nil checks
+			name := ""
+			startTime := ""
+			endTime := ""
+			if nameVal, ok := b["name"]; ok && nameVal != nil {
+				if nameStr, ok := nameVal.(string); ok {
+					name = nameStr
+				}
+			}
+			if startVal, ok := b["start_time"]; ok && startVal != nil {
+				if startStr, ok := startVal.(string); ok {
+					startTime = startStr
+				}
+			}
+			if endVal, ok := b["end_time"]; ok && endVal != nil {
+				if endStr, ok := endVal.(string); ok {
+					endTime = endStr
+				}
+			}
+			breaksJSON += `{"name":"` + name + `","start_time":"` + startTime + `","end_time":"` + endTime + `"}`
 		}
 		breaksJSON += `]`
 	}
 	
-	// Clear existing default
-	_, err := db.Exec("UPDATE timetable_settings SET is_default = false WHERE is_default = true")
+	// Delete all existing default settings
+	_, err := db.Exec("DELETE FROM timetable_settings WHERE is_default = true")
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing default"})
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing defaults"})
 	}
 	
 	// Insert new default

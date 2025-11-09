@@ -1,6 +1,7 @@
 package students
 
 import (
+	"strings"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
@@ -97,9 +98,67 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 		Offset:    offset,
 	}
 
-	students, totalCount, err := database.GetStudentsWithFiltersAndPagination(config.GetDB(), filters)
+	// Use GetStudentsWithDetails to get parent data, then apply filters
+	allStudents, err := database.GetStudentsWithDetails(config.GetDB())
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch students: " + err.Error()})
+	}
+
+	// Apply filters manually
+	var filteredStudents []*models.Student
+	for _, student := range allStudents {
+		// Apply search filter
+		if filters.Search != "" && len(filters.Search) >= 3 {
+			searchLower := strings.ToLower(filters.Search)
+			fullName := strings.ToLower(student.FirstName + " " + student.LastName)
+			if !strings.Contains(strings.ToLower(student.FirstName), searchLower) &&
+			   !strings.Contains(strings.ToLower(student.LastName), searchLower) &&
+			   !strings.Contains(fullName, searchLower) &&
+			   !strings.Contains(strings.ToLower(student.StudentID), searchLower) {
+				continue
+			}
+		}
+
+		// Apply status filter
+		if filters.Status != "" {
+			if (filters.Status == "active" && !student.IsActive) ||
+			   (filters.Status == "inactive" && student.IsActive) {
+				continue
+			}
+		}
+
+		// Apply class filter
+		if filters.ClassID != "" {
+			if student.ClassID == nil || *student.ClassID != filters.ClassID {
+				continue
+			}
+		}
+
+		// Apply gender filter
+		if filters.Gender != "" {
+			if student.Gender == nil || string(*student.Gender) != filters.Gender {
+				continue
+			}
+		}
+
+		filteredStudents = append(filteredStudents, student)
+	}
+
+	totalCount := len(filteredStudents)
+
+	// Apply pagination
+	students := filteredStudents
+	if limit > 0 {
+		start := offset
+		end := offset + limit
+		if start > len(filteredStudents) {
+			students = []*models.Student{}
+		} else {
+			if end > len(filteredStudents) {
+				end = len(filteredStudents)
+			}
+			students = filteredStudents[start:end]
+		}
 	}
 
 	// Format students for table display

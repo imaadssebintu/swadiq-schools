@@ -45,13 +45,14 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	status := c.Query("status") // "paid", "unpaid", "all"
 
 	// Build base query
-	baseQuery := `SELECT f.id, f.student_id, '', f.title, f.amount, f.paid, 
+	baseQuery := `SELECT f.id, f.student_id, f.fee_type_id::text, f.title, f.amount, f.paid, 
 				  f.due_date, f.paid_at, f.created_at, f.updated_at,
 				  s.first_name as student_first_name, s.last_name as student_last_name,
 				  s.student_id as student_code,
-				  '' as fee_type_name, '' as fee_type_code
+				  COALESCE(ft.name, '') as fee_type_name, COALESCE(ft.code, '') as fee_type_code
 				  FROM fees f
 				  JOIN students s ON f.student_id = s.id
+				  JOIN fee_types ft ON f.fee_type_id = ft.id
 				  WHERE s.is_active = true AND f.deleted_at IS NULL`
 
 	var conditions []string
@@ -97,8 +98,8 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	var fees []FeeResponse
 	for rows.Next() {
 		var fee FeeResponse
-		var studentFirstName, studentLastName, studentCode *string
-		var feeTypeName, feeTypeCode *string
+		var studentFirstName, studentLastName, studentCode string
+		var feeTypeName, feeTypeCode string
 		var paidAt *time.Time
 
 		err := rows.Scan(
@@ -112,20 +113,12 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		}
 
 		// Set student info
-		if studentFirstName != nil && studentLastName != nil {
-			fee.StudentName = *studentFirstName + " " + *studentLastName
-		}
-		if studentCode != nil {
-			fee.StudentCode = *studentCode
-		}
+		fee.StudentName = studentFirstName + " " + studentLastName
+		fee.StudentCode = studentCode
 
 		// Set fee type info
-		if feeTypeName != nil {
-			fee.FeeTypeName = *feeTypeName
-		}
-		if feeTypeCode != nil {
-			fee.FeeTypeCode = *feeTypeCode
-		}
+		fee.FeeTypeName = feeTypeName
+		fee.FeeTypeCode = feeTypeCode
 
 		// Set paid_at if exists
 		if paidAt != nil {
@@ -145,20 +138,20 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeID := c.Params("id")
 
-	query := `SELECT f.id, f.student_id, f.title, f.amount, f.paid, 
+	query := `SELECT f.id, f.student_id, f.fee_type_id::text, f.title, f.amount, f.paid, 
 			  f.due_date, f.paid_at, f.created_at, f.updated_at,
 			  s.first_name as student_first_name, s.last_name as student_last_name,
 			  s.student_id as student_code
 			  FROM fees f
 			  JOIN students s ON f.student_id = s.id
-			  WHERE f.id = $1 AND s.is_active = true`
+			  WHERE f.id = $1 AND s.is_active = true AND f.deleted_at IS NULL`
 
 	var fee FeeResponse
-	var studentFirstName, studentLastName, studentCode *string
+	var studentFirstName, studentLastName, studentCode string
 	var paidAt *time.Time
 
 	err := db.QueryRow(query, feeID).Scan(
-		&fee.ID, &fee.StudentID, &fee.Title, &fee.Amount, &fee.Paid,
+		&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Paid,
 		&fee.DueDate, &paidAt, &fee.CreatedAt, &fee.UpdatedAt,
 		&studentFirstName, &studentLastName, &studentCode,
 	)
@@ -170,12 +163,8 @@ func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Set student info
-	if studentFirstName != nil && studentLastName != nil {
-		fee.StudentName = *studentFirstName + " " + *studentLastName
-	}
-	if studentCode != nil {
-		fee.StudentCode = *studentCode
-	}
+	fee.StudentName = studentFirstName + " " + studentLastName
+	fee.StudentCode = studentCode
 	if paidAt != nil {
 		fee.PaidAt = paidAt
 	}
@@ -204,11 +193,16 @@ func CreateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 		fee.Currency = "USD"
 	}
 
-	// Insert fee into database
-	query := `INSERT INTO fees (student_id, title, amount, currency, due_date, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id, created_at, updated_at`
+	// Validate fee_type_id is provided since it's required
+	if fee.FeeTypeID == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Fee type ID is required")
+	}
 
-	err := db.QueryRow(query, fee.StudentID, fee.Title, fee.Amount, fee.Currency, fee.DueDate).Scan(
+	// Insert fee into database
+	query := `INSERT INTO fees (student_id, fee_type_id, title, amount, currency, due_date, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, fee.StudentID, fee.FeeTypeID, fee.Title, fee.Amount, fee.Currency, fee.DueDate).Scan(
 		&fee.ID, &fee.CreatedAt, &fee.UpdatedAt,
 	)
 	if err != nil {
@@ -233,7 +227,7 @@ func UpdateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	// Update fee in database
 	query := `UPDATE fees SET title = $1, amount = $2, due_date = $3, updated_at = NOW()
-			  WHERE id = $4`
+			  WHERE id = $4 AND deleted_at IS NULL`
 
 	result, err := db.Exec(query, fee.Title, fee.Amount, fee.DueDate, feeID)
 	if err != nil {
@@ -256,7 +250,7 @@ func DeleteFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeID := c.Params("id")
 
 	// Soft delete fee (set deleted_at)
-	query := `UPDATE fees SET deleted_at = NOW() WHERE id = $1`
+	query := `UPDATE fees SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL`
 
 	result, err := db.Exec(query, feeID)
 	if err != nil {
@@ -279,7 +273,7 @@ func MarkFeeAsPaidAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeID := c.Params("id")
 
 	// Update fee as paid
-	query := `UPDATE fees SET paid = true, paid_at = NOW(), updated_at = NOW() WHERE id = $1`
+	query := `UPDATE fees SET paid = true, paid_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL`
 
 	result, err := db.Exec(query, feeID)
 	if err != nil {
@@ -320,11 +314,17 @@ func GetFeeStatsAPI(c *fiber.Ctx, db *sql.DB) error {
 		StudentsWithFees: 0,
 	}
 
-	db.QueryRow(query).Scan(
+	err := db.QueryRow(query).Scan(
 		&stats.TotalFees, &stats.PaidFees, &stats.UnpaidFees,
 		&stats.TotalPaid, &stats.TotalUnpaid, &stats.StudentsWithFees,
 	)
-	// Ignore errors and return zero stats - this ensures the frontend always gets valid data
+	if err != nil {
+		// Return zero stats if query fails
+		return c.JSON(fiber.Map{
+			"success": true,
+			"data":    stats,
+		})
+	}
 
 	return c.JSON(fiber.Map{
 		"success": true,

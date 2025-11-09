@@ -116,6 +116,13 @@
         </div>
 
         <div class="p-6 space-y-6">
+            <!-- Load Default Settings Button -->
+            <div class="flex justify-end">
+                <button onclick="loadDefaultSettings()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                    Load Default Settings
+                </button>
+            </div>
+            
             <!-- Days Selection -->
             <div>
                 <h4 class="font-medium text-gray-900 mb-3">School Days</h4>
@@ -329,20 +336,31 @@
         content.innerHTML = '<div class="text-center py-4">Loading...</div>';
         
         try {
-            // Load subjects and teachers for this class
-            const [subjectsResponse, teachersResponse] = await Promise.all([
+            // Load papers, subjects and teachers for this class
+            const [papersResponse, subjectsResponse, teachersResponse] = await Promise.all([
+                fetch(`/api/classes/${classID}/papers`),
                 fetch(`/api/classes/${classID}/subjects`),
                 fetch('/api/teachers')
             ]);
             
+            const papersData = await papersResponse.json();
             const subjectsData = await subjectsResponse.json();
             const teachersData = await teachersResponse.json();
             
+            console.log('Papers data:', papersData);
+            console.log('Subjects data:', subjectsData);
+            console.log('Teachers data:', teachersData);
+            
+            const papers = Array.isArray(papersData) ? papersData : (papersData.papers || []);
             const subjects = subjectsData.subjects || [];
             const teachers = teachersData.teachers || [];
             
+            console.log('Parsed papers:', papers);
+            console.log('Parsed subjects:', subjects);
+            console.log('Parsed teachers:', teachers);
+            
             // Create edit form
-            content.innerHTML = createEditTimetableForm(subjects, teachers);
+            content.innerHTML = createEditTimetableForm(papers, subjects, teachers);
         } catch (error) {
             console.error('Error loading edit form:', error);
             content.innerHTML = '<div class="text-red-500 text-center py-4">Error loading form</div>';
@@ -355,26 +373,47 @@
         const endTime = new Date(`2000-01-01T${timetableSettings.endTime}:00`);
         const lessonDuration = timetableSettings.lessonDuration * 60000; // Convert to milliseconds
         
+        // Sort breaks by start time
+        const sortedBreaks = (timetableSettings.breaks || []).sort((a, b) => {
+            const aTime = a.startTime || a.start_time || '00:00';
+            const bTime = b.startTime || b.start_time || '00:00';
+            return aTime.localeCompare(bTime);
+        });
+        
         let currentTime = new Date(startTime);
+        let breakIndex = 0;
         
         while (currentTime < endTime) {
             const slotStart = currentTime.toTimeString().slice(0, 5);
-            const slotEnd = new Date(currentTime.getTime() + lessonDuration).toTimeString().slice(0, 5);
-            const timeSlot = `${slotStart} - ${slotEnd}`;
             
-            // Check if this time slot is a break
-            const breakSlot = timetableSettings.breaks.find(b => 
-                slotStart >= b.startTime && slotStart < b.endTime
-            );
+            // Check if we should insert a break at this time
+            let breakToInsert = null;
+            if (breakIndex < sortedBreaks.length) {
+                const nextBreak = sortedBreaks[breakIndex];
+                const breakStartTime = nextBreak.startTime || nextBreak.start_time || '00:00';
+                const breakEndTime = nextBreak.endTime || nextBreak.end_time || '00:00';
+                
+                if (slotStart >= breakStartTime && breakStartTime !== breakEndTime) {
+                    breakToInsert = {
+                        name: nextBreak.name || 'Break',
+                        startTime: breakStartTime,
+                        endTime: breakEndTime
+                    };
+                    breakIndex++;
+                }
+            }
             
-            if (breakSlot) {
+            if (breakToInsert) {
                 schedule.push({
-                    time: `${breakSlot.startTime} - ${breakSlot.endTime}`,
+                    time: `${breakToInsert.startTime} - ${breakToInsert.endTime}`,
                     type: 'break',
-                    label: breakSlot.name
+                    label: breakToInsert.name
                 });
-                currentTime = new Date(`2000-01-01T${breakSlot.endTime}:00`);
+                currentTime = new Date(`2000-01-01T${breakToInsert.endTime}:00`);
             } else {
+                const slotEnd = new Date(currentTime.getTime() + lessonDuration).toTimeString().slice(0, 5);
+                const timeSlot = `${slotStart} - ${slotEnd}`;
+                
                 schedule.push({
                     time: timeSlot,
                     type: 'lesson'
@@ -386,8 +425,28 @@
         return schedule;
     }
 
-    function createEditTimetableForm(subjects, teachers) {
+    function createEditTimetableForm(papers, subjects, teachers) {
         const schedule = generateSchedule();
+        
+        // Combine papers and subjects for the dropdown
+        console.log('Creating options from papers:', papers);
+        console.log('Creating options from subjects:', subjects);
+        
+        const allOptions = [
+            ...papers.map(paper => ({ 
+                id: paper.id, 
+                name: `${paper.name} (Paper)`, 
+                type: 'paper',
+                subject: paper.subject ? paper.subject.name : 'Unknown Subject'
+            })),
+            ...subjects.map(subject => ({ 
+                id: subject.id, 
+                name: `${subject.name} (Subject)`, 
+                type: 'subject'
+            }))
+        ];
+        
+        console.log('All options created:', allOptions);
 
         return `
             <div class="overflow-x-auto">
@@ -419,8 +478,8 @@
                                             <td class="px-4 py-3">
                                                 <div class="space-y-2">
                                                     <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="subject">
-                                                        <option value="">Select Subject</option>
-                                                        ${subjects.map(subject => `<option value="${subject.id}">${subject.name}</option>`).join('')}
+                                                        <option value="">Select Paper/Subject</option>
+                                                        ${allOptions.map(option => `<option value="${option.id}" data-type="${option.type}">${option.name}</option>`).join('')}
                                                     </select>
                                                     <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="teacher">
                                                         <option value="">Select Teacher</option>
@@ -451,15 +510,34 @@
     }
 
     function loadSettingsForm() {
-        // Load days
+        console.log('Loading settings form with:', timetableSettings);
+        
+        // Load days - first uncheck all, then check the ones in settings
         document.querySelectorAll('.day-checkbox').forEach(cb => {
-            cb.checked = timetableSettings.days.includes(cb.value);
+            cb.checked = false;
         });
         
+        if (timetableSettings.days && Array.isArray(timetableSettings.days)) {
+            timetableSettings.days.forEach(day => {
+                const checkbox = document.getElementById(`day_${day}`);
+                console.log(`Looking for checkbox day_${day}:`, checkbox);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    console.log(`Checked ${day}`);
+                }
+            });
+        }
+        
         // Load times
-        document.getElementById('schoolStartTime').value = timetableSettings.startTime;
-        document.getElementById('schoolEndTime').value = timetableSettings.endTime;
-        document.getElementById('lessonDuration').value = timetableSettings.lessonDuration;
+        const startTimeInput = document.getElementById('schoolStartTime');
+        const endTimeInput = document.getElementById('schoolEndTime');
+        const durationInput = document.getElementById('lessonDuration');
+        
+        console.log('Time inputs:', { startTimeInput, endTimeInput, durationInput });
+        
+        if (startTimeInput) startTimeInput.value = timetableSettings.startTime || '08:00';
+        if (endTimeInput) endTimeInput.value = timetableSettings.endTime || '16:00';
+        if (durationInput) durationInput.value = timetableSettings.lessonDuration || 60;
         
         // Load breaks
         loadBreaks();
@@ -467,7 +545,8 @@
 
     function loadBreaks() {
         const container = document.getElementById('breaksContainer');
-        container.innerHTML = timetableSettings.breaks.map((breakItem, index) => `
+        const breaks = timetableSettings.breaks || [];
+        container.innerHTML = breaks.map((breakItem, index) => `
             <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                 <input type="text" value="${breakItem.name}" placeholder="Break name" 
                        class="flex-1 px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="name">
@@ -526,8 +605,12 @@
             });
             
             Object.values(breaksByIndex).forEach(breakItem => {
-                if (breakItem.name && breakItem.start_time && breakItem.end_time) {
-                    breaks.push(breakItem);
+                if (breakItem.name && breakItem.startTime && breakItem.endTime) {
+                    breaks.push({
+                        name: breakItem.name,
+                        start_time: breakItem.startTime,
+                        end_time: breakItem.endTime
+                    });
                 }
             });
             
@@ -594,6 +677,88 @@
             }
         } catch (error) {
             console.error('Error loading settings:', error);
+        }
+    }
+
+    async function loadDefaultSettings() {
+        try {
+            const response = await fetch('/api/timetable/settings/default', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Default settings response:', data);
+                
+                if (data.success && data.settings) {
+                    const settings = data.settings;
+                    
+                    // Parse days and breaks if they are strings
+                    let days = settings.days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                    if (typeof days === 'string') {
+                        try {
+                            days = JSON.parse(days);
+                        } catch (e) {
+                            days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                        }
+                    }
+                    
+                    let breaks = settings.breaks || [
+                        { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
+                        { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
+                    ];
+                    if (typeof breaks === 'string') {
+                        try {
+                            breaks = JSON.parse(breaks);
+                        } catch (e) {
+                            breaks = [
+                                { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
+                                { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
+                            ];
+                        }
+                    }
+                    
+                    // Ensure breaks have correct property names
+                    breaks = breaks.map(b => ({
+                        name: b.name || 'Break',
+                        startTime: b.startTime || b.start_time || '10:00',
+                        endTime: b.endTime || b.end_time || '10:30'
+                    }));
+                    
+                    timetableSettings = {
+                        days: days,
+                        startTime: settings.start_time || settings.startTime || '08:00',
+                        endTime: settings.end_time || settings.endTime || '16:00',
+                        lessonDuration: settings.lesson_duration || settings.lessonDuration || 60,
+                        breaks: breaks
+                    };
+                    
+                    console.log('Updated timetableSettings:', timetableSettings);
+                    
+                    // Update the form with default settings
+                    loadSettingsForm();
+                    showNotification('Default settings loaded successfully', 'success');
+                } else {
+                    // Use hardcoded defaults if no settings found
+                    timetableSettings = {
+                        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+                        startTime: '08:00',
+                        endTime: '16:00',
+                        lessonDuration: 60,
+                        breaks: [
+                            { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
+                            { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
+                        ]
+                    };
+                    loadSettingsForm();
+                    showNotification('Default settings loaded successfully', 'success');
+                }
+            } else {
+                showNotification('Failed to load default settings', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading default settings:', error);
+            showNotification('Failed to load default settings', 'error');
         }
     }
 
