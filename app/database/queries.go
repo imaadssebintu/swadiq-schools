@@ -659,35 +659,167 @@ func SearchParents(db *sql.DB, query string) ([]*models.Parent, error) {
 }
 
 func GetAllAcademicYears(db *sql.DB) ([]*models.AcademicYear, error) {
-	return []*models.AcademicYear{}, nil
+	query := `SELECT id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+			  FROM academic_years WHERE deleted_at IS NULL ORDER BY start_date DESC`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []*models.AcademicYear{}, nil // Return empty slice instead of error
+	}
+	defer rows.Close()
+
+	var years []*models.AcademicYear
+	for rows.Next() {
+		year := &models.AcademicYear{}
+		err := rows.Scan(&year.ID, &year.Name, &year.StartDate.Time, &year.EndDate.Time,
+			&year.IsCurrent, &year.IsActive, &year.CreatedAt, &year.UpdatedAt)
+		if err != nil {
+			continue
+		}
+		years = append(years, year)
+	}
+	if years == nil {
+		years = []*models.AcademicYear{}
+	}
+	return years, nil
 }
 
 func GetAcademicYearByID(db *sql.DB, id string) (*models.AcademicYear, error) {
-	return &models.AcademicYear{}, nil
+	query := `SELECT id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+			  FROM academic_years WHERE id = $1 AND deleted_at IS NULL`
+
+	year := &models.AcademicYear{}
+	err := db.QueryRow(query, id).Scan(&year.ID, &year.Name, &year.StartDate.Time, &year.EndDate.Time,
+		&year.IsCurrent, &year.IsActive, &year.CreatedAt, &year.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return year, nil
 }
 
 func CreateAcademicYear(db *sql.DB, year *models.AcademicYear) error {
-	return nil
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// If this year is being set as active, deactivate all others
+	if year.IsActive {
+		_, err = tx.Exec("UPDATE academic_years SET is_active = false")
+		if err != nil {
+			return err
+		}
+	}
+
+	query := `INSERT INTO academic_years (name, start_date, end_date, is_current, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err = tx.QueryRow(query, year.Name, year.StartDate.Time, year.EndDate.Time,
+		year.IsCurrent, year.IsActive).Scan(&year.ID, &year.CreatedAt, &year.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func UpdateAcademicYear(db *sql.DB, year *models.AcademicYear) error {
-	return nil
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// If this year is being set as active, deactivate all others
+	if year.IsActive {
+		_, err = tx.Exec("UPDATE academic_years SET is_active = false WHERE id != $1", year.ID)
+		if err != nil {
+			return err
+		}
+	}
+
+	query := `UPDATE academic_years
+			  SET name = $1, start_date = $2, end_date = $3, is_current = $4, is_active = $5, updated_at = NOW()
+			  WHERE id = $6 AND deleted_at IS NULL`
+
+	_, err = tx.Exec(query, year.Name, year.StartDate.Time, year.EndDate.Time,
+		year.IsCurrent, year.IsActive, year.ID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func DeleteAcademicYear(db *sql.DB, id string) error {
-	return nil
+	query := `UPDATE academic_years SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
 }
 
-func GetAllTerms(db *sql.DB) ([]*models.AcademicYear, error) {
-	return []*models.AcademicYear{}, nil
+func GetAllTerms(db *sql.DB) ([]*models.Term, error) {
+	query := `SELECT t.id, t.academic_year_id, t.name, t.start_date, t.end_date, t.is_current, t.is_active, t.created_at, t.updated_at,
+			  ay.name as academic_year_name
+			  FROM terms t
+			  LEFT JOIN academic_years ay ON t.academic_year_id = ay.id
+			  WHERE t.deleted_at IS NULL ORDER BY t.start_date DESC`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []*models.Term{}, nil // Return empty slice instead of error
+	}
+	defer rows.Close()
+
+	var terms []*models.Term
+	for rows.Next() {
+		term := &models.Term{}
+		var academicYearName *string
+		err := rows.Scan(&term.ID, &term.AcademicYearID, &term.Name, &term.StartDate.Time, &term.EndDate.Time,
+			&term.IsCurrent, &term.IsActive, &term.CreatedAt, &term.UpdatedAt, &academicYearName)
+		if err != nil {
+			continue
+		}
+		if academicYearName != nil {
+			term.AcademicYear = &models.AcademicYear{ID: term.AcademicYearID, Name: *academicYearName}
+		}
+		terms = append(terms, term)
+	}
+	if terms == nil {
+		terms = []*models.Term{}
+	}
+	return terms, nil
 }
 
-func GetTermByID(db *sql.DB, id string) (*models.AcademicYear, error) {
-	return &models.AcademicYear{}, nil
+func GetTermByID(db *sql.DB, id string) (*models.Term, error) {
+	query := `SELECT t.id, t.academic_year_id, t.name, t.start_date, t.end_date, t.is_current, t.is_active, t.created_at, t.updated_at,
+			  ay.name as academic_year_name
+			  FROM terms t
+			  LEFT JOIN academic_years ay ON t.academic_year_id = ay.id
+			  WHERE t.id = $1 AND t.deleted_at IS NULL`
+
+	term := &models.Term{}
+	var academicYearName *string
+	err := db.QueryRow(query, id).Scan(&term.ID, &term.AcademicYearID, &term.Name, &term.StartDate.Time, &term.EndDate.Time,
+		&term.IsCurrent, &term.IsActive, &term.CreatedAt, &term.UpdatedAt, &academicYearName)
+	if err != nil {
+		return nil, err
+	}
+	if academicYearName != nil {
+		term.AcademicYear = &models.AcademicYear{ID: term.AcademicYearID, Name: *academicYearName}
+	}
+	return term, nil
 }
 
 func CreateTerm(db *sql.DB, term *models.Term) error {
-	return nil
+	query := `INSERT INTO terms (academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, term.AcademicYearID, term.Name, term.StartDate.Time, term.EndDate.Time,
+		term.IsCurrent, term.IsActive).Scan(&term.ID, &term.CreatedAt, &term.UpdatedAt)
+	return err
 }
 
 func GetStudentsByClass(db *sql.DB, classID string) ([]*models.Student, error) {
@@ -1954,31 +2086,98 @@ func DeleteSubject(db *sql.DB, id string) error {
 }
 // Additional missing functions
 func UpdateTerm(db *sql.DB, term *models.Term) error {
-	return nil
+	query := `UPDATE terms
+			  SET academic_year_id = $1, name = $2, start_date = $3, end_date = $4, is_current = $5, is_active = $6, updated_at = NOW()
+			  WHERE id = $7 AND deleted_at IS NULL`
+
+	_, err := db.Exec(query, term.AcademicYearID, term.Name, term.StartDate, term.EndDate,
+		term.IsCurrent, term.IsActive, term.ID)
+	return err
 }
 
 func DeleteTerm(db *sql.DB, id string) error {
-	return nil
+	query := `UPDATE terms SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
 }
 
 func GetTermsByAcademicYearID(db *sql.DB, yearID string) ([]*models.Term, error) {
-	return []*models.Term{}, nil
+	query := `SELECT id, academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+			  FROM terms WHERE academic_year_id = $1 AND deleted_at IS NULL ORDER BY start_date`
+
+	rows, err := db.Query(query, yearID)
+	if err != nil {
+		return []*models.Term{}, err
+	}
+	defer rows.Close()
+
+	var terms []*models.Term
+	for rows.Next() {
+		term := &models.Term{}
+		err := rows.Scan(&term.ID, &term.AcademicYearID, &term.Name, &term.StartDate, &term.EndDate,
+			&term.IsCurrent, &term.IsActive, &term.CreatedAt, &term.UpdatedAt)
+		if err != nil {
+			continue
+		}
+		terms = append(terms, term)
+	}
+	return terms, nil
 }
 
 func SetCurrentAcademicYear(db *sql.DB, yearID string) error {
-	return nil
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Set all academic years to not current
+	_, err = tx.Exec("UPDATE academic_years SET is_current = false")
+	if err != nil {
+		return err
+	}
+
+	// Set the specified year as current
+	_, err = tx.Exec("UPDATE academic_years SET is_current = true WHERE id = $1", yearID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func SetCurrentTerm(db *sql.DB, termID string) error {
-	return nil
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Set all terms to not current
+	_, err = tx.Exec("UPDATE terms SET is_current = false")
+	if err != nil {
+		return err
+	}
+
+	// Set the specified term as current
+	_, err = tx.Exec("UPDATE terms SET is_current = true WHERE id = $1", termID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func AutoSetCurrentAcademicYear(db *sql.DB) error {
-	return nil
+	query := `UPDATE academic_years SET is_current = (start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE)`
+	_, err := db.Exec(query)
+	return err
 }
 
 func AutoSetCurrentTerm(db *sql.DB) error {
-	return nil
+	query := `UPDATE terms SET is_current = (start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE)`
+	_, err := db.Exec(query)
+	return err
 }
 
 func UpdateStudent(db *sql.DB, student *models.Student) error {

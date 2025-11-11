@@ -1,3 +1,11 @@
+<!-- Loading Spinner -->
+<div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+        <span class="text-gray-700">Loading...</span>
+    </div>
+</div>
+
 <!-- Academic Settings Page -->
 <div class="p-4 lg:p-6">
     <div class="mb-6">
@@ -192,6 +200,16 @@
     // Global variables
     let academicYears = [];
     let terms = [];
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // Loading functions
+    function showLoading() {
+        loadingSpinner.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        loadingSpinner.classList.add('hidden');
+    }
 
     // DOM Elements
     const academicYearsTableBody = document.getElementById('academicYearsTableBody');
@@ -237,6 +255,7 @@
 
     // Load academic years
     async function loadAcademicYears() {
+        showLoading();
         try {
             const response = await fetch('/api/academic-years');
             academicYears = await response.json();
@@ -245,18 +264,24 @@
         } catch (error) {
             console.error('Error loading academic years:', error);
             showError('Failed to load academic years');
+        } finally {
+            hideLoading();
         }
     }
 
     // Load terms
     async function loadTerms() {
+        showLoading();
         try {
             const response = await fetch('/api/terms');
             terms = await response.json();
+            console.log('Loaded terms:', terms); // Debug log
             renderTerms();
         } catch (error) {
             console.error('Error loading terms:', error);
             showError('Failed to load terms');
+        } finally {
+            hideLoading();
         }
     }
 
@@ -465,6 +490,7 @@
             is_current: false  // Add this field to match the model
         };
 
+        showLoading();
         try {
             let response;
             if (id) {
@@ -498,6 +524,8 @@
         } catch (error) {
             console.error('Error saving academic year:', error);
             showError('Failed to save academic year');
+        } finally {
+            hideLoading();
         }
     }
 
@@ -520,6 +548,7 @@
             is_active: isActive
         };
 
+        showLoading();
         try {
             let response;
             if (id) {
@@ -553,6 +582,8 @@
         } catch (error) {
             console.error('Error saving term:', error);
             showError('Failed to save term');
+        } finally {
+            hideLoading();
         }
     }
 
@@ -573,6 +604,7 @@
         const id = document.getElementById('deleteItemId').value;
         const type = document.getElementById('deleteItemType').value;
 
+        showLoading();
         try {
             let response;
             if (type === 'academic_year') {
@@ -600,6 +632,8 @@
         } catch (error) {
             console.error('Error deleting item:', error);
             showError('Failed to delete item');
+        } finally {
+            hideLoading();
         }
     }
 

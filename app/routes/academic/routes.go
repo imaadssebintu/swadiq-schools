@@ -2,6 +2,7 @@ package academic
 
 import (
 	"database/sql"
+	"strings"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
@@ -80,6 +81,11 @@ func GetAllAcademicYearsHandler(db *sql.DB) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve academic years"})
 		}
 
+		// Ensure we always return an array, never null
+		if academicYears == nil {
+			academicYears = []*models.AcademicYear{}
+		}
+
 		return c.JSON(academicYears)
 	}
 }
@@ -115,6 +121,9 @@ func CreateAcademicYearHandler(db *sql.DB) fiber.Handler {
 		}
 
 		if err := database.CreateAcademicYear(db, &academicYear); err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "An academic year with this name already exists"})
+			}
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create academic year: " + err.Error()})
 		}
 
@@ -172,6 +181,11 @@ func GetAllTermsHandler(db *sql.DB) fiber.Handler {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve terms"})
 		}
 
+		// Ensure we always return an array, never null
+		if terms == nil {
+			terms = []*models.Term{}
+		}
+
 		return c.JSON(terms)
 	}
 }
@@ -202,7 +216,7 @@ func CreateTermHandler(db *sql.DB) fiber.Handler {
 		}
 
 		// Validate dates
-		if term.EndDate.Before(term.StartDate) {
+		if term.EndDate.Time.Before(term.StartDate.Time) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 		}
 
@@ -212,7 +226,7 @@ func CreateTermHandler(db *sql.DB) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 		}
 
-		if term.StartDate.Before(academicYear.StartDate.Time) || term.EndDate.After(academicYear.EndDate.Time) {
+		if term.StartDate.Time.Before(academicYear.StartDate.Time) || term.EndDate.Time.After(academicYear.EndDate.Time) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 		}
 
@@ -241,7 +255,7 @@ func UpdateTermHandler(db *sql.DB) fiber.Handler {
 		term.ID = termID
 
 		// Validate dates
-		if term.EndDate.Before(term.StartDate) {
+		if term.EndDate.Time.Before(term.StartDate.Time) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 		}
 
@@ -251,7 +265,7 @@ func UpdateTermHandler(db *sql.DB) fiber.Handler {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 		}
 
-		if term.StartDate.Before(academicYear.StartDate.Time) || term.EndDate.After(academicYear.EndDate.Time) {
+		if term.StartDate.Time.Before(academicYear.StartDate.Time) || term.EndDate.Time.After(academicYear.EndDate.Time) {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 		}
 

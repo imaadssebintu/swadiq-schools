@@ -33,27 +33,75 @@ type FeeStatsResponse struct {
 	TotalFees        int     `json:"total_fees"`
 	PaidFees         int     `json:"paid_fees"`
 	UnpaidFees       int     `json:"unpaid_fees"`
+	TotalAmount      float64 `json:"total_amount"`
 	TotalPaid        float64 `json:"total_paid"`
-	TotalUnpaid      float64 `json:"total_unpaid"`
+	TotalBalance     float64 `json:"total_balance"`
 	StudentsWithFees int     `json:"students_with_fees"`
+}
+
+// GetFeeStatsAPI returns fee statistics
+func GetFeeStatsAPI(c *fiber.Ctx, db *sql.DB) error {
+	termID := c.Query("term_id")
+
+	query := `SELECT 
+				COUNT(*) as total_fees,
+				COUNT(CASE WHEN paid = true THEN 1 END) as paid_fees,
+				COUNT(CASE WHEN paid = false THEN 1 END) as unpaid_fees,
+				COALESCE(SUM(amount), 0) as total_amount,
+				COALESCE(SUM(amount - balance), 0) as total_paid,
+				COALESCE(SUM(balance), 0) as total_balance,
+				COUNT(DISTINCT student_id) as students_with_fees
+			  FROM fees 
+			  WHERE deleted_at IS NULL`
+
+	args := []interface{}{}
+	if termID != "" {
+		query += " AND term_id = $1"
+		args = append(args, termID)
+	}
+
+	var stats FeeStatsResponse
+	err := db.QueryRow(query, args...).Scan(
+		&stats.TotalFees, &stats.PaidFees, &stats.UnpaidFees,
+		&stats.TotalAmount, &stats.TotalPaid, &stats.TotalBalance,
+		&stats.StudentsWithFees,
+	)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch statistics"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    stats,
+	})
 }
 
 // GetFeesAPI returns all fees with optional filtering
 func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
+	// Check if fees table exists
+	var tableExists bool
+	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'fees')").Scan(&tableExists)
+	if err != nil || !tableExists {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"data":    []FeeResponse{},
+		})
+	}
+
 	// Get query parameters for filtering
 	studentID := c.Query("student_id")
 	status := c.Query("status") // "paid", "unpaid", "all"
 
-	// Build base query
-	baseQuery := `SELECT f.id, f.student_id, f.fee_type_id::text, f.title, f.amount, f.paid, 
+	// Build base query with LEFT JOINs to handle missing data
+	baseQuery := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.paid, 
 				  f.due_date, f.paid_at, f.created_at, f.updated_at,
-				  s.first_name as student_first_name, s.last_name as student_last_name,
-				  s.student_id as student_code,
+				  COALESCE(s.first_name, '') as student_first_name, COALESCE(s.last_name, '') as student_last_name,
+				  COALESCE(s.student_id, '') as student_code,
 				  COALESCE(ft.name, '') as fee_type_name, COALESCE(ft.code, '') as fee_type_code
 				  FROM fees f
-				  JOIN students s ON f.student_id = s.id
-				  JOIN fee_types ft ON f.fee_type_id = ft.id
-				  WHERE s.is_active = true AND f.deleted_at IS NULL`
+				  LEFT JOIN students s ON f.student_id = s.id
+				  LEFT JOIN fee_types ft ON f.fee_type_id = ft.id
+				  WHERE f.deleted_at IS NULL`
 
 	var conditions []string
 	var args []interface{}
@@ -91,7 +139,10 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	// Execute query
 	rows, err := db.Query(baseQuery, args...)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch fees")
+		return c.JSON(fiber.Map{
+			"success": true,
+			"data":    []FeeResponse{},
+		})
 	}
 	defer rows.Close()
 
@@ -113,7 +164,7 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		}
 
 		// Set student info
-		fee.StudentName = studentFirstName + " " + studentLastName
+		fee.StudentName = strings.TrimSpace(studentFirstName + " " + studentLastName)
 		fee.StudentCode = studentCode
 
 		// Set fee type info
@@ -128,6 +179,10 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		fees = append(fees, fee)
 	}
 
+	if fees == nil {
+		fees = []FeeResponse{}
+	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data":    fees,
@@ -138,33 +193,39 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeID := c.Params("id")
 
-	query := `SELECT f.id, f.student_id, f.fee_type_id::text, f.title, f.amount, f.paid, 
+	query := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.paid, 
 			  f.due_date, f.paid_at, f.created_at, f.updated_at,
-			  s.first_name as student_first_name, s.last_name as student_last_name,
-			  s.student_id as student_code
+			  COALESCE(s.first_name, '') as student_first_name, COALESCE(s.last_name, '') as student_last_name,
+			  COALESCE(s.student_id, '') as student_code,
+			  COALESCE(ft.name, '') as fee_type_name, COALESCE(ft.code, '') as fee_type_code
 			  FROM fees f
-			  JOIN students s ON f.student_id = s.id
-			  WHERE f.id = $1 AND s.is_active = true AND f.deleted_at IS NULL`
+			  LEFT JOIN students s ON f.student_id = s.id
+			  LEFT JOIN fee_types ft ON f.fee_type_id = ft.id
+			  WHERE f.id = $1 AND f.deleted_at IS NULL`
 
 	var fee FeeResponse
 	var studentFirstName, studentLastName, studentCode string
+	var feeTypeName, feeTypeCode string
 	var paidAt *time.Time
 
 	err := db.QueryRow(query, feeID).Scan(
 		&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Paid,
 		&fee.DueDate, &paidAt, &fee.CreatedAt, &fee.UpdatedAt,
 		&studentFirstName, &studentLastName, &studentCode,
+		&feeTypeName, &feeTypeCode,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fiber.NewError(fiber.StatusNotFound, "Fee not found")
+			return c.Status(404).JSON(fiber.Map{"success": false, "error": "Fee not found"})
 		}
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch fee")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch fee"})
 	}
 
 	// Set student info
-	fee.StudentName = studentFirstName + " " + studentLastName
+	fee.StudentName = strings.TrimSpace(studentFirstName + " " + studentLastName)
 	fee.StudentCode = studentCode
+	fee.FeeTypeName = feeTypeName
+	fee.FeeTypeCode = feeTypeCode
 	if paidAt != nil {
 		fee.PaidAt = paidAt
 	}
@@ -175,41 +236,58 @@ func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	})
 }
 
+// CreateFeeRequest represents the request structure for creating fees
+type CreateFeeRequest struct {
+	StudentID  string    `json:"student_id" validate:"required,uuid"`
+	FeeTypeID  string    `json:"fee_type_id" validate:"required,uuid"`
+	TermID     *string   `json:"term_id,omitempty" validate:"omitempty,uuid"`
+	Title      string    `json:"title" validate:"required"`
+	Amount     float64   `json:"amount" validate:"required,gt=0"`
+	DueDate    time.Time `json:"due_date" validate:"required"`
+	Currency   string    `json:"currency,omitempty"`
+}
+
 // CreateFeeAPI creates a new fee
 func CreateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
-	var fee models.Fee
-	if err := c.BodyParser(&fee); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	var req CreateFeeRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Invalid request body"})
 	}
 
 	// Validate required fields
-	if fee.StudentID == "" || fee.Title == "" || fee.Amount <= 0 || fee.DueDate.IsZero() {
-		return fiber.NewError(fiber.StatusBadRequest, "Missing required fields")
+	if req.StudentID == "" || req.FeeTypeID == "" || req.Title == "" || req.Amount <= 0 || req.DueDate.IsZero() {
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Missing required fields"})
 	}
 
-	// Set default values
-	fee.Paid = false
-	if fee.Currency == "" {
-		fee.Currency = "USD"
-	}
-
-	// Validate fee_type_id is provided since it's required
-	if fee.FeeTypeID == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "Fee type ID is required")
+	// Set default currency
+	if req.Currency == "" {
+		req.Currency = "UGX"
 	}
 
 	// Insert fee into database
-	query := `INSERT INTO fees (student_id, fee_type_id, title, amount, currency, due_date, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING id, created_at, updated_at`
+	query := `INSERT INTO fees (student_id, fee_type_id, term_id, title, amount, balance, currency, paid, due_date, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $5, $6, false, $7, NOW(), NOW()) RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, fee.StudentID, fee.FeeTypeID, fee.Title, fee.Amount, fee.Currency, fee.DueDate).Scan(
+	var fee models.Fee
+	err := db.QueryRow(query, req.StudentID, req.FeeTypeID, req.TermID, req.Title, req.Amount, req.Currency, req.DueDate).Scan(
 		&fee.ID, &fee.CreatedAt, &fee.UpdatedAt,
 	)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create fee")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to create fee"})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+	// Set response data
+	fee.StudentID = req.StudentID
+	fee.FeeTypeID = req.FeeTypeID
+	fee.TermID = req.TermID
+	fee.Title = req.Title
+	fee.Amount = req.Amount
+	fee.Balance = req.Amount
+	fee.Currency = req.Currency
+	fee.Paid = false
+	fee.DueDate = req.DueDate
+
+	return c.Status(201).JSON(fiber.Map{
 		"success": true,
 		"data":    fee,
 		"message": "Fee created successfully",
@@ -222,7 +300,7 @@ func UpdateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	var fee models.Fee
 	if err := c.BodyParser(&fee); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Invalid request body"})
 	}
 
 	// Update fee in database
@@ -231,12 +309,12 @@ func UpdateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	result, err := db.Exec(query, fee.Title, fee.Amount, fee.DueDate, feeID)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to update fee")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to update fee"})
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		return fiber.NewError(fiber.StatusNotFound, "Fee not found")
+		return c.Status(404).JSON(fiber.Map{"success": false, "error": "Fee not found"})
 	}
 
 	return c.JSON(fiber.Map{
@@ -254,17 +332,184 @@ func DeleteFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	result, err := db.Exec(query, feeID)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to delete fee")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to delete fee"})
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		return fiber.NewError(fiber.StatusNotFound, "Fee not found")
+		return c.Status(404).JSON(fiber.Map{"success": false, "error": "Fee not found"})
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Fee deleted successfully",
+	})
+}
+
+// RecordPaymentRequest represents the request structure for recording payments
+type RecordPaymentRequest struct {
+	StudentID       string             `json:"student_id" validate:"required,uuid"`
+	TotalAmount     float64            `json:"total_amount" validate:"required,gt=0"`
+	PaymentMethod   string             `json:"payment_method" validate:"required"`
+	TransactionID   *string            `json:"transaction_id,omitempty"`
+	FeeAllocations  []FeeAllocation    `json:"fee_allocations" validate:"required,dive"`
+}
+
+type FeeAllocation struct {
+	FeeID   string  `json:"fee_id" validate:"required,uuid"`
+	Amount  float64 `json:"amount" validate:"required,gt=0"`
+}
+
+// RecordPaymentAPI records a payment and allocates it to specific fees
+func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
+	var req RecordPaymentRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Invalid request body"})
+	}
+
+	// Start transaction
+	tx, err := db.Begin()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to start transaction"})
+	}
+	defer tx.Rollback()
+
+	// Get user ID from session (assuming you have middleware for this)
+	userID := "admin" // Replace with actual user ID from session
+
+	// Insert payment record
+	paymentQuery := `INSERT INTO payments (student_id, total_amount, payment_date, payment_method, paid_by, transaction_id, status, paid_at, created_at, updated_at)
+					 VALUES ($1, $2, NOW(), $3, $4, $5, 'completed', NOW(), NOW(), NOW()) RETURNING id`
+
+	var paymentID string
+	err = tx.QueryRow(paymentQuery, req.StudentID, req.TotalAmount, req.PaymentMethod, userID, req.TransactionID).Scan(&paymentID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to create payment record"})
+	}
+
+	// Process each fee allocation
+	for _, allocation := range req.FeeAllocations {
+		// Get current fee details
+		var currentBalance float64
+		var feeTypeID string
+		err = tx.QueryRow("SELECT balance, fee_type_id FROM fees WHERE id = $1", allocation.FeeID).Scan(&currentBalance, &feeTypeID)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"success": false, "error": "Fee not found: " + allocation.FeeID})
+		}
+
+		// Calculate new balance
+		newBalance := currentBalance - allocation.Amount
+		if newBalance < 0 {
+			newBalance = 0
+		}
+
+		// Insert payment allocation
+		allocationQuery := `INSERT INTO payment_allocations (payment_id, fee_id, fee_type_id, amount, balance, is_fully_paid, created_at, updated_at)
+						   VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`
+
+		_, err = tx.Exec(allocationQuery, paymentID, allocation.FeeID, feeTypeID, allocation.Amount, newBalance, newBalance == 0)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to create payment allocation"})
+		}
+
+		// Update fee balance and paid status
+		updateFeeQuery := `UPDATE fees SET balance = $1, paid = $2, updated_at = NOW()`
+		if newBalance == 0 {
+			updateFeeQuery += `, paid_at = NOW()`
+		}
+		updateFeeQuery += ` WHERE id = $3`
+
+		_, err = tx.Exec(updateFeeQuery, newBalance, newBalance == 0, allocation.FeeID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to update fee"})
+		}
+	}
+
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to commit transaction"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data": fiber.Map{
+			"payment_id": paymentID,
+			"message": "Payment recorded successfully",
+		},
+	})
+}
+
+// GetStudentFeesAPI returns all fees for a specific student with payment details
+func GetStudentFeesAPI(c *fiber.Ctx, db *sql.DB) error {
+	studentID := c.Params("student_id")
+	termID := c.Query("term_id")
+
+	query := `SELECT f.id, f.student_id, f.fee_type_id, f.term_id, f.title, f.amount, f.balance, 
+				 f.currency, f.paid, f.due_date, f.paid_at, f.created_at, f.updated_at,
+				 ft.name as fee_type_name, ft.code as fee_type_code,
+				 t.name as term_name,
+				 COALESCE(SUM(pa.amount), 0) as total_paid
+			  FROM fees f
+			  LEFT JOIN fee_types ft ON f.fee_type_id = ft.id
+			  LEFT JOIN terms t ON f.term_id = t.id
+			  LEFT JOIN payment_allocations pa ON f.id = pa.fee_id
+			  WHERE f.student_id = $1 AND f.deleted_at IS NULL`
+
+	args := []interface{}{studentID}
+	if termID != "" {
+		query += " AND f.term_id = $2"
+		args = append(args, termID)
+	}
+
+	query += ` GROUP BY f.id, ft.name, ft.code, t.name ORDER BY f.created_at DESC`
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch fees"})
+	}
+	defer rows.Close()
+
+	type StudentFeeResponse struct {
+		ID           string     `json:"id"`
+		StudentID    string     `json:"student_id"`
+		FeeTypeID    string     `json:"fee_type_id"`
+		TermID       *string    `json:"term_id"`
+		Title        string     `json:"title"`
+		Amount       float64    `json:"amount"`
+		Balance      float64    `json:"balance"`
+		TotalPaid    float64    `json:"total_paid"`
+		Currency     string     `json:"currency"`
+		Paid         bool       `json:"paid"`
+		DueDate      time.Time  `json:"due_date"`
+		PaidAt       *time.Time `json:"paid_at"`
+		CreatedAt    time.Time  `json:"created_at"`
+		UpdatedAt    time.Time  `json:"updated_at"`
+		FeeTypeName  string     `json:"fee_type_name"`
+		FeeTypeCode  string     `json:"fee_type_code"`
+		TermName     *string    `json:"term_name"`
+	}
+
+	var fees []StudentFeeResponse
+	for rows.Next() {
+		var fee StudentFeeResponse
+		err := rows.Scan(
+			&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.TermID, &fee.Title, &fee.Amount, &fee.Balance,
+			&fee.Currency, &fee.Paid, &fee.DueDate, &fee.PaidAt, &fee.CreatedAt, &fee.UpdatedAt,
+			&fee.FeeTypeName, &fee.FeeTypeCode, &fee.TermName, &fee.TotalPaid,
+		)
+		if err != nil {
+			continue
+		}
+		fees = append(fees, fee)
+	}
+
+	if fees == nil {
+		fees = []StudentFeeResponse{}
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    fees,
 	})
 }
 
@@ -277,12 +522,12 @@ func MarkFeeAsPaidAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	result, err := db.Exec(query, feeID)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to mark fee as paid")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to mark fee as paid"})
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
-		return fiber.NewError(fiber.StatusNotFound, "Fee not found")
+		return c.Status(404).JSON(fiber.Map{"success": false, "error": "Fee not found"})
 	}
 
 	return c.JSON(fiber.Map{
@@ -291,52 +536,13 @@ func MarkFeeAsPaidAPI(c *fiber.Ctx, db *sql.DB) error {
 	})
 }
 
-// GetFeeStatsAPI returns fee statistics
-func GetFeeStatsAPI(c *fiber.Ctx, db *sql.DB) error {
-	query := `
-		SELECT 
-			COUNT(*) as total_fees,
-			COUNT(CASE WHEN paid = true THEN 1 END) as paid_fees,
-			COUNT(CASE WHEN paid = false THEN 1 END) as unpaid_fees,
-			COALESCE(SUM(CASE WHEN paid = true THEN amount END), 0) as total_paid,
-			COALESCE(SUM(CASE WHEN paid = false THEN amount END), 0) as total_unpaid,
-			COUNT(DISTINCT student_id) as students_with_fees
-		FROM fees 
-		WHERE deleted_at IS NULL
-	`
 
-	stats := FeeStatsResponse{
-		TotalFees:        0,
-		PaidFees:         0,
-		UnpaidFees:       0,
-		TotalPaid:        0,
-		TotalUnpaid:      0,
-		StudentsWithFees: 0,
-	}
-
-	err := db.QueryRow(query).Scan(
-		&stats.TotalFees, &stats.PaidFees, &stats.UnpaidFees,
-		&stats.TotalPaid, &stats.TotalUnpaid, &stats.StudentsWithFees,
-	)
-	if err != nil {
-		// Return zero stats if query fails
-		return c.JSON(fiber.Map{
-			"success": true,
-			"data":    stats,
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"success": true,
-		"data":    stats,
-	})
-}
 
 // GetStudentsForClassesAPI returns students from specific classes with pagination and search
 func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 	classIDsParam := c.Query("class_ids")
 	if classIDsParam == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "class_ids is required"})
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "class_ids is required"})
 	}
 	
 	classIDs := strings.Split(classIDsParam, ",")
@@ -375,7 +581,7 @@ func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 	
 	rows, err := db.Query(query, args...)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch students")
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch students"})
 	}
 	defer rows.Close()
 	
