@@ -158,10 +158,11 @@
     </header>
 
     <!-- Layout Container -->
-    <div class="flex h-screen">
+    <div class="flex h-screen pt-14">
         <!-- Sidebar -->
         <aside id="sidebar"
-               class="fixed lg:static inset-y-0 left-0 z-40 w-56 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out pt-14 lg:pt-0">
+               class="fixed lg:static inset-y-0 left-0 z-40 w-56 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out lg:mt-0"
+               style="top: 3.5rem;">
 
             <!-- Sidebar Content -->
             <div class="flex flex-col h-full">
@@ -307,7 +308,7 @@
         <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
 
         <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto pt-14">
+        <main class="flex-1 overflow-y-auto">
             <!-- Page Content -->
             <div>
                 {{embed}}
