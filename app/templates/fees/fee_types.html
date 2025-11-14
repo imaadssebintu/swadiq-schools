@@ -334,6 +334,9 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'view':
                 viewAssignments(id, name);
                 break;
+            case 'activate':
+                activateFeeType(id, name);
+                break;
             case 'edit':
                 editFeeType(id);
                 break;
@@ -604,6 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button data-action="view" data-id="${escapedId}" data-name="${escapedName}" class="text-blue-600 hover:text-blue-900 mr-3">View</button>
+                    <button data-action="activate" data-id="${escapedId}" data-name="${escapedName}" class="text-green-600 hover:text-green-900 mr-3">Activate</button>
                     <button data-action="edit" data-id="${escapedId}" class="text-primary-600 hover:text-primary-900 mr-3">Edit</button>
                     <button data-action="delete" data-id="${escapedId}" data-name="${escapedName}" class="text-red-600 hover:text-red-900">Delete</button>
                 </td>
@@ -1295,6 +1299,51 @@ function closeMessageModal() {
 function closeViewAssignmentsModal() {
     document.getElementById('viewAssignmentsModal').classList.add('hidden');
     document.body.style.overflow = 'auto';
+}
+
+// Activate fee type function
+async function activateFeeType(feeTypeId, feeTypeName) {
+    if (!confirm(`Activate "${feeTypeName}" for student payments?`)) {
+        return;
+    }
+    
+    // Show loading in button
+    let activateBtn = null;
+    let originalText = '';
+    if (window.event && window.event.target) {
+        activateBtn = window.event.target.closest('button');
+        originalText = activateBtn.textContent;
+        activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        activateBtn.disabled = true;
+    }
+    
+    try {
+        const response = await fetch('/api/fees/activate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                fee_type_id: feeTypeId
+            })
+        });
+        
+        if (response.ok) {
+            loadFeeTypes();
+            showSuccessMessage('Success', 'Fee type activated successfully!');
+        } else {
+            const error = await response.json();
+            showErrorMessage('Error', error.error || 'Failed to activate fee type');
+        }
+    } catch (error) {
+        showErrorMessage('Error', 'Error activating fee type');
+    } finally {
+        // Reset button state
+        if (activateBtn) {
+            activateBtn.innerHTML = originalText;
+            activateBtn.disabled = false;
+        }
+    }
 }
 </script>
 

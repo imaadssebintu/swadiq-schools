@@ -729,12 +729,47 @@
                 const data = await response.json();
                 if (data.success && data.settings) {
                     const settings = data.settings;
+                    
+                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
+                    const extractTime = (timeStr) => {
+                        if (timeStr && timeStr.includes('T')) {
+                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+                        }
+                        return timeStr || '08:00';
+                    };
+                    
+                    // Parse days and breaks if they are strings
+                    let days = settings.days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                    if (typeof days === 'string') {
+                        try {
+                            days = JSON.parse(days);
+                        } catch (e) {
+                            days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                        }
+                    }
+                    
+                    let breaks = settings.breaks || [];
+                    if (typeof breaks === 'string') {
+                        try {
+                            breaks = JSON.parse(breaks);
+                        } catch (e) {
+                            breaks = [];
+                        }
+                    }
+                    
+                    // Ensure breaks have correct property names and extract times
+                    breaks = breaks.map(b => ({
+                        name: b.name || 'Break',
+                        startTime: extractTime(b.startTime || b.start_time),
+                        endTime: extractTime(b.endTime || b.end_time)
+                    }));
+                    
                     timetableSettings = {
-                        days: typeof settings.days === 'string' ? JSON.parse(settings.days) : settings.days,
-                        startTime: settings.start_time,
-                        endTime: settings.end_time,
+                        days: days,
+                        startTime: extractTime(settings.start_time),
+                        endTime: extractTime(settings.end_time),
                         lessonDuration: settings.lesson_duration,
-                        breaks: typeof settings.breaks === 'string' ? JSON.parse(settings.breaks) : settings.breaks
+                        breaks: breaks
                     };
                 }
             }
@@ -755,6 +790,14 @@
                 
                 if (data.success && data.settings) {
                     const settings = data.settings;
+                    
+                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
+                    const extractTime = (timeStr) => {
+                        if (timeStr && timeStr.includes('T')) {
+                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+                        }
+                        return timeStr || '08:00';
+                    };
                     
                     // Parse days and breaks if they are strings
                     let days = settings.days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -781,17 +824,17 @@
                         }
                     }
                     
-                    // Ensure breaks have correct property names
+                    // Ensure breaks have correct property names and extract times
                     breaks = breaks.map(b => ({
                         name: b.name || 'Break',
-                        startTime: b.startTime || b.start_time || '10:00',
-                        endTime: b.endTime || b.end_time || '10:30'
+                        startTime: extractTime(b.startTime || b.start_time),
+                        endTime: extractTime(b.endTime || b.end_time)
                     }));
                     
                     timetableSettings = {
                         days: days,
-                        startTime: settings.start_time || settings.startTime || '08:00',
-                        endTime: settings.end_time || settings.endTime || '16:00',
+                        startTime: extractTime(settings.start_time || settings.startTime),
+                        endTime: extractTime(settings.end_time || settings.endTime),
                         lessonDuration: settings.lesson_duration || settings.lessonDuration || 60,
                         breaks: breaks
                     };

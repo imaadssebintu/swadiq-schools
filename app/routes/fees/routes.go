@@ -74,6 +74,14 @@ func SetupFeesRoutes(app *fiber.App) {
 		})
 	})
 
+	// Active Fees web route
+	fees.Get("/active", func(c *fiber.Ctx) error {
+		return c.Render("fees/active_fees", fiber.Map{
+			"Title":       "Active Fees - Swadiq Schools",
+			"CurrentPage": "fees",
+		})
+	})
+
 	// Fee Types API routes
 	feeTypesAPI.Get("/", func(c *fiber.Ctx) error {
 		return GetFeeTypesAPI(c, config.GetDB())
@@ -102,5 +110,14 @@ func SetupFeesRoutes(app *fiber.App) {
 	// Students by classes API route
 	feesAPI.Get("/students-by-classes", func(c *fiber.Ctx) error {
 		return GetStudentsForClassesAPI(c, config.GetDB())
+	})
+
+	// Fee activation routes
+	feesAPI.Post("/activate", func(c *fiber.Ctx) error {
+		return ActivateFeesAPI(c, config.GetDB())
+	})
+
+	feesAPI.Get("/active", func(c *fiber.Ctx) error {
+		return GetActiveFeeTypesAPI(c, config.GetDB())
 	})
 }

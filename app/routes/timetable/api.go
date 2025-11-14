@@ -1,6 +1,7 @@
 package timetable
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"swadiq-schools/app/config"
@@ -159,7 +160,7 @@ func GetClassTimetableAPI(c *fiber.Ctx) error {
 	}
 	defer rows.Close()
 
-	var timetable []fiber.Map
+	timetable := make([]fiber.Map, 0)
 	for rows.Next() {
 		var id, day, startTime, endTime, subjectName, paperName, teacherName string
 		if err := rows.Scan(&id, &day, &startTime, &endTime, &subjectName, &paperName, &teacherName); err != nil {
@@ -257,8 +258,8 @@ func GetTimetableSettingsAPI(c *fiber.Ctx) error {
 	classID := c.Params("classId")
 	db := config.GetDB()
 	
-	query := `SELECT id, class_id, days, start_time, end_time, lesson_duration, breaks, is_default, created_at, updated_at 
-			  FROM timetable_settings WHERE class_id = $1`
+	query := `SELECT id, class_id, days, start_time, end_time, lesson_duration, breaks, is_default 
+			  FROM timetable_settings WHERE class_id = $1 AND is_default = false`
 	
 	var settings struct {
 		ID             string `db:"id"`
@@ -281,21 +282,24 @@ func GetTimetableSettingsAPI(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"success": true,
 			"settings": fiber.Map{
-				"days":            []string{"monday", "tuesday", "wednesday", "thursday", "friday"},
-				"start_time":      "08:00",
-				"end_time":        "16:00",
+				"days":            json.RawMessage(`["monday","tuesday","wednesday","thursday","friday"]`),
+				"start_time":      "08:00:00",
+				"end_time":        "16:00:00",
 				"lesson_duration": 60,
-				"breaks": []fiber.Map{
-					{"name": "Breakfast Break", "start_time": "10:00", "end_time": "10:30"},
-					{"name": "Lunch Break", "start_time": "12:30", "end_time": "13:30"},
-				},
+				"breaks":          json.RawMessage(`[{"name":"Breakfast Break","start_time":"10:00","end_time":"10:30"},{"name":"Lunch Break","start_time":"12:30","end_time":"13:30"}]`),
 			},
 		})
 	}
 	
 	return c.JSON(fiber.Map{
-		"success":  true,
-		"settings": settings,
+		"success": true,
+		"settings": fiber.Map{
+			"days":            json.RawMessage(settings.Days),
+			"start_time":      settings.StartTime,
+			"end_time":        settings.EndTime,
+			"lesson_duration": settings.LessonDuration,
+			"breaks":          json.RawMessage(settings.Breaks),
+		},
 	})
 }
 
@@ -303,10 +307,10 @@ func SaveTimetableSettingsAPI(c *fiber.Ctx) error {
 	classID := c.Params("classId")
 	
 	type SettingsRequest struct {
-		Days           []string `json:"days"`
-		StartTime      string   `json:"start_time"`
-		EndTime        string   `json:"end_time"`
-		LessonDuration int      `json:"lesson_duration"`
+		Days           []string    `json:"days"`
+		StartTime      string      `json:"start_time"`
+		EndTime        string      `json:"end_time"`
+		LessonDuration int         `json:"lesson_duration"`
 		Breaks         []fiber.Map `json:"breaks"`
 	}
 	
@@ -317,64 +321,27 @@ func SaveTimetableSettingsAPI(c *fiber.Ctx) error {
 	
 	db := config.GetDB()
 	
-	// Convert arrays to JSON strings for storage
-	daysJSON := `[]`
-	if len(req.Days) > 0 {
-		daysJSON = `["` + req.Days[0]
-		for i := 1; i < len(req.Days); i++ {
-			daysJSON += `","` + req.Days[i]
-		}
-		daysJSON += `"]`
-	}
+	// Convert arrays to JSON strings safely
+	daysJSON, _ := json.Marshal(req.Days)
+	breaksJSON, _ := json.Marshal(req.Breaks)
 	
-	breaksJSON := `[]`
-	if len(req.Breaks) > 0 {
-		breaksJSON = `[`
-		for i, b := range req.Breaks {
-			if i > 0 {
-				breaksJSON += `,`
-			}
-			// Safely get values with type assertion
-			name := ""
-			startTime := ""
-			endTime := ""
-			if nameVal, ok := b["name"]; ok && nameVal != nil {
-				if nameStr, ok := nameVal.(string); ok {
-					name = nameStr
-				}
-			}
-			if startVal, ok := b["start_time"]; ok && startVal != nil {
-				if startStr, ok := startVal.(string); ok {
-					startTime = startStr
-				}
-			}
-			if endVal, ok := b["end_time"]; ok && endVal != nil {
-				if endStr, ok := endVal.(string); ok {
-					endTime = endStr
-				}
-			}
-			breaksJSON += `{"name":"` + name + `","start_time":"` + startTime + `","end_time":"` + endTime + `"}`
-		}
-		breaksJSON += `]`
-	}
-	
-	// Check if settings exist
+	// Check if settings exist for this class
 	var existingID string
-	err := db.QueryRow("SELECT id FROM timetable_settings WHERE class_id = $1", classID).Scan(&existingID)
+	err := db.QueryRow("SELECT id FROM timetable_settings WHERE class_id = $1 AND is_default = false", classID).Scan(&existingID)
 	
 	if err != nil {
 		// Create new settings
 		query := `INSERT INTO timetable_settings (class_id, days, start_time, end_time, lesson_duration, breaks, is_default, created_at, updated_at)
 				  VALUES ($1, $2, $3, $4, $5, $6, false, NOW(), NOW())`
 		
-		_, err = db.Exec(query, classID, daysJSON, req.StartTime, req.EndTime, req.LessonDuration, breaksJSON)
+		_, err = db.Exec(query, classID, string(daysJSON), req.StartTime, req.EndTime, req.LessonDuration, string(breaksJSON))
 	} else {
 		// Update existing settings
 		query := `UPDATE timetable_settings 
 				  SET days = $2, start_time = $3, end_time = $4, lesson_duration = $5, breaks = $6, updated_at = NOW()
-				  WHERE class_id = $1`
+				  WHERE class_id = $1 AND is_default = false`
 		
-		_, err = db.Exec(query, classID, daysJSON, req.StartTime, req.EndTime, req.LessonDuration, breaksJSON)
+		_, err = db.Exec(query, classID, string(daysJSON), req.StartTime, req.EndTime, req.LessonDuration, string(breaksJSON))
 	}
 	
 	if err != nil {
@@ -412,21 +379,35 @@ func GetDefaultTimetableSettingsAPI(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"success": true,
 			"settings": fiber.Map{
-				"days":            []string{"monday", "tuesday", "wednesday", "thursday", "friday"},
+				"days":            json.RawMessage(`["monday","tuesday","wednesday","thursday","friday"]`),
 				"start_time":      "08:00",
 				"end_time":        "16:00",
 				"lesson_duration": 60,
-				"breaks": []fiber.Map{
-					{"name": "Breakfast Break", "start_time": "10:00", "end_time": "10:30"},
-					{"name": "Lunch Break", "start_time": "12:30", "end_time": "13:30"},
-				},
+				"breaks":          json.RawMessage(`[{"name":"Breakfast Break","start_time":"10:00","end_time":"10:30"},{"name":"Lunch Break","start_time":"12:30","end_time":"13:30"}]`),
 			},
 		})
 	}
 	
+	// Return raw JSON strings for days and breaks
+	daysJSON := settings.Days
+	if daysJSON == "" {
+		daysJSON = `["monday","tuesday","wednesday","thursday","friday"]`
+	}
+	
+	breaksJSON := settings.Breaks
+	if breaksJSON == "" {
+		breaksJSON = `[{"name":"Breakfast Break","start_time":"10:00","end_time":"10:30"},{"name":"Lunch Break","start_time":"12:30","end_time":"13:30"}]`
+	}
+	
 	return c.JSON(fiber.Map{
-		"success":  true,
-		"settings": settings,
+		"success": true,
+		"settings": fiber.Map{
+			"days":            json.RawMessage(daysJSON),
+			"start_time":      settings.StartTime,
+			"end_time":        settings.EndTime,
+			"lesson_duration": settings.LessonDuration,
+			"breaks":          json.RawMessage(breaksJSON),
+		},
 	})
 }
 

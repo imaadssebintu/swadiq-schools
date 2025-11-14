@@ -133,18 +133,13 @@
             </div>
         </div>
 
-        <div class="flex justify-between p-6 border-t border-gray-200">
-            <button onclick="applyDefaultSettings()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                Apply to Classes
+        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
+            <button onclick="closeDefaultSettingsModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+                Cancel
             </button>
-            <div class="flex gap-3">
-                <button onclick="closeDefaultSettingsModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                    Cancel
-                </button>
-                <button onclick="saveDefaultSettings()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg">
-                    Save Default Settings
-                </button>
-            </div>
+            <button onclick="saveDefaultSettings()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg">
+                Save Default Settings
+            </button>
         </div>
     </div>
 </div>
@@ -309,10 +304,19 @@
                 const data = await response.json();
                 if (data.success && data.settings) {
                     const settings = data.settings;
+                    
+                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
+                    const extractTime = (timeStr) => {
+                        if (timeStr.includes('T')) {
+                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+                        }
+                        return timeStr;
+                    };
+                    
                     defaultSettings = {
                         days: typeof settings.days === 'string' ? JSON.parse(settings.days) : settings.days,
-                        startTime: settings.start_time,
-                        endTime: settings.end_time,
+                        startTime: extractTime(settings.start_time),
+                        endTime: extractTime(settings.end_time),
                         lessonDuration: settings.lesson_duration,
                         breaks: typeof settings.breaks === 'string' ? JSON.parse(settings.breaks) : settings.breaks
                     };
@@ -371,34 +375,7 @@
         loadDefaultBreaks();
     }
 
-    async function applyDefaultSettings() {
-        const applyBtn = document.querySelector('#defaultSettingsModal button[onclick="applyDefaultSettings()"]');
-        const originalText = applyBtn.textContent;
-        applyBtn.disabled = true;
-        applyBtn.textContent = 'Applying...';
-        
-        try {
-            const response = await fetch('/api/timetable/settings/apply-default', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include'
-            });
-            
-            if (response.ok) {
-                const result = await response.json();
-                showNotification(`Applied default settings to ${result.applied_count} classes`, 'success');
-            } else {
-                const error = await response.json();
-                showNotification(error.error || 'Failed to apply default settings', 'error');
-            }
-        } catch (error) {
-            console.error('Error applying default settings:', error);
-            showNotification('Failed to apply default settings', 'error');
-        } finally {
-            applyBtn.disabled = false;
-            applyBtn.textContent = originalText;
-        }
-    }
+
 
     async function saveDefaultSettings() {
         const saveBtn = document.querySelector('#defaultSettingsModal button[onclick="saveDefaultSettings()"]');
