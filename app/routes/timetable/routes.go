@@ -21,8 +21,8 @@ func SetupTimetableRoutes(app *fiber.App) {
 	// API routes
 	api := app.Group("/api/timetable")
 	api.Use(auth.AuthMiddleware)
-	api.Get("/class/:id", GetClassTimetableAPI)
-	api.Post("/class/:id", SaveClassTimetableAPI)
+	api.Get("/class/:id", GetTimetableDataAPI)
+	api.Post("/class/:id", SaveTimetableAPI)
 	api.Get("/settings/class/:classId", GetTimetableSettingsAPI)
 	api.Post("/settings/class/:classId", SaveTimetableSettingsAPI)
 	api.Get("/settings/default", GetDefaultTimetableSettingsAPI)

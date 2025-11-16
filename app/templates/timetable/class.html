@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="bg-white shadow-sm border-b border-gray-200 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -34,7 +34,7 @@
         <!-- Timetable Grid -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">Weekly Timetable</h2>
+                <h2 class="text-lg font-semibold text-gray-900">{{.class.Name}} - Weekly Timetable</h2>
             </div>
             
             <!-- Loading State -->
@@ -74,7 +74,7 @@
                 <table class="min-w-full table-auto">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Time</th>
+                            <th class="pl-8 pr-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Time</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Monday</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Tuesday</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Wednesday</th>
@@ -427,18 +427,18 @@
         tbody.innerHTML = Object.keys(timeSlots).map(timeSlot => {
             return `
                 <tr class="hover:bg-gray-50">
-                    <td class="px-2 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
+                    <td class="pl-8 pr-4 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
                     ${days.map(day => {
                         const entry = timeSlots[timeSlot][day];
                         if (entry) {
                             return `
                                 <td class="px-4 py-4">
-                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 min-w-0">
+                                    <div class="${entry.is_break ? 'bg-orange-50 border border-orange-200' : 'bg-blue-50 border border-blue-200'} rounded-lg p-3 min-w-0">
                                         <div class="flex justify-between items-start mb-1">
-                                            <div class="font-medium text-blue-900 text-sm leading-tight flex-1 min-w-0">${entry.subject_name}</div>
-                                            <div class="text-xs text-blue-600 font-mono ml-2 whitespace-nowrap flex-shrink-0">${entry.paper_code || ''}</div>
+                                            <div class="font-medium ${entry.is_break ? 'text-orange-900' : 'text-blue-900'} text-sm leading-tight flex-1 min-w-0">${entry.subject_name}</div>
+                                            ${entry.is_break ? '' : `<div class="text-xs text-blue-600 font-mono ml-2 whitespace-nowrap flex-shrink-0">${entry.paper_code || ''}</div>`}
                                         </div>
-                                        <div class="text-xs text-blue-700 whitespace-nowrap overflow-hidden text-ellipsis">${entry.teacher_name || 'No teacher assigned'}</div>
+                                        ${entry.is_break ? '' : `<div class="text-xs text-blue-700 whitespace-nowrap overflow-hidden text-ellipsis">${entry.teacher_name || 'No teacher assigned'}</div>`}
                                     </div>
                                 </td>
                             `;
@@ -977,7 +977,30 @@
     }
 
     function printTimetable() {
+        // Store original title
+        const originalTitle = document.title;
+        
+        // Set empty title for printing
+        document.title = '';
+        
+        // Add print-specific styles
+        const printStyle = document.createElement('style');
+        printStyle.textContent = `
+            @media print {
+                @page { margin: 0 !important; }
+                html, body { margin: 0 !important; padding: 0 !important; }
+            }
+        `;
+        document.head.appendChild(printStyle);
+        
+        // Print
         window.print();
+        
+        // Cleanup
+        setTimeout(() => {
+            document.title = originalTitle;
+            document.head.removeChild(printStyle);
+        }, 100);
     }
 
     function showNotification(message, type = 'info') {
@@ -1090,21 +1113,135 @@
 </script>
 
 <style>
+    /* Hide scrollbars */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    
+    html {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
     @media print {
         .no-print {
             display: none !important;
         }
         
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+        
         body {
             background: white !important;
+            margin: 0;
+            padding: 0;
         }
         
-        .bg-gray-50 {
+        /* Hide everything except timetable */
+        body * {
+            visibility: hidden;
+        }
+        
+        .bg-white.rounded-xl,
+        .bg-white.rounded-xl * {
+            visibility: visible;
+        }
+        
+        .bg-white.rounded-xl {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
             background: white !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 20px !important;
         }
         
-        .shadow-sm, .shadow-xl {
-            box-shadow: none !important;
+        /* Timetable header */
+        .px-6.py-4.border-b {
+            padding: 0 0 15px 0 !important;
+            border-bottom: 2px solid #e5e7eb !important;
+            margin-bottom: 20px !important;
         }
+        
+        .px-6.py-4.border-b h2 {
+            font-size: 18px !important;
+            font-weight: 600 !important;
+            color: #111827 !important;
+        }
+        
+        /* Table styling */
+        table {
+            width: 100% !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            font-size: 11px !important;
+        }
+        
+        /* Remove all table borders */
+        th, td {
+            border: none !important;
+            padding: 12px 8px !important;
+        }
+        
+        /* Header styling */
+        thead th {
+            background-color: #f9fafb !important;
+            font-weight: 500 !important;
+            color: #6b7280 !important;
+            text-transform: uppercase !important;
+            font-size: 10px !important;
+            letter-spacing: 0.05em !important;
+            padding: 12px 8px !important;
+        }
+        
+        /* Row styling */
+        tbody tr {
+            border-bottom: 1px solid #f3f4f6 !important;
+        }
+        
+        tbody tr:hover {
+            background: transparent !important;
+        }
+        
+        /* Subject cards */
+        .bg-blue-50, .bg-orange-50 {
+            border-radius: 6px !important;
+            padding: 8px !important;
+            margin: 2px 0 !important;
+        }
+        
+        .bg-blue-50 {
+            background-color: #eff6ff !important;
+            border: 1px solid #dbeafe !important;
+        }
+        
+        .bg-orange-50 {
+            background-color: #fff7ed !important;
+            border: 1px solid #fed7aa !important;
+        }
+        
+        /* Text colors */
+        .text-blue-900, .text-blue-700, .text-blue-600 {
+            color: #1e3a8a !important;
+        }
+        
+        .text-orange-900, .text-orange-700 {
+            color: #9a3412 !important;
+        }
+        
+        .text-gray-900 {
+            color: #111827 !important;
+        }
+        
+        .text-gray-400 {
+            color: #9ca3af !important;
+        }
+    }
+
     }
 </style>

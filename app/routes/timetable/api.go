@@ -9,46 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetTimetableAPI(c *fiber.Ctx) error {
-	db := config.GetDB()
 
-	query := `SELECT id, class_id, subject_id, teacher_id, day_of_week, start_time, end_time, room
-			  FROM timetable_entries 
-			  WHERE is_active = true 
-			  ORDER BY day_of_week, start_time`
-
-	rows, err := db.Query(query)
-	if err != nil {
-		return c.JSON(fiber.Map{
-			"entries": []interface{}{},
-			"count":   0,
-		})
-	}
-	defer rows.Close()
-
-	var entries []fiber.Map
-	for rows.Next() {
-		var id, classID, subjectID, teacherID, dayOfWeek, startTime, endTime, room string
-		if err := rows.Scan(&id, &classID, &subjectID, &teacherID, &dayOfWeek, &startTime, &endTime, &room); err != nil {
-			continue
-		}
-		entries = append(entries, fiber.Map{
-			"id":          id,
-			"class_id":    classID,
-			"subject_id":  subjectID,
-			"teacher_id":  teacherID,
-			"day_of_week": dayOfWeek,
-			"start_time":  startTime,
-			"end_time":    endTime,
-			"room":        room,
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"entries": entries,
-		"count":   len(entries),
-	})
-}
 
 func CreateTimetableEntryAPI(c *fiber.Ctx) error {
 	type CreateEntryRequest struct {
@@ -134,75 +95,9 @@ func DeleteTimetableEntryAPI(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Timetable entry deleted successfully"})
 }
 
-func GetClassTimetableAPI(c *fiber.Ctx) error {
-	classID := c.Params("id")
-	if classID == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
-	}
 
-	db := config.GetDB()
-	query := `
-		SELECT te.id, te.day_of_week, te.start_time, te.end_time,
-			   s.id as subject_id, s.name as subject_name, 
-			   p.id as paper_id, p.name as paper_name, p.code as paper_code,
-			   te.teacher_id, t.first_name || ' ' || t.last_name as teacher_name
-		FROM timetable_entries te
-		LEFT JOIN papers p ON te.paper_id = p.id
-		LEFT JOIN subjects s ON te.subject_id = s.id
-		LEFT JOIN users t ON te.teacher_id = t.id
-		WHERE te.class_id = $1 AND te.is_active = true
-		ORDER BY te.start_time, te.day_of_week
-	`
 
-	rows, err := db.Query(query, classID)
-	if err != nil {
-		log.Printf("Error fetching timetable: %v", err)
-		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch timetable", "details": err.Error()})
-	}
-	defer rows.Close()
-
-	timetable := make([]fiber.Map, 0)
-	for rows.Next() {
-		var id, day, startTime, endTime, subjectID, subjectName, paperID, paperName, paperCode, teacherID, teacherName string
-		if err := rows.Scan(&id, &day, &startTime, &endTime, &subjectID, &subjectName, &paperID, &paperName, &paperCode, &teacherID, &teacherName); err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to scan timetable entry", "details": err.Error()})
-		}
-		// Format time to HH:MM
-		formatTime := func(timeStr string) string {
-			if timeStr == "" {
-				return "00:00"
-			}
-			// Handle different time formats
-			if len(timeStr) >= 8 && timeStr[2] == ':' && timeStr[5] == ':' {
-				return timeStr[:5] // Extract HH:MM from HH:MM:SS
-			}
-			if len(timeStr) >= 5 && timeStr[2] == ':' {
-				return timeStr[:5] // Already HH:MM format
-			}
-			return timeStr
-		}
-		
-		timetable = append(timetable, fiber.Map{
-			"id":           id,
-			"day":          day,
-			"time_slot":    fmt.Sprintf("%s - %s", formatTime(startTime), formatTime(endTime)),
-			"subject_id":   subjectID,
-			"subject_name": subjectName,
-			"paper_id":     paperID,
-			"paper_name":   paperName,
-			"paper_code":   paperCode,
-			"teacher_id":   teacherID,
-			"teacher_name": teacherName,
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"success":   true,
-		"timetable": timetable,
-	})
-}
-
-func SaveClassTimetableAPI(c *fiber.Ctx) error {
+func SaveTimetableAPI(c *fiber.Ctx) error {
 	classID := c.Params("id")
 	if classID == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
@@ -221,49 +116,59 @@ func SaveClassTimetableAPI(c *fiber.Ctx) error {
 
 	var req TimetableRequest
 	if err := c.BodyParser(&req); err != nil {
+		log.Printf("Error parsing request body: %v", err)
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
 	}
+
+	log.Printf("Received timetable save request for class %s with %d entries", classID, len(req.Timetable))
 
 	db := config.GetDB()
 	tx, err := db.Begin()
 	if err != nil {
+		log.Printf("Error starting transaction: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to start transaction"})
 	}
 	defer tx.Rollback()
 
 	// Delete existing timetable for the class
 	if _, err := tx.Exec("DELETE FROM timetable_entries WHERE class_id = $1", classID); err != nil {
+		log.Printf("Error clearing existing timetable: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing timetable"})
 	}
 
-	for _, entry := range req.Timetable {
-		if entry.PaperID == "" {
-			continue // Skip entries without a paper
+	for i, entry := range req.Timetable {
+		if entry.PaperID == "" || entry.TeacherID == "" {
+			continue // Skip entries without paper or teacher
 		}
 
 		// Get subject_id from paper
 		var subjectID string
 		err := tx.QueryRow("SELECT subject_id FROM papers WHERE id = $1", entry.PaperID).Scan(&subjectID)
 		if err != nil {
-			// If paper is not found, we can either skip or return an error
-			// For now, let's skip it
+			log.Printf("Error getting subject for paper %s: %v", entry.PaperID, err)
+			continue
+		}
+
+		// Extract start and end times from time_slot
+		var startTime, endTime string
+		n, err := fmt.Sscanf(entry.TimeSlot, "%s - %s", &startTime, &endTime)
+		if n != 2 || err != nil {
+			log.Printf("Error parsing time slot '%s': %v", entry.TimeSlot, err)
 			continue
 		}
 
 		query := `INSERT INTO timetable_entries (class_id, subject_id, paper_id, teacher_id, day_of_week, start_time, end_time, is_active, created_at, updated_at)
 				  VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW(), NOW())`
 
-		// Extract start and end times from time_slot
-		var startTime, endTime string
-		fmt.Sscanf(entry.TimeSlot, "%s - %s", &startTime, &endTime)
-
 		_, err = tx.Exec(query, classID, subjectID, entry.PaperID, entry.TeacherID, entry.Day, startTime, endTime)
 		if err != nil {
+			log.Printf("Error inserting timetable entry %d: %v", i, err)
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to create timetable entry", "details": err.Error()})
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
+		log.Printf("Error committing transaction: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to commit transaction"})
 	}
 
@@ -271,6 +176,257 @@ func SaveClassTimetableAPI(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Timetable saved successfully",
 	})
+}
+
+func GetTimetableDataAPI(c *fiber.Ctx) error {
+	classID := c.Params("id")
+	if classID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
+	}
+
+	db := config.GetDB()
+
+	// Get existing timetable entries
+	timetableQuery := `
+		SELECT te.id, te.day_of_week, te.start_time, te.end_time,
+			   s.id as subject_id, s.name as subject_name, 
+			   te.paper_id, COALESCE(p.code, '') as paper_name, COALESCE(p.code, '') as paper_code,
+			   te.teacher_id, t.first_name || ' ' || t.last_name as teacher_name
+		FROM timetable_entries te
+		LEFT JOIN papers p ON te.paper_id = p.id
+		LEFT JOIN subjects s ON te.subject_id = s.id
+		LEFT JOIN users t ON te.teacher_id = t.id
+		WHERE te.class_id = $1 AND te.is_active = true
+		ORDER BY te.start_time, te.day_of_week
+	`
+
+	timetableRows, err := db.Query(timetableQuery, classID)
+	if err != nil {
+		log.Printf("Error fetching timetable: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch timetable", "details": err.Error()})
+	}
+	defer timetableRows.Close()
+
+	timetable := make([]fiber.Map, 0)
+	for timetableRows.Next() {
+		var id, day, startTime, endTime, subjectID, subjectName, teacherID, teacherName, paperName, paperCode string
+		var paperID *string
+		if err := timetableRows.Scan(&id, &day, &startTime, &endTime, &subjectID, &subjectName, &paperID, &paperName, &paperCode, &teacherID, &teacherName); err != nil {
+			log.Printf("Error scanning timetable row: %v", err)
+			continue
+		}
+		
+		paperIDStr := ""
+		if paperID != nil {
+			paperIDStr = *paperID
+		}
+		
+		// Format time properly
+		formatTime := func(timeStr string) string {
+			if timeStr == "" {
+				return "00:00"
+			}
+			// Handle PostgreSQL time format: 0000-01-01T07:20:00Z
+			if len(timeStr) > 11 && timeStr[10] == 'T' {
+				// Extract time part after T
+				timePart := timeStr[11:]
+				if len(timePart) >= 5 {
+					return timePart[:5]
+				}
+			}
+			// Handle HH:MM:SS format
+			if len(timeStr) >= 8 && timeStr[2] == ':' && timeStr[5] == ':' {
+				return timeStr[:5]
+			}
+			// Handle HH:MM format
+			if len(timeStr) >= 5 && timeStr[2] == ':' {
+				return timeStr[:5]
+			}
+			return timeStr
+		}
+		
+		timetable = append(timetable, fiber.Map{
+			"id":           id,
+			"day":          day,
+			"time_slot":    fmt.Sprintf("%s - %s", formatTime(startTime), formatTime(endTime)),
+			"subject_id":   subjectID,
+			"subject_name": subjectName,
+			"paper_id":     paperIDStr,
+			"paper_name":   paperName,
+			"paper_code":   paperCode,
+			"teacher_id":   teacherID,
+			"teacher_name": teacherName,
+		})
+	}
+
+	// Get all subjects
+	subjectsQuery := `SELECT id, name FROM subjects WHERE is_active = true ORDER BY name`
+	subjectsRows, err := db.Query(subjectsQuery)
+	if err != nil {
+		log.Printf("Error fetching subjects: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch subjects"})
+	}
+	defer subjectsRows.Close()
+
+	subjects := make([]fiber.Map, 0)
+	for subjectsRows.Next() {
+		var id, name string
+		if err := subjectsRows.Scan(&id, &name); err != nil {
+			continue
+		}
+		subjects = append(subjects, fiber.Map{"id": id, "name": name})
+	}
+
+	// Get all papers
+	papersQuery := `SELECT p.id, p.code as name, p.subject_id, s.name as subject_name FROM papers p LEFT JOIN subjects s ON p.subject_id = s.id WHERE p.is_active = true ORDER BY s.name, p.code`
+	papersRows, err := db.Query(papersQuery)
+	if err != nil {
+		log.Printf("Error fetching papers: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch papers"})
+	}
+	defer papersRows.Close()
+
+	papers := make([]fiber.Map, 0)
+	for papersRows.Next() {
+		var id, name, subjectID, subjectName string
+		if err := papersRows.Scan(&id, &name, &subjectID, &subjectName); err != nil {
+			continue
+		}
+		papers = append(papers, fiber.Map{
+			"id":           id,
+			"name":         name,
+			"subject_id":   subjectID,
+			"subject_name": subjectName,
+		})
+	}
+
+	// Get all teachers - check if role column exists
+	teachersQuery := `SELECT id, first_name || ' ' || last_name as name FROM users WHERE is_active = true ORDER BY first_name, last_name`
+	teachersRows, err := db.Query(teachersQuery)
+	if err != nil {
+		log.Printf("Error fetching teachers: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch teachers"})
+	}
+	defer teachersRows.Close()
+
+	teachers := make([]fiber.Map, 0)
+	for teachersRows.Next() {
+		var id, name string
+		if err := teachersRows.Scan(&id, &name); err != nil {
+			continue
+		}
+		teachers = append(teachers, fiber.Map{"id": id, "name": name})
+	}
+
+	// Get timetable settings for breaks
+	settingsQuery := `SELECT days, start_time, end_time, lesson_duration, breaks FROM timetable_settings WHERE class_id = $1 AND is_default = false LIMIT 1`
+	var settings struct {
+		Days           string
+		StartTime      string
+		EndTime        string
+		LessonDuration int
+		Breaks         string
+	}
+	
+	err = db.QueryRow(settingsQuery, classID).Scan(&settings.Days, &settings.StartTime, &settings.EndTime, &settings.LessonDuration, &settings.Breaks)
+	if err != nil {
+		// Use default settings
+		settings.Days = `["monday","tuesday","wednesday","thursday","friday"]`
+		settings.StartTime = "08:00"
+		settings.EndTime = "16:00"
+		settings.LessonDuration = 60
+		settings.Breaks = `[{"name":"Breakfast Break","start_time":"10:00","end_time":"10:20"},{"name":"Lunch Break","start_time":"13:00","end_time":"14:00"}]`
+	}
+
+	// Generate complete schedule with breaks
+	completeSchedule := generateCompleteSchedule(timetable, settings)
+
+	return c.JSON(fiber.Map{
+		"success":   true,
+		"timetable": completeSchedule,
+		"subjects":  subjects,
+		"papers":    papers,
+		"teachers":  teachers,
+		"settings": fiber.Map{
+			"days":            json.RawMessage(settings.Days),
+			"start_time":      settings.StartTime,
+			"end_time":        settings.EndTime,
+			"lesson_duration": settings.LessonDuration,
+			"breaks":          json.RawMessage(settings.Breaks),
+		},
+	})
+}
+
+func generateCompleteSchedule(timetable []fiber.Map, settings struct {
+	Days           string
+	StartTime      string
+	EndTime        string
+	LessonDuration int
+	Breaks         string
+}) []fiber.Map {
+	// Parse breaks
+	var breaks []struct {
+		Name      string `json:"name"`
+		StartTime string `json:"start_time"`
+		EndTime   string `json:"end_time"`
+	}
+	if settings.Breaks != "" {
+		json.Unmarshal([]byte(settings.Breaks), &breaks)
+	}
+
+	// Add break entries to the timetable
+	for _, breakItem := range breaks {
+		timeSlot := fmt.Sprintf("%s - %s", breakItem.StartTime, breakItem.EndTime)
+		
+		// Create break entry for each day
+		days := []string{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
+		for _, day := range days {
+			breakEntry := fiber.Map{
+				"id":           fmt.Sprintf("break-%s-%s", day, breakItem.StartTime),
+				"day":          day,
+				"time_slot":    timeSlot,
+				"subject_id":   "BREAK",
+				"subject_name": breakItem.Name,
+				"paper_id":     "",
+				"paper_name":   "",
+				"teacher_id":   "",
+				"teacher_name": "",
+				"is_break":     true,
+				"start_time":   breakItem.StartTime,
+			}
+			timetable = append(timetable, breakEntry)
+		}
+	}
+
+	// Sort all entries by start time
+	for i := 0; i < len(timetable)-1; i++ {
+		for j := i + 1; j < len(timetable); j++ {
+			var timeI, timeJ string
+			if startTimeI, ok := timetable[i]["start_time"]; ok {
+				timeI = startTimeI.(string)
+			} else {
+				// Extract from time_slot for regular entries
+				timeSlotI := timetable[i]["time_slot"].(string)
+				if parts := fmt.Sprintf("%s", timeSlotI); len(parts) > 0 {
+					timeI = timeSlotI[:5]
+				}
+			}
+			if startTimeJ, ok := timetable[j]["start_time"]; ok {
+				timeJ = startTimeJ.(string)
+			} else {
+				// Extract from time_slot for regular entries
+				timeSlotJ := timetable[j]["time_slot"].(string)
+				if parts := fmt.Sprintf("%s", timeSlotJ); len(parts) > 0 {
+					timeJ = timeSlotJ[:5]
+				}
+			}
+			if timeI > timeJ {
+				timetable[i], timetable[j] = timetable[j], timetable[i]
+			}
+		}
+	}
+
+	return timetable
 }
 
 // Timetable Settings APIs
