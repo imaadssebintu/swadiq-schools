@@ -143,8 +143,9 @@ func GetClassTimetableAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
 	query := `
 		SELECT te.id, te.day_of_week, te.start_time, te.end_time,
-			   s.name as subject_name, p.name as paper_name,
-			   t.first_name || ' ' || t.last_name as teacher_name
+			   s.id as subject_id, s.name as subject_name, 
+			   p.id as paper_id, p.name as paper_name, p.code as paper_code,
+			   te.teacher_id, t.first_name || ' ' || t.last_name as teacher_name
 		FROM timetable_entries te
 		LEFT JOIN papers p ON te.paper_id = p.id
 		LEFT JOIN subjects s ON te.subject_id = s.id
@@ -162,16 +163,35 @@ func GetClassTimetableAPI(c *fiber.Ctx) error {
 
 	timetable := make([]fiber.Map, 0)
 	for rows.Next() {
-		var id, day, startTime, endTime, subjectName, paperName, teacherName string
-		if err := rows.Scan(&id, &day, &startTime, &endTime, &subjectName, &paperName, &teacherName); err != nil {
+		var id, day, startTime, endTime, subjectID, subjectName, paperID, paperName, paperCode, teacherID, teacherName string
+		if err := rows.Scan(&id, &day, &startTime, &endTime, &subjectID, &subjectName, &paperID, &paperName, &paperCode, &teacherID, &teacherName); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to scan timetable entry", "details": err.Error()})
 		}
+		// Format time to HH:MM
+		formatTime := func(timeStr string) string {
+			if timeStr == "" {
+				return "00:00"
+			}
+			// Handle different time formats
+			if len(timeStr) >= 8 && timeStr[2] == ':' && timeStr[5] == ':' {
+				return timeStr[:5] // Extract HH:MM from HH:MM:SS
+			}
+			if len(timeStr) >= 5 && timeStr[2] == ':' {
+				return timeStr[:5] // Already HH:MM format
+			}
+			return timeStr
+		}
+		
 		timetable = append(timetable, fiber.Map{
 			"id":           id,
 			"day":          day,
-			"time_slot":    fmt.Sprintf("%s - %s", startTime, endTime),
+			"time_slot":    fmt.Sprintf("%s - %s", formatTime(startTime), formatTime(endTime)),
+			"subject_id":   subjectID,
 			"subject_name": subjectName,
+			"paper_id":     paperID,
 			"paper_name":   paperName,
+			"paper_code":   paperCode,
+			"teacher_id":   teacherID,
 			"teacher_name": teacherName,
 		})
 	}
@@ -183,7 +203,7 @@ func GetClassTimetableAPI(c *fiber.Ctx) error {
 }
 
 func SaveClassTimetableAPI(c *fiber.Ctx) error {
-	classID := c.Params("classId")
+	classID := c.Params("id")
 	if classID == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
 	}

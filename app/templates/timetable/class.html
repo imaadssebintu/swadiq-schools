@@ -80,6 +80,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wednesday</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thursday</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saturday</th>
                         </tr>
                     </thead>
                     <tbody id="timetableBody" class="bg-white divide-y divide-gray-200">
@@ -232,7 +233,7 @@
 <script>
     const classID = '{{.classID}}';
     let timetableSettings = {
-        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
         startTime: '08:00',
         endTime: '16:00',
         lessonDuration: 60,
@@ -385,6 +386,27 @@
         }
     }
 
+    function formatTimeSlot(timeSlot) {
+        // Extract time from ISO format like "0000-01-01T07:20:00Z - 0000-01-01T08:40:00Z"
+        const parts = timeSlot.split(' - ');
+        if (parts.length === 2) {
+            const startTime = parts[0].includes('T') ? parts[0].split('T')[1].substring(0, 5) : parts[0];
+            const endTime = parts[1].includes('T') ? parts[1].split('T')[1].substring(0, 5) : parts[1];
+            
+            // Convert to 12-hour format with AM/PM
+            const formatTo12Hour = (time24) => {
+                const [hours, minutes] = time24.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                return `${displayHour}:${minutes} ${ampm}`;
+            };
+            
+            return `${formatTo12Hour(startTime)}<br>${formatTo12Hour(endTime)}`;
+        }
+        return timeSlot;
+    }
+
     function displayTimetable(timetable) {
         const tbody = document.getElementById('timetableBody');
         
@@ -397,21 +419,23 @@
             timeSlots[entry.time_slot][entry.day] = entry;
         });
 
-        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
         
         tbody.innerHTML = Object.keys(timeSlots).map(timeSlot => {
             return `
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-4 font-medium text-gray-900">${timeSlot}</td>
+                    <td class="px-4 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
                     ${days.map(day => {
                         const entry = timeSlots[timeSlot][day];
                         if (entry) {
                             return `
                                 <td class="px-4 py-4">
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                        <div class="font-medium text-blue-900">${entry.paper_name}</div>
+                                        <div class="flex justify-between items-center">
+                                            <div class="font-medium text-blue-900">${entry.subject_name}</div>
+                                            <div class="text-xs text-blue-600">${entry.paper_code || ''}</div>
+                                        </div>
                                         <div class="text-sm text-blue-700">${entry.teacher_name || 'No teacher assigned'}</div>
-                                        <div class="text-xs text-blue-600">${entry.room || 'No room assigned'}</div>
                                     </div>
                                 </td>
                             `;
@@ -440,19 +464,23 @@
         content.innerHTML = '<div class="text-center py-4">Loading...</div>';
         
         try {
-            // Load subjects for this class
-            const subjectsResponse = await fetch(`/api/classes/${classID}/subjects`);
+            // Load subjects and existing timetable for this class
+            const [subjectsResponse, timetableResponse] = await Promise.all([
+                fetch(`/api/classes/${classID}/subjects`),
+                fetch(`/api/timetable/class/${classID}`)
+            ]);
             
             const subjectsData = await subjectsResponse.json();
-            
-            console.log('Subjects data:', subjectsData);
+            const timetableData = await timetableResponse.json();
             
             const subjects = subjectsData.subjects || [];
-            
-            console.log('Parsed subjects:', subjects);
+            const existingTimetable = timetableData.timetable || [];
             
             // Create edit form
             content.innerHTML = createEditTimetableForm(subjects);
+            
+            // Load existing timetable entries
+            await loadExistingTimetableEntries(existingTimetable);
         } catch (error) {
             console.error('Error loading edit form:', error);
             content.innerHTML = '<div class="text-red-500 text-center py-4">Error loading form</div>';
@@ -963,6 +991,98 @@
         setTimeout(() => {
             notification.remove();
         }, 5000);
+    }
+    async function loadExistingTimetableEntries(timetable) {
+        console.log('Loading existing timetable entries:', timetable);
+        
+        for (const entry of timetable) {
+            let timeSlot = entry.time_slot;
+            const day = entry.day;
+            
+            // Convert time format from "0000-01-01T07:20:00Z - 0000-01-01T08:40:00Z" to "07:20 - 08:40"
+            const parts = timeSlot.split(' - ');
+            if (parts.length === 2) {
+                const startTime = parts[0].includes('T') ? parts[0].split('T')[1].substring(0, 5) : parts[0];
+                const endTime = parts[1].includes('T') ? parts[1].split('T')[1].substring(0, 5) : parts[1];
+                timeSlot = `${startTime} - ${endTime}`;
+            }
+            
+            console.log(`Loading entry for ${day} at ${timeSlot}:`, entry);
+            
+            // Find the selects for this time slot and day
+            const subjectSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='subject']`);
+            const paperSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='paper']`);
+            const teacherSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='teacher']`);
+            
+            console.log('Found selects:', { subjectSelect: !!subjectSelect, paperSelect: !!paperSelect, teacherSelect: !!teacherSelect });
+            
+            if (!subjectSelect || !paperSelect || !teacherSelect) {
+                console.log('Missing selects for', timeSlot, day);
+                continue;
+            }
+            
+            try {
+                // Set subject
+                if (entry.subject_id) {
+                    console.log('Setting subject:', entry.subject_id);
+                    subjectSelect.value = entry.subject_id;
+                    
+                    // Manually load papers for this subject
+                    try {
+                        const response = await fetch(`/api/papers/subject/${entry.subject_id}`);
+                        const data = await response.json();
+                        
+                        paperSelect.innerHTML = '<option value="">Select Paper</option>';
+                        if (data.papers) {
+                            data.papers.forEach(paper => {
+                                const option = document.createElement('option');
+                                option.value = paper.id;
+                                option.textContent = paper.name;
+                                paperSelect.appendChild(option);
+                            });
+                        }
+                        paperSelect.disabled = false;
+                        
+                        // Set paper
+                        if (entry.paper_id) {
+                            console.log('Setting paper:', entry.paper_id);
+                            paperSelect.value = entry.paper_id;
+                            
+                            // Manually load teachers for this paper
+                            let teacherResponse = await fetch(`/api/teachers/for-timetable?paper_id=${entry.paper_id}&day_of_week=${day}&start_time=${timeSlot.split(' - ')[0]}&end_time=${timeSlot.split(' - ')[1]}`);
+                            let teacherData = await teacherResponse.json();
+                            
+                            // If no available teachers found, load all teachers for this paper
+                            if (!teacherData.teachers || teacherData.teachers.length === 0) {
+                                teacherResponse = await fetch(`/api/teachers/for-timetable?paper_id=${entry.paper_id}`);
+                                teacherData = await teacherResponse.json();
+                            }
+                            
+                            teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+                            if (teacherData.teachers) {
+                                teacherData.teachers.forEach(teacher => {
+                                    const option = document.createElement('option');
+                                    option.value = teacher.id;
+                                    option.textContent = `${teacher.first_name} ${teacher.last_name}`;
+                                    teacherSelect.appendChild(option);
+                                });
+                            }
+                            teacherSelect.disabled = false;
+                            
+                            // Set teacher
+                            if (entry.teacher_id) {
+                                console.log('Setting teacher:', entry.teacher_id);
+                                teacherSelect.value = entry.teacher_id;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error loading papers/teachers:', error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading entry:', error);
+            }
+        }
     }
 </script>
 

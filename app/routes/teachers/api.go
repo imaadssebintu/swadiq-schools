@@ -730,3 +730,45 @@ func UpdateTeacherAvailabilityAPI(c *fiber.Ctx) error {
 		"message": "Teacher availability updated successfully",
 	})
 }
+
+func RemoveTeacherSubjectAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	subjectID := c.Params("subjectId")
+	paperID := c.Query("paper_id")
+
+	db := config.GetDB()
+
+	if paperID != "" {
+		// Remove specific paper
+		_, err := db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2 AND paper_id = $3`, teacherID, subjectID, paperID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to remove paper"})
+		}
+
+		// Check if this was the last paper for this subject
+		var count int
+		err = db.QueryRow(`SELECT COUNT(*) FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID).Scan(&count)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to check remaining papers"})
+		}
+
+		// If no papers left, remove the subject entirely
+		if count == 0 {
+			_, err = db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to remove subject"})
+			}
+		}
+	} else {
+		// Remove entire subject (all papers)
+		_, err := db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to remove subject"})
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Subject/paper removed successfully",
+	})
+}

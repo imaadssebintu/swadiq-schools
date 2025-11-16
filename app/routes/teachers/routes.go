@@ -31,6 +31,7 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api.Delete("/:id", DeleteTeacherAPI)
 	api.Get("/:id/subjects", GetTeacherSubjectsAPI)
 	api.Post("/:id/subjects", AssignTeacherSubjectsAPI)
+	api.Delete("/:id/subjects/:subjectId", RemoveTeacherSubjectAPI)
 	api.Get("/:id/availability", GetTeacherAvailabilityAPI)
 	api.Post("/:id/availability", UpdateTeacherAvailabilityAPI)
 }

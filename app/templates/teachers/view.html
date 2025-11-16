@@ -360,9 +360,14 @@ async function loadTeacherSubjects() {
                     const papersHtml = papers.length > 0 ? `
                         <div class="mt-2 space-y-1">
                             ${papers.map(paper => `
-                                <div class="flex items-center text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                                    <i class="fas fa-file-alt mr-1"></i>
-                                    ${paper.name} (${paper.code})
+                                <div class="flex items-center justify-between text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        ${paper.name} (${paper.code})
+                                    </div>
+                                    <button onclick="removeTeacherPaper('${subject.id}', '${paper.id}')" class="text-red-500 hover:text-red-700 ml-2">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             `).join('')}
                         </div>
@@ -375,8 +380,13 @@ async function loadTeacherSubjects() {
                                     <h3 class="font-medium text-gray-900">${subject.name}</h3>
                                     <p class="text-sm text-gray-500">${subject.code}</p>
                                 </div>
-                                <div class="text-xs text-gray-400">
-                                    ${papers.length} paper${papers.length !== 1 ? 's' : ''}
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-400">
+                                        ${papers.length} paper${papers.length !== 1 ? 's' : ''}
+                                    </span>
+                                    <button onclick="removeTeacherSubject('${subject.id}')" class="text-red-500 hover:text-red-700 text-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                             ${papersHtml}
@@ -562,7 +572,6 @@ async function handleSaveAvailability() {
         });
 
         if (response.ok) {
-            alert('Teacher availability updated successfully!');
             loadTeacherAvailability();
         } else {
             const error = await response.json();
@@ -715,6 +724,54 @@ async function handleAssignSubjects(e) {
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
+    }
+}
+
+async function removeTeacherSubject(subjectId) {
+    if (!confirm('Are you sure you want to remove this entire subject and all its papers?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadTeacherSubjects();
+            loadTeacherData();
+            alert('Subject removed successfully!');
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to remove subject'));
+        }
+    } catch (error) {
+        console.error('Error removing subject:', error);
+        alert('Error removing subject');
+    }
+}
+
+async function removeTeacherPaper(subjectId, paperId) {
+    if (!confirm('Are you sure you want to remove this paper? If this is the last paper, the entire subject will be removed.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}?paper_id=${paperId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadTeacherSubjects();
+            loadTeacherData();
+            alert('Paper removed successfully!');
+        } else {
+            const error = await response.json();
+            alert('Error: ' + (error.error || 'Failed to remove paper'));
+        }
+    } catch (error) {
+        console.error('Error removing paper:', error);
+        alert('Error removing paper');
     }
 }
 </script>
