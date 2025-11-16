@@ -71,16 +71,16 @@
 
             <!-- Timetable Content -->
             <div id="timetableContent" class="hidden overflow-x-auto">
-                <table class="w-full">
+                <table class="min-w-full table-auto">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuesday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wednesday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thursday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Friday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saturday</th>
+                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Time</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Monday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Tuesday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Wednesday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Thursday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Friday</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Saturday</th>
                         </tr>
                     </thead>
                     <tbody id="timetableBody" class="bg-white divide-y divide-gray-200">
@@ -402,7 +402,10 @@
                 return `${displayHour}:${minutes} ${ampm}`;
             };
             
-            return `${formatTo12Hour(startTime)}<br>${formatTo12Hour(endTime)}`;
+            return `<div class="text-xs leading-tight">
+                        <div class="whitespace-nowrap">${formatTo12Hour(startTime)}</div>
+                        <div class="whitespace-nowrap">${formatTo12Hour(endTime)}</div>
+                    </div>`;
         }
         return timeSlot;
     }
@@ -424,18 +427,18 @@
         tbody.innerHTML = Object.keys(timeSlots).map(timeSlot => {
             return `
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
+                    <td class="px-2 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
                     ${days.map(day => {
                         const entry = timeSlots[timeSlot][day];
                         if (entry) {
                             return `
                                 <td class="px-4 py-4">
-                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                        <div class="flex justify-between items-center">
-                                            <div class="font-medium text-blue-900">${entry.subject_name}</div>
-                                            <div class="text-xs text-blue-600">${entry.paper_code || ''}</div>
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 min-w-0">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <div class="font-medium text-blue-900 text-sm leading-tight flex-1 min-w-0">${entry.subject_name}</div>
+                                            <div class="text-xs text-blue-600 font-mono ml-2 whitespace-nowrap flex-shrink-0">${entry.paper_code || ''}</div>
                                         </div>
-                                        <div class="text-sm text-blue-700">${entry.teacher_name || 'No teacher assigned'}</div>
+                                        <div class="text-xs text-blue-700 whitespace-nowrap overflow-hidden text-ellipsis">${entry.teacher_name || 'No teacher assigned'}</div>
                                     </div>
                                 </td>
                             `;
