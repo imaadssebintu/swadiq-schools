@@ -35,10 +35,10 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Teacher</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
+                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Class Teacher</th>
+                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
+                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="classesTableBody" class="bg-white divide-y divide-gray-200">
@@ -211,33 +211,37 @@
 
         tableBody.innerHTML = classes.map(classItem => `
             <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3">
+                <td class="px-2 sm:px-4 py-3">
                     <div class="flex items-center">
-                        <div class="bg-primary-100 p-2 rounded-lg mr-3">
-                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-primary-100 p-1 sm:p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">${classItem.name}</p>
+                        <div class="min-w-0">
+                            <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">${classItem.name}</p>
                             <p class="text-xs text-gray-500">Code: ${classItem.code || 'N/A'}</p>
                         </div>
                     </div>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-900">
-                    ${classItem.teacher ?
-                        `${classItem.teacher.first_name} ${classItem.teacher.last_name}` :
-                        '<span class="text-gray-400">Not assigned</span>'
-                    }
+                <td class="px-2 sm:px-4 py-3 text-xs sm:text-sm text-gray-900">
+                    <div class="truncate">
+                        ${classItem.teacher ?
+                            `${classItem.teacher.first_name} ${classItem.teacher.last_name}` :
+                            '<span class="text-gray-400">Not assigned</span>'
+                        }
+                    </div>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-900">
-                    ${classItem.student_count && classItem.student_count > 0 ?
-                        `${classItem.student_count} students` :
-                        '<span class="text-gray-400">No students</span>'
-                    }
+                <td class="px-2 sm:px-4 py-3 text-xs sm:text-sm text-gray-900">
+                    <div class="whitespace-nowrap">
+                        ${classItem.student_count && classItem.student_count > 0 ?
+                            `${classItem.student_count} students` :
+                            '<span class="text-gray-400">No students</span>'
+                        }
+                    </div>
                 </td>
-                <td class="px-4 py-3">
-                    <a href="/timetable/class/${classItem.id}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                <td class="px-2 sm:px-4 py-3">
+                    <a href="/timetable/class/${classItem.id}" class="text-primary-600 hover:text-primary-800 text-xs sm:text-sm font-medium whitespace-nowrap">
                         View Timetable
                     </a>
                 </td>
