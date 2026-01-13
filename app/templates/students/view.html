@@ -235,14 +235,8 @@
                             class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
                 </div>
 
-                <!-- Quick Search / Actions -->
+                <!-- Quick Actions -->
                 <div class="flex items-center gap-2">
-                    <div class="relative">
-                        <i
-                            class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
-                        <input type="text" placeholder="Search records..."
-                            class="pl-8 pr-3 py-2 bg-white border border-slate-200 rounded text-[10px] font-medium focus:ring-2 focus:ring-indigo-500/10 outline-none w-40 transition-all">
-                    </div>
                     <button
                         class="p-2 bg-white border border-slate-200 rounded text-slate-500 hover:text-indigo-600 transition-all">
                         <i class="fas fa-download text-xs"></i>
@@ -319,16 +313,13 @@
                             <tr>
                                 <th
                                     class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Description</th>
+                                    Code</th>
                                 <th
                                     class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
                                     Academic Info</th>
                                 <th
-                                    class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Revenue</th>
-                                <th
                                     class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Balance</th>
+                                    Financials</th>
                                 <th
                                     class="px-6 py-3 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
                                     Status</th>
@@ -339,52 +330,113 @@
                         </thead>
                         <tbody id="studentFeesTableBody" class="divide-y divide-slate-100">
                             <!-- Skeletons -->
-                            <tr>
+                            <tr class="animate-pulse">
                                 <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-32"></div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="h-4 bg-slate-200 rounded w-16"></div> <!-- Code -->
+                                        <div class="h-3.5 bg-slate-100 rounded w-24"></div> <!-- Ref -->
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-24"></div>
+                                    <div class="flex flex-col gap-2">
+                                        <div class="h-3 bg-slate-200 rounded w-24"></div> <!-- Year -->
+                                        <div class="h-3 bg-slate-100 rounded w-20"></div> <!-- Term -->
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-32 ml-auto"></div>
+                                    <div class="max-w-[120px] md:ml-auto space-y-2">
+                                        <div class="h-3.5 bg-slate-200 rounded w-24 ml-auto"></div> <!-- Amount -->
+                                        <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
+                                        <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Balance -->
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-20 ml-auto"></div>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-16 mx-auto"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-20 ml-auto"></div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-24"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-20"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-28 ml-auto"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-24 ml-auto"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-16 mx-auto"></div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="skeleton-row-cell w-20 ml-auto"></div>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
                                 </td>
                             </tr>
-                        </tbody>
-                        <div class="skeleton-row-cell w-24 ml-auto"></div>
-                        </td>
-                        </tr>
+                            <tr class="animate-pulse">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col gap-1.5">
+                                        <div class="h-4 bg-slate-200 rounded w-14"></div> <!-- Code -->
+                                        <div class="h-3.5 bg-slate-100 rounded w-20"></div> <!-- Ref -->
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="h-3 bg-slate-200 rounded w-20"></div> <!-- Year -->
+                                        <div class="h-3 bg-slate-100 rounded w-16"></div> <!-- Term -->
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="max-w-[120px] md:ml-auto space-y-2">
+                                        <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Amount -->
+                                        <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
+                                        <div class="h-3.5 bg-slate-200 rounded w-16 ml-auto"></div> <!-- Balance -->
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Payment History Section -->
+                <div class="mt-8 bg-white border border-slate-100 rounded shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-history text-indigo-500 text-xs"></i>
+                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Payment History</h3>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-100/50">
+                                <tr>
+                                    <th
+                                        class="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                                        Date & Method</th>
+                                    <th
+                                        class="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                                        Fees Paid</th>
+                                    <th
+                                        class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                                        Amount</th>
+                                    <th
+                                        class="px-6 py-3 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentHistoryTableBody" class="divide-y divide-slate-100 text-sm">
+                                <!-- Skeletons -->
+                                <tr class="animate-pulse">
+                                    <td class="px-6 py-4">
+                                        <div class="space-y-2">
+                                            <div class="h-4 bg-slate-200 rounded w-24"></div>
+                                            <div class="h-3 bg-slate-100 rounded w-16"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="h-4 bg-slate-100 rounded w-32"></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="h-4 bg-slate-200 rounded w-20 ml-auto"></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -563,7 +615,102 @@
             // Open Add Fee Modal Trigger
             const addBtn = document.getElementById('addFeeForStudentBtn');
             if (addBtn) addBtn.addEventListener('click', openAddFeeModal);
+
+            loadStudentPayments();
         });
+
+        async function loadStudentPayments() {
+            const container = document.getElementById('paymentHistoryTableBody');
+
+            try {
+                const res = await fetch(`/api/fees/student/${studentID}/payments`);
+                const result = await res.json();
+
+                if (result.success && result.data) {
+                    renderPayments(result.data);
+                } else {
+                    container.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No payment history found</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error loading payments:', error);
+                container.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-rose-500 text-xs font-bold">Failed to load payment history</td></tr>`;
+            }
+        }
+
+        function renderPayments(payments) {
+            const container = document.getElementById('paymentHistoryTableBody');
+            if (!payments || payments.length === 0) {
+                container.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No payment history recorded yet</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = payments.map(p => {
+                const date = new Date(p.payment_date).toLocaleDateString();
+                const method = p.payment_method;
+                const total = new Intl.NumberFormat().format(p.total_amount);
+
+                // Formating allocations display
+                const allocationsHtml = p.allocations.map(a => {
+                    const cumulativePaid = a.total_fee_amount - a.balance;
+                    return `
+                    <div class="flex flex-col gap-1 mt-2 first:mt-0 p-2 bg-slate-50/50 rounded border border-slate-100/50 min-w-[200px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-bold uppercase tracking-wider">${a.fee_type_name}</span>
+                            ${a.is_fully_paid ? '<i class="fas fa-check-circle text-emerald-500 text-[10px]"></i>' : ''}
+                        </div>
+                        
+                        <!-- Payment Context -->
+                        <div class="flex items-center justify-between text-[10px] font-bold">
+                            <div class="flex items-center gap-1.5 whitespace-nowrap">
+                                <span class="text-slate-400 uppercase tracking-tighter text-[9px]">Now Paid:</span>
+                                <span class="text-indigo-600">UGX ${new Intl.NumberFormat().format(a.amount)}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 whitespace-nowrap">
+                                <span class="text-slate-400 uppercase tracking-tighter text-[9px]">Total Paid:</span>
+                                <span class="text-slate-700">UGX ${new Intl.NumberFormat().format(cumulativePaid)}</span>
+                            </div>
+                        </div>
+
+                        <!-- Fee Context -->
+                        <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-100/30 whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Balance</span>
+                                <span class="text-[10px] font-bold ${a.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}">
+                                    UGX ${new Intl.NumberFormat().format(a.balance)}
+                                </span>
+                            </div>
+                            <div class="text-[10px] text-slate-500 font-bold">
+                                of UGX ${new Intl.NumberFormat().format(a.total_fee_amount)}
+                            </div>
+                        </div>
+                    </div>
+                `}).join('') || '<span class="text-[10px] text-slate-400">No specific allocations</span>';
+
+                return `
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-700">${date}</span>
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${method}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                ${allocationsHtml}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <span class="font-bold text-slate-700 text-sm">UGX ${total}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center">
+                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold uppercase tracking-widest">Successful</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
 
         async function loadStudentFees() {
             const tableBody = document.getElementById('studentFeesTableBody');
@@ -638,34 +785,32 @@
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition-colors group">
-                        <td class="px-6 py-4" data-label="Description">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-700 tracking-tight">${fee.title}</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Ref: ${fee.id.substring(0, 8)}</span>
+                        <td class="px-6 py-4" data-label="Code">
+                            <div class="flex flex-col items-start gap-1">
+                                <span class="text-sm font-bold text-slate-700 tracking-tight">${fee.fee_type_code || 'GEN'}</span>
+                                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-bold uppercase tracking-wider whitespace-nowrap">Ref: ${fee.id.substring(0, 8)}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4" data-label="Academic Info">
                             <div class="flex flex-col">
-                                <div class="flex items-center gap-1">
-                                    <span class="px-1 py-0.5 bg-indigo-50 text-indigo-500 rounded text-[9px] font-bold uppercase tracking-wider">${fee.fee_type_code || 'GEN'}</span>
-                                    <span class="text-xs font-bold text-slate-600">${fee.academic_year_name || '-'}</span>
-                                </div>
+                                <span class="text-xs font-bold text-slate-600">${fee.academic_year_name || '-'}</span>
                                 <span class="text-[10px] font-medium text-slate-400 mt-0.5">${fee.term_name || '-'}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Revenue">
-                            <div class="max-w-[100px] md:ml-auto">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-[10px] font-bold text-slate-400">UGX ${new Intl.NumberFormat().format(amount)}</span>
-                                    <span class="text-[10px] font-bold text-emerald-600">${Math.round(progress)}%</span>
+                        <td class="px-6 py-4" data-label="Financials">
+                            <div class="max-w-[120px] md:ml-auto flex flex-col gap-1.5">
+                                <div class="flex justify-between items-center whitespace-nowrap">
+                                    <span class="text-xs font-bold text-slate-400">TOT: UGX ${new Intl.NumberFormat().format(amount)}</span>
+                                    <span class="text-[10px] font-bold text-emerald-600 ml-2">${Math.round(progress)}%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
                                      <div class="bg-emerald-500 h-full rounded-full transition-all duration-700" style="width: ${progress}%"></div>
                                 </div>
+                                <div class="flex justify-end items-center whitespace-nowrap">
+                                    <span class="text-[10px] font-bold text-slate-400 mr-2">BAL:</span>
+                                    <span class="text-sm font-bold ${balance > 0 ? 'text-rose-600' : 'text-slate-400'}">UGX ${new Intl.NumberFormat().format(balance)}</span>
+                                </div>
                             </div>
-                        </td>
-                        <td class="px-6 py-4 text-right" data-label="Balance">
-                            <span class="text-sm font-bold ${balance > 0 ? 'text-rose-600' : 'text-slate-400'}">UGX ${new Intl.NumberFormat().format(balance)}</span>
                         </td>
                         <td class="px-6 py-4 text-center" data-label="Status">
                             <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${statusClass}">${statusText}</span>
@@ -750,15 +895,25 @@
             const btn = document.getElementById('submitPaymentBtn');
             const originalText = btn.innerHTML;
 
+            const feeId = document.getElementById('paymentFeeId').value;
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+
+            const txId = document.getElementById('paymentTxId').value;
+
             const data = {
-                fee_id: document.getElementById('paymentFeeId').value,
                 student_id: document.getElementById('paymentStudentId').value,
-                amount: parseFloat(document.getElementById('paymentAmount').value),
+                total_amount: amount,
                 payment_method: document.getElementById('paymentMethod').value,
-                transaction_id: document.getElementById('paymentTxId').value
+                transaction_id: txId.trim() !== "" ? txId : null,
+                fee_allocations: [
+                    {
+                        fee_id: feeId,
+                        amount: amount
+                    }
+                ]
             };
 
-            if (isNaN(data.amount) || data.amount <= 0) {
+            if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
             }
@@ -776,8 +931,13 @@
                 const result = await response.json();
 
                 if (response.ok) {
+                    // Force refresh both tables before alerting
+                    await Promise.all([
+                        loadStudentFees(),
+                        loadStudentPayments()
+                    ]);
+
                     closePaymentModal();
-                    loadStudentFees();
                     alert('Collection recorded successfully!');
                 } else {
                     alert('Error: ' + (result.error || 'Failed to record payment'));

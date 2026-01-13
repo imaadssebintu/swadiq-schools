@@ -417,6 +417,14 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Invalid request body"})
 	}
 
+	// Basic validation
+	if req.TotalAmount <= 0 {
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Total amount must be greater than zero"})
+	}
+	if len(req.FeeAllocations) == 0 {
+		return c.Status(400).JSON(fiber.Map{"success": false, "error": "At least one fee allocation is required"})
+	}
+
 	// Start transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -658,5 +666,82 @@ func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 		"total_count": len(students),
 		"has_more":    len(students) == limit,
 		"next_offset": offset + len(students),
+	})
+}
+
+// GetStudentPaymentsAPI returns all payments made by a specific student
+func GetStudentPaymentsAPI(c *fiber.Ctx, db *sql.DB) error {
+	studentID := c.Params("student_id")
+
+	// Query to fetch payments
+	paymentQuery := `SELECT p.id, p.total_amount, p.payment_date, p.payment_method, p.transaction_id, p.status
+					 FROM payments p
+					 WHERE p.student_id = $1 AND p.deleted_at IS NULL
+					 ORDER BY p.payment_date DESC`
+
+	rows, err := db.Query(paymentQuery, studentID)
+	if err != nil {
+		log.Printf("Error fetching payments: %v", err)
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch payments"})
+	}
+	defer rows.Close()
+
+	type PaymentResponse struct {
+		ID            string        `json:"id"`
+		TotalAmount   float64       `json:"total_amount"`
+		PaymentDate   time.Time     `json:"payment_date"`
+		PaymentMethod string        `json:"payment_method"`
+		TransactionID *string       `json:"transaction_id"`
+		Status        string        `json:"status"`
+		Allocations   []interface{} `json:"allocations"`
+	}
+
+	var payments []PaymentResponse
+	for rows.Next() {
+		var p PaymentResponse
+		err := rows.Scan(&p.ID, &p.TotalAmount, &p.PaymentDate, &p.PaymentMethod, &p.TransactionID, &p.Status)
+		if err != nil {
+			log.Printf("Error scanning payment: %v", err)
+			continue
+		}
+		p.Allocations = []interface{}{} // Initialize empty list
+		payments = append(payments, p)
+	}
+
+	// Fetch allocations for each payment
+	for i := range payments {
+		allocationQuery := `SELECT pa.amount, pa.balance, pa.is_fully_paid, 
+						   COALESCE(ft.name, 'Unknown Fee') as fee_type_name, 
+						   COALESCE(f.amount, 0) as total_fee_amount
+						   FROM payment_allocations pa
+						   LEFT JOIN fee_types ft ON pa.fee_type_id = ft.id
+						   LEFT JOIN fees f ON pa.fee_id = f.id
+						   WHERE pa.payment_id = $1`
+
+		allocRows, err := db.Query(allocationQuery, payments[i].ID)
+		if err != nil {
+			continue
+		}
+		defer allocRows.Close()
+
+		for allocRows.Next() {
+			var amount, balance, totalFeeAmount float64
+			var isFullyPaid bool
+			var feeTypeName string
+			if err := allocRows.Scan(&amount, &balance, &isFullyPaid, &feeTypeName, &totalFeeAmount); err == nil {
+				payments[i].Allocations = append(payments[i].Allocations, fiber.Map{
+					"amount":           amount,
+					"balance":          balance,
+					"is_fully_paid":    isFullyPaid,
+					"fee_type_name":    feeTypeName,
+					"total_fee_amount": totalFeeAmount,
+				})
+			}
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    payments,
 	})
 }

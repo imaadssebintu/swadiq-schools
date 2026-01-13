@@ -124,4 +124,9 @@ func SetupFeesRoutes(app *fiber.App) {
 	feesAPI.Get("/active", func(c *fiber.Ctx) error {
 		return GetActiveFeeTypesAPI(c, config.GetDB())
 	})
+
+	// Student payment history route
+	feesAPI.Get("/student/:student_id/payments", func(c *fiber.Ctx) error {
+		return GetStudentPaymentsAPI(c, config.GetDB())
+	})
 }
