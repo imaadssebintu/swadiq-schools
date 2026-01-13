@@ -614,6 +614,7 @@
                 typeSelect.innerHTML = types.map(t => `<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
             } catch (error) {
                 console.error('Error loading form data:', error);
+
             }
         }
 
