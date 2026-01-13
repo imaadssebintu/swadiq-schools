@@ -2,6 +2,7 @@ package fees
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,14 +31,19 @@ func ApplyFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		TargetStudentID *string
 	}
 
+	log.Printf("Applying fee type with ID: %s", req.FeeTypeID)
+
 	err := db.QueryRow(`
-		SELECT name, COALESCE(scope, 'manual'), target_class_id, target_student_id 
+		SELECT name, COALESCE(scope, 'manual')
 		FROM fee_types WHERE id = $1 AND is_active = true
-	`, req.FeeTypeID).Scan(&feeType.Name, &feeType.Scope, &feeType.TargetClassID, &feeType.TargetStudentID)
+	`, req.FeeTypeID).Scan(&feeType.Name, &feeType.Scope)
 
 	if err != nil {
+		log.Printf("Fee type lookup failed: %v", err)
 		return fiber.NewError(fiber.StatusNotFound, "Fee type not found")
 	}
+
+	log.Printf("Fee Type Scope: %s", feeType.Scope)
 
 	var studentIDs []string
 
@@ -57,23 +63,51 @@ func ApplyFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		}
 
 	case "class":
-		if feeType.TargetClassID == nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Class ID required for class scope")
-		}
-		rows, err := db.Query("SELECT student_id FROM class_students WHERE class_id = $1", *feeType.TargetClassID)
+		// Get class IDs from assignments
+		rows, err := db.Query("SELECT class_id FROM fee_type_assignments WHERE fee_type_id = $1", req.FeeTypeID)
 		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch class students")
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch fee assignments")
 		}
 		defer rows.Close()
 
+		var classIDs []string
 		for rows.Next() {
-			var studentID string
-			rows.Scan(&studentID)
-			studentIDs = append(studentIDs, studentID)
+			var classID string
+			rows.Scan(&classID)
+			classIDs = append(classIDs, classID)
+		}
+		rows.Close() // Close before reusing
+
+		log.Printf("Found %d assigned classes for fee type", len(classIDs))
+
+		if len(classIDs) == 0 {
+			// If no assignments found, look for ALL classes? No, that's unsafe.
+			// But maybe the user intends to select a class manually?
+			// For now, return specific error
+			return fiber.NewError(fiber.StatusBadRequest, "No classes assigned to this fee type. Edit the fee type to assign classes.")
 		}
 
+		// Get students for these classes
+		for _, classID := range classIDs {
+			// Query students table directly as it has class_id
+			classRow, err := db.Query("SELECT id FROM students WHERE class_id = $1 AND deleted_at IS NULL AND is_active = true", classID)
+			if err != nil {
+				log.Printf("Error fetching students for class %s: %v", classID, err)
+				continue
+			}
+			defer classRow.Close()
+			for classRow.Next() {
+				var studentID string
+				classRow.Scan(&studentID)
+				studentIDs = append(studentIDs, studentID)
+			}
+			classRow.Close()
+		}
+		log.Printf("Found %d students in assigned classes", len(studentIDs))
+
 	case "all_classes":
-		rows, err := db.Query("SELECT DISTINCT student_id FROM class_students")
+		// Query all active students assigned to any class
+		rows, err := db.Query("SELECT id FROM students WHERE class_id IS NOT NULL AND deleted_at IS NULL AND is_active = true")
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch all class students")
 		}
@@ -86,10 +120,18 @@ func ApplyFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		}
 
 	case "student":
-		if feeType.TargetStudentID == nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Student ID required for student scope")
+		// Get student IDs from assignments
+		rows, err := db.Query("SELECT student_id FROM fee_type_assignments WHERE fee_type_id = $1", req.FeeTypeID)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch fee assignments")
 		}
-		studentIDs = append(studentIDs, *feeType.TargetStudentID)
+		defer rows.Close()
+
+		for rows.Next() {
+			var studentID string
+			rows.Scan(&studentID)
+			studentIDs = append(studentIDs, studentID)
+		}
 
 	default:
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid fee scope")
@@ -99,10 +141,11 @@ func ApplyFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	for _, studentID := range studentIDs {
 		_, err := db.Exec(`
 			INSERT INTO fees (student_id, fee_type_id, academic_year_id, term_id, title, amount, balance, due_date, created_at, updated_at)
-			VALUES ($1, $2, NULLIF($3, ''), NULLIF($4, ''), $5, $6, $6, $7, NOW(), NOW())
+			VALUES ($1, $2, NULLIF($3, '')::uuid, NULLIF($4, '')::uuid, $5, $6, $6, $7, NOW(), NOW())
 		`, studentID, req.FeeTypeID, req.AcademicYearID, req.TermID, feeType.Name, req.Amount, req.DueDate)
 
 		if err != nil {
+			log.Printf("Failed to insert fee for student %s: %v", studentID, err)
 			return fiber.NewError(fiber.StatusInternalServerError, "Failed to apply fee to student: "+studentID)
 		}
 	}

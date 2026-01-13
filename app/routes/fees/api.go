@@ -3,6 +3,7 @@ package fees
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
 	"swadiq-schools/app/models"
 	"time"
@@ -12,20 +13,23 @@ import (
 
 // FeeResponse represents the response structure for fees
 type FeeResponse struct {
-	ID           string     `json:"id"`
-	StudentID    string     `json:"student_id"`
-	FeeTypeID    string     `json:"fee_type_id"`
-	Title        string     `json:"title"`
-	Amount       float64    `json:"amount"`
-	Paid         bool       `json:"paid"`
-	DueDate      time.Time  `json:"due_date"`
-	PaidAt       *time.Time `json:"paid_at,omitempty"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	StudentName  string     `json:"student_name,omitempty"`
-	StudentCode  string     `json:"student_code,omitempty"`
-	FeeTypeName  string     `json:"fee_type_name,omitempty"`
-	FeeTypeCode  string     `json:"fee_type_code,omitempty"`
+	ID               string     `json:"id"`
+	StudentID        string     `json:"student_id"`
+	FeeTypeID        string     `json:"fee_type_id"`
+	Title            string     `json:"title"`
+	Amount           float64    `json:"amount"`
+	Balance          float64    `json:"balance"`
+	Paid             bool       `json:"paid"`
+	DueDate          time.Time  `json:"due_date"`
+	PaidAt           *time.Time `json:"paid_at,omitempty"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	StudentName      string     `json:"student_name,omitempty"`
+	StudentCode      string     `json:"student_code,omitempty"`
+	FeeTypeName      string     `json:"fee_type_name,omitempty"`
+	FeeTypeCode      string     `json:"fee_type_code,omitempty"`
+	AcademicYearName string     `json:"academic_year_name,omitempty"`
+	TermName         string     `json:"term_name,omitempty"`
 }
 
 // FeeStatsResponse represents the response structure for fee statistics
@@ -39,36 +43,33 @@ type FeeStatsResponse struct {
 	StudentsWithFees int     `json:"students_with_fees"`
 }
 
-// GetFeeStatsAPI returns fee statistics
+// GetFeeStatsAPI returns fee statistics (unfiltered summary)
 func GetFeeStatsAPI(c *fiber.Ctx, db *sql.DB) error {
-	termID := c.Query("term_id")
+	log.Println("Fetching fee statistics...")
 
 	query := `SELECT 
-				COUNT(*) as total_fees,
-				COUNT(CASE WHEN paid = true THEN 1 END) as paid_fees,
-				COUNT(CASE WHEN paid = false THEN 1 END) as unpaid_fees,
-				COALESCE(SUM(amount), 0) as total_amount,
-				COALESCE(SUM(amount - balance), 0) as total_paid,
-				COALESCE(SUM(balance), 0) as total_balance,
-				COUNT(DISTINCT student_id) as students_with_fees
+				COUNT(*)::int as total_fees,
+				COUNT(CASE WHEN paid = true THEN 1 END)::int as paid_fees,
+				COUNT(CASE WHEN paid = false OR paid IS NULL THEN 1 END)::int as unpaid_fees,
+				COALESCE(SUM(amount), 0)::float as total_amount,
+				COALESCE(SUM(amount - COALESCE(balance, amount)), 0)::float as total_paid,
+				COALESCE(SUM(COALESCE(balance, 0)), 0)::float as total_balance,
+				COUNT(DISTINCT student_id)::int as students_with_fees
 			  FROM fees 
 			  WHERE deleted_at IS NULL`
 
-	args := []interface{}{}
-	if termID != "" {
-		query += " AND term_id = $1"
-		args = append(args, termID)
-	}
-
 	var stats FeeStatsResponse
-	err := db.QueryRow(query, args...).Scan(
+	err := db.QueryRow(query).Scan(
 		&stats.TotalFees, &stats.PaidFees, &stats.UnpaidFees,
 		&stats.TotalAmount, &stats.TotalPaid, &stats.TotalBalance,
 		&stats.StudentsWithFees,
 	)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch statistics"})
+		log.Printf("Error fetching fee statistics: %v", err)
+		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch statistics: " + err.Error()})
 	}
+
+	log.Printf("Fee stats fetched successfully: %+v", stats)
 
 	return c.JSON(fiber.Map{
 		"success": true,
@@ -89,28 +90,57 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Get query parameters for filtering
+	studentSearch := c.Query("student")
 	studentID := c.Query("student_id")
+	yearID := c.Query("academic_year_id")
+	termID := c.Query("term_id")
 	status := c.Query("status") // "paid", "unpaid", "all"
 
 	// Build base query with LEFT JOINs to handle missing data
-	baseQuery := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.paid, 
+	baseQuery := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.balance, f.paid, 
 				  f.due_date, f.paid_at, f.created_at, f.updated_at,
 				  COALESCE(s.first_name, '') as student_first_name, COALESCE(s.last_name, '') as student_last_name,
 				  COALESCE(s.student_id, '') as student_code,
-				  COALESCE(ft.name, '') as fee_type_name, COALESCE(ft.code, '') as fee_type_code
+				  COALESCE(ft.name, '') as fee_type_name, COALESCE(ft.code, '') as fee_type_code,
+				  COALESCE(ay.name, '') as academic_year_name,
+				  COALESCE(t.name, '') as term_name
 				  FROM fees f
 				  LEFT JOIN students s ON f.student_id = s.id
 				  LEFT JOIN fee_types ft ON f.fee_type_id = ft.id
+				  LEFT JOIN academic_years ay ON f.academic_year_id = ay.id
+				  LEFT JOIN terms t ON f.term_id = t.id
 				  WHERE f.deleted_at IS NULL`
 
 	var conditions []string
 	var args []interface{}
 	argIndex := 1
 
-	// Add student filter if provided
+	// Add student search (by name or code) if provided
+	if studentSearch != "" {
+		conditions = append(conditions, fmt.Sprintf("(s.first_name ILIKE $%d OR s.last_name ILIKE $%d OR s.student_id ILIKE $%d)", argIndex, argIndex+1, argIndex+2))
+		searchPattern := "%" + studentSearch + "%"
+		args = append(args, searchPattern, searchPattern, searchPattern)
+		argIndex += 3
+	}
+
+	// Add exact student ID filter if provided
 	if studentID != "" {
 		conditions = append(conditions, fmt.Sprintf("f.student_id = $%d", argIndex))
 		args = append(args, studentID)
+		argIndex++
+	}
+
+	// Add academic year filter if provided
+	if yearID != "" {
+		conditions = append(conditions, fmt.Sprintf("f.academic_year_id = $%d", argIndex))
+		args = append(args, yearID)
+		argIndex++
+	}
+
+	// Add term filter if provided
+	if termID != "" {
+		conditions = append(conditions, fmt.Sprintf("f.term_id = $%d", argIndex))
+		args = append(args, termID)
 		argIndex++
 	}
 
@@ -136,6 +166,20 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	// Add ordering
 	baseQuery += " ORDER BY f.created_at DESC"
 
+	// Add pagination
+	limit := c.QueryInt("limit", 10)
+	page := c.QueryInt("page", 1)
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	baseQuery += fmt.Sprintf(" LIMIT $%d OFFSET $%d", argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
 	// Execute query
 	rows, err := db.Query(baseQuery, args...)
 	if err != nil {
@@ -151,13 +195,15 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		var fee FeeResponse
 		var studentFirstName, studentLastName, studentCode string
 		var feeTypeName, feeTypeCode string
+		var academicYearName, termName string
 		var paidAt *time.Time
 
 		err := rows.Scan(
-			&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Paid,
+			&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Balance, &fee.Paid,
 			&fee.DueDate, &paidAt, &fee.CreatedAt, &fee.UpdatedAt,
 			&studentFirstName, &studentLastName, &studentCode,
 			&feeTypeName, &feeTypeCode,
+			&academicYearName, &termName,
 		)
 		if err != nil {
 			continue
@@ -170,6 +216,10 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		// Set fee type info
 		fee.FeeTypeName = feeTypeName
 		fee.FeeTypeCode = feeTypeCode
+
+		// Set academic year and term info
+		fee.AcademicYearName = academicYearName
+		fee.TermName = termName
 
 		// Set paid_at if exists
 		if paidAt != nil {
@@ -193,7 +243,7 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeID := c.Params("id")
 
-	query := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.paid, 
+	query := `SELECT f.id, f.student_id, COALESCE(f.fee_type_id::text, '') as fee_type_id, f.title, f.amount, f.balance, f.paid, 
 			  f.due_date, f.paid_at, f.created_at, f.updated_at,
 			  COALESCE(s.first_name, '') as student_first_name, COALESCE(s.last_name, '') as student_last_name,
 			  COALESCE(s.student_id, '') as student_code,
@@ -209,7 +259,7 @@ func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 	var paidAt *time.Time
 
 	err := db.QueryRow(query, feeID).Scan(
-		&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Paid,
+		&fee.ID, &fee.StudentID, &fee.FeeTypeID, &fee.Title, &fee.Amount, &fee.Balance, &fee.Paid,
 		&fee.DueDate, &paidAt, &fee.CreatedAt, &fee.UpdatedAt,
 		&studentFirstName, &studentLastName, &studentCode,
 		&feeTypeName, &feeTypeCode,
@@ -238,13 +288,13 @@ func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 
 // CreateFeeRequest represents the request structure for creating fees
 type CreateFeeRequest struct {
-	StudentID  string    `json:"student_id" validate:"required,uuid"`
-	FeeTypeID  string    `json:"fee_type_id" validate:"required,uuid"`
-	TermID     *string   `json:"term_id,omitempty" validate:"omitempty,uuid"`
-	Title      string    `json:"title" validate:"required"`
-	Amount     float64   `json:"amount" validate:"required,gt=0"`
-	DueDate    time.Time `json:"due_date" validate:"required"`
-	Currency   string    `json:"currency,omitempty"`
+	StudentID string    `json:"student_id" validate:"required,uuid"`
+	FeeTypeID string    `json:"fee_type_id" validate:"required,uuid"`
+	TermID    *string   `json:"term_id,omitempty" validate:"omitempty,uuid"`
+	Title     string    `json:"title" validate:"required"`
+	Amount    float64   `json:"amount" validate:"required,gt=0"`
+	DueDate   time.Time `json:"due_date" validate:"required"`
+	Currency  string    `json:"currency,omitempty"`
 }
 
 // CreateFeeAPI creates a new fee
@@ -348,16 +398,16 @@ func DeleteFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 
 // RecordPaymentRequest represents the request structure for recording payments
 type RecordPaymentRequest struct {
-	StudentID       string             `json:"student_id" validate:"required,uuid"`
-	TotalAmount     float64            `json:"total_amount" validate:"required,gt=0"`
-	PaymentMethod   string             `json:"payment_method" validate:"required"`
-	TransactionID   *string            `json:"transaction_id,omitempty"`
-	FeeAllocations  []FeeAllocation    `json:"fee_allocations" validate:"required,dive"`
+	StudentID      string          `json:"student_id" validate:"required,uuid"`
+	TotalAmount    float64         `json:"total_amount" validate:"required,gt=0"`
+	PaymentMethod  string          `json:"payment_method" validate:"required"`
+	TransactionID  *string         `json:"transaction_id,omitempty"`
+	FeeAllocations []FeeAllocation `json:"fee_allocations" validate:"required,dive"`
 }
 
 type FeeAllocation struct {
-	FeeID   string  `json:"fee_id" validate:"required,uuid"`
-	Amount  float64 `json:"amount" validate:"required,gt=0"`
+	FeeID  string  `json:"fee_id" validate:"required,uuid"`
+	Amount float64 `json:"amount" validate:"required,gt=0"`
 }
 
 // RecordPaymentAPI records a payment and allocates it to specific fees
@@ -374,8 +424,11 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 	defer tx.Rollback()
 
-	// Get user ID from session (assuming you have middleware for this)
-	userID := "admin" // Replace with actual user ID from session
+	// Get user ID from context (set by AuthMiddleware)
+	userID, ok := c.Locals("user_id").(string)
+	if !ok || userID == "" {
+		return c.Status(401).JSON(fiber.Map{"success": false, "error": "User not authenticated"})
+	}
 
 	// Insert payment record
 	paymentQuery := `INSERT INTO payments (student_id, total_amount, payment_date, payment_method, paid_by, transaction_id, status, paid_at, created_at, updated_at)
@@ -384,6 +437,7 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 	var paymentID string
 	err = tx.QueryRow(paymentQuery, req.StudentID, req.TotalAmount, req.PaymentMethod, userID, req.TransactionID).Scan(&paymentID)
 	if err != nil {
+		log.Printf("Error creating payment record: %v", err)
 		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to create payment record"})
 	}
 
@@ -405,7 +459,7 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 
 		// Insert payment allocation
 		allocationQuery := `INSERT INTO payment_allocations (payment_id, fee_id, fee_type_id, amount, balance, is_fully_paid, created_at, updated_at)
-						   VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`
+							   VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())`
 
 		_, err = tx.Exec(allocationQuery, paymentID, allocation.FeeID, feeTypeID, allocation.Amount, newBalance, newBalance == 0)
 		if err != nil {
@@ -434,7 +488,7 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 		"success": true,
 		"data": fiber.Map{
 			"payment_id": paymentID,
-			"message": "Payment recorded successfully",
+			"message":    "Payment recorded successfully",
 		},
 	})
 }
@@ -470,23 +524,23 @@ func GetStudentFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	defer rows.Close()
 
 	type StudentFeeResponse struct {
-		ID           string     `json:"id"`
-		StudentID    string     `json:"student_id"`
-		FeeTypeID    string     `json:"fee_type_id"`
-		TermID       *string    `json:"term_id"`
-		Title        string     `json:"title"`
-		Amount       float64    `json:"amount"`
-		Balance      float64    `json:"balance"`
-		TotalPaid    float64    `json:"total_paid"`
-		Currency     string     `json:"currency"`
-		Paid         bool       `json:"paid"`
-		DueDate      time.Time  `json:"due_date"`
-		PaidAt       *time.Time `json:"paid_at"`
-		CreatedAt    time.Time  `json:"created_at"`
-		UpdatedAt    time.Time  `json:"updated_at"`
-		FeeTypeName  string     `json:"fee_type_name"`
-		FeeTypeCode  string     `json:"fee_type_code"`
-		TermName     *string    `json:"term_name"`
+		ID          string     `json:"id"`
+		StudentID   string     `json:"student_id"`
+		FeeTypeID   string     `json:"fee_type_id"`
+		TermID      *string    `json:"term_id"`
+		Title       string     `json:"title"`
+		Amount      float64    `json:"amount"`
+		Balance     float64    `json:"balance"`
+		TotalPaid   float64    `json:"total_paid"`
+		Currency    string     `json:"currency"`
+		Paid        bool       `json:"paid"`
+		DueDate     time.Time  `json:"due_date"`
+		PaidAt      *time.Time `json:"paid_at"`
+		CreatedAt   time.Time  `json:"created_at"`
+		UpdatedAt   time.Time  `json:"updated_at"`
+		FeeTypeName string     `json:"fee_type_name"`
+		FeeTypeCode string     `json:"fee_type_code"`
+		TermName    *string    `json:"term_name"`
 	}
 
 	var fees []StudentFeeResponse
@@ -536,20 +590,18 @@ func MarkFeeAsPaidAPI(c *fiber.Ctx, db *sql.DB) error {
 	})
 }
 
-
-
 // GetStudentsForClassesAPI returns students from specific classes with pagination and search
 func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 	classIDsParam := c.Query("class_ids")
 	if classIDsParam == "" {
 		return c.Status(400).JSON(fiber.Map{"success": false, "error": "class_ids is required"})
 	}
-	
+
 	classIDs := strings.Split(classIDsParam, ",")
 	search := c.Query("search")
 	limit := c.QueryInt("limit", 10)
 	offset := c.QueryInt("offset", 0)
-	
+
 	// Build placeholders for class IDs
 	placeholders := make([]string, len(classIDs))
 	args := make([]interface{}, 0)
@@ -557,34 +609,34 @@ func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 		placeholders[i] = fmt.Sprintf("$%d", i+1)
 		args = append(args, strings.TrimSpace(classID))
 	}
-	
+
 	// Simple query that works with basic student table structure
 	query := fmt.Sprintf(`SELECT id, first_name, last_name, student_id, class_id 
 						  FROM students 
-						  WHERE is_active = true AND class_id IN (%s)`, 
-						  strings.Join(placeholders, ","))
-	
+						  WHERE is_active = true AND class_id IN (%s)`,
+		strings.Join(placeholders, ","))
+
 	// Add search conditions if provided
 	if search != "" {
 		searchPattern := "%" + strings.ToLower(search) + "%"
 		query += fmt.Sprintf(` AND (LOWER(student_id) LIKE $%d 
 							   OR LOWER(first_name) LIKE $%d 
 							   OR LOWER(last_name) LIKE $%d 
-							   OR LOWER(first_name || ' ' || last_name) LIKE $%d)`, 
-							   len(args)+1, len(args)+2, len(args)+3, len(args)+4)
+							   OR LOWER(first_name || ' ' || last_name) LIKE $%d)`,
+			len(args)+1, len(args)+2, len(args)+3, len(args)+4)
 		args = append(args, searchPattern, searchPattern, searchPattern, searchPattern)
 	}
-	
+
 	// Add ordering and pagination
 	query += fmt.Sprintf(" ORDER BY first_name, last_name LIMIT $%d OFFSET $%d", len(args)+1, len(args)+2)
 	args = append(args, limit, offset)
-	
+
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"success": false, "error": "Failed to fetch students"})
 	}
 	defer rows.Close()
-	
+
 	students := make([]map[string]interface{}, 0)
 	for rows.Next() {
 		var id, firstName, lastName, studentID, classID string
@@ -599,7 +651,7 @@ func GetStudentsForClassesAPI(c *fiber.Ctx, db *sql.DB) error {
 			"class_id":   classID,
 		})
 	}
-	
+
 	return c.JSON(fiber.Map{
 		"success":     true,
 		"students":    students,

@@ -1,38 +1,87 @@
-<div class="min-h-screen bg-gray-50">
+<style>
+    @keyframes pulse-slow {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+
+    @keyframes skeleton-loading {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .skeleton-text {
+        height: 1.25rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 0.25rem;
+        animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .skeleton-row-cell {
+        height: 1rem;
+        background: #e5e7eb;
+        border-radius: 0.25rem;
+        animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
+    <div class="bg-white shadow-lg border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Fees Management</h1>
-                    <p class="mt-1 text-sm text-gray-500">Manage student fees and payments</p>
+                    <h1
+                        class="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        Fees Management</h1>
+                    <p class="mt-1 text-sm text-gray-600 font-medium">Track and manage student fees with ease</p>
                 </div>
                 <div class="flex gap-3">
-                    <a href="/fees/active" 
-                       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <a href="/fees/active"
+                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Active Fees
                     </a>
-                    <a href="/fee-types" 
-                       class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <a href="/fee-types"
+                        class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                         Fee Types
                     </a>
-                    <button id="addFeeBtn" 
-                            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <button id="addFeeBtn"
+                        class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         Add New Fee
                     </button>
-                    <button id="applyFeesBtn" 
-                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <button id="applyFeesBtn"
+                        class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Apply Fees
                     </button>
@@ -45,54 +94,90 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <!-- Total Payable Card -->
+            <div
+                class="group bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Total Fees</p>
-                        <p id="totalFees" class="text-2xl font-bold text-gray-900">0</p>
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-blue-100 uppercase tracking-wide mb-1">Total Payable</p>
+                        <div id="totalAmount">
+                            <div class="skeleton-text w-24 mb-1"></div>
+                        </div>
+                        <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300">
+                        </div>
                     </div>
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+
+            <!-- Total Paid Card -->
+            <div
+                class="group bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Paid Fees</p>
-                        <p id="paidFees" class="text-2xl font-bold text-green-600">0</p>
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-green-100 uppercase tracking-wide mb-1">Total Paid</p>
+                        <div id="totalPaid">
+                            <div class="skeleton-text w-24 mb-1"></div>
+                        </div>
+                        <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300">
+                        </div>
                     </div>
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+
+            <!-- Total Balance Card -->
+            <div
+                class="group bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Unpaid Fees</p>
-                        <p id="unpaidFees" class="text-2xl font-bold text-yellow-600">0</p>
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-red-100 uppercase tracking-wide mb-1">Total Balance</p>
+                        <div id="totalBalance">
+                            <div class="skeleton-text w-24 mb-1"></div>
+                        </div>
+                        <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300">
+                        </div>
                     </div>
-                    <div class="bg-yellow-100 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+
+            <!-- Students with Fees Card -->
+            <div
+                class="group bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Students with Fees</p>
-                        <p id="studentsWithFees" class="text-2xl font-bold text-purple-600">0</p>
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-purple-100 uppercase tracking-wide mb-1">Students with
+                            Fees</p>
+                        <div id="studentsWithFees">
+                            <div class="skeleton-text w-12 mb-1"></div>
+                        </div>
+                        <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300">
+                        </div>
                     </div>
-                    <div class="bg-purple-100 p-3 rounded-lg">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
                 </div>
@@ -100,49 +185,102 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 p-4 mb-6">
+            <div class="flex items-center gap-2 mb-3">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <h3 class="text-base font-bold text-gray-900">Filter Fees</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 <div>
-                    <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">All</option>
-                        <option value="paid">Paid</option>
-                        <option value="unpaid">Unpaid</option>
+                    <label for="yearFilter" class="block text-xs font-semibold text-gray-700 mb-1.5">Academic
+                        Year</label>
+                    <select id="yearFilter" onchange="applyFilters()"
+                        class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white hover:border-indigo-300 text-sm">
+                        <option value="">All Years</option>
                     </select>
                 </div>
                 <div>
-                    <label for="studentFilter" class="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                    <input type="text" id="studentFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Search by student name or ID">
+                    <label for="termFilter" class="block text-xs font-semibold text-gray-700 mb-1.5">Term</label>
+                    <select id="termFilter" onchange="applyFilters()"
+                        class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white hover:border-indigo-300 text-sm">
+                        <option value="">All Terms</option>
+                    </select>
                 </div>
-                <div class="flex items-end space-x-2">
-                    <button id="applyFilters" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">Apply</button>
-                    <button id="clearFilters" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200">Clear</button>
+                <div>
+                    <label for="statusFilter" class="block text-xs font-semibold text-gray-700 mb-1.5">Status</label>
+                    <select id="statusFilter" onchange="applyFilters()"
+                        class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white hover:border-indigo-300 text-sm">
+                        <option value="">All Statuses</option>
+                        <option value="paid">Fully Paid</option>
+                        <option value="unpaid">Unpaid/Partial</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="studentFilter" class="block text-xs font-semibold text-gray-700 mb-1.5">Student</label>
+                    <input type="text" id="studentFilter" oninput="applyFilters()"
+                        class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-indigo-300 text-sm"
+                        placeholder="Name or ID">
+                </div>
+                <div class="flex items-end">
+                    <button id="clearFilters"
+                        class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg font-semibold transition-all duration-200 border-2 border-gray-200 hover:border-gray-300 text-sm">Clear
+                        Filters</button>
                 </div>
             </div>
         </div>
 
         <!-- Fees Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">All Fees</h2>
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-2 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <h2
+                            class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            All Fees</h2>
+                    </div>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th
+                                class="w-1/4 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Student</th>
+                            <th
+                                class="w-1/12 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Code</th>
+                            <th
+                                class="w-1/6 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Amount/Balance</th>
+                            <th
+                                class="w-1/6 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Due Date</th>
+                            <th
+                                class="w-1/6 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Year/Term</th>
+                            <th
+                                class="w-1/12 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="w-1/12 px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider text-right">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody id="feesTableBody" class="bg-white divide-y divide-gray-200">
                         <!-- Loading skeleton -->
                         <tr class="skeleton-row">
-                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                                 <div class="flex items-center justify-center">
                                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
                                     <span class="ml-2">Loading fees...</span>
@@ -163,7 +301,7 @@
             <h3 class="text-lg font-semibold text-gray-900">Add New Fee</h3>
             <button id="closeAddFeeModal" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
@@ -171,29 +309,39 @@
         <form id="addFeeForm" class="p-6 space-y-4">
             <div>
                 <label for="studentSelect" class="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                <select id="studentSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <select id="studentSelect"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
                     <option value="">Select a student</option>
                     <!-- Students will be loaded here -->
                 </select>
             </div>
             <div>
                 <label for="feeTitle" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input type="text" id="feeTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="text" id="feeTitle"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
             <div>
                 <label for="feeAmount" class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                <input type="number" id="feeAmount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="number" id="feeAmount" step="0.01" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
             <div>
                 <label for="feeDueDate" class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
-                <input type="date" id="feeDueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="date" id="feeDueDate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-                <button type="button" id="cancelAddFee" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                <button type="button" id="cancelAddFee"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" id="saveFeeBtn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                <button type="submit" id="saveFeeBtn"
+                    class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
                     Save Fee
                 </button>
             </div>
@@ -203,12 +351,12 @@
 
 <!-- Edit Fee Modal -->
 <div id="editFeeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Edit Fee</h3>
-            <button id="closeEditFeeModal" class="text-gray-400 hover:text-gray-600">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div class="bg-primary-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="text-lg font-semibold">Edit Fee</h3>
+            <button id="closeEditFeeModal" class="hover:text-gray-200 transition-colors duration-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
@@ -217,24 +365,160 @@
             <input type="hidden" id="editFeeId">
             <div>
                 <label for="editFeeTitle" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input type="text" id="editFeeTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="text" id="editFeeTitle"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
             <div>
                 <label for="editFeeAmount" class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                <input type="number" id="editFeeAmount" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="number" id="editFeeAmount" step="0.01" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
             <div>
                 <label for="editFeeDueDate" class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
-                <input type="date" id="editFeeDueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                <input type="date" id="editFeeDueDate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-                <button type="button" id="cancelEditFee" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                <button type="button" id="cancelEditFee"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" id="updateFeeBtn" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                <button type="submit" id="updateFeeBtn"
+                    class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
                     Update Fee
                 </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Record Payment Modal -->
+<div id="paymentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div class="bg-primary-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="text-lg font-semibold">Record Payment</h3>
+            <button id="closePaymentModal" class="hover:text-gray-200 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form id="paymentForm" class="p-6 space-y-4">
+            <input type="hidden" id="paymentFeeId">
+            <input type="hidden" id="paymentStudentId">
+
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                <p id="paymentStudentName" class="text-sm font-bold text-gray-900"></p>
+                <p id="paymentFeeTitle" class="text-xs text-gray-600"></p>
+                <p id="paymentCurrentBalance" class="text-xs font-bold text-red-600 mt-1"></p>
+            </div>
+
+            <div>
+                <label for="paymentAmount" class="block text-sm font-medium text-gray-700 mb-2">Amount to Pay
+                    (UGX)</label>
+                <input type="number" id="paymentAmount" step="0.01" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                    placeholder="0" required>
+            </div>
+
+            <div>
+                <label for="paymentMethod" class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                <select id="paymentMethod"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                    required>
+                    <option value="Cash">Cash</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Mobile Money">Mobile Money</option>
+                    <option value="Cheque">Cheque</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="paymentTxId" class="block text-sm font-medium text-gray-700 mb-2">Transaction ID /
+                    Reference</label>
+                <input type="text" id="paymentTxId"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                    placeholder="Optional">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closePaymentModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">Cancel</button>
+                <button type="submit" id="submitPaymentBtn"
+                    class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium shadow-md">Record
+                    Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Apply Fees Modal -->
+<div id="applyFeesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div class="bg-green-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="text-lg font-semibold">Apply Fees to Students</h3>
+            <button id="closeApplyFeesModal" class="hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form id="applyFeesForm" class="p-6 space-y-4">
+            <div>
+                <label for="applyFeeTypeId" class="block text-sm font-medium text-gray-700 mb-2">Fee Type</label>
+                <select id="applyFeeTypeId"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                    required>
+                    <option value="">Select Fee Type</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="applyYearId" class="block text-sm font-medium text-gray-700 mb-2">Academic Year</label>
+                    <select id="applyYearId"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                        required>
+                        <option value="">Select Year</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="applyTermId" class="block text-sm font-medium text-gray-700 mb-2">Term</label>
+                    <select id="applyTermId"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                        required>
+                        <option value="">Select Term</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="applyAmount" class="block text-sm font-medium text-gray-700 mb-2">Amount (UGX)</label>
+                    <input type="number" id="applyAmount"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                        required>
+                </div>
+                <div>
+                    <label for="applyDueDate" class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                    <input type="date" id="applyDueDate"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                        required>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="closeApplyFeesModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">Cancel</button>
+                <button type="submit" id="submitApplyFeesBtn"
+                    class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium shadow-md">Apply
+                    Now</button>
             </div>
         </form>
     </div>
@@ -245,24 +529,58 @@
     // Global variables
     let currentFilters = {
         status: '',
-        student: ''
+        student: '',
+        academic_year_id: '',
+        term_id: ''
     };
 
+    // Pagination state
+    let currentPage = 1;
+    let hasMore = true;
+    let isLoadingFees = false;
+    const limit = 10;
+    let sentinelObserver = null;
+
     // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAcademicYears();
+        loadTerms();
+        loadFeeTypes();
         loadFeeStats();
         loadFees();
         loadStudents();
 
         // Event listeners
-        document.getElementById('applyFilters').addEventListener('click', applyFilters);
         document.getElementById('clearFilters').addEventListener('click', clearFilters);
+        setupSentinelObserver();
+
         document.getElementById('saveFeeBtn').addEventListener('click', saveFee);
         document.getElementById('updateFeeBtn').addEventListener('click', updateFee);
+        document.getElementById('paymentForm').addEventListener('submit', submitPayment);
+        document.getElementById('applyFeesForm').addEventListener('submit', submitApplyFees);
+
+        // Auto-fill amount when Fee Type changes
+        document.getElementById('applyFeeTypeId').addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const amount = selectedOption.getAttribute('data-amount');
+            if (amount) {
+                document.getElementById('applyAmount').value = amount;
+            }
+        });
+
         document.getElementById('addFeeBtn').addEventListener('click', () => {
             document.getElementById('addFeeModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         });
+        document.getElementById('applyFeesBtn').addEventListener('click', () => {
+            document.getElementById('applyFeesModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close buttons
+        document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
+        document.getElementById('closeApplyFeesModal').addEventListener('click', closeApplyFeesModal);
+
         document.getElementById('cancelAddFee').addEventListener('click', () => {
             document.getElementById('addFeeModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
@@ -279,90 +597,238 @@
             document.getElementById('editFeeModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
         });
-
-        // Close modals when clicking outside
-        document.getElementById('addFeeModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
-        });
-        document.getElementById('editFeeModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // Handle Escape key to close modals
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (!document.getElementById('addFeeModal').classList.contains('hidden')) {
-                    document.getElementById('addFeeModal').classList.add('hidden');
-                    document.body.style.overflow = 'auto';
-                } else if (!document.getElementById('editFeeModal').classList.contains('hidden')) {
-                    document.getElementById('editFeeModal').classList.add('hidden');
-                    document.body.style.overflow = 'auto';
-                }
-            }
-        });
     });
 
-    // Load fee statistics
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        document.getElementById('paymentForm').reset();
+    }
+
+    function closeApplyFeesModal() {
+        document.getElementById('applyFeesModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        document.getElementById('applyFeesForm').reset();
+    }
+
+    // Close modals when clicking outside
+    document.getElementById('addFeeModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+    document.getElementById('editFeeModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Handle Escape key to close modals
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            if (!document.getElementById('addFeeModal').classList.contains('hidden')) {
+                document.getElementById('addFeeModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            } else if (!document.getElementById('editFeeModal').classList.contains('hidden')) {
+                document.getElementById('editFeeModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    });
+
+    // Load fee statistics (General summary, does not change with filters)
     function loadFeeStats() {
         fetch('/api/fees/stats')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('totalFees').textContent = data.data.total_fees;
-                    document.getElementById('paidFees').textContent = data.data.paid_fees;
-                    document.getElementById('unpaidFees').textContent = data.data.unpaid_fees;
-                    document.getElementById('studentsWithFees').textContent = data.data.students_with_fees;
+                    const stats = data.data;
+                    document.getElementById('totalAmount').innerHTML = `<p class="text-xl font-extrabold text-white mb-1">UGX ${new Intl.NumberFormat().format(stats.total_amount)}</p>`;
+                    document.getElementById('totalPaid').innerHTML = `<p class="text-xl font-extrabold text-white mb-1">UGX ${new Intl.NumberFormat().format(stats.total_paid)}</p>`;
+                    document.getElementById('totalBalance').innerHTML = `<p class="text-xl font-extrabold text-white mb-1">UGX ${new Intl.NumberFormat().format(stats.total_balance)}</p>`;
+                    document.getElementById('studentsWithFees').innerHTML = `<p class="text-xl font-extrabold text-white mb-1">${stats.students_with_fees}</p>`;
                 }
             })
             .catch(error => console.error('Error loading fee stats:', error));
     }
 
+    function getSkeletonRows(count = 5) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <tr class="skeleton-row transition-opacity duration-300">
+                    <td class="px-6 py-4"><div class="flex items-center"><div class="h-10 w-10 rounded-full bg-gray-200 animate-pulse mr-3"></div><div class="space-y-2"><div class="skeleton-row-cell w-32"></div><div class="skeleton-row-cell w-24"></div></div></div></td>
+                    <td class="px-6 py-4"><div class="skeleton-row-cell w-20"></div></td>
+                    <td class="px-6 py-4"><div class="space-y-2"><div class="skeleton-row-cell w-28"></div><div class="skeleton-row-cell w-36"></div></div></td>
+                    <td class="px-6 py-4"><div class="skeleton-row-cell w-24"></div></td>
+                    <td class="px-6 py-4"><div class="space-y-2"><div class="skeleton-row-cell w-24"></div><div class="skeleton-row-cell w-20"></div></div></td>
+                    <td class="px-6 py-4"><div class="skeleton-row-cell w-24"></div></td>
+                    <td class="px-6 py-4"><div class="flex gap-2"><div class="skeleton-row-cell w-12"></div><div class="skeleton-row-cell w-12"></div></div></td>
+                </tr>
+            `;
+        }
+        return html;
+    }
+
     // Load fees
-    function loadFees() {
-        let url = '/api/fees';
+    function loadFees(isAppend = false) {
+        if (isLoadingFees && isAppend) return;
+
+        if (!isAppend) {
+            currentPage = 1;
+            hasMore = true;
+            isLoadingFees = false;
+        }
+
+        if (!hasMore && isAppend) return;
+        isLoadingFees = true;
+
+        let url = `/api/fees?limit=${limit}&page=${currentPage}`;
         const params = new URLSearchParams();
 
-        // Add filters to query parameters
-        if (currentFilters.status) {
-            params.append('status', currentFilters.status);
+        if (currentFilters.status) params.append('status', currentFilters.status);
+        if (currentFilters.student) params.append('student', currentFilters.student);
+        if (currentFilters.academic_year_id) params.append('academic_year_id', currentFilters.academic_year_id);
+        if (currentFilters.term_id) params.append('term_id', currentFilters.term_id);
+
+        const queryString = params.toString();
+        if (queryString) {
+            url += '&' + queryString;
         }
 
-        if (params.toString()) {
-            url += '?' + params.toString();
-        }
-
-        // Show loading
         const tableBody = document.getElementById('feesTableBody');
-        tableBody.innerHTML = `
-            <tr class="skeleton-row">
-                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                    <div class="flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                        <span class="ml-2">Loading fees...</span>
-                    </div>
-                </td>
-            </tr>
-        `;
+        if (!isAppend) {
+            tableBody.innerHTML = getSkeletonRows(6);
+        } else {
+            const loaderContainer = document.createElement('tbody');
+            loaderContainer.id = 'scrollLoader';
+            loaderContainer.innerHTML = getSkeletonRows(3);
+            // Append rows directly to avoid nested tbody issues
+            Array.from(loaderContainer.children).forEach(row => tableBody.appendChild(row));
+        }
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    renderFeesTable(data.data);
+                isLoadingFees = false;
+
+                // Clear skeleton rows
+                const skeletons = tableBody.querySelectorAll('.skeleton-row');
+                skeletons.forEach(s => s.remove());
+
+                if (data.success && data.data && data.data.length > 0) {
+                    if (isAppend) {
+                        appendFeesToTable(data.data);
+                    } else {
+                        renderFeesTable(data.data);
+                    }
+                    if (data.data.length < limit) {
+                        hasMore = false;
+                    } else {
+                        currentPage++;
+                    }
                 } else {
-                    showEmptyState();
+                    if (!isAppend) {
+                        showEmptyState();
+                    }
+                    hasMore = false;
                 }
             })
             .catch(error => {
+                isLoadingFees = false;
+                const scrollLoader = document.getElementById('scrollLoader');
+                if (scrollLoader) scrollLoader.remove();
                 console.error('Error loading fees:', error);
-                showErrorState();
+                if (!isAppend) showErrorState();
             });
+    }
+
+    function setupSentinelObserver() {
+        const tableBody = document.getElementById('feesTableBody');
+        const sentinelRow = document.createElement('tr');
+        sentinelRow.id = 'loadMoreSentinel';
+        sentinelRow.innerHTML = `<td colspan="7" style="height: 1px; padding: 0; border: none;"></td>`;
+        tableBody.parentNode.appendChild(sentinelRow);
+
+        sentinelObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isLoadingFees && hasMore) {
+                console.log('Sentinel visible, loading more fees...');
+                loadFees(true);
+            }
+        }, {
+            rootMargin: '200px', // Trigger before it actually enters viewport
+            threshold: 0.1
+        });
+
+        sentinelObserver.observe(sentinelRow);
+    }
+
+    function appendFeesToTable(fees) {
+        const tbody = document.getElementById('feesTableBody');
+        fees.forEach(fee => {
+            const row = createFeeRow(fee);
+            tbody.appendChild(row);
+        });
+    }
+
+    function createFeeRow(fee) {
+        const balance = parseFloat(fee.balance || 0);
+        const amount = parseFloat(fee.amount);
+        const isFullyPaid = fee.paid || balance === 0;
+        const statusClass = isFullyPaid ? 'bg-green-100 text-green-800' : (balance < amount ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800');
+        const statusText = isFullyPaid ? 'Fully Paid' : (balance < amount ? 'Partially Paid' : 'Unpaid');
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-50 border-b border-gray-100 transition-colors duration-150';
+        row.innerHTML = `
+            <td class="px-4 py-4">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-xs mr-3">
+                        ${fee.student_name ? fee.student_name.split(' ').map(n => n[0]).join('').toUpperCase() : '?'}
+                    </div>
+                    <div>
+                        <a href="/students/${fee.student_id}" class="text-sm font-semibold text-gray-900 hover:text-indigo-600 transition-colors whitespace-nowrap">${fee.student_name || 'N/A'}</a>
+                        <p class="text-xs text-gray-500 whitespace-nowrap">${fee.student_code || 'N/A'}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-4 text-sm text-gray-600 font-medium">${fee.fee_type_code || 'N/A'}</td>
+            <td class="px-4 py-4">
+                <div class="text-sm">
+                    <div class="text-gray-900 font-bold">UGX ${new Intl.NumberFormat().format(amount)}</div>
+                    <div class="text-red-600 font-semibold text-xs">Balance: UGX ${new Intl.NumberFormat().format(balance)}</div>
+                </div>
+            </td>
+            <td class="px-4 py-4 text-sm text-gray-500">${new Date(fee.due_date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+            <td class="px-4 py-4">
+                <div class="text-xs">
+                    <div class="text-gray-700 font-medium">${fee.academic_year_name || 'N/A'}</div>
+                    <div class="text-gray-500">${fee.term_name || 'N/A'}</div>
+                </div>
+            </td>
+            <td class="px-4 py-4">
+                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${statusClass}">
+                    ${statusText}
+                </span>
+            </td>
+            <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                    ${!isFullyPaid ? `
+                        <button onclick="openPaymentModal('${fee.id}', '${fee.student_id}', '${fee.student_name}', '${fee.title}', ${balance})" class="inline-flex items-center text-green-600 hover:text-green-800 text-sm font-semibold transition-colors duration-150">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Pay
+                        </button>
+                        <button onclick="editFee('${fee.id}')" class="text-primary-600 hover:text-primary-800 text-sm font-semibold transition-colors duration-150">Edit</button>
+                    ` : `
+                        <button onclick="window.print()" class="text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors duration-150">Receipt</button>
+                    `}
+                    <button onclick="deleteFee('${fee.id}')" class="text-red-600 hover:text-red-800 text-sm font-semibold transition-colors duration-150">Delete</button>
+                </div>
+            </td>
+        `;
+        return row;
     }
 
     // Render fees table
@@ -376,33 +842,7 @@
         }
 
         fees.forEach(fee => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-50';
-            row.innerHTML = `
-                <td class="px-4 py-3">
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">${fee.student_name || 'N/A'}</p>
-                        <p class="text-xs text-gray-500">(${fee.student_code || 'N/A'})</p>
-                    </div>
-                </td>
-                <td class="px-4 py-3 text-sm text-gray-900">${fee.title}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">$${parseFloat(fee.amount).toFixed(2)}</td>
-                <td class="px-4 py-3 text-sm text-gray-900">${new Date(fee.due_date).toLocaleDateString()}</td>
-                <td class="px-4 py-3">
-                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${fee.paid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                        ${fee.paid ? 'Paid' : 'Unpaid'}
-                    </span>
-                </td>
-                <td class="px-4 py-3">
-                    <div class="flex items-center gap-2">
-                        ${!fee.paid ? `
-                            <button onclick="markAsPaid('${fee.id}')" class="text-green-600 hover:text-green-800 text-sm font-medium">Pay</button>
-                            <button onclick="editFee('${fee.id}')" class="text-primary-600 hover:text-primary-800 text-sm font-medium">Edit</button>
-                        ` : ''}
-                        <button onclick="deleteFee('${fee.id}')" class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
-                    </div>
-                </td>
-            `;
+            const row = createFeeRow(fee);
             tbody.appendChild(row);
         });
     }
@@ -411,7 +851,7 @@
         const tableBody = document.getElementById('feesTableBody');
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                     <div class="flex flex-col items-center">
                         <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -428,7 +868,7 @@
         const tableBody = document.getElementById('feesTableBody');
         tableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
                     <div class="flex flex-col items-center">
                         <svg class="w-12 h-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
@@ -464,6 +904,8 @@
     function applyFilters() {
         currentFilters.status = document.getElementById('statusFilter').value;
         currentFilters.student = document.getElementById('studentFilter').value;
+        currentFilters.academic_year_id = document.getElementById('yearFilter').value;
+        currentFilters.term_id = document.getElementById('termFilter').value;
         loadFees();
     }
 
@@ -471,17 +913,167 @@
     function clearFilters() {
         document.getElementById('statusFilter').value = '';
         document.getElementById('studentFilter').value = '';
+        document.getElementById('yearFilter').value = '';
+        document.getElementById('termFilter').value = '';
         currentFilters = {
             status: '',
-            student: ''
+            student: '',
+            academic_year_id: '',
+            term_id: ''
         };
         loadFees();
+    }
+
+    // Load helper functions
+    function loadAcademicYears() {
+        fetch('/api/academic-years')
+            .then(res => res.json())
+            .then(data => {
+                const filter = document.getElementById('yearFilter');
+                const modal = document.getElementById('applyYearId');
+                data.forEach(year => {
+                    const opt = `<option value="${year.id}">${year.name}</option>`;
+                    filter.innerHTML += opt;
+                    modal.innerHTML += opt;
+                });
+            });
+    }
+
+    function loadTerms() {
+        fetch('/api/terms')
+            .then(res => res.json())
+            .then(data => {
+                const filter = document.getElementById('termFilter');
+                const modal = document.getElementById('applyTermId');
+                data.forEach(term => {
+                    const opt = `<option value="${term.id}" data-end-date="${term.end_date}">${term.name}</option>`;
+                    filter.innerHTML += opt;
+                    modal.innerHTML += opt;
+                });
+            });
+    }
+
+    function loadFeeTypes() {
+        fetch('/api/fee-types')
+            .then(res => res.json())
+            .then(data => {
+                const modal = document.getElementById('applyFeeTypeId');
+                data.data.forEach(type => {
+                    modal.innerHTML += `<option value="${type.id}" data-amount="${type.amount}">${type.name}</option>`;
+                });
+            });
+    }
+
+    // Payment Logic
+    function openPaymentModal(feeId, studentId, studentName, feeTitle, balance) {
+        document.getElementById('paymentFeeId').value = feeId;
+        document.getElementById('paymentStudentId').value = studentId;
+        document.getElementById('paymentStudentName').textContent = studentName;
+        document.getElementById('paymentFeeTitle').textContent = feeTitle;
+        document.getElementById('paymentCurrentBalance').textContent = `Outstanding: UGX ${new Intl.NumberFormat().format(balance)}`;
+        document.getElementById('paymentAmount').value = balance;
+        document.getElementById('paymentModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function submitPayment(e) {
+        e.preventDefault();
+        const feeId = document.getElementById('paymentFeeId').value;
+        const studentId = document.getElementById('paymentStudentId').value;
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        const method = document.getElementById('paymentMethod').value;
+        const txId = document.getElementById('paymentTxId').value;
+
+        const data = {
+            student_id: studentId,
+            payment_method: method,
+            transaction_id: txId,
+            total_amount: amount,
+            fee_allocations: [{ fee_id: feeId, amount: amount }]
+        };
+
+        const btn = document.getElementById('submitPaymentBtn');
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+
+        fetch('/api/fees/record-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    closePaymentModal();
+                    loadFees();
+                    loadFeeStats();
+                } else alert(res.error);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Record Payment';
+            });
+    }
+
+    function submitApplyFees(e) {
+        e.preventDefault();
+
+        const termSelect = document.getElementById('applyTermId');
+        const selectedTerm = termSelect.options[termSelect.selectedIndex];
+        const termEndDateStr = selectedTerm.getAttribute('data-end-date');
+        const dueDateStr = document.getElementById('applyDueDate').value;
+
+        if (termEndDateStr && dueDateStr) {
+            const termEndDate = new Date(termEndDateStr);
+            const dueDate = new Date(dueDateStr);
+
+            if (dueDate > termEndDate) {
+                alert(`The due date cannot be after the term end date (${termEndDate.toLocaleDateString()}).`);
+                return;
+            }
+        }
+
+        if (!document.getElementById('applyFeeTypeId').value) {
+            alert('Please select a fee type');
+            return;
+        }
+
+        const data = {
+            fee_type_id: document.getElementById('applyFeeTypeId').value,
+            academic_year_id: document.getElementById('applyYearId').value,
+            term_id: termSelect.value,
+            amount: parseFloat(document.getElementById('applyAmount').value),
+            due_date: new Date(dueDateStr).toISOString()
+        };
+
+        const btn = document.getElementById('submitApplyFeesBtn');
+        btn.disabled = true;
+        btn.textContent = 'Applying...';
+
+        fetch('/api/fees/apply', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    alert(`${res.message}. Applied to ${res.students_count || 0} students.`);
+                    closeApplyFeesModal();
+                    loadFees();
+                    loadFeeStats();
+                } else alert(res.error || 'Failed to apply fees');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Apply Now';
+            });
     }
 
     // Save new fee
     function saveFee(e) {
         e.preventDefault();
-        
+
         const studentId = document.getElementById('studentSelect').value;
         const title = document.getElementById('feeTitle').value;
         const amount = document.getElementById('feeAmount').value;
@@ -511,32 +1103,32 @@
             },
             body: JSON.stringify(feeData)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Close modal and reset form
-                document.getElementById('addFeeModal').classList.add('hidden');
-                document.body.style.overflow = 'auto';
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal and reset form
+                    document.getElementById('addFeeModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
 
-                // Reset form fields
-                document.getElementById('studentSelect').value = '';
-                document.getElementById('feeTitle').value = '';
-                document.getElementById('feeAmount').value = '';
-                document.getElementById('feeDueDate').value = '';
+                    // Reset form fields
+                    document.getElementById('studentSelect').value = '';
+                    document.getElementById('feeTitle').value = '';
+                    document.getElementById('feeAmount').value = '';
+                    document.getElementById('feeDueDate').value = '';
 
-                // Reload fees
-                loadFees();
-            } else {
-                alert('Error adding fee: ' + data.message);
-            }
-        })
-        .catch(() => {
-            alert('Error adding fee');
-        })
-        .finally(() => {
-            saveBtn.innerHTML = originalText;
-            saveBtn.disabled = false;
-        });
+                    // Reload fees
+                    loadFees();
+                } else {
+                    alert('Error adding fee: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error adding fee');
+            })
+            .finally(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
     }
 
     // Edit fee
@@ -595,32 +1187,32 @@
             },
             body: JSON.stringify(feeData)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Close modal and reset form
-                document.getElementById('editFeeModal').classList.add('hidden');
-                document.body.style.overflow = 'auto';
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal and reset form
+                    document.getElementById('editFeeModal').classList.add('hidden');
+                    document.body.style.overflow = 'auto';
 
-                // Reset form fields
-                document.getElementById('editFeeId').value = '';
-                document.getElementById('editFeeTitle').value = '';
-                document.getElementById('editFeeAmount').value = '';
-                document.getElementById('editFeeDueDate').value = '';
+                    // Reset form fields
+                    document.getElementById('editFeeId').value = '';
+                    document.getElementById('editFeeTitle').value = '';
+                    document.getElementById('editFeeAmount').value = '';
+                    document.getElementById('editFeeDueDate').value = '';
 
-                // Reload fees
-                loadFees();
-            } else {
-                alert('Error updating fee: ' + data.message);
-            }
-        })
-        .catch(() => {
-            alert('Error updating fee');
-        })
-        .finally(() => {
-            updateBtn.innerHTML = originalText;
-            updateBtn.disabled = false;
-        });
+                    // Reload fees
+                    loadFees();
+                } else {
+                    alert('Error updating fee: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error updating fee');
+            })
+            .finally(() => {
+                updateBtn.innerHTML = originalText;
+                updateBtn.disabled = false;
+            });
     }
 
     // Delete fee
@@ -632,18 +1224,18 @@
         fetch('/api/fees/' + id, {
             method: 'DELETE'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Reload fees
-                loadFees();
-            } else {
-                alert('Error deleting fee: ' + data.message);
-            }
-        })
-        .catch(() => {
-            alert('Error deleting fee');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload fees
+                    loadFees();
+                } else {
+                    alert('Error deleting fee: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error deleting fee');
+            });
     }
 
     // Mark fee as paid
@@ -651,18 +1243,18 @@
         fetch('/api/fees/' + id + '/pay', {
             method: 'POST'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Reload fees
-                loadFees();
-            } else {
-                alert('Error marking fee as paid: ' + data.message);
-            }
-        })
-        .catch(() => {
-            alert('Error marking fee as paid');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload fees
+                    loadFees();
+                } else {
+                    alert('Error marking fee as paid: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error marking fee as paid');
+            });
     }
 </script>
 </div>

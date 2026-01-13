@@ -16,7 +16,7 @@ func SetupFeesRoutes(app *fiber.App) {
 	// API routes for fees
 	feesAPI := app.Group("/api/fees")
 	feesAPI.Use(auth.AuthMiddleware)
-	
+
 	// Add apply fees route
 	feesAPI.Post("/apply", func(c *fiber.Ctx) error {
 		return ApplyFeesAPI(c, config.GetDB())
@@ -33,6 +33,10 @@ func SetupFeesRoutes(app *fiber.App) {
 	// API routes
 	feesAPI.Get("/", func(c *fiber.Ctx) error {
 		return GetFeesAPI(c, config.GetDB())
+	})
+
+	feesAPI.Get("/stats", func(c *fiber.Ctx) error {
+		return GetFeeStatsAPI(c, config.GetDB())
 	})
 
 	feesAPI.Get("/:id", func(c *fiber.Ctx) error {
@@ -55,8 +59,8 @@ func SetupFeesRoutes(app *fiber.App) {
 		return MarkFeeAsPaidAPI(c, config.GetDB())
 	})
 
-	feesAPI.Get("/stats", func(c *fiber.Ctx) error {
-		return GetFeeStatsAPI(c, config.GetDB())
+	feesAPI.Post("/record-payment", func(c *fiber.Ctx) error {
+		return RecordPaymentAPI(c, config.GetDB())
 	})
 
 	// Fee Types routes

@@ -1,0 +1,46 @@
+<!-- Edit Fee Modal -->
+<div id="editFeeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden">
+        <div class="bg-primary-600 px-6 py-4 flex justify-between items-center text-white">
+            <h3 class="text-lg font-semibold">Edit Fee</h3>
+            <button id="closeEditFeeModal" class="hover:text-gray-200 transition-colors duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form id="editFeeForm" class="p-6 space-y-4">
+            <input type="hidden" id="editFeeId">
+            <div>
+                <label for="editFeeTitle" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input type="text" id="editFeeTitle"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
+            </div>
+            <div>
+                <label for="editFeeAmount" class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                <input type="number" id="editFeeAmount" step="0.01" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
+            </div>
+            <div>
+                <label for="editFeeDueDate" class="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                <input type="date" id="editFeeDueDate"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    required>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancelEditFee"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                    Cancel
+                </button>
+                <button type="submit" id="updateFeeBtn"
+                    class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                    Update Fee
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

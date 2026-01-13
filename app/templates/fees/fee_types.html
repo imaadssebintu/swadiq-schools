@@ -8,17 +8,18 @@
                     <p class="mt-1 text-sm text-gray-500">Manage different types of fees</p>
                 </div>
                 <div class="flex gap-3">
-                    <a href="/fees" 
-                       class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <a href="/fees"
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to Fees
                     </a>
-                    <button id="addFeeTypeBtn" 
-                            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
+                    <button id="addFeeTypeBtn"
+                        class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         Add Fee Type
                     </button>
@@ -38,21 +39,30 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Frequency</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Code</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Amount</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Assigned To</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Payment Frequency</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody id="feeTypesTableBody" class="bg-white divide-y divide-gray-200">
                         <tr>
                             <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center">
-                                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
                                     <p class="text-lg font-medium text-gray-900 mb-2">Loading fee types...</p>
                                 </div>
@@ -66,7 +76,8 @@
 </div>
 
 <!-- Edit Fee Type Modal -->
-<div id="editFeeTypeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
+<div id="editFeeTypeModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 class="text-xl font-semibold text-gray-900">Edit Fee Type</h2>
@@ -81,36 +92,36 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                     <input type="text" id="editFeeTypeName" name="name" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Enter fee type name">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Enter fee type name">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
                     <input type="text" id="editFeeTypeCode" name="code" required maxlength="20"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Enter fee code">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Enter fee code">
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea id="editFeeTypeDescription" name="description" rows="3"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="Enter description (optional)"></textarea>
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter description (optional)"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
                 <input type="number" id="editFeeTypeAmount" name="amount" required min="0" step="1"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                       placeholder="Enter amount">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter amount">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency *</label>
                     <select id="editFeeTypeFrequency" name="payment_frequency" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="per_term">Per term</option>
                         <option value="once">One-time payment</option>
                         <option value="per_year">Per year</option>
@@ -120,7 +131,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Fee Type *</label>
                     <select id="editFeeTypeRequired" name="is_required" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="true">Must (Required)</option>
                         <option value="false">Optional</option>
                     </select>
@@ -128,7 +139,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
                     <select id="editFeeTypeStatus" name="is_active" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
@@ -138,7 +149,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Apply To *</label>
                 <select id="editFeeTypeScope" name="scope" required onchange="handleEditScopeChange()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="manual">Manual assignment</option>
                     <option value="all_students">All students</option>
                     <option value="all_classes">All classes</option>
@@ -151,11 +162,12 @@
             <div id="editClassSelector" class="hidden">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Select Classes</label>
                 <div class="flex gap-2">
-                    <div id="editSelectedClassNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                    <div id="editSelectedClassNames"
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
                         No classes selected
                     </div>
-                    <button type="button" onclick="openEditClassModal()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button type="button" onclick="openEditClassModal()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         Select
                     </button>
                 </div>
@@ -164,11 +176,12 @@
             <div id="editStudentSelector" class="hidden">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Select Students</label>
                 <div class="flex gap-2">
-                    <div id="editSelectedStudentNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                    <div id="editSelectedStudentNames"
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
                         No students selected
                     </div>
-                    <button type="button" onclick="openEditStudentModal()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button type="button" onclick="openEditStudentModal()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         Select
                     </button>
                 </div>
@@ -176,12 +189,12 @@
             </div>
 
             <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelEditFeeType" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <button type="button" id="cancelEditFeeType"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancel
                 </button>
                 <button type="submit" id="editFeeTypeSubmitBtn"
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                     <i id="editFeeTypeIcon" class="fas fa-save mr-2"></i>
                     <span id="editFeeTypeText">Update Fee Type</span>
                 </button>
@@ -191,7 +204,8 @@
 </div>
 
 <!-- Add Fee Type Modal -->
-<div id="addFeeTypeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
+<div id="addFeeTypeModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 class="text-xl font-semibold text-gray-900">Add Fee Type</h2>
@@ -205,36 +219,36 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                     <input type="text" id="feeTypeName" name="name" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Enter fee type name">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Enter fee type name">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
                     <input type="text" id="feeTypeCode" name="code" required maxlength="20"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Enter fee code">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Enter fee code">
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <textarea id="feeTypeDescription" name="description" rows="3"
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                          placeholder="Enter description (optional)"></textarea>
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter description (optional)"></textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
                 <input type="number" id="feeTypeAmount" name="amount" required min="0" step="1"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                       placeholder="Enter amount">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter amount">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency *</label>
                     <select id="feeTypeFrequency" name="payment_frequency" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="per_term" selected>Per term</option>
                         <option value="once">One-time payment</option>
                         <option value="per_year">Per year</option>
@@ -244,7 +258,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Fee Type *</label>
                     <select id="feeTypeRequired" name="is_required" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="true">Must (Required)</option>
                         <option value="false">Optional</option>
                     </select>
@@ -252,7 +266,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Apply To *</label>
                     <select id="feeTypeScope" name="scope" required onchange="handleScopeChange()"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="manual">Manual assignment</option>
                         <option value="all_students">All students</option>
                         <option value="all_classes">All classes</option>
@@ -266,11 +280,12 @@
             <div id="classSelector" class="hidden">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Select Classes</label>
                 <div class="flex gap-2">
-                    <div id="selectedClassNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                    <div id="selectedClassNames"
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
                         No classes selected
                     </div>
-                    <button type="button" onclick="openClassModal()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button type="button" onclick="openClassModal()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         Select
                     </button>
                 </div>
@@ -279,11 +294,12 @@
             <div id="studentSelector" class="hidden">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Select Students</label>
                 <div class="flex gap-2">
-                    <div id="selectedStudentNames" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
+                    <div id="selectedStudentNames"
+                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
                         No students selected
                     </div>
-                    <button type="button" id="selectStudentsBtn" onclick="openStudentModal()" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <button type="button" id="selectStudentsBtn" onclick="openStudentModal()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
                         Select
                     </button>
                 </div>
@@ -291,12 +307,12 @@
             </div>
 
             <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelAddFeeType" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <button type="button" id="cancelAddFeeType"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancel
                 </button>
                 <button type="submit" id="addFeeTypeSubmitBtn"
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                     <i id="addFeeTypeIcon" class="fas fa-plus mr-2"></i>
                     <span id="addFeeTypeText">Add Fee Type</span>
                 </button>
@@ -306,200 +322,201 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addFeeTypeBtn = document.getElementById('addFeeTypeBtn');
-    const addFeeTypeModal = document.getElementById('addFeeTypeModal');
-    const closeAddFeeTypeModal = document.getElementById('closeAddFeeTypeModal');
-    const cancelAddFeeType = document.getElementById('cancelAddFeeType');
-    const addFeeTypeForm = document.getElementById('addFeeTypeForm');
-    
-    const editFeeTypeModal = document.getElementById('editFeeTypeModal');
-    const closeEditFeeTypeModal = document.getElementById('closeEditFeeTypeModal');
-    const cancelEditFeeType = document.getElementById('cancelEditFeeType');
-    const editFeeTypeForm = document.getElementById('editFeeTypeForm');
+    document.addEventListener('DOMContentLoaded', function () {
+        const addFeeTypeBtn = document.getElementById('addFeeTypeBtn');
+        const addFeeTypeModal = document.getElementById('addFeeTypeModal');
+        const closeAddFeeTypeModal = document.getElementById('closeAddFeeTypeModal');
+        const cancelAddFeeType = document.getElementById('cancelAddFeeType');
+        const addFeeTypeForm = document.getElementById('addFeeTypeForm');
 
-    // Load fee types on page load
-    loadFeeTypes();
-    
-    // Event delegation for action buttons
-    document.getElementById('feeTypesTableBody').addEventListener('click', function(e) {
-        const button = e.target.closest('button[data-action]');
-        if (!button) return;
-        
-        const action = button.dataset.action;
-        const id = button.dataset.id;
-        const name = button.dataset.name;
-        
-        switch(action) {
-            case 'view':
-                viewAssignments(id, name);
-                break;
-            case 'activate':
-                activateFeeType(id, name);
-                break;
-            case 'edit':
-                editFeeType(id);
-                break;
-            case 'delete':
-                deleteFeeType(id, name);
-                break;
-        }
-    });
+        const editFeeTypeModal = document.getElementById('editFeeTypeModal');
+        const closeEditFeeTypeModal = document.getElementById('closeEditFeeTypeModal');
+        const cancelEditFeeType = document.getElementById('cancelEditFeeType');
+        const editFeeTypeForm = document.getElementById('editFeeTypeForm');
 
-    // Modal handlers
-    addFeeTypeBtn.addEventListener('click', () => {
-        addFeeTypeModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    });
+        // Load fee types on page load
+        window.loadFeeTypes = loadFeeTypes;
+        loadFeeTypes();
 
-    [closeAddFeeTypeModal, cancelAddFeeType].forEach(btn => {
-        btn.addEventListener('click', () => {
-            addFeeTypeModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            addFeeTypeForm.reset();
+        // Event delegation for action buttons
+        document.getElementById('feeTypesTableBody').addEventListener('click', function (e) {
+            const button = e.target.closest('button[data-action]');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const id = button.dataset.id;
+            const name = button.dataset.name;
+
+            switch (action) {
+                case 'view':
+                    viewAssignments(id, name);
+                    break;
+                case 'activate':
+                    activateFeeType(id, name);
+                    break;
+                case 'edit':
+                    editFeeType(id);
+                    break;
+                case 'delete':
+                    deleteFeeType(id, name);
+                    break;
+            }
         });
-    });
 
-    // Edit modal handlers
-    [closeEditFeeTypeModal, cancelEditFeeType].forEach(btn => {
-        btn.addEventListener('click', () => {
-            editFeeTypeModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            editFeeTypeForm.reset();
+        // Modal handlers
+        addFeeTypeBtn.addEventListener('click', () => {
+            addFeeTypeModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         });
-    });
 
-    // Close modal when clicking outside
-    addFeeTypeModal.addEventListener('click', function(e) {
-        if (e.target === addFeeTypeModal) {
-            addFeeTypeModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            addFeeTypeForm.reset();
-        }
-    });
-    
-    editFeeTypeModal.addEventListener('click', function(e) {
-        if (e.target === editFeeTypeModal) {
-            editFeeTypeModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            editFeeTypeForm.reset();
-        }
-    });
-
-    // Form submission
-    addFeeTypeForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const submitBtn = document.getElementById('addFeeTypeSubmitBtn');
-        const icon = document.getElementById('addFeeTypeIcon');
-        const text = document.getElementById('addFeeTypeText');
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        icon.className = 'fas fa-spinner fa-spin mr-2';
-        text.textContent = 'Adding...';
-        
-        const formData = new FormData(addFeeTypeForm);
-        const data = Object.fromEntries(formData);
-        
-        if (data.description === '') {
-            delete data.description;
-        }
-
-        try {
-            const response = await fetch('/api/fee-types', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
+        [closeAddFeeTypeModal, cancelAddFeeType].forEach(btn => {
+            btn.addEventListener('click', () => {
                 addFeeTypeModal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
                 addFeeTypeForm.reset();
-                loadFeeTypes();
-                showSuccessMessage('Success', 'Fee type added successfully!');
-            } else {
-                const error = await response.json();
-                showErrorMessage('Error', error.message || 'Failed to add fee type');
-            }
-        } catch (error) {
-            showErrorMessage('Error', 'Error adding fee type');
-        } finally {
-            // Reset button state
-            submitBtn.disabled = false;
-            icon.className = 'fas fa-plus mr-2';
-            text.textContent = 'Add Fee Type';
-        }
-    });
-    
-    // Edit form submission
-    editFeeTypeForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const submitBtn = document.getElementById('editFeeTypeSubmitBtn');
-        const icon = document.getElementById('editFeeTypeIcon');
-        const text = document.getElementById('editFeeTypeText');
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        icon.className = 'fas fa-spinner fa-spin mr-2';
-        text.textContent = 'Updating...';
-        
-        const formData = new FormData(editFeeTypeForm);
-        const data = Object.fromEntries(formData);
-        const feeTypeId = data.id;
-        
-        if (data.description === '') {
-            delete data.description;
-        }
-        delete data.id; // Remove id from data as it's in the URL
-
-        try {
-            const response = await fetch(`/api/fee-types/${feeTypeId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
             });
+        });
 
-            if (response.ok) {
+        // Edit modal handlers
+        [closeEditFeeTypeModal, cancelEditFeeType].forEach(btn => {
+            btn.addEventListener('click', () => {
                 editFeeTypeModal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
                 editFeeTypeForm.reset();
-                loadFeeTypes();
-                showSuccessMessage('Success', 'Fee type updated successfully!');
-            } else {
-                const error = await response.json();
-                showErrorMessage('Error', error.message || 'Failed to update fee type');
+            });
+        });
+
+        // Close modal when clicking outside
+        addFeeTypeModal.addEventListener('click', function (e) {
+            if (e.target === addFeeTypeModal) {
+                addFeeTypeModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                addFeeTypeForm.reset();
             }
-        } catch (error) {
-            showErrorMessage('Error', 'Error updating fee type');
-        } finally {
-            // Reset button state
-            submitBtn.disabled = false;
-            icon.className = 'fas fa-save mr-2';
-            text.textContent = 'Update Fee Type';
+        });
+
+        editFeeTypeModal.addEventListener('click', function (e) {
+            if (e.target === editFeeTypeModal) {
+                editFeeTypeModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                editFeeTypeForm.reset();
+            }
+        });
+
+        // Form submission
+        addFeeTypeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('addFeeTypeSubmitBtn');
+            const icon = document.getElementById('addFeeTypeIcon');
+            const text = document.getElementById('addFeeTypeText');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            icon.className = 'fas fa-spinner fa-spin mr-2';
+            text.textContent = 'Adding...';
+
+            const formData = new FormData(addFeeTypeForm);
+            const data = Object.fromEntries(formData);
+
+            if (data.description === '') {
+                delete data.description;
+            }
+
+            try {
+                const response = await fetch('/api/fee-types', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    addFeeTypeModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    addFeeTypeForm.reset();
+                    loadFeeTypes();
+                    showSuccessMessage('Success', 'Fee type added successfully!');
+                } else {
+                    const error = await response.json();
+                    showErrorMessage('Error', error.message || 'Failed to add fee type');
+                }
+            } catch (error) {
+                showErrorMessage('Error', 'Error adding fee type');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                icon.className = 'fas fa-plus mr-2';
+                text.textContent = 'Add Fee Type';
+            }
+        });
+
+        // Edit form submission
+        editFeeTypeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('editFeeTypeSubmitBtn');
+            const icon = document.getElementById('editFeeTypeIcon');
+            const text = document.getElementById('editFeeTypeText');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            icon.className = 'fas fa-spinner fa-spin mr-2';
+            text.textContent = 'Updating...';
+
+            const formData = new FormData(editFeeTypeForm);
+            const data = Object.fromEntries(formData);
+            const feeTypeId = data.id;
+
+            if (data.description === '') {
+                delete data.description;
+            }
+            delete data.id; // Remove id from data as it's in the URL
+
+            try {
+                const response = await fetch(`/api/fee-types/${feeTypeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    editFeeTypeModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    editFeeTypeForm.reset();
+                    loadFeeTypes();
+                    showSuccessMessage('Success', 'Fee type updated successfully!');
+                } else {
+                    const error = await response.json();
+                    showErrorMessage('Error', error.message || 'Failed to update fee type');
+                }
+            } catch (error) {
+                showErrorMessage('Error', 'Error updating fee type');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                icon.className = 'fas fa-save mr-2';
+                text.textContent = 'Update Fee Type';
+            }
+        });
+
+        window.getFrequencyLabel = function (frequency) {
+            const labels = {
+                'once': 'One-time',
+                'per_term': 'Per Term',
+                'per_year': 'Per Year',
+                'on_demand': 'On Demand'
+            };
+            return labels[frequency] || frequency;
         }
-    });
 
-    window.getFrequencyLabel = function(frequency) {
-        const labels = {
-            'once': 'One-time',
-            'per_term': 'Per Term',
-            'per_year': 'Per Year',
-            'on_demand': 'On Demand'
-        };
-        return labels[frequency] || frequency;
-    }
-
-    async function loadFeeTypes() {
-        // Show loading skeleton
-        const tbody = document.getElementById('feeTypesTableBody');
-        tbody.innerHTML = Array(5).fill().map(() => `
+        async function loadFeeTypes() {
+            // Show loading skeleton
+            const tbody = document.getElementById('feeTypesTableBody');
+            tbody.innerHTML = Array(5).fill().map(() => `
             <tr class="animate-pulse">
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="h-4 bg-gray-200 rounded w-24"></div>
@@ -528,26 +545,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             </tr>
         `).join('');
-        
-        try {
-            const response = await fetch('/api/fee-types');
-            const result = await response.json();
-            
-            if (result.success) {
-                displayFeeTypes(result.data);
-            } else {
-                showError('Failed to load fee types: ' + (result.error || 'Unknown error'));
-            }
-        } catch (error) {
-            showError('Error loading fee types: ' + error.message);
-        }
-    }
 
-    function displayFeeTypes(feeTypes) {
-        const tbody = document.getElementById('feeTypesTableBody');
-        
-        if (feeTypes.length === 0) {
-            tbody.innerHTML = `
+            try {
+                const response = await fetch('/api/fee-types');
+                const result = await response.json();
+
+                if (result.success) {
+                    displayFeeTypes(result.data);
+                } else {
+                    showError('Failed to load fee types: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                showError('Error loading fee types: ' + error.message);
+            }
+        }
+
+        function displayFeeTypes(feeTypes) {
+            const tbody = document.getElementById('feeTypesTableBody');
+
+            if (feeTypes.length === 0) {
+                tbody.innerHTML = `
                 <tr>
                     <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                         <div class="flex flex-col items-center">
@@ -560,26 +577,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                 </tr>
             `;
-            return;
-        }
+                return;
+            }
 
-        tbody.innerHTML = feeTypes.map(feeType => {
-            let assignedTo = '';
-            if (feeType.classes && feeType.classes.length > 0) {
-                assignedTo += `Classes: ${feeType.classes.slice(0, 2).join(', ')}`;
-                if (feeType.classes.length > 2) assignedTo += ` +${feeType.classes.length - 2} more`;
-            }
-            if (feeType.students && feeType.students.length > 0) {
-                if (assignedTo) assignedTo += '<br>';
-                assignedTo += `Students: ${feeType.students.slice(0, 2).join(', ')}`;
-                if (feeType.students.length > 2) assignedTo += ` +${feeType.students.length - 2} more`;
-            }
-            if (!assignedTo) assignedTo = 'Manual assignment';
-            
-            const escapedName = feeType.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-            const escapedId = feeType.id.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-            
-            return `
+            tbody.innerHTML = feeTypes.map(feeType => {
+                let assignedTo = '';
+                if (feeType.classes && feeType.classes.length > 0) {
+                    assignedTo += `Classes: ${feeType.classes.slice(0, 2).join(', ')}`;
+                    if (feeType.classes.length > 2) assignedTo += ` +${feeType.classes.length - 2} more`;
+                }
+                if (feeType.students && feeType.students.length > 0) {
+                    if (assignedTo) assignedTo += '<br>';
+                    assignedTo += `Students: ${feeType.students.slice(0, 2).join(', ')}`;
+                    if (feeType.students.length > 2) assignedTo += ` +${feeType.students.length - 2} more`;
+                }
+                if (!assignedTo) assignedTo = 'Manual assignment';
+
+                const escapedName = feeType.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                const escapedId = feeType.id.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+                return `
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm font-medium text-gray-900">${escapedName}</div>
@@ -613,12 +630,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             </tr>
             `;
-        }).join('');
-    }
+            }).join('');
+        }
 
-    function showError(message) {
-        const tbody = document.getElementById('feeTypesTableBody');
-        tbody.innerHTML = `
+        function showError(message) {
+            const tbody = document.getElementById('feeTypesTableBody');
+            tbody.innerHTML = `
             <tr>
                 <td colspan="7" class="px-6 py-8 text-center text-red-500">
                     <div class="flex flex-col items-center">
@@ -631,228 +648,228 @@ document.addEventListener('DOMContentLoaded', function() {
                 </td>
             </tr>
         `;
-    }
-});
-
-// Global function for scope change handling
-function handleScopeChange() {
-    const scope = document.getElementById('feeTypeScope').value;
-    const classSelector = document.getElementById('classSelector');
-    const studentSelector = document.getElementById('studentSelector');
-    
-    classSelector.classList.add('hidden');
-    studentSelector.classList.add('hidden');
-    
-    if (scope === 'class') {
-        classSelector.classList.remove('hidden');
-    } else if (scope === 'student') {
-        studentSelector.classList.remove('hidden');
-    } else if (scope === 'class_and_student') {
-        classSelector.classList.remove('hidden');
-        studentSelector.classList.remove('hidden');
-        updateStudentSelectorState();
-    } else if (scope === 'all_classes') {
-        // Automatically select all classes
-        selectAllClasses();
-    }
-}
-
-// Edit scope change handling
-function handleEditScopeChange() {
-    const scope = document.getElementById('editFeeTypeScope').value;
-    const classSelector = document.getElementById('editClassSelector');
-    const studentSelector = document.getElementById('editStudentSelector');
-    
-    classSelector.classList.add('hidden');
-    studentSelector.classList.add('hidden');
-    
-    if (scope === 'class') {
-        classSelector.classList.remove('hidden');
-    } else if (scope === 'student') {
-        studentSelector.classList.remove('hidden');
-    } else if (scope === 'class_and_student') {
-        classSelector.classList.remove('hidden');
-        studentSelector.classList.remove('hidden');
-    } else if (scope === 'all_classes') {
-        // Automatically select all classes for edit mode
-        selectAllClassesEdit();
-    }
-}
-
-function updateStudentSelectorState() {
-    const scope = document.getElementById('feeTypeScope').value;
-    const selectStudentsBtn = document.getElementById('selectStudentsBtn');
-    
-    if (scope === 'class_and_student') {
-        if (selectedClasses.size === 0) {
-            selectStudentsBtn.disabled = true;
-            selectStudentsBtn.title = 'Please select at least one class first';
-        } else {
-            selectStudentsBtn.disabled = false;
-            selectStudentsBtn.title = '';
         }
-    }
-}
-
-// Global variables
-let selectedClasses = new Set();
-let selectedStudents = new Set();
-let allClasses = [];
-let allStudents = [];
-let studentOffset = 0;
-let hasMoreStudents = true;
-
-// Modal functions
-async function openClassModal() {
-    document.getElementById('classSelectionModal').classList.remove('hidden');
-    await loadClasses();
-}
-
-function closeClassModal() {
-    document.getElementById('classSelectionModal').classList.add('hidden');
-}
-
-async function openStudentModal() {
-    document.getElementById('studentSelectionModal').classList.remove('hidden');
-    selectedStudents.clear(); // Clear previous selections
-    await loadStudents(true); // Always reset when opening
-    setupStudentInfiniteScroll();
-}
-
-function closeStudentModal() {
-    document.getElementById('studentSelectionModal').classList.add('hidden');
-    if (window.studentScrollObserver) {
-        window.studentScrollObserver.disconnect();
-    }
-}
-
-async function loadClasses() {
-    try {
-        document.getElementById('classLoadingSkeleton').classList.remove('hidden');
-        document.getElementById('classListContainer').classList.add('hidden');
-        
-        const response = await fetch('/api/classes');
-        const data = await response.json();
-        allClasses = data.classes || [];
-        
-        document.getElementById('classLoadingSkeleton').classList.add('hidden');
-        document.getElementById('classListContainer').classList.remove('hidden');
-        displayClasses(allClasses);
-    } catch (error) {
-        console.error('Error loading classes:', error);
-        document.getElementById('classLoadingSkeleton').classList.add('hidden');
-        document.getElementById('classListContainer').classList.remove('hidden');
-    }
-}
-
-async function loadStudents(reset = true) {
-    try {
-        if (reset) {
-            studentOffset = 0;
-            allStudents = [];
-            hasMoreStudents = true;
-            document.getElementById('studentLoadingSkeleton').classList.remove('hidden');
-            document.getElementById('studentListContainer').classList.add('hidden');
-        } else {
-            // Show loading skeleton for infinite scroll
-            document.getElementById('studentInfiniteLoadingSkeleton').classList.remove('hidden');
-        }
-        
-        const scope = document.getElementById('feeTypeScope').value;
-        let url = '/api/students/table?limit=10&offset=' + studentOffset;
-        
-        // If in class_and_student mode and classes are selected, filter by classes
-        if (scope === 'class_and_student' && selectedClasses.size > 0) {
-            const classIds = Array.from(selectedClasses);
-            const searchTerm = document.getElementById('studentSearchInput')?.value.trim() || '';
-            url = `/api/fees/students-by-classes?class_ids=${classIds.join(',')}&limit=10&offset=${studentOffset}`;
-            if (searchTerm) {
-                url += `&search=${encodeURIComponent(searchTerm)}`;
-            }
-        }
-        
-        // Debug log removed for production
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        const newStudents = data.students || [];
-        const totalStudents = data.total_count || data.total || 0;
-        
-        if (reset) {
-            allStudents = newStudents;
-            selectedStudents.clear(); // Clear selections when resetting
-            document.getElementById('studentLoadingSkeleton').classList.add('hidden');
-            document.getElementById('studentListContainer').classList.remove('hidden');
-        } else {
-            allStudents = [...allStudents, ...newStudents];
-            document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
-        }
-        
-        hasMoreStudents = newStudents.length === 10;
-        studentOffset += newStudents.length;
-        
-        displayStudents(reset ? allStudents : allStudents);
-        // Remove duplicates from allStudents array
-        const uniqueStudents = allStudents.filter((student, index, self) => 
-            index === self.findIndex(s => s.id === student.id)
-        );
-        allStudents = uniqueStudents;
-        
-        updateStudentCount(allStudents.length, totalStudents || allStudents.length);
-        updateLoadMoreButton();
-    } catch (error) {
-        console.error('Error loading students:', error);
-        if (reset) {
-            document.getElementById('studentLoadingSkeleton').classList.add('hidden');
-            document.getElementById('studentListContainer').classList.remove('hidden');
-        } else {
-            document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
-        }
-    }
-}
-
-async function loadMoreStudents() {
-    if (hasMoreStudents) {
-        await loadStudents(false);
-    }
-}
-
-function updateLoadMoreButton() {
-    const loadMoreBtn = document.getElementById('loadMoreStudents');
-    if (hasMoreStudents && allStudents.length > 0) {
-        loadMoreBtn.classList.remove('hidden');
-    } else {
-        loadMoreBtn.classList.add('hidden');
-    }
-}
-
-function setupStudentInfiniteScroll() {
-    const loadMoreBtn = document.getElementById('loadMoreStudents');
-    if (!loadMoreBtn) return;
-
-    if (window.studentScrollObserver) {
-        window.studentScrollObserver.disconnect();
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && hasMoreStudents) {
-                loadMoreStudents();
-            }
-        });
-    }, {
-        root: null,
-        rootMargin: '100px',
-        threshold: 0
     });
 
-    observer.observe(loadMoreBtn);
-    window.studentScrollObserver = observer;
-}
+    // Global function for scope change handling
+    function handleScopeChange() {
+        const scope = document.getElementById('feeTypeScope').value;
+        const classSelector = document.getElementById('classSelector');
+        const studentSelector = document.getElementById('studentSelector');
 
-function displayClasses(classes) {
-    const container = document.getElementById('classListContainer');
-    container.innerHTML = classes.map(cls => `
+        classSelector.classList.add('hidden');
+        studentSelector.classList.add('hidden');
+
+        if (scope === 'class') {
+            classSelector.classList.remove('hidden');
+        } else if (scope === 'student') {
+            studentSelector.classList.remove('hidden');
+        } else if (scope === 'class_and_student') {
+            classSelector.classList.remove('hidden');
+            studentSelector.classList.remove('hidden');
+            updateStudentSelectorState();
+        } else if (scope === 'all_classes') {
+            // Automatically select all classes
+            selectAllClasses();
+        }
+    }
+
+    // Edit scope change handling
+    function handleEditScopeChange() {
+        const scope = document.getElementById('editFeeTypeScope').value;
+        const classSelector = document.getElementById('editClassSelector');
+        const studentSelector = document.getElementById('editStudentSelector');
+
+        classSelector.classList.add('hidden');
+        studentSelector.classList.add('hidden');
+
+        if (scope === 'class') {
+            classSelector.classList.remove('hidden');
+        } else if (scope === 'student') {
+            studentSelector.classList.remove('hidden');
+        } else if (scope === 'class_and_student') {
+            classSelector.classList.remove('hidden');
+            studentSelector.classList.remove('hidden');
+        } else if (scope === 'all_classes') {
+            // Automatically select all classes for edit mode
+            selectAllClassesEdit();
+        }
+    }
+
+    function updateStudentSelectorState() {
+        const scope = document.getElementById('feeTypeScope').value;
+        const selectStudentsBtn = document.getElementById('selectStudentsBtn');
+
+        if (scope === 'class_and_student') {
+            if (selectedClasses.size === 0) {
+                selectStudentsBtn.disabled = true;
+                selectStudentsBtn.title = 'Please select at least one class first';
+            } else {
+                selectStudentsBtn.disabled = false;
+                selectStudentsBtn.title = '';
+            }
+        }
+    }
+
+    // Global variables
+    let selectedClasses = new Set();
+    let selectedStudents = new Set();
+    let allClasses = [];
+    let allStudents = [];
+    let studentOffset = 0;
+    let hasMoreStudents = true;
+
+    // Modal functions
+    async function openClassModal() {
+        document.getElementById('classSelectionModal').classList.remove('hidden');
+        await loadClasses();
+    }
+
+    function closeClassModal() {
+        document.getElementById('classSelectionModal').classList.add('hidden');
+    }
+
+    async function openStudentModal() {
+        document.getElementById('studentSelectionModal').classList.remove('hidden');
+        selectedStudents.clear(); // Clear previous selections
+        await loadStudents(true); // Always reset when opening
+        setupStudentInfiniteScroll();
+    }
+
+    function closeStudentModal() {
+        document.getElementById('studentSelectionModal').classList.add('hidden');
+        if (window.studentScrollObserver) {
+            window.studentScrollObserver.disconnect();
+        }
+    }
+
+    async function loadClasses() {
+        try {
+            document.getElementById('classLoadingSkeleton').classList.remove('hidden');
+            document.getElementById('classListContainer').classList.add('hidden');
+
+            const response = await fetch('/api/classes');
+            const data = await response.json();
+            allClasses = data.classes || [];
+
+            document.getElementById('classLoadingSkeleton').classList.add('hidden');
+            document.getElementById('classListContainer').classList.remove('hidden');
+            displayClasses(allClasses);
+        } catch (error) {
+            console.error('Error loading classes:', error);
+            document.getElementById('classLoadingSkeleton').classList.add('hidden');
+            document.getElementById('classListContainer').classList.remove('hidden');
+        }
+    }
+
+    async function loadStudents(reset = true) {
+        try {
+            if (reset) {
+                studentOffset = 0;
+                allStudents = [];
+                hasMoreStudents = true;
+                document.getElementById('studentLoadingSkeleton').classList.remove('hidden');
+                document.getElementById('studentListContainer').classList.add('hidden');
+            } else {
+                // Show loading skeleton for infinite scroll
+                document.getElementById('studentInfiniteLoadingSkeleton').classList.remove('hidden');
+            }
+
+            const scope = document.getElementById('feeTypeScope').value;
+            let url = '/api/students/table?limit=10&offset=' + studentOffset;
+
+            // If in class_and_student mode and classes are selected, filter by classes
+            if (scope === 'class_and_student' && selectedClasses.size > 0) {
+                const classIds = Array.from(selectedClasses);
+                const searchTerm = document.getElementById('studentSearchInput')?.value.trim() || '';
+                url = `/api/fees/students-by-classes?class_ids=${classIds.join(',')}&limit=10&offset=${studentOffset}`;
+                if (searchTerm) {
+                    url += `&search=${encodeURIComponent(searchTerm)}`;
+                }
+            }
+
+            // Debug log removed for production
+
+            const response = await fetch(url);
+            const data = await response.json();
+            const newStudents = data.students || [];
+            const totalStudents = data.total_count || data.total || 0;
+
+            if (reset) {
+                allStudents = newStudents;
+                selectedStudents.clear(); // Clear selections when resetting
+                document.getElementById('studentLoadingSkeleton').classList.add('hidden');
+                document.getElementById('studentListContainer').classList.remove('hidden');
+            } else {
+                allStudents = [...allStudents, ...newStudents];
+                document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
+            }
+
+            hasMoreStudents = newStudents.length === 10;
+            studentOffset += newStudents.length;
+
+            displayStudents(reset ? allStudents : allStudents);
+            // Remove duplicates from allStudents array
+            const uniqueStudents = allStudents.filter((student, index, self) =>
+                index === self.findIndex(s => s.id === student.id)
+            );
+            allStudents = uniqueStudents;
+
+            updateStudentCount(allStudents.length, totalStudents || allStudents.length);
+            updateLoadMoreButton();
+        } catch (error) {
+            console.error('Error loading students:', error);
+            if (reset) {
+                document.getElementById('studentLoadingSkeleton').classList.add('hidden');
+                document.getElementById('studentListContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('studentInfiniteLoadingSkeleton').classList.add('hidden');
+            }
+        }
+    }
+
+    async function loadMoreStudents() {
+        if (hasMoreStudents) {
+            await loadStudents(false);
+        }
+    }
+
+    function updateLoadMoreButton() {
+        const loadMoreBtn = document.getElementById('loadMoreStudents');
+        if (hasMoreStudents && allStudents.length > 0) {
+            loadMoreBtn.classList.remove('hidden');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+        }
+    }
+
+    function setupStudentInfiniteScroll() {
+        const loadMoreBtn = document.getElementById('loadMoreStudents');
+        if (!loadMoreBtn) return;
+
+        if (window.studentScrollObserver) {
+            window.studentScrollObserver.disconnect();
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && hasMoreStudents) {
+                    loadMoreStudents();
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '100px',
+            threshold: 0
+        });
+
+        observer.observe(loadMoreBtn);
+        window.studentScrollObserver = observer;
+    }
+
+    function displayClasses(classes) {
+        const container = document.getElementById('classListContainer');
+        container.innerHTML = classes.map(cls => `
         <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
             <label class="flex items-center cursor-pointer">
                 <input type="checkbox" class="mr-3" value="${cls.id}" 
@@ -865,17 +882,17 @@ function displayClasses(classes) {
             </label>
         </div>
     `).join('');
-    updateClassSelectionCount();
-}
+        updateClassSelectionCount();
+    }
 
-function displayStudents(students) {
-    const container = document.getElementById('studentListContainer');
-    // Remove duplicates by ID
-    const uniqueStudents = students.filter((student, index, self) => 
-        index === self.findIndex(s => s.id === student.id)
-    );
-    
-    container.innerHTML = uniqueStudents.map(student => `
+    function displayStudents(students) {
+        const container = document.getElementById('studentListContainer');
+        // Remove duplicates by ID
+        const uniqueStudents = students.filter((student, index, self) =>
+            index === self.findIndex(s => s.id === student.id)
+        );
+
+        container.innerHTML = uniqueStudents.map(student => `
         <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
             <label class="flex items-center cursor-pointer">
                 <input type="checkbox" class="mr-3" value="${student.id}" 
@@ -888,241 +905,241 @@ function displayStudents(students) {
             </label>
         </div>
     `).join('');
-    updateStudentSelectionCount();
-}
-
-function toggleClassSelection(classId, className) {
-    if (selectedClasses.has(classId)) {
-        selectedClasses.delete(classId);
-    } else {
-        selectedClasses.add(classId);
+        updateStudentSelectionCount();
     }
-    updateClassSelectionCount();
-}
 
-function toggleStudentSelection(studentId, studentName) {
-    if (selectedStudents.has(studentId)) {
-        selectedStudents.delete(studentId);
-    } else {
-        selectedStudents.add(studentId);
-    }
-    updateStudentSelectionCount();
-}
-
-function updateClassSelectionCount() {
-    const countEl = document.getElementById('selectedClassCount');
-    if (countEl) {
-        const count = selectedClasses.size;
-        countEl.textContent = `${count} class${count !== 1 ? 'es' : ''} selected`;
-    }
-    updateStudentSelectorState();
-}
-
-function updateStudentSelectionCount() {
-    const countEl = document.getElementById('selectedStudentCount');
-    if (countEl) {
-        const count = selectedStudents.size;
-        countEl.textContent = `${count} student${count !== 1 ? 's' : ''} selected`;
-    }
-}
-
-function updateStudentCount(displayed, total) {
-    const countEl = document.getElementById('studentCount');
-    if (countEl) {
-        countEl.textContent = `Showing ${displayed} of ${total} students`;
-    }
-}
-
-function confirmClassSelection() {
-    const selectedClassIds = Array.from(selectedClasses);
-    const selectedClassNames = selectedClassIds.map(id => {
-        const cls = allClasses.find(c => c.id === id);
-        return cls ? cls.name : '';
-    }).filter(name => name);
-    
-    if (window.editMode) {
-        document.getElementById('editFeeTypeClasses').value = selectedClassIds.join(',');
-        document.getElementById('editSelectedClassNames').innerHTML = selectedClassNames.length > 0 
-            ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No classes selected';
-        window.editMode = false;
-    } else {
-        document.getElementById('feeTypeClasses').value = selectedClassIds.join(',');
-        document.getElementById('selectedClassNames').innerHTML = selectedClassNames.length > 0 
-            ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No classes selected';
-    }
-    
-    closeClassModal();
-}
-
-function confirmStudentSelection() {
-    const selectedStudentIds = Array.from(selectedStudents);
-    const selectedStudentNames = selectedStudentIds.map(id => {
-        const student = allStudents.find(s => s.id === id);
-        return student ? `${student.first_name} ${student.last_name}` : '';
-    }).filter(name => name);
-    
-    if (window.editMode) {
-        document.getElementById('editFeeTypeStudents').value = selectedStudentIds.join(',');
-        document.getElementById('editSelectedStudentNames').innerHTML = selectedStudentNames.length > 0 
-            ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No students selected';
-        window.editMode = false;
-    } else {
-        document.getElementById('feeTypeStudents').value = selectedStudentIds.join(',');
-        document.getElementById('selectedStudentNames').innerHTML = selectedStudentNames.length > 0 
-            ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No students selected';
-    }
-    
-    closeStudentModal();
-}
-
-let searchTimeout;
-function handleStudentSearch() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        loadStudents(true); // Reset and search
-    }, 300);
-}
-
-// Edit fee type function
-async function editFeeType(feeTypeId) {
-    // Show loading in button if event is available
-    let editBtn = null;
-    let originalText = '';
-    if (window.event && window.event.target) {
-        editBtn = window.event.target.closest('button');
-        originalText = editBtn.textContent;
-        editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        editBtn.disabled = true;
-    }
-    
-    try {
-        const response = await fetch(`/api/fee-types/${feeTypeId}`);
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-            const feeType = data.data;
-            
-            // Populate form fields
-            document.getElementById('editFeeTypeId').value = feeType.id;
-            document.getElementById('editFeeTypeName').value = feeType.name;
-            document.getElementById('editFeeTypeCode').value = feeType.code;
-            document.getElementById('editFeeTypeDescription').value = feeType.description || '';
-            document.getElementById('editFeeTypeAmount').value = feeType.amount;
-            document.getElementById('editFeeTypeFrequency').value = feeType.payment_frequency;
-            document.getElementById('editFeeTypeRequired').value = feeType.is_required ? 'true' : 'false';
-            document.getElementById('editFeeTypeStatus').value = feeType.is_active ? 'true' : 'false';
-            document.getElementById('editFeeTypeScope').value = feeType.scope || 'manual';
-            
-            // Set current assignments
-            if (feeType.target_class_id) {
-                document.getElementById('editFeeTypeClasses').value = feeType.target_class_id;
-                // Load class names for display
-                loadEditClassNames(feeType.target_class_id.split(','));
-            }
-            if (feeType.target_student_id) {
-                document.getElementById('editFeeTypeStudents').value = feeType.target_student_id;
-                // Load student names for display
-                loadEditStudentNames(feeType.target_student_id.split(','));
-            }
-            
-            // Handle scope visibility
-            handleEditScopeChange();
-            
-            // Show modal
-            document.getElementById('editFeeTypeModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+    function toggleClassSelection(classId, className) {
+        if (selectedClasses.has(classId)) {
+            selectedClasses.delete(classId);
         } else {
-            showErrorMessage('Error', 'Failed to load fee type details');
+            selectedClasses.add(classId);
         }
-    } catch (error) {
-        showErrorMessage('Error', 'Error loading fee type details');
-    } finally {
-        // Reset button state
-        if (editBtn) {
-            editBtn.innerHTML = originalText;
-            editBtn.disabled = false;
-        }
+        updateClassSelectionCount();
     }
-}
 
-// Delete fee type function
-async function deleteFeeType(feeTypeId, feeTypeName) {
-    if (!confirm(`Are you sure you want to delete "${feeTypeName}"? This action cannot be undone.`)) {
-        return;
-    }
-    
-    // Show loading in button if event is available
-    let deleteBtn = null;
-    let originalText = '';
-    if (window.event && window.event.target) {
-        deleteBtn = window.event.target.closest('button');
-        originalText = deleteBtn.textContent;
-        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        deleteBtn.disabled = true;
-    }
-    
-    try {
-        const response = await fetch(`/api/fee-types/${feeTypeId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            loadFeeTypes();
-            showSuccessMessage('Success', 'Fee type deleted successfully!');
+    function toggleStudentSelection(studentId, studentName) {
+        if (selectedStudents.has(studentId)) {
+            selectedStudents.delete(studentId);
         } else {
-            const error = await response.json();
-            showErrorMessage('Error', error.message || error.error || 'Failed to delete fee type');
+            selectedStudents.add(studentId);
         }
-    } catch (error) {
-        showErrorMessage('Error', 'Error deleting fee type');
-    } finally {
-        // Reset button state
-        if (deleteBtn) {
-            deleteBtn.innerHTML = originalText;
-            deleteBtn.disabled = false;
+        updateStudentSelectionCount();
+    }
+
+    function updateClassSelectionCount() {
+        const countEl = document.getElementById('selectedClassCount');
+        if (countEl) {
+            const count = selectedClasses.size;
+            countEl.textContent = `${count} class${count !== 1 ? 'es' : ''} selected`;
+        }
+        updateStudentSelectorState();
+    }
+
+    function updateStudentSelectionCount() {
+        const countEl = document.getElementById('selectedStudentCount');
+        if (countEl) {
+            const count = selectedStudents.size;
+            countEl.textContent = `${count} student${count !== 1 ? 's' : ''} selected`;
         }
     }
-}
 
-// View assignments function
-async function viewAssignments(feeTypeId, feeTypeName) {
-    // Show modal with loading state
-    const modal = document.getElementById('viewAssignmentsModal');
-    const title = document.getElementById('viewAssignmentsTitle');
-    const content = document.getElementById('viewAssignmentsContent');
-    
-    title.textContent = `${feeTypeName} - Loading...`;
-    content.innerHTML = `
+    function updateStudentCount(displayed, total) {
+        const countEl = document.getElementById('studentCount');
+        if (countEl) {
+            countEl.textContent = `Showing ${displayed} of ${total} students`;
+        }
+    }
+
+    function confirmClassSelection() {
+        const selectedClassIds = Array.from(selectedClasses);
+        const selectedClassNames = selectedClassIds.map(id => {
+            const cls = allClasses.find(c => c.id === id);
+            return cls ? cls.name : '';
+        }).filter(name => name);
+
+        if (window.editMode) {
+            document.getElementById('editFeeTypeClasses').value = selectedClassIds.join(',');
+            document.getElementById('editSelectedClassNames').innerHTML = selectedClassNames.length > 0
+                ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No classes selected';
+            window.editMode = false;
+        } else {
+            document.getElementById('feeTypeClasses').value = selectedClassIds.join(',');
+            document.getElementById('selectedClassNames').innerHTML = selectedClassNames.length > 0
+                ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No classes selected';
+        }
+
+        closeClassModal();
+    }
+
+    function confirmStudentSelection() {
+        const selectedStudentIds = Array.from(selectedStudents);
+        const selectedStudentNames = selectedStudentIds.map(id => {
+            const student = allStudents.find(s => s.id === id);
+            return student ? `${student.first_name} ${student.last_name}` : '';
+        }).filter(name => name);
+
+        if (window.editMode) {
+            document.getElementById('editFeeTypeStudents').value = selectedStudentIds.join(',');
+            document.getElementById('editSelectedStudentNames').innerHTML = selectedStudentNames.length > 0
+                ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No students selected';
+            window.editMode = false;
+        } else {
+            document.getElementById('feeTypeStudents').value = selectedStudentIds.join(',');
+            document.getElementById('selectedStudentNames').innerHTML = selectedStudentNames.length > 0
+                ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No students selected';
+        }
+
+        closeStudentModal();
+    }
+
+    let searchTimeout;
+    function handleStudentSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadStudents(true); // Reset and search
+        }, 300);
+    }
+
+    // Edit fee type function
+    async function editFeeType(feeTypeId) {
+        // Show loading in button if event is available
+        let editBtn = null;
+        let originalText = '';
+        if (window.event && window.event.target) {
+            editBtn = window.event.target.closest('button');
+            originalText = editBtn.textContent;
+            editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            editBtn.disabled = true;
+        }
+
+        try {
+            const response = await fetch(`/api/fee-types/${feeTypeId}`);
+            const data = await response.json();
+
+            if (data.success && data.data) {
+                const feeType = data.data;
+
+                // Populate form fields
+                document.getElementById('editFeeTypeId').value = feeType.id;
+                document.getElementById('editFeeTypeName').value = feeType.name;
+                document.getElementById('editFeeTypeCode').value = feeType.code;
+                document.getElementById('editFeeTypeDescription').value = feeType.description || '';
+                document.getElementById('editFeeTypeAmount').value = feeType.amount;
+                document.getElementById('editFeeTypeFrequency').value = feeType.payment_frequency;
+                document.getElementById('editFeeTypeRequired').value = feeType.is_required ? 'true' : 'false';
+                document.getElementById('editFeeTypeStatus').value = feeType.is_active ? 'true' : 'false';
+                document.getElementById('editFeeTypeScope').value = feeType.scope || 'manual';
+
+                // Set current assignments
+                if (feeType.target_class_id) {
+                    document.getElementById('editFeeTypeClasses').value = feeType.target_class_id;
+                    // Load class names for display
+                    loadEditClassNames(feeType.target_class_id.split(','));
+                }
+                if (feeType.target_student_id) {
+                    document.getElementById('editFeeTypeStudents').value = feeType.target_student_id;
+                    // Load student names for display
+                    loadEditStudentNames(feeType.target_student_id.split(','));
+                }
+
+                // Handle scope visibility
+                handleEditScopeChange();
+
+                // Show modal
+                document.getElementById('editFeeTypeModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                showErrorMessage('Error', 'Failed to load fee type details');
+            }
+        } catch (error) {
+            showErrorMessage('Error', 'Error loading fee type details');
+        } finally {
+            // Reset button state
+            if (editBtn) {
+                editBtn.innerHTML = originalText;
+                editBtn.disabled = false;
+            }
+        }
+    }
+
+    // Delete fee type function
+    async function deleteFeeType(feeTypeId, feeTypeName) {
+        if (!confirm(`Are you sure you want to delete "${feeTypeName}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        // Show loading in button if event is available
+        let deleteBtn = null;
+        let originalText = '';
+        if (window.event && window.event.target) {
+            deleteBtn = window.event.target.closest('button');
+            originalText = deleteBtn.textContent;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            deleteBtn.disabled = true;
+        }
+
+        try {
+            const response = await fetch(`/api/fee-types/${feeTypeId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                loadFeeTypes();
+                showSuccessMessage('Success', 'Fee type deleted successfully!');
+            } else {
+                const error = await response.json();
+                showErrorMessage('Error', error.message || error.error || 'Failed to delete fee type');
+            }
+        } catch (error) {
+            showErrorMessage('Error', 'Error deleting fee type');
+        } finally {
+            // Reset button state
+            if (deleteBtn) {
+                deleteBtn.innerHTML = originalText;
+                deleteBtn.disabled = false;
+            }
+        }
+    }
+
+    // View assignments function
+    async function viewAssignments(feeTypeId, feeTypeName) {
+        // Show modal with loading state
+        const modal = document.getElementById('viewAssignmentsModal');
+        const title = document.getElementById('viewAssignmentsTitle');
+        const content = document.getElementById('viewAssignmentsContent');
+
+        title.textContent = `${feeTypeName} - Loading...`;
+        content.innerHTML = `
         <div class="flex items-center justify-center py-12">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div>
             <span class="text-gray-600">Loading fee type details...</span>
         </div>
     `;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    
-    try {
-        // Get both fee type details and assignments
-        const [feeTypeResponse, assignmentsResponse] = await Promise.all([
-            fetch(`/api/fee-types/${feeTypeId}`),
-            fetch(`/api/fee-types/${feeTypeId}/assignments`)
-        ]);
-        
-        const feeTypeData = await feeTypeResponse.json();
-        const assignmentsData = await assignmentsResponse.json();
-        
-        if (feeTypeResponse.ok && assignmentsResponse.ok && feeTypeData.success && assignmentsData.success) {
-            const feeType = feeTypeData.data;
-            const title = document.getElementById('viewAssignmentsTitle');
-            const content = document.getElementById('viewAssignmentsContent');
-            
-            title.textContent = `${feeTypeName} - Details & Assignments`;
-            
-            let contentHTML = `
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        try {
+            // Get both fee type details and assignments
+            const [feeTypeResponse, assignmentsResponse] = await Promise.all([
+                fetch(`/api/fee-types/${feeTypeId}`),
+                fetch(`/api/fee-types/${feeTypeId}/assignments`)
+            ]);
+
+            const feeTypeData = await feeTypeResponse.json();
+            const assignmentsData = await assignmentsResponse.json();
+
+            if (feeTypeResponse.ok && assignmentsResponse.ok && feeTypeData.success && assignmentsData.success) {
+                const feeType = feeTypeData.data;
+                const title = document.getElementById('viewAssignmentsTitle');
+                const content = document.getElementById('viewAssignmentsContent');
+
+                title.textContent = `${feeTypeName} - Details & Assignments`;
+
+                let contentHTML = `
                 <!-- Fee Type Details -->
                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
                     <h4 class="font-semibold text-gray-900 mb-3">Fee Type Details</h4>
@@ -1162,12 +1179,12 @@ async function viewAssignments(feeTypeId, feeTypeName) {
                     ` : ''}
                 </div>
             `;
-            
-            // Add assignments section
-            contentHTML += '<div><h4 class="font-semibold text-gray-900 mb-3">Assignments</h4>';
-            
-            if (assignmentsData.classes && assignmentsData.classes.length > 0) {
-                contentHTML += `
+
+                // Add assignments section
+                contentHTML += '<div><h4 class="font-semibold text-gray-900 mb-3">Assignments</h4>';
+
+                if (assignmentsData.classes && assignmentsData.classes.length > 0) {
+                    contentHTML += `
                     <div class="mb-4">
                         <h5 class="text-sm font-medium text-gray-700 mb-2">Classes (${assignmentsData.classes.length})</h5>
                         <div class="flex flex-wrap gap-2">
@@ -1175,10 +1192,10 @@ async function viewAssignments(feeTypeId, feeTypeName) {
                         </div>
                     </div>
                 `;
-            }
-            
-            if (assignmentsData.students && assignmentsData.students.length > 0) {
-                contentHTML += `
+                }
+
+                if (assignmentsData.students && assignmentsData.students.length > 0) {
+                    contentHTML += `
                     <div class="mb-4">
                         <h5 class="text-sm font-medium text-gray-700 mb-2">Students (${assignmentsData.students.length})</h5>
                         <div class="flex flex-wrap gap-2">
@@ -1186,10 +1203,10 @@ async function viewAssignments(feeTypeId, feeTypeName) {
                         </div>
                     </div>
                 `;
-            }
-            
-            if ((!assignmentsData.classes || assignmentsData.classes.length === 0) && (!assignmentsData.students || assignmentsData.students.length === 0)) {
-                contentHTML += `
+                }
+
+                if ((!assignmentsData.classes || assignmentsData.classes.length === 0) && (!assignmentsData.students || assignmentsData.students.length === 0)) {
+                    contentHTML += `
                     <div class="text-center py-6 bg-gray-50 rounded-lg">
                         <div class="text-gray-400 mb-2">
                             <i class="fas fa-users text-2xl"></i>
@@ -1198,223 +1215,226 @@ async function viewAssignments(feeTypeId, feeTypeName) {
                         <p class="text-xs text-gray-500">This fee type uses manual assignment.</p>
                     </div>
                 `;
+                }
+
+                contentHTML += '</div>';
+
+                content.innerHTML = contentHTML;
+                document.getElementById('viewAssignmentsModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                console.error('API Error:', { feeTypeData, assignmentsData });
+                showErrorMessage('Error', 'Failed to load fee type details');
             }
-            
-            contentHTML += '</div>';
-            
-            content.innerHTML = contentHTML;
-            document.getElementById('viewAssignmentsModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        } else {
-            console.error('API Error:', { feeTypeData, assignmentsData });
-            showErrorMessage('Error', 'Failed to load fee type details');
-        }
-    } catch (error) {
-        console.error('Exception:', error);
-        showErrorMessage('Error', 'Error loading fee type details');
-    }
-}
-
-// Helper functions for edit modal
-async function loadEditClassNames(classIds) {
-    try {
-        const response = await fetch('/api/classes');
-        const data = await response.json();
-        const classes = data.classes || [];
-        
-        const selectedClasses = classes.filter(c => classIds.includes(c.id));
-        const classNames = selectedClasses.map(c => c.name);
-        
-        document.getElementById('editSelectedClassNames').innerHTML = classNames.length > 0 
-            ? classNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No classes selected';
-    } catch (error) {
-        console.error('Error loading class names:', error);
-    }
-}
-
-async function loadEditStudentNames(studentIds) {
-    try {
-        const response = await fetch('/api/students/table?limit=1000');
-        const data = await response.json();
-        const students = data.students || [];
-        
-        const selectedStudents = students.filter(s => studentIds.includes(s.id));
-        const studentNames = selectedStudents.map(s => `${s.first_name} ${s.last_name}`);
-        
-        document.getElementById('editSelectedStudentNames').innerHTML = studentNames.length > 0 
-            ? studentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-            : 'No students selected';
-    } catch (error) {
-        console.error('Error loading student names:', error);
-    }
-}
-
-// Edit modal functions (reuse existing modal logic)
-function openEditClassModal() {
-    // Reuse existing class modal but update edit fields
-    window.editMode = true;
-    openClassModal();
-}
-
-function openEditStudentModal() {
-    // Reuse existing student modal but update edit fields
-    window.editMode = true;
-    openStudentModal();
-}
-// Modal helper functions
-function showSuccessMessage(title, message) {
-    const modal = document.getElementById('messageModal');
-    const icon = document.getElementById('messageIcon');
-    const titleEl = document.getElementById('messageTitle');
-    const textEl = document.getElementById('messageText');
-    const button = document.getElementById('messageButton');
-    
-    icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-green-100';
-    icon.innerHTML = '<i class="fas fa-check text-green-600 text-xl"></i>';
-    titleEl.textContent = title;
-    textEl.textContent = message;
-    button.className = 'px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors duration-200';
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function showErrorMessage(title, message) {
-    const modal = document.getElementById('messageModal');
-    const icon = document.getElementById('messageIcon');
-    const titleEl = document.getElementById('messageTitle');
-    const textEl = document.getElementById('messageText');
-    const button = document.getElementById('messageButton');
-    
-    icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100';
-    icon.innerHTML = '<i class="fas fa-times text-red-600 text-xl"></i>';
-    titleEl.textContent = title;
-    textEl.textContent = message;
-    button.className = 'px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors duration-200';
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMessageModal() {
-    document.getElementById('messageModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function closeViewAssignmentsModal() {
-    document.getElementById('viewAssignmentsModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Function to automatically select all classes
-async function selectAllClasses() {
-    try {
-        const response = await fetch('/api/classes');
-        const data = await response.json();
-        const classes = data.classes || [];
-        
-        // Select all classes
-        selectedClasses.clear();
-        const classIds = [];
-        const classNames = [];
-        
-        classes.forEach(cls => {
-            selectedClasses.add(cls.id);
-            classIds.push(cls.id);
-            classNames.push(cls.name);
-        });
-        
-        // Update hidden input and display
-        document.getElementById('feeTypeClasses').value = classIds.join(',');
-        document.getElementById('selectedClassNames').innerHTML = classNames.length > 0 
-            ? `<span class="text-green-600 font-medium">All classes selected (${classNames.length})</span>`
-            : 'No classes available';
-            
-    } catch (error) {
-        console.error('Error loading classes for auto-selection:', error);
-    }
-}
-
-// Function to automatically select all classes in edit mode
-async function selectAllClassesEdit() {
-    try {
-        const response = await fetch('/api/classes');
-        const data = await response.json();
-        const classes = data.classes || [];
-        
-        // Select all classes
-        const classIds = [];
-        const classNames = [];
-        
-        classes.forEach(cls => {
-            classIds.push(cls.id);
-            classNames.push(cls.name);
-        });
-        
-        // Update hidden input and display for edit mode
-        document.getElementById('editFeeTypeClasses').value = classIds.join(',');
-        document.getElementById('editSelectedClassNames').innerHTML = classNames.length > 0 
-            ? `<span class="text-green-600 font-medium">All classes selected (${classNames.length})</span>`
-            : 'No classes available';
-            
-    } catch (error) {
-        console.error('Error loading classes for auto-selection in edit mode:', error);
-    }
-}
-
-// Activate fee type function
-async function activateFeeType(feeTypeId, feeTypeName) {
-    if (!confirm(`Activate "${feeTypeName}" for student payments?`)) {
-        return;
-    }
-    
-    // Show loading in button
-    let activateBtn = null;
-    let originalText = '';
-    if (window.event && window.event.target) {
-        activateBtn = window.event.target.closest('button');
-        originalText = activateBtn.textContent;
-        activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        activateBtn.disabled = true;
-    }
-    
-    try {
-        const response = await fetch('/api/fees/activate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                fee_type_id: feeTypeId
-            })
-        });
-        
-        if (response.ok) {
-            loadFeeTypes();
-            showSuccessMessage('Success', 'Fee type activated successfully!');
-        } else {
-            const error = await response.json();
-            showErrorMessage('Error', error.error || 'Failed to activate fee type');
-        }
-    } catch (error) {
-        showErrorMessage('Error', 'Error activating fee type');
-    } finally {
-        // Reset button state
-        if (activateBtn) {
-            activateBtn.innerHTML = originalText;
-            activateBtn.disabled = false;
+        } catch (error) {
+            console.error('Exception:', error);
+            showErrorMessage('Error', 'Error loading fee type details');
         }
     }
-}
+
+    // Helper functions for edit modal
+    async function loadEditClassNames(classIds) {
+        try {
+            const response = await fetch('/api/classes');
+            const data = await response.json();
+            const classes = data.classes || [];
+
+            const selectedClasses = classes.filter(c => classIds.includes(c.id));
+            const classNames = selectedClasses.map(c => c.name);
+
+            document.getElementById('editSelectedClassNames').innerHTML = classNames.length > 0
+                ? classNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No classes selected';
+        } catch (error) {
+            console.error('Error loading class names:', error);
+        }
+    }
+
+    async function loadEditStudentNames(studentIds) {
+        try {
+            const response = await fetch('/api/students/table?limit=1000');
+            const data = await response.json();
+            const students = data.students || [];
+
+            const selectedStudents = students.filter(s => studentIds.includes(s.id));
+            const studentNames = selectedStudents.map(s => `${s.first_name} ${s.last_name}`);
+
+            document.getElementById('editSelectedStudentNames').innerHTML = studentNames.length > 0
+                ? studentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
+                : 'No students selected';
+        } catch (error) {
+            console.error('Error loading student names:', error);
+        }
+    }
+
+    // Edit modal functions (reuse existing modal logic)
+    function openEditClassModal() {
+        // Reuse existing class modal but update edit fields
+        window.editMode = true;
+        openClassModal();
+    }
+
+    function openEditStudentModal() {
+        // Reuse existing student modal but update edit fields
+        window.editMode = true;
+        openStudentModal();
+    }
+    // Modal helper functions
+    function showSuccessMessage(title, message) {
+        const modal = document.getElementById('messageModal');
+        const icon = document.getElementById('messageIcon');
+        const titleEl = document.getElementById('messageTitle');
+        const textEl = document.getElementById('messageText');
+        const button = document.getElementById('messageButton');
+
+        icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-green-100';
+        icon.innerHTML = '<i class="fas fa-check text-green-600 text-xl"></i>';
+        titleEl.textContent = title;
+        textEl.textContent = message;
+        button.className = 'px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors duration-200';
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showErrorMessage(title, message) {
+        const modal = document.getElementById('messageModal');
+        const icon = document.getElementById('messageIcon');
+        const titleEl = document.getElementById('messageTitle');
+        const textEl = document.getElementById('messageText');
+        const button = document.getElementById('messageButton');
+
+        icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100';
+        icon.innerHTML = '<i class="fas fa-times text-red-600 text-xl"></i>';
+        titleEl.textContent = title;
+        textEl.textContent = message;
+        button.className = 'px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors duration-200';
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMessageModal() {
+        document.getElementById('messageModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function closeViewAssignmentsModal() {
+        document.getElementById('viewAssignmentsModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Function to automatically select all classes
+    async function selectAllClasses() {
+        try {
+            const response = await fetch('/api/classes');
+            const data = await response.json();
+            const classes = data.classes || [];
+
+            // Select all classes
+            selectedClasses.clear();
+            const classIds = [];
+            const classNames = [];
+
+            classes.forEach(cls => {
+                selectedClasses.add(cls.id);
+                classIds.push(cls.id);
+                classNames.push(cls.name);
+            });
+
+            // Update hidden input and display
+            document.getElementById('feeTypeClasses').value = classIds.join(',');
+            document.getElementById('selectedClassNames').innerHTML = classNames.length > 0
+                ? `<span class="text-green-600 font-medium">All classes selected (${classNames.length})</span>`
+                : 'No classes available';
+
+        } catch (error) {
+            console.error('Error loading classes for auto-selection:', error);
+        }
+    }
+
+    // Function to automatically select all classes in edit mode
+    async function selectAllClassesEdit() {
+        try {
+            const response = await fetch('/api/classes');
+            const data = await response.json();
+            const classes = data.classes || [];
+
+            // Select all classes
+            const classIds = [];
+            const classNames = [];
+
+            classes.forEach(cls => {
+                classIds.push(cls.id);
+                classNames.push(cls.name);
+            });
+
+            // Update hidden input and display for edit mode
+            document.getElementById('editFeeTypeClasses').value = classIds.join(',');
+            document.getElementById('editSelectedClassNames').innerHTML = classNames.length > 0
+                ? `<span class="text-green-600 font-medium">All classes selected (${classNames.length})</span>`
+                : 'No classes available';
+
+        } catch (error) {
+            console.error('Error loading classes for auto-selection in edit mode:', error);
+        }
+    }
+
+    // Activate fee type function
+    async function activateFeeType(feeTypeId, feeTypeName) {
+        if (!confirm(`Activate "${feeTypeName}" for student payments?`)) {
+            return;
+        }
+
+        // Show loading in button
+        let activateBtn = null;
+        let originalText = '';
+        if (window.event && window.event.target) {
+            activateBtn = window.event.target.closest('button');
+            originalText = activateBtn.textContent;
+            activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            activateBtn.disabled = true;
+        }
+
+        try {
+            const response = await fetch('/api/fees/activate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fee_type_id: feeTypeId
+                })
+            });
+
+            if (response.ok) {
+                loadFeeTypes();
+                showSuccessMessage('Success', 'Fee type activated successfully!');
+            } else {
+                const error = await response.json();
+                showErrorMessage('Error', error.error || 'Failed to activate fee type');
+            }
+        } catch (error) {
+            console.error('Activation Error:', error);
+            showErrorMessage('Error', 'Error activating fee type: ' + error.message);
+        } finally {
+            // Reset button state
+            if (activateBtn) {
+                activateBtn.innerHTML = originalText;
+                activateBtn.disabled = false;
+            }
+        }
+    }
 </script>
 
 <!-- View Assignments Modal -->
-<div id="viewAssignmentsModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
+<div id="viewAssignmentsModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 id="viewAssignmentsTitle" class="text-xl font-semibold text-gray-900">Fee Type Assignments</h2>
-            <button onclick="closeViewAssignmentsModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+            <button onclick="closeViewAssignmentsModal()"
+                class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -1424,7 +1444,8 @@ async function activateFeeType(feeTypeId, feeTypeName) {
             </div>
         </div>
         <div class="flex justify-end p-6 border-t border-gray-200">
-            <button onclick="closeViewAssignmentsModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+            <button onclick="closeViewAssignmentsModal()"
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                 Close
             </button>
         </div>
@@ -1432,7 +1453,8 @@ async function activateFeeType(feeTypeId, feeTypeName) {
 </div>
 
 <!-- Success/Error Modal -->
-<div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
+<div id="messageModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
         <div class="p-6 text-center">
             <div id="messageIcon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center">
@@ -1440,7 +1462,8 @@ async function activateFeeType(feeTypeId, feeTypeName) {
             </div>
             <h3 id="messageTitle" class="text-lg font-semibold mb-2">Message</h3>
             <p id="messageText" class="text-gray-600 mb-6">Message content</p>
-            <button onclick="closeMessageModal()" id="messageButton" class="px-6 py-2 rounded-lg font-medium transition-colors duration-200">
+            <button onclick="closeMessageModal()" id="messageButton"
+                class="px-6 py-2 rounded-lg font-medium transition-colors duration-200">
                 OK
             </button>
         </div>
@@ -1448,13 +1471,14 @@ async function activateFeeType(feeTypeId, feeTypeName) {
 </div>
 
 <!-- Class Selection Modal -->
-<div id="classSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+<div id="classSelectionModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
             <h3 class="text-lg font-semibold text-gray-900">Select Classes</h3>
             <button onclick="closeClassModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
@@ -1462,7 +1486,7 @@ async function activateFeeType(feeTypeId, feeTypeName) {
             <div class="mb-4">
                 <div class="relative">
                     <input type="text" id="classSearchInput" placeholder="Search classes..."
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
@@ -1495,12 +1519,12 @@ async function activateFeeType(feeTypeId, feeTypeName) {
                 <span id="selectedClassCount" class="text-sm text-gray-600">0 classes selected</span>
             </div>
             <div class="flex gap-2">
-                <button onclick="closeClassModal()" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                <button onclick="closeClassModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                     Cancel
                 </button>
-                <button onclick="confirmClassSelection()" 
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
+                <button onclick="confirmClassSelection()"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
                     Confirm Selection
                 </button>
             </div>
@@ -1509,13 +1533,14 @@ async function activateFeeType(feeTypeId, feeTypeName) {
 </div>
 
 <!-- Student Selection Modal -->
-<div id="studentSelectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+<div id="studentSelectionModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
             <h3 class="text-lg font-semibold text-gray-900">Select Students</h3>
             <button onclick="closeStudentModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
@@ -1523,8 +1548,8 @@ async function activateFeeType(feeTypeId, feeTypeName) {
             <div class="mb-4">
                 <div class="relative">
                     <input type="text" id="studentSearchInput" placeholder="Search students..."
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           oninput="handleStudentSearch()">
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        oninput="handleStudentSearch()">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
                 <div class="mt-2">
@@ -1575,7 +1600,8 @@ async function activateFeeType(feeTypeId, feeTypeName) {
                 </div>
             </div>
             <div id="loadMoreStudents" class="text-center mt-4 hidden">
-                <button onclick="loadMoreStudents()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                <button onclick="loadMoreStudents()"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
                     Load More Students
                 </button>
             </div>
@@ -1585,12 +1611,12 @@ async function activateFeeType(feeTypeId, feeTypeName) {
                 <span id="selectedStudentCount" class="text-sm text-gray-600">0 students selected</span>
             </div>
             <div class="flex gap-2">
-                <button onclick="closeStudentModal()" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                <button onclick="closeStudentModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                     Cancel
                 </button>
-                <button onclick="confirmStudentSelection()" 
-                        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
+                <button onclick="confirmStudentSelection()"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
                     Confirm Selection
                 </button>
             </div>

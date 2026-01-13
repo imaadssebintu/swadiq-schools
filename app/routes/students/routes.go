@@ -1,6 +1,7 @@
 package students
 
 import (
+	"fmt"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
@@ -15,6 +16,7 @@ func SetupStudentsRoutes(app *fiber.App) {
 
 	// Routes
 	students.Get("/", StudentsPage)
+	students.Get("/:id", StudentViewPage)
 
 	// API routes
 	api := app.Group("/api/students")
@@ -53,6 +55,30 @@ func StudentsPage(c *fiber.Ctx) error {
 		"Title":       "Students - Swadiq Schools",
 		"CurrentPage": "students",
 		"students":    students,
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
+	})
+}
+
+func StudentViewPage(c *fiber.Ctx) error {
+	user := c.Locals("user").(*models.User)
+	studentID := c.Params("id")
+
+	// Get student details to show name in title if possible
+	student, _ := database.GetStudentByID(config.GetDB(), studentID)
+
+	title := "Student Profile - Swadiq Schools"
+	if student != nil {
+		title = fmt.Sprintf("%s %s - Profile", student.FirstName, student.LastName)
+	}
+
+	return c.Render("students/view", fiber.Map{
+		"Title":       title,
+		"CurrentPage": "students",
+		"studentID":   studentID,
+		"student":     student,
 		"user":        user,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,

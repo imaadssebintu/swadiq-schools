@@ -10,7 +10,7 @@ import (
 )
 
 type Config struct {
-	DB *sql.DB
+	DB   *sql.DB
 	SMTP SMTPConfig
 }
 
@@ -27,7 +27,7 @@ var AppConfig *Config
 func InitDB() {
 	// Try remote database first, fallback to local
 	var psqlInfo string
-	
+
 	// Check if LOCAL_DB environment variable is set
 	if os.Getenv("LOCAL_DB") == "true" {
 		psqlInfo = "host=localhost port=5432 user=postgres dbname=swadiq sslmode=disable"
@@ -39,11 +39,11 @@ func InitDB() {
 		password := "Ertdfgxc"
 		dbname := "swadiq"
 
-		psqlInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable connect_timeout=10",
+		psqlInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable connect_timeout=60",
 			host, port, user, password, dbname)
 		log.Printf("Attempting to connect to remote database at %s:%d", host, port)
 	}
-	
+
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal("Failed to open database connection:", err)
@@ -56,7 +56,7 @@ func InitDB() {
 	log.Println("Testing database connection...")
 	if err = db.Ping(); err != nil {
 		log.Printf("Database connection failed: %v", err)
-		
+
 		if os.Getenv("LOCAL_DB") != "true" {
 			log.Println("\n=== DATABASE CONNECTION FAILED ===")
 			log.Println("The remote database server is unreachable.")
@@ -72,7 +72,7 @@ func InitDB() {
 			log.Println("- Ensure database 'swadiq' exists")
 			log.Println("- Verify user 'imaad' has access")
 		}
-		
+
 		log.Fatal("Cannot establish database connection")
 	}
 

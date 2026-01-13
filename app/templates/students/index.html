@@ -8,10 +8,12 @@
                 <p class="text-gray-600 text-sm">Manage student records, enrollment, and information</p>
             </div>
             <div class="flex items-center space-x-3">
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
+                <button
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
                     <i class="fas fa-download mr-2"></i>Export
                 </button>
-                <button id="addStudentBtn" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-sm">
+                <button id="addStudentBtn"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-sm">
                     <i class="fas fa-plus mr-2"></i>Add Student
                 </button>
             </div>
@@ -87,18 +89,21 @@
             <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <!-- Search -->
                 <div class="relative">
-                    <input id="searchInput" type="text" placeholder="Search by name, student ID, or parent (min 3 chars)..."
-                           class="w-full sm:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    <input id="searchInput" type="text"
+                        placeholder="Search by name, student ID, or parent (min 3 chars)..."
+                        class="w-full sm:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     <!-- Search hint tooltip -->
-                    <div id="searchHint" class="absolute top-full left-0 mt-1 px-3 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-xs text-yellow-800 shadow-lg z-10 hidden">
+                    <div id="searchHint"
+                        class="absolute top-full left-0 mt-1 px-3 py-2 bg-yellow-100 border border-yellow-300 rounded-lg text-xs text-yellow-800 shadow-lg z-10 hidden">
                         <i class="fas fa-info-circle mr-1"></i>
                         Type at least 3 characters to search
                     </div>
                 </div>
 
                 <!-- Status Filter -->
-                <select id="statusFilter" class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
+                <select id="statusFilter"
+                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
                     <option value="">All Status</option>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -108,13 +113,16 @@
             </div>
 
             <div class="flex items-center space-x-2">
-                <button id="moreFiltersBtn" class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                <button id="moreFiltersBtn"
+                    class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
                     <i class="fas fa-filter mr-1"></i>More Filters
                 </button>
-                <button id="sortBtn" class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                <button id="sortBtn"
+                    class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
                     <i class="fas fa-sort mr-1"></i>Sort
                 </button>
-                <button id="clearFiltersBtn" class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200 hidden">
+                <button id="clearFiltersBtn"
+                    class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200 hidden">
                     <i class="fas fa-times mr-1"></i>Clear
                 </button>
             </div>
@@ -127,7 +135,8 @@
             <!-- Class Filter -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                <select id="classFilter" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
+                <select id="classFilter"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
                     <option value="">All Classes</option>
                 </select>
             </div>
@@ -135,7 +144,8 @@
             <!-- Gender Filter -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                <select id="genderFilter" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
+                <select id="genderFilter"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
                     <option value="">All Genders</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -146,21 +156,25 @@
             <!-- Date Range Filter -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Enrolled After</label>
-                <input id="dateFromFilter" type="date" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <input id="dateFromFilter" type="date"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
 
             <!-- Date Range Filter -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Enrolled Before</label>
-                <input id="dateToFilter" type="date" class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <input id="dateToFilter" type="date"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
             </div>
         </div>
 
         <div class="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-200">
-            <button id="resetAdvancedFilters" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200">
+            <button id="resetAdvancedFilters"
+                class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200">
                 Reset Filters
             </button>
-            <button id="applyAdvancedFilters" class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+            <button id="applyAdvancedFilters"
+                class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                 Apply Filters
             </button>
         </div>
@@ -173,11 +187,13 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
                 <div class="space-y-2">
                     <label class="flex items-center">
-                        <input type="radio" name="sortBy" value="name" class="text-primary-600 focus:ring-primary-500" checked>
+                        <input type="radio" name="sortBy" value="name" class="text-primary-600 focus:ring-primary-500"
+                            checked>
                         <span class="ml-2 text-sm text-gray-700">Name (A-Z)</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="radio" name="sortBy" value="student_id" class="text-primary-600 focus:ring-primary-500">
+                        <input type="radio" name="sortBy" value="student_id"
+                            class="text-primary-600 focus:ring-primary-500">
                         <span class="ml-2 text-sm text-gray-700">Student ID</span>
                     </label>
                     <label class="flex items-center">
@@ -190,11 +206,13 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Order</label>
                 <div class="space-y-2">
                     <label class="flex items-center">
-                        <input type="radio" name="sortOrder" value="asc" class="text-primary-600 focus:ring-primary-500" checked>
+                        <input type="radio" name="sortOrder" value="asc" class="text-primary-600 focus:ring-primary-500"
+                            checked>
                         <span class="ml-2 text-sm text-gray-700">Ascending</span>
                     </label>
                     <label class="flex items-center">
-                        <input type="radio" name="sortOrder" value="desc" class="text-primary-600 focus:ring-primary-500">
+                        <input type="radio" name="sortOrder" value="desc"
+                            class="text-primary-600 focus:ring-primary-500">
                         <span class="ml-2 text-sm text-gray-700">Descending</span>
                     </label>
                 </div>
@@ -202,10 +220,12 @@
         </div>
 
         <div class="flex justify-end space-x-2 mt-4 pt-4 border-t border-gray-200">
-            <button id="resetSort" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200">
+            <button id="resetSort"
+                class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors duration-200">
                 Reset Sort
             </button>
-            <button id="applySort" class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+            <button id="applySort"
+                class="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                 Apply Sort
             </button>
         </div>
@@ -217,11 +237,16 @@
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parent/Guardian</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Student</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Student ID</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Parent/Guardian</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
@@ -393,7 +418,8 @@
                                 <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
                                 <p class="text-lg font-medium">Error loading students</p>
                                 <p class="text-sm">Please try refreshing the page.</p>
-                                <button onclick="loadStudents()" class="mt-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                                <button onclick="loadStudents()"
+                                    class="mt-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
                                     Retry
                                 </button>
                             </div>
@@ -408,30 +434,36 @@
             <div class="flex flex-col items-center space-y-3">
                 <!-- Results info -->
                 <div class="text-sm text-gray-700">
-                    Showing <span id="showing-students-count" class="font-medium">0</span> of <span id="total-students-count" class="font-medium">0</span> students
+                    Showing <span id="showing-students-count" class="font-medium">0</span> of <span
+                        id="total-students-count" class="font-medium">0</span> students
                 </div>
 
                 <!-- Auto-loading indicator -->
-                <div id="auto-loading-students-indicator" class="hidden flex items-center justify-center space-x-3 py-4 text-gray-600 bg-blue-50 rounded-lg border border-blue-200 transition-all duration-300">
+                <div id="auto-loading-students-indicator"
+                    class="hidden flex items-center justify-center space-x-3 py-4 text-gray-600 bg-blue-50 rounded-lg border border-blue-200 transition-all duration-300">
                     <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
                     <span class="text-sm font-medium">Loading more students...</span>
                     <div class="flex space-x-1">
                         <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 150ms">
+                        </div>
+                        <div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 300ms">
+                        </div>
                     </div>
                 </div>
 
                 <!-- Load More Button -->
                 <div id="load-more-students" class="text-center py-4">
-                    <button id="load-more-btn" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    <button id="load-more-btn"
+                        class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         <i class="fas fa-plus mr-2"></i>Load More Students
                     </button>
                 </div>
 
                 <!-- End of results message -->
                 <div id="end-of-students" class="hidden text-center py-6">
-                    <div class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                    <div
+                        class="inline-flex items-center justify-center space-x-3 px-6 py-3 bg-green-50 border border-green-200 rounded-lg text-green-700">
                         <div class="flex-shrink-0">
                             <i class="fas fa-check-circle text-green-500 text-lg"></i>
                         </div>
@@ -473,13 +505,13 @@
                             <span class="text-xs text-gray-500">(Auto-generated)</span>
                         </label>
                         <input type="text" id="studentId" name="studentId" readonly
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
-                               placeholder="STU-2025-001 (will be auto-generated)">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                            placeholder="STU-2025-001 (will be auto-generated)">
                     </div>
                     <div>
                         <label for="classId" class="block text-sm font-medium text-gray-700 mb-2">Class</label>
                         <select id="classId" name="classId"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Select Class</option>
                         </select>
                     </div>
@@ -493,26 +525,27 @@
                     <div>
                         <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
                         <input type="text" id="firstName" name="firstName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter first name">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter first name">
                     </div>
                     <div>
                         <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
                         <input type="text" id="lastName" name="lastName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter last name">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter last name">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                        <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-2">Date of
+                            Birth</label>
                         <input type="date" id="dateOfBirth" name="dateOfBirth"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                     <div>
                         <label for="gender" class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
                         <select id="gender" name="gender"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -528,8 +561,8 @@
                     <div>
                         <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address</label>
                         <textarea id="address" name="address" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                  placeholder="Enter student address"></textarea>
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter student address"></textarea>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Parent/Guardian</label>
@@ -538,22 +571,26 @@
                             <input type="hidden" id="parentId" name="parentId" value="">
 
                             <!-- Selected parent display -->
-                            <div id="selectedParentDisplay" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
+                            <div id="selectedParentDisplay"
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
                                 No parent selected
                             </div>
 
-                            <button type="button" id="searchParentBtn" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm whitespace-nowrap">
+                            <button type="button" id="searchParentBtn"
+                                class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm whitespace-nowrap">
                                 <i class="fas fa-search mr-1"></i>Search
                             </button>
-                            <button type="button" id="addParentBtn" class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm whitespace-nowrap">
+                            <button type="button" id="addParentBtn"
+                                class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm whitespace-nowrap">
                                 <i class="fas fa-plus mr-1"></i>Add New
                             </button>
                         </div>
                     </div>
                     <div>
-                        <label for="parentRelationship" class="block text-sm font-medium text-gray-700 mb-2">Relationship</label>
+                        <label for="parentRelationship"
+                            class="block text-sm font-medium text-gray-700 mb-2">Relationship</label>
                         <select id="parentRelationship" name="parentRelationship"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Select Relationship</option>
                             <option value="father">Father</option>
                             <option value="mother">Mother</option>
@@ -568,10 +605,12 @@
 
             <!-- Modal Footer -->
             <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <button type="button" id="cancelBtn"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                <button type="submit"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                     <i class="fas fa-plus mr-2"></i>Add Student
                 </button>
             </div>
@@ -580,7 +619,8 @@
 </div>
 
 <!-- Parent Search Modal -->
-<div id="parentSearchModal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center p-4">
+<div id="parentSearchModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -596,7 +636,7 @@
             <div class="mb-6">
                 <div class="relative">
                     <input type="text" id="parentSearchInput" placeholder="Search parents by name, email, or phone..."
-                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
@@ -650,7 +690,8 @@
             <div id="noParentsFound" class="hidden text-center py-8">
                 <i class="fas fa-users text-gray-300 text-4xl mb-4"></i>
                 <p class="text-gray-500">No parents found</p>
-                <button type="button" id="createNewParentBtn" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+                <button type="button" id="createNewParentBtn"
+                    class="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
                     <i class="fas fa-plus mr-2"></i>Create New Parent
                 </button>
             </div>
@@ -676,16 +717,18 @@
                 <h3 class="text-md font-medium text-gray-900 mb-4">Personal Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="parentFirstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                        <label for="parentFirstName" class="block text-sm font-medium text-gray-700 mb-2">First Name
+                            *</label>
                         <input type="text" id="parentFirstName" name="firstName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter first name">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter first name">
                     </div>
                     <div>
-                        <label for="parentLastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                        <label for="parentLastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name
+                            *</label>
                         <input type="text" id="parentLastName" name="lastName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter last name">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter last name">
                     </div>
                 </div>
             </div>
@@ -695,32 +738,36 @@
                 <h3 class="text-md font-medium text-gray-900 mb-4">Contact Information</h3>
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone
+                            Number</label>
                         <input type="tel" id="parentPhone" name="phone"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter phone number">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter phone number">
                     </div>
                     <div>
-                        <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">Email
+                            Address</label>
                         <input type="email" id="parentEmail" name="email"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter email address">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter email address">
                     </div>
                     <div>
                         <label for="parentAddress" class="block text-sm font-medium text-gray-700 mb-2">Address</label>
                         <textarea id="parentAddress" name="address" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                  placeholder="Enter address"></textarea>
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter address"></textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Modal Footer -->
             <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelParentBtn" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                <button type="button" id="cancelParentBtn"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+                <button type="submit"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
                     <i class="fas fa-plus mr-2"></i>Add Parent
                 </button>
             </div>
@@ -734,7 +781,8 @@
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">Search & Select Parent/Guardian</h3>
-            <button type="button" id="closeSearchParentModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+            <button type="button" id="closeSearchParentModalBtn"
+                class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
@@ -745,8 +793,8 @@
             <div class="mb-4">
                 <div class="relative">
                     <input type="text" id="parentSearchInput"
-                           class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Search by name, phone, or email...">
+                        class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="Search by name, phone, or email...">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
@@ -778,7 +826,8 @@
 
         <!-- Modal Footer -->
         <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
-            <button type="button" id="cancelSearchParentBtn" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+            <button type="button" id="cancelSearchParentBtn"
+                class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                 Cancel
             </button>
         </div>
@@ -790,390 +839,390 @@
 </style>
 
 <script>
-console.log('Students page script loaded');
-// Loading utility functions
-function setButtonLoading(button, isLoading, originalText = null) {
-    if (isLoading) {
-        button.disabled = true;
-        button.dataset.originalText = originalText || button.textContent;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
-        button.classList.add('opacity-75', 'cursor-not-allowed');
-    } else {
-        button.disabled = false;
-        button.innerHTML = button.dataset.originalText || originalText;
-        button.classList.remove('opacity-75', 'cursor-not-allowed');
-    }
-}
-
-// Initialize students page functionality
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired');
-
-    // Global variables for infinite scroll (declare at the top)
-    let currentOffset = 0;
-    let isLoading = false;
-    let hasMoreStudents = true;
-    let allStudents = [];
-    const STUDENTS_PER_PAGE = 10;
-    
-    // Current filters state
-    let currentFilters = {};
-
-    // Modal elements
-    const addStudentBtn = document.getElementById('addStudentBtn');
-    const addStudentModal = document.getElementById('addStudentModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const addStudentForm = document.getElementById('addStudentForm');
-
-
-
-    // Parent modal elements
-    const addParentBtn = document.getElementById('addParentBtn');
-    const addParentModal = document.getElementById('addParentModal');
-    const closeParentModalBtn = document.getElementById('closeParentModalBtn');
-    const cancelParentBtn = document.getElementById('cancelParentBtn');
-    const addParentForm = document.getElementById('addParentForm');
-
-    // Search parent modal elements
-    const searchParentBtn = document.getElementById('searchParentBtn');
-    const parentSearchModal = document.getElementById('parentSearchModal');
-    const closeParentSearchBtn = document.getElementById('closeParentSearchBtn');
-    const parentSearchInput = document.getElementById('parentSearchInput');
-    const parentsList = document.getElementById('parentsList');
-    const noParentsFound = document.getElementById('noParentsFound');
-
-    // Load classes, students, and stats on page load
-    loadClasses();
-    loadStudents();
-    loadStats();
-
-    // Student ID functionality
-    const studentIdInput = document.getElementById('studentId');
-
-    // Set dynamic placeholder with current year
-    function updateStudentIdPlaceholder() {
-        const currentYear = new Date().getFullYear();
-        studentIdInput.placeholder = `STU-${currentYear}-001 (will be auto-generated)`;
+    console.log('Students page script loaded');
+    // Loading utility functions
+    function setButtonLoading(button, isLoading, originalText = null) {
+        if (isLoading) {
+            button.disabled = true;
+            button.dataset.originalText = originalText || button.textContent;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            button.classList.add('opacity-75', 'cursor-not-allowed');
+        } else {
+            button.disabled = false;
+            button.innerHTML = button.dataset.originalText || originalText;
+            button.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
     }
 
-    // Update placeholder on page load
-    updateStudentIdPlaceholder();
+    // Initialize students page functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOMContentLoaded event fired');
 
-    // Modal functionality
-    function openModal() {
-        addStudentModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+        // Global variables for infinite scroll (declare at the top)
+        let currentOffset = 0;
+        let isLoading = false;
+        let hasMoreStudents = true;
+        let allStudents = [];
+        const STUDENTS_PER_PAGE = 10;
 
-    function closeModal() {
-        addStudentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        addStudentForm.reset();
-        clearSelectedParent();
-        // Reset student ID field and update placeholder
-        studentIdInput.value = '';
+        // Current filters state
+        let currentFilters = {};
+
+        // Modal elements
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const addStudentModal = document.getElementById('addStudentModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const addStudentForm = document.getElementById('addStudentForm');
+
+
+
+        // Parent modal elements
+        const addParentBtn = document.getElementById('addParentBtn');
+        const addParentModal = document.getElementById('addParentModal');
+        const closeParentModalBtn = document.getElementById('closeParentModalBtn');
+        const cancelParentBtn = document.getElementById('cancelParentBtn');
+        const addParentForm = document.getElementById('addParentForm');
+
+        // Search parent modal elements
+        const searchParentBtn = document.getElementById('searchParentBtn');
+        const parentSearchModal = document.getElementById('parentSearchModal');
+        const closeParentSearchBtn = document.getElementById('closeParentSearchBtn');
+        const parentSearchInput = document.getElementById('parentSearchInput');
+        const parentsList = document.getElementById('parentsList');
+        const noParentsFound = document.getElementById('noParentsFound');
+
+        // Load classes, students, and stats on page load
+        loadClasses();
+        loadStudents();
+        loadStats();
+
+        // Student ID functionality
+        const studentIdInput = document.getElementById('studentId');
+
+        // Set dynamic placeholder with current year
+        function updateStudentIdPlaceholder() {
+            const currentYear = new Date().getFullYear();
+            studentIdInput.placeholder = `STU-${currentYear}-001 (will be auto-generated)`;
+        }
+
+        // Update placeholder on page load
         updateStudentIdPlaceholder();
-    }
 
-    // Event listeners for modal
-    addStudentBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Close modal when clicking outside
-    addStudentModal.addEventListener('click', function(e) {
-        if (e.target === addStudentModal) {
-            closeModal();
+        // Modal functionality
+        function openModal() {
+            addStudentModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
-    });
 
-    // Search and Filter functionality
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const moreFiltersBtn = document.getElementById('moreFiltersBtn');
-    const sortBtn = document.getElementById('sortBtn');
-    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-    const advancedFiltersPanel = document.getElementById('advancedFiltersPanel');
-    const sortOptionsPanel = document.getElementById('sortOptionsPanel');
-
-    // Search input with debounce and 3+ character requirement
-    let searchTimeout;
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const searchValue = this.value.trim();
-        
-        searchTimeout = setTimeout(() => {
-            if (searchValue.length === 0 || searchValue.length >= 3) {
-                currentFilters.search = searchValue;
-                applyFilters();
-            }
-        }, 300); // 300ms debounce
-        
-        // Show search hint for less than 3 characters
-        if (searchValue.length > 0 && searchValue.length < 3) {
-            showSearchHint();
-        } else {
-            hideSearchHint();
+        function closeModal() {
+            addStudentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            addStudentForm.reset();
+            clearSelectedParent();
+            // Reset student ID field and update placeholder
+            studentIdInput.value = '';
+            updateStudentIdPlaceholder();
         }
-    });
 
-    // Status filter
-    statusFilter.addEventListener('change', function() {
-        currentFilters.status = this.value;
-        applyFilters();
-    });
+        // Event listeners for modal
+        addStudentBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
 
-    // More filters button
-    moreFiltersBtn.addEventListener('click', function() {
-        const isVisible = !advancedFiltersPanel.classList.contains('hidden');
-        advancedFiltersPanel.classList.toggle('hidden');
-        sortOptionsPanel.classList.add('hidden'); // Hide sort panel
-
-        // Update button appearance
-        if (isVisible) {
-            this.classList.remove('bg-primary-100', 'text-primary-700');
-            this.classList.add('text-gray-600');
-        } else {
-            this.classList.add('bg-primary-100', 'text-primary-700');
-            this.classList.remove('text-gray-600');
-        }
-    });
-
-    // Sort button
-    sortBtn.addEventListener('click', function() {
-        const isVisible = !sortOptionsPanel.classList.contains('hidden');
-        sortOptionsPanel.classList.toggle('hidden');
-        advancedFiltersPanel.classList.add('hidden'); // Hide filters panel
-
-        // Update button appearance
-        if (isVisible) {
-            this.classList.remove('bg-primary-100', 'text-primary-700');
-            this.classList.add('text-gray-600');
-        } else {
-            this.classList.add('bg-primary-100', 'text-primary-700');
-            this.classList.remove('text-gray-600');
-        }
-    });
-
-    // Clear filters button
-    clearFiltersBtn.addEventListener('click', function() {
-        clearAllFilters();
-    });
-
-    // Advanced filters event handlers
-    const classFilter = document.getElementById('classFilter');
-    const genderFilter = document.getElementById('genderFilter');
-    const dateFromFilter = document.getElementById('dateFromFilter');
-    const dateToFilter = document.getElementById('dateToFilter');
-    const applyAdvancedFiltersBtn = document.getElementById('applyAdvancedFilters');
-    const resetAdvancedFiltersBtn = document.getElementById('resetAdvancedFilters');
-
-    // Apply advanced filters
-    applyAdvancedFiltersBtn.addEventListener('click', function() {
-        currentFilters.class_id = classFilter.value;
-        currentFilters.gender = genderFilter.value;
-        currentFilters.date_from = dateFromFilter.value;
-        currentFilters.date_to = dateToFilter.value;
-        applyFilters();
-        advancedFiltersPanel.classList.add('hidden');
-        moreFiltersBtn.classList.remove('bg-primary-100', 'text-primary-700');
-        moreFiltersBtn.classList.add('text-gray-600');
-    });
-
-    // Reset advanced filters
-    resetAdvancedFiltersBtn.addEventListener('click', function() {
-        classFilter.value = '';
-        genderFilter.value = '';
-        dateFromFilter.value = '';
-        dateToFilter.value = '';
-        delete currentFilters.class_id;
-        delete currentFilters.gender;
-        delete currentFilters.date_from;
-        delete currentFilters.date_to;
-        applyFilters();
-    });
-
-    // Sort options event handlers
-    const applySort = document.getElementById('applySort');
-    const resetSort = document.getElementById('resetSort');
-
-    applySort.addEventListener('click', function() {
-        const sortBy = document.querySelector('input[name="sortBy"]:checked').value;
-        const sortOrder = document.querySelector('input[name="sortOrder"]:checked').value;
-        currentFilters.sort_by = sortBy;
-        currentFilters.sort_order = sortOrder;
-        applyFilters();
-        sortOptionsPanel.classList.add('hidden');
-        sortBtn.classList.remove('bg-primary-100', 'text-primary-700');
-        sortBtn.classList.add('text-gray-600');
-    });
-
-    resetSort.addEventListener('click', function() {
-        document.querySelector('input[name="sortBy"][value="name"]').checked = true;
-        document.querySelector('input[name="sortOrder"][value="asc"]').checked = true;
-        delete currentFilters.sort_by;
-        delete currentFilters.sort_order;
-        applyFilters();
-    });
-
-    // Apply filters function
-    function applyFilters() {
-        loadStudents(currentFilters, true); // Reset pagination when applying filters
-        updateClearFiltersButton();
-    }
-
-    // Clear all filters
-    function clearAllFilters() {
-        // Clear search
-        searchInput.value = '';
-        statusFilter.value = '';
-
-        // Clear advanced filters
-        classFilter.value = '';
-        genderFilter.value = '';
-        dateFromFilter.value = '';
-        dateToFilter.value = '';
-
-        // Clear sort
-        document.querySelector('input[name="sortBy"][value="name"]').checked = true;
-        document.querySelector('input[name="sortOrder"][value="asc"]').checked = true;
-
-        // Reset filters object
-        currentFilters = {};
-
-        // Reset pagination state
-        currentOffset = 0;
-        hasMoreStudents = true;
-        allStudents = [];
-
-        // Hide panels
-        advancedFiltersPanel.classList.add('hidden');
-        sortOptionsPanel.classList.add('hidden');
-
-        // Reset button appearances
-        moreFiltersBtn.classList.remove('bg-primary-100', 'text-primary-700');
-        moreFiltersBtn.classList.add('text-gray-600');
-        sortBtn.classList.remove('bg-primary-100', 'text-primary-700');
-        sortBtn.classList.add('text-gray-600');
-
-        // Apply filters
-        applyFilters();
-    }
-
-    // Update clear filters button visibility
-    function updateClearFiltersButton() {
-        const hasFilters = Object.keys(currentFilters).length > 0 &&
-                          Object.values(currentFilters).some(value => value && value.trim() !== '');
-
-        if (hasFilters) {
-            clearFiltersBtn.classList.remove('hidden');
-        } else {
-            clearFiltersBtn.classList.add('hidden');
-        }
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (!addStudentModal.classList.contains('hidden')) {
+        // Close modal when clicking outside
+        addStudentModal.addEventListener('click', function (e) {
+            if (e.target === addStudentModal) {
                 closeModal();
             }
-            if (!addParentModal.classList.contains('hidden')) {
+        });
+
+        // Search and Filter functionality
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const moreFiltersBtn = document.getElementById('moreFiltersBtn');
+        const sortBtn = document.getElementById('sortBtn');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        const advancedFiltersPanel = document.getElementById('advancedFiltersPanel');
+        const sortOptionsPanel = document.getElementById('sortOptionsPanel');
+
+        // Search input with debounce and 3+ character requirement
+        let searchTimeout;
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            const searchValue = this.value.trim();
+
+            searchTimeout = setTimeout(() => {
+                if (searchValue.length === 0 || searchValue.length >= 3) {
+                    currentFilters.search = searchValue;
+                    applyFilters();
+                }
+            }, 300); // 300ms debounce
+
+            // Show search hint for less than 3 characters
+            if (searchValue.length > 0 && searchValue.length < 3) {
+                showSearchHint();
+            } else {
+                hideSearchHint();
+            }
+        });
+
+        // Status filter
+        statusFilter.addEventListener('change', function () {
+            currentFilters.status = this.value;
+            applyFilters();
+        });
+
+        // More filters button
+        moreFiltersBtn.addEventListener('click', function () {
+            const isVisible = !advancedFiltersPanel.classList.contains('hidden');
+            advancedFiltersPanel.classList.toggle('hidden');
+            sortOptionsPanel.classList.add('hidden'); // Hide sort panel
+
+            // Update button appearance
+            if (isVisible) {
+                this.classList.remove('bg-primary-100', 'text-primary-700');
+                this.classList.add('text-gray-600');
+            } else {
+                this.classList.add('bg-primary-100', 'text-primary-700');
+                this.classList.remove('text-gray-600');
+            }
+        });
+
+        // Sort button
+        sortBtn.addEventListener('click', function () {
+            const isVisible = !sortOptionsPanel.classList.contains('hidden');
+            sortOptionsPanel.classList.toggle('hidden');
+            advancedFiltersPanel.classList.add('hidden'); // Hide filters panel
+
+            // Update button appearance
+            if (isVisible) {
+                this.classList.remove('bg-primary-100', 'text-primary-700');
+                this.classList.add('text-gray-600');
+            } else {
+                this.classList.add('bg-primary-100', 'text-primary-700');
+                this.classList.remove('text-gray-600');
+            }
+        });
+
+        // Clear filters button
+        clearFiltersBtn.addEventListener('click', function () {
+            clearAllFilters();
+        });
+
+        // Advanced filters event handlers
+        const classFilter = document.getElementById('classFilter');
+        const genderFilter = document.getElementById('genderFilter');
+        const dateFromFilter = document.getElementById('dateFromFilter');
+        const dateToFilter = document.getElementById('dateToFilter');
+        const applyAdvancedFiltersBtn = document.getElementById('applyAdvancedFilters');
+        const resetAdvancedFiltersBtn = document.getElementById('resetAdvancedFilters');
+
+        // Apply advanced filters
+        applyAdvancedFiltersBtn.addEventListener('click', function () {
+            currentFilters.class_id = classFilter.value;
+            currentFilters.gender = genderFilter.value;
+            currentFilters.date_from = dateFromFilter.value;
+            currentFilters.date_to = dateToFilter.value;
+            applyFilters();
+            advancedFiltersPanel.classList.add('hidden');
+            moreFiltersBtn.classList.remove('bg-primary-100', 'text-primary-700');
+            moreFiltersBtn.classList.add('text-gray-600');
+        });
+
+        // Reset advanced filters
+        resetAdvancedFiltersBtn.addEventListener('click', function () {
+            classFilter.value = '';
+            genderFilter.value = '';
+            dateFromFilter.value = '';
+            dateToFilter.value = '';
+            delete currentFilters.class_id;
+            delete currentFilters.gender;
+            delete currentFilters.date_from;
+            delete currentFilters.date_to;
+            applyFilters();
+        });
+
+        // Sort options event handlers
+        const applySort = document.getElementById('applySort');
+        const resetSort = document.getElementById('resetSort');
+
+        applySort.addEventListener('click', function () {
+            const sortBy = document.querySelector('input[name="sortBy"]:checked').value;
+            const sortOrder = document.querySelector('input[name="sortOrder"]:checked').value;
+            currentFilters.sort_by = sortBy;
+            currentFilters.sort_order = sortOrder;
+            applyFilters();
+            sortOptionsPanel.classList.add('hidden');
+            sortBtn.classList.remove('bg-primary-100', 'text-primary-700');
+            sortBtn.classList.add('text-gray-600');
+        });
+
+        resetSort.addEventListener('click', function () {
+            document.querySelector('input[name="sortBy"][value="name"]').checked = true;
+            document.querySelector('input[name="sortOrder"][value="asc"]').checked = true;
+            delete currentFilters.sort_by;
+            delete currentFilters.sort_order;
+            applyFilters();
+        });
+
+        // Apply filters function
+        function applyFilters() {
+            loadStudents(currentFilters, true); // Reset pagination when applying filters
+            updateClearFiltersButton();
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            // Clear search
+            searchInput.value = '';
+            statusFilter.value = '';
+
+            // Clear advanced filters
+            classFilter.value = '';
+            genderFilter.value = '';
+            dateFromFilter.value = '';
+            dateToFilter.value = '';
+
+            // Clear sort
+            document.querySelector('input[name="sortBy"][value="name"]').checked = true;
+            document.querySelector('input[name="sortOrder"][value="asc"]').checked = true;
+
+            // Reset filters object
+            currentFilters = {};
+
+            // Reset pagination state
+            currentOffset = 0;
+            hasMoreStudents = true;
+            allStudents = [];
+
+            // Hide panels
+            advancedFiltersPanel.classList.add('hidden');
+            sortOptionsPanel.classList.add('hidden');
+
+            // Reset button appearances
+            moreFiltersBtn.classList.remove('bg-primary-100', 'text-primary-700');
+            moreFiltersBtn.classList.add('text-gray-600');
+            sortBtn.classList.remove('bg-primary-100', 'text-primary-700');
+            sortBtn.classList.add('text-gray-600');
+
+            // Apply filters
+            applyFilters();
+        }
+
+        // Update clear filters button visibility
+        function updateClearFiltersButton() {
+            const hasFilters = Object.keys(currentFilters).length > 0 &&
+                Object.values(currentFilters).some(value => value && value.trim() !== '');
+
+            if (hasFilters) {
+                clearFiltersBtn.classList.remove('hidden');
+            } else {
+                clearFiltersBtn.classList.add('hidden');
+            }
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (!addStudentModal.classList.contains('hidden')) {
+                    closeModal();
+                }
+                if (!addParentModal.classList.contains('hidden')) {
+                    closeParentModal();
+                }
+            }
+        });
+
+        // Parent Modal functionality
+        function openParentModal() {
+            addParentModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeParentModal() {
+            addParentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            addParentForm.reset();
+        }
+
+        // Event listeners for parent modal
+        addParentBtn.addEventListener('click', openParentModal);
+        closeParentModalBtn.addEventListener('click', closeParentModal);
+        cancelParentBtn.addEventListener('click', closeParentModal);
+
+        // Close parent modal when clicking outside
+        addParentModal.addEventListener('click', function (e) {
+            if (e.target === addParentModal) {
                 closeParentModal();
             }
+        });
+
+        // Parent Search Modal functionality
+        function openParentSearchModal() {
+            parentSearchModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            parentSearchInput.focus();
+
+            // Show loading skeleton initially
+            document.getElementById('parentsLoading').classList.remove('hidden');
+            document.getElementById('parentsList').classList.add('hidden');
+            document.getElementById('noParentsFound').classList.add('hidden');
+
+            loadParents();
         }
-    });
 
-    // Parent Modal functionality
-    function openParentModal() {
-        addParentModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+        function closeParentSearchModal() {
+            parentSearchModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            parentSearchInput.value = '';
+            parentsList.innerHTML = '';
 
-    function closeParentModal() {
-        addParentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        addParentForm.reset();
-    }
-
-    // Event listeners for parent modal
-    addParentBtn.addEventListener('click', openParentModal);
-    closeParentModalBtn.addEventListener('click', closeParentModal);
-    cancelParentBtn.addEventListener('click', closeParentModal);
-
-    // Close parent modal when clicking outside
-    addParentModal.addEventListener('click', function(e) {
-        if (e.target === addParentModal) {
-            closeParentModal();
+            // Reset loading states
+            document.getElementById('parentsLoading').classList.add('hidden');
+            document.getElementById('parentsList').classList.add('hidden');
+            document.getElementById('noParentsFound').classList.add('hidden');
         }
-    });
 
-    // Parent Search Modal functionality
-    function openParentSearchModal() {
-        parentSearchModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        parentSearchInput.focus();
+        // Load parents for selection
+        async function loadParents(search = '') {
+            try {
+                const url = search ? `/api/parents?search=${encodeURIComponent(search)}` : '/api/parents';
+                const response = await fetch(url);
 
-        // Show loading skeleton initially
-        document.getElementById('parentsLoading').classList.remove('hidden');
-        document.getElementById('parentsList').classList.add('hidden');
-        document.getElementById('noParentsFound').classList.add('hidden');
-
-        loadParents();
-    }
-
-    function closeParentSearchModal() {
-        parentSearchModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        parentSearchInput.value = '';
-        parentsList.innerHTML = '';
-
-        // Reset loading states
-        document.getElementById('parentsLoading').classList.add('hidden');
-        document.getElementById('parentsList').classList.add('hidden');
-        document.getElementById('noParentsFound').classList.add('hidden');
-    }
-
-    // Load parents for selection
-    async function loadParents(search = '') {
-        try {
-            const url = search ? `/api/parents?search=${encodeURIComponent(search)}` : '/api/parents';
-            const response = await fetch(url);
-
-            if (response.ok) {
-                const data = await response.json();
-                displayParents(data.parents);
-            } else {
-                console.error('Failed to load parents');
+                if (response.ok) {
+                    const data = await response.json();
+                    displayParents(data.parents);
+                } else {
+                    console.error('Failed to load parents');
+                    showNoParentsFound();
+                }
+            } catch (error) {
+                console.error('Error loading parents:', error);
                 showNoParentsFound();
             }
-        } catch (error) {
-            console.error('Error loading parents:', error);
-            showNoParentsFound();
-        }
-    }
-
-    // Display parents in the search modal
-    function displayParents(parents) {
-        // Hide loading skeleton
-        document.getElementById('parentsLoading').classList.add('hidden');
-
-        parentsList.innerHTML = '';
-        noParentsFound.classList.add('hidden');
-
-        if (parents.length === 0) {
-            showNoParentsFound();
-            return;
         }
 
-        // Show parents list
-        document.getElementById('parentsList').classList.remove('hidden');
+        // Display parents in the search modal
+        function displayParents(parents) {
+            // Hide loading skeleton
+            document.getElementById('parentsLoading').classList.add('hidden');
 
-        parents.forEach(parent => {
-            const parentItem = document.createElement('div');
-            parentItem.className = 'flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200';
-            parentItem.innerHTML = `
+            parentsList.innerHTML = '';
+            noParentsFound.classList.add('hidden');
+
+            if (parents.length === 0) {
+                showNoParentsFound();
+                return;
+            }
+
+            // Show parents list
+            document.getElementById('parentsList').classList.remove('hidden');
+
+            parents.forEach(parent => {
+                const parentItem = document.createElement('div');
+                parentItem.className = 'flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200';
+                parentItem.innerHTML = `
                 <div class="flex items-center space-x-4">
                     <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
                         <span class="text-primary-600 font-medium">${parent.first_name.charAt(0)}${parent.last_name.charAt(0)}</span>
@@ -1188,45 +1237,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             `;
 
-            parentItem.addEventListener('click', () => selectParent(parent));
-            parentsList.appendChild(parentItem);
-        });
-    }
-
-    // Show no parents found message
-    function showNoParentsFound() {
-        // Hide loading skeleton and parents list
-        document.getElementById('parentsLoading').classList.add('hidden');
-        document.getElementById('parentsList').classList.add('hidden');
-
-        parentsList.innerHTML = '';
-        noParentsFound.classList.remove('hidden');
-    }
-
-    // Select a parent
-    function selectParent(parent) {
-        // Check if we're in create or edit mode by checking which modal is visible
-        const editModal = document.getElementById('editStudentModal');
-        const isEditMode = editModal && !editModal.classList.contains('hidden');
-
-        if (isEditMode) {
-            // Edit mode
-            document.getElementById('editParentId').value = parent.id;
-            document.getElementById('editSelectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
-            console.log('Selected parent for edit:', parent.first_name, parent.last_name, 'ID:', parent.id);
-        } else {
-            // Create mode
-            document.getElementById('parentId').value = parent.id;
-            document.getElementById('selectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
-            console.log('Selected parent for create:', parent.first_name, parent.last_name, 'ID:', parent.id);
+                parentItem.addEventListener('click', () => selectParent(parent));
+                parentsList.appendChild(parentItem);
+            });
         }
 
-        closeParentSearchModal();
-    }
+        // Show no parents found message
+        function showNoParentsFound() {
+            // Hide loading skeleton and parents list
+            document.getElementById('parentsLoading').classList.add('hidden');
+            document.getElementById('parentsList').classList.add('hidden');
 
-    function resetSearchResults() {
-        if (parentSearchResults) {
-            parentSearchResults.innerHTML = `
+            parentsList.innerHTML = '';
+            noParentsFound.classList.remove('hidden');
+        }
+
+        // Select a parent
+        function selectParent(parent) {
+            // Check if we're in create or edit mode by checking which modal is visible
+            const editModal = document.getElementById('editStudentModal');
+            const isEditMode = editModal && !editModal.classList.contains('hidden');
+
+            if (isEditMode) {
+                // Edit mode
+                document.getElementById('editParentId').value = parent.id;
+                document.getElementById('editSelectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
+                console.log('Selected parent for edit:', parent.first_name, parent.last_name, 'ID:', parent.id);
+            } else {
+                // Create mode
+                document.getElementById('parentId').value = parent.id;
+                document.getElementById('selectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
+                console.log('Selected parent for create:', parent.first_name, parent.last_name, 'ID:', parent.id);
+            }
+
+            closeParentSearchModal();
+        }
+
+        function resetSearchResults() {
+            if (parentSearchResults) {
+                parentSearchResults.innerHTML = `
                 <div id="parentSearchLoading" class="hidden p-4 text-center text-gray-500">
                     <i class="fas fa-spinner fa-spin mr-2"></i>Searching...
                 </div>
@@ -1241,99 +1290,99 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>No parents found matching your search.</p>
                 </div>
             `;
-        }
-    }
-
-    // Event listeners for parent search modal
-    searchParentBtn.addEventListener('click', openParentSearchModal);
-    closeParentSearchBtn.addEventListener('click', closeParentSearchModal);
-
-    // Search input functionality
-    parentSearchInput.addEventListener('input', function() {
-        const searchTerm = this.value.trim();
-
-        // Show loading skeleton when searching
-        document.getElementById('parentsLoading').classList.remove('hidden');
-        document.getElementById('parentsList').classList.add('hidden');
-        document.getElementById('noParentsFound').classList.add('hidden');
-
-        if (searchTerm.length >= 2) {
-            loadParents(searchTerm);
-        } else if (searchTerm.length === 0) {
-            loadParents();
-        }
-    });
-
-    // Close parent search modal when clicking outside
-    parentSearchModal.addEventListener('click', function(e) {
-        if (e.target === parentSearchModal) {
-            closeParentSearchModal();
-        }
-    });
-
-    // Edit modal parent search functionality
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.id === 'editSearchParentBtn') {
-            openParentSearchModal();
+            }
         }
 
-        if (e.target && e.target.id === 'editRemoveParentBtn') {
-            // Remove parent assignment
-            document.getElementById('editParentId').value = '';
-            document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
-            document.getElementById('editParentRelationship').value = '';
-            console.log('Parent removed from student');
-        }
-    });
+        // Event listeners for parent search modal
+        searchParentBtn.addEventListener('click', openParentSearchModal);
+        closeParentSearchBtn.addEventListener('click', closeParentSearchModal);
 
-    // Parent search functionality
-    let parentSearchTimeout;
+        // Search input functionality
+        parentSearchInput.addEventListener('input', function () {
+            const searchTerm = this.value.trim();
 
-    if (parentSearchInput) {
-        parentSearchInput.addEventListener('input', function() {
-            const query = this.value.trim();
+            // Show loading skeleton when searching
+            document.getElementById('parentsLoading').classList.remove('hidden');
+            document.getElementById('parentsList').classList.add('hidden');
+            document.getElementById('noParentsFound').classList.add('hidden');
 
-            // Clear previous timeout
-            if (parentSearchTimeout) {
-                clearTimeout(parentSearchTimeout);
+            if (searchTerm.length >= 2) {
+                loadParents(searchTerm);
+            } else if (searchTerm.length === 0) {
+                loadParents();
+            }
+        });
+
+        // Close parent search modal when clicking outside
+        parentSearchModal.addEventListener('click', function (e) {
+            if (e.target === parentSearchModal) {
+                closeParentSearchModal();
+            }
+        });
+
+        // Edit modal parent search functionality
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'editSearchParentBtn') {
+                openParentSearchModal();
             }
 
-            // Set new timeout for search
-            parentSearchTimeout = setTimeout(() => {
-                if (query.length === 0) {
-                    resetSearchResults();
-                } else if (query.length >= 2) {
-                    searchParents(query);
-                }
-            }, 300); // 300ms debounce
+            if (e.target && e.target.id === 'editRemoveParentBtn') {
+                // Remove parent assignment
+                document.getElementById('editParentId').value = '';
+                document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
+                document.getElementById('editParentRelationship').value = '';
+                console.log('Parent removed from student');
+            }
         });
-    }
 
-    async function searchParents(query) {
-        if (!parentSearchResults) return;
+        // Parent search functionality
+        let parentSearchTimeout;
 
-        const loadingDiv = document.getElementById('parentSearchLoading');
-        const emptyDiv = document.getElementById('parentSearchEmpty');
-        const noResultsDiv = document.getElementById('parentSearchNoResults');
+        if (parentSearchInput) {
+            parentSearchInput.addEventListener('input', function () {
+                const query = this.value.trim();
 
-        // Show loading state
-        parentSearchResults.innerHTML = '';
-        if (loadingDiv) {
-            loadingDiv.classList.remove('hidden');
-            parentSearchResults.appendChild(loadingDiv);
+                // Clear previous timeout
+                if (parentSearchTimeout) {
+                    clearTimeout(parentSearchTimeout);
+                }
+
+                // Set new timeout for search
+                parentSearchTimeout = setTimeout(() => {
+                    if (query.length === 0) {
+                        resetSearchResults();
+                    } else if (query.length >= 2) {
+                        searchParents(query);
+                    }
+                }, 300); // 300ms debounce
+            });
         }
 
-        try {
-            const response = await fetch(`/api/parents/search?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
+        async function searchParents(query) {
+            if (!parentSearchResults) return;
 
+            const loadingDiv = document.getElementById('parentSearchLoading');
+            const emptyDiv = document.getElementById('parentSearchEmpty');
+            const noResultsDiv = document.getElementById('parentSearchNoResults');
+
+            // Show loading state
             parentSearchResults.innerHTML = '';
+            if (loadingDiv) {
+                loadingDiv.classList.remove('hidden');
+                parentSearchResults.appendChild(loadingDiv);
+            }
 
-            if (data.parents && data.parents.length > 0) {
-                data.parents.forEach(parent => {
-                    const parentDiv = document.createElement('div');
-                    parentDiv.className = 'p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0';
-                    parentDiv.innerHTML = `
+            try {
+                const response = await fetch(`/api/parents/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                parentSearchResults.innerHTML = '';
+
+                if (data.parents && data.parents.length > 0) {
+                    data.parents.forEach(parent => {
+                        const parentDiv = document.createElement('div');
+                        parentDiv.className = 'p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0';
+                        parentDiv.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <h4 class="font-medium text-gray-900">${parent.first_name} ${parent.last_name}</h4>
@@ -1351,477 +1400,477 @@ document.addEventListener('DOMContentLoaded', function() {
                             </button>
                         </div>
                     `;
-                    parentSearchResults.appendChild(parentDiv);
-                });
-
-                // Add event listeners to select buttons
-                document.querySelectorAll('.select-parent-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const parentId = this.dataset.parentId;
-                        const parentName = this.dataset.parentName;
-
-                        // Set the selected parent
-                        setSelectedParent(parentId, parentName);
-                        closeSearchParentModal();
+                        parentSearchResults.appendChild(parentDiv);
                     });
-                });
-            } else {
-                if (noResultsDiv) {
-                    noResultsDiv.classList.remove('hidden');
-                    parentSearchResults.appendChild(noResultsDiv);
+
+                    // Add event listeners to select buttons
+                    document.querySelectorAll('.select-parent-btn').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const parentId = this.dataset.parentId;
+                            const parentName = this.dataset.parentName;
+
+                            // Set the selected parent
+                            setSelectedParent(parentId, parentName);
+                            closeSearchParentModal();
+                        });
+                    });
+                } else {
+                    if (noResultsDiv) {
+                        noResultsDiv.classList.remove('hidden');
+                        parentSearchResults.appendChild(noResultsDiv);
+                    }
                 }
-            }
-        } catch (error) {
-            console.error('Error searching parents:', error);
-            parentSearchResults.innerHTML = `
+            } catch (error) {
+                console.error('Error searching parents:', error);
+                parentSearchResults.innerHTML = `
                 <div class="p-8 text-center text-red-500">
                     <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
                     <p>Error searching parents. Please try again.</p>
                 </div>
             `;
-        }
-    }
-
-    // Parent form submission
-    addParentForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        setButtonLoading(submitBtn, true, '<i class="fas fa-plus mr-2"></i>Add Parent');
-
-        const formData = new FormData(this);
-        const data = {
-            first_name: formData.get('firstName'),
-            last_name: formData.get('lastName'),
-            phone: formData.get('phone'),
-            email: formData.get('email'),
-            address: formData.get('address')
-        };
-
-        try {
-            const response = await fetch('/api/parents', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Parent added successfully!');
-                closeParentModal();
-                // Set the newly created parent as selected
-                setSelectedParent(result.parent.id, `${result.parent.first_name} ${result.parent.last_name}`);
-            } else {
-                alert('Error: ' + result.error);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while adding the parent');
-        } finally {
-            setButtonLoading(submitBtn, false, '<i class="fas fa-plus mr-2"></i>Add Parent');
-        }
-    });
-
-    // Form submission
-    addStudentForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        setButtonLoading(submitBtn, true, '<i class="fas fa-plus mr-2"></i>Add Student');
-
-        const formData = new FormData(this);
-        const data = {
-            // student_id is auto-generated on the server, no need to send it
-            first_name: formData.get('firstName'),
-            last_name: formData.get('lastName'),
-            date_of_birth: formData.get('dateOfBirth'),
-            gender: formData.get('gender'),
-            address: formData.get('address'),
-            class_id: formData.get('classId'),
-            parent_id: formData.get('parentId'),
-            parent_relationship: formData.get('parentRelationship')
-        };
-
-        try {
-            const response = await fetch('/api/students', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Student added successfully!');
-                closeModal();
-                loadStudents(); // Reload the students table
-            } else {
-                alert('Error: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while adding the student');
-        } finally {
-            setButtonLoading(submitBtn, false, '<i class="fas fa-plus mr-2"></i>Add Student');
-        }
-    });
-
-    // Load classes from API
-    async function loadClasses() {
-        try {
-            const response = await fetch('/api/classes', {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await response.json();
-
-            // Populate add student modal class dropdown
-            const classSelect = document.getElementById('classId');
-            classSelect.innerHTML = '<option value="">Select Class</option>';
-
-            // Populate filter class dropdown
-            const classFilter = document.getElementById('classFilter');
-            classFilter.innerHTML = '<option value="">All Classes</option>';
-
-            data.classes.forEach(classItem => {
-                // Add to student modal
-                const option = document.createElement('option');
-                option.value = classItem.id;
-                option.textContent = classItem.name;
-                classSelect.appendChild(option);
-
-                // Add to filter dropdown
-                const filterOption = document.createElement('option');
-                filterOption.value = classItem.id;
-                filterOption.textContent = classItem.name;
-                classFilter.appendChild(filterOption);
-            });
-        } catch (error) {
-            console.error('Error loading classes:', error);
-        }
-    }
-
-    // Function to set selected parent
-    function setSelectedParent(parentId, parentName) {
-        const parentIdInput = document.getElementById('parentId');
-        const selectedParentDisplay = document.getElementById('selectedParentDisplay');
-
-        if (parentIdInput && selectedParentDisplay) {
-            parentIdInput.value = parentId;
-            selectedParentDisplay.textContent = parentName;
-            selectedParentDisplay.classList.remove('text-gray-500');
-            selectedParentDisplay.classList.add('text-gray-900');
-        }
-    }
-
-    // Function to clear selected parent
-    function clearSelectedParent() {
-        const parentIdInput = document.getElementById('parentId');
-        const selectedParentDisplay = document.getElementById('selectedParentDisplay');
-
-        if (parentIdInput && selectedParentDisplay) {
-            parentIdInput.value = '';
-            selectedParentDisplay.textContent = 'No parent selected';
-            selectedParentDisplay.classList.remove('text-gray-900');
-            selectedParentDisplay.classList.add('text-gray-500');
-        }
-    }
-
-
-
-    // Load students from API with optional filters and pagination
-    async function loadStudents(filters = {}, reset = true) {
-        console.log('loadStudents called:', { reset, currentOffset, hasMoreStudents, isLoading });
-        if (isLoading) {
-            console.log('Already loading, skipping request');
-            return;
-        }
-        
-        const tableBody = document.getElementById('studentsTableBody');
-        const emptyRow = document.getElementById('emptyRow');
-        const errorRow = document.getElementById('errorRow');
-
-        // Reset pagination if this is a new search/filter
-        if (reset) {
-            currentOffset = 0;
-            hasMoreStudents = true;
-            allStudents = [];
-            // Clear existing rows except skeleton and state rows
-            const existingRows = tableBody.querySelectorAll('tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
-            existingRows.forEach(row => row.remove());
-            // Reset end indicator
-            const endOfResults = document.getElementById('end-of-students');
-            if (endOfResults) endOfResults.classList.add('hidden');
         }
 
-        if (!hasMoreStudents) {
-            console.log('No more students to load');
-            return;
-        }
+        // Parent form submission
+        addParentForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        isLoading = true;
-        
-        // Show appropriate loading state
-        if (reset) {
-            showSkeletonLoading();
-            hideAutoLoadingStudentsState();
-        } else {
-            showAutoLoadingStudentsState();
-        }
-        emptyRow.classList.add('hidden');
-        errorRow.classList.add('hidden');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true, '<i class="fas fa-plus mr-2"></i>Add Parent');
 
-        try {
-            // Build query parameters
-            const params = new URLSearchParams();
+            const formData = new FormData(this);
+            const data = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                address: formData.get('address')
+            };
 
-            if (filters.search) params.append('search', filters.search);
-            if (filters.status) params.append('status', filters.status);
-            if (filters.class_id) params.append('class_id', filters.class_id);
-            if (filters.gender) params.append('gender', filters.gender);
-            if (filters.date_from) params.append('date_from', filters.date_from);
-            if (filters.date_to) params.append('date_to', filters.date_to);
-            if (filters.sort_by) params.append('sort_by', filters.sort_by);
-            if (filters.sort_order) params.append('sort_order', filters.sort_order);
-            
-            // Add pagination parameters
-            params.append('limit', STUDENTS_PER_PAGE.toString());
-            params.append('offset', currentOffset.toString());
-
-            const queryString = params.toString();
-            const url = `/api/students/table?${queryString}`;
-
-            const response = await fetch(url, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch students');
-            }
-
-            const data = await response.json();
-
-            // Hide loading states
-            if (reset) {
-                hideSkeletonLoading();
-            } else {
-                hideAutoLoadingStudentsState();
-            }
-
-            if (data.students && data.students.length > 0) {
-                // Add new students to the array
-                allStudents = reset ? data.students : [...allStudents, ...data.students];
-                
-                // Render new students (append to existing if not reset)
-                if (reset) {
-                    renderStudents(data.students);
-                } else {
-                    appendStudents(data.students);
-                }
-                
-                // Update pagination state - CRITICAL: Check if we have more data
-                hasMoreStudents = data.has_more && data.students.length === STUDENTS_PER_PAGE;
-                currentOffset = data.next_offset;
-                
-                console.log('Updated pagination state:', { 
-                    hasMoreStudents, 
-                    currentOffset, 
-                    totalLoaded: allStudents.length, 
-                    totalCount: data.total_count,
-                    receivedCount: data.students.length,
-                    expectedPerPage: STUDENTS_PER_PAGE
+            try {
+                const response = await fetch('/api/parents', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
                 });
-                
-                updatePagination(data.total_count, allStudents.length);
-                
-                // Reinitialize infinite scroll after data loads
-                if (!reset) {
-                    reinitializeInfiniteScroll();
-                }
-            } else {
-                // No students returned - we've reached the end
-                hasMoreStudents = false;
-                if (reset) {
-                    emptyRow.classList.remove('hidden');
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Parent added successfully!');
+                    closeParentModal();
+                    // Set the newly created parent as selected
+                    setSelectedParent(result.parent.id, `${result.parent.first_name} ${result.parent.last_name}`);
                 } else {
-                    updatePagination(allStudents.length, allStudents.length);
+                    alert('Error: ' + result.error);
                 }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the parent');
+            } finally {
+                setButtonLoading(submitBtn, false, '<i class="fas fa-plus mr-2"></i>Add Parent');
             }
-        } catch (error) {
-            console.error('Error loading students:', error);
-            hasMoreStudents = false; // Stop loading on error
+        });
+
+        // Form submission
+        addStudentForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true, '<i class="fas fa-plus mr-2"></i>Add Student');
+
+            const formData = new FormData(this);
+            const data = {
+                // student_id is auto-generated on the server, no need to send it
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                date_of_birth: formData.get('dateOfBirth'),
+                gender: formData.get('gender'),
+                address: formData.get('address'),
+                class_id: formData.get('classId'),
+                parent_id: formData.get('parentId'),
+                parent_relationship: formData.get('parentRelationship')
+            };
+
+            try {
+                const response = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Student added successfully!');
+                    closeModal();
+                    loadStudents(); // Reload the students table
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the student');
+            } finally {
+                setButtonLoading(submitBtn, false, '<i class="fas fa-plus mr-2"></i>Add Student');
+            }
+        });
+
+        // Load classes from API
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/classes', {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                // Populate add student modal class dropdown
+                const classSelect = document.getElementById('classId');
+                classSelect.innerHTML = '<option value="">Select Class</option>';
+
+                // Populate filter class dropdown
+                const classFilter = document.getElementById('classFilter');
+                classFilter.innerHTML = '<option value="">All Classes</option>';
+
+                data.classes.forEach(classItem => {
+                    // Add to student modal
+                    const option = document.createElement('option');
+                    option.value = classItem.id;
+                    option.textContent = classItem.name;
+                    classSelect.appendChild(option);
+
+                    // Add to filter dropdown
+                    const filterOption = document.createElement('option');
+                    filterOption.value = classItem.id;
+                    filterOption.textContent = classItem.name;
+                    classFilter.appendChild(filterOption);
+                });
+            } catch (error) {
+                console.error('Error loading classes:', error);
+            }
+        }
+
+        // Function to set selected parent
+        function setSelectedParent(parentId, parentName) {
+            const parentIdInput = document.getElementById('parentId');
+            const selectedParentDisplay = document.getElementById('selectedParentDisplay');
+
+            if (parentIdInput && selectedParentDisplay) {
+                parentIdInput.value = parentId;
+                selectedParentDisplay.textContent = parentName;
+                selectedParentDisplay.classList.remove('text-gray-500');
+                selectedParentDisplay.classList.add('text-gray-900');
+            }
+        }
+
+        // Function to clear selected parent
+        function clearSelectedParent() {
+            const parentIdInput = document.getElementById('parentId');
+            const selectedParentDisplay = document.getElementById('selectedParentDisplay');
+
+            if (parentIdInput && selectedParentDisplay) {
+                parentIdInput.value = '';
+                selectedParentDisplay.textContent = 'No parent selected';
+                selectedParentDisplay.classList.remove('text-gray-900');
+                selectedParentDisplay.classList.add('text-gray-500');
+            }
+        }
+
+
+
+        // Load students from API with optional filters and pagination
+        async function loadStudents(filters = {}, reset = true) {
+            console.log('loadStudents called:', { reset, currentOffset, hasMoreStudents, isLoading });
+            if (isLoading) {
+                console.log('Already loading, skipping request');
+                return;
+            }
+
+            const tableBody = document.getElementById('studentsTableBody');
+            const emptyRow = document.getElementById('emptyRow');
+            const errorRow = document.getElementById('errorRow');
+
+            // Reset pagination if this is a new search/filter
             if (reset) {
-                hideSkeletonLoading();
-                errorRow.classList.remove('hidden');
-            } else {
+                currentOffset = 0;
+                hasMoreStudents = true;
+                allStudents = [];
+                // Clear existing rows except skeleton and state rows
+                const existingRows = tableBody.querySelectorAll('tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
+                existingRows.forEach(row => row.remove());
+                // Reset end indicator
+                const endOfResults = document.getElementById('end-of-students');
+                if (endOfResults) endOfResults.classList.add('hidden');
+            }
+
+            if (!hasMoreStudents) {
+                console.log('No more students to load');
+                return;
+            }
+
+            isLoading = true;
+
+            // Show appropriate loading state
+            if (reset) {
+                showSkeletonLoading();
                 hideAutoLoadingStudentsState();
+            } else {
+                showAutoLoadingStudentsState();
             }
-        } finally {
-            isLoading = false;
-        }
-    }
+            emptyRow.classList.add('hidden');
+            errorRow.classList.add('hidden');
 
-    // Show skeleton loading
-    function showSkeletonLoading() {
-        const skeletonRows = document.querySelectorAll('.skeleton-row');
-        skeletonRows.forEach(row => row.classList.remove('hidden'));
+            try {
+                // Build query parameters
+                const params = new URLSearchParams();
 
-        // Hide any existing student rows
-        const existingRows = document.querySelectorAll('#studentsTableBody tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
-        existingRows.forEach(row => row.remove());
-    }
+                if (filters.search) params.append('search', filters.search);
+                if (filters.status) params.append('status', filters.status);
+                if (filters.class_id) params.append('class_id', filters.class_id);
+                if (filters.gender) params.append('gender', filters.gender);
+                if (filters.date_from) params.append('date_from', filters.date_from);
+                if (filters.date_to) params.append('date_to', filters.date_to);
+                if (filters.sort_by) params.append('sort_by', filters.sort_by);
+                if (filters.sort_order) params.append('sort_order', filters.sort_order);
 
-    // Hide skeleton loading
-    function hideSkeletonLoading() {
-        const skeletonRows = document.querySelectorAll('.skeleton-row');
-        skeletonRows.forEach(row => row.classList.add('hidden'));
-    }
+                // Add pagination parameters
+                params.append('limit', STUDENTS_PER_PAGE.toString());
+                params.append('offset', currentOffset.toString());
 
-    // Show auto-loading students state
-    function showAutoLoadingStudentsState() {
-        const indicator = document.getElementById('auto-loading-students-indicator');
-        if (indicator) {
-            indicator.classList.remove('hidden');
-        }
-    }
+                const queryString = params.toString();
+                const url = `/api/students/table?${queryString}`;
 
-    // Hide auto-loading students state
-    function hideAutoLoadingStudentsState() {
-        const indicator = document.getElementById('auto-loading-students-indicator');
-        if (indicator && !indicator.classList.contains('hidden')) {
-            indicator.classList.add('hidden');
-        }
-    }
-
-    // Load stats from API
-    async function loadStats() {
-        try {
-            const response = await fetch('/api/students/stats', {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
+                const response = await fetch(url, {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch students');
                 }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch stats');
+
+                const data = await response.json();
+
+                // Hide loading states
+                if (reset) {
+                    hideSkeletonLoading();
+                } else {
+                    hideAutoLoadingStudentsState();
+                }
+
+                if (data.students && data.students.length > 0) {
+                    // Add new students to the array
+                    allStudents = reset ? data.students : [...allStudents, ...data.students];
+
+                    // Render new students (append to existing if not reset)
+                    if (reset) {
+                        renderStudents(data.students);
+                    } else {
+                        appendStudents(data.students);
+                    }
+
+                    // Update pagination state - CRITICAL: Check if we have more data
+                    hasMoreStudents = data.has_more && data.students.length === STUDENTS_PER_PAGE;
+                    currentOffset = data.next_offset;
+
+                    console.log('Updated pagination state:', {
+                        hasMoreStudents,
+                        currentOffset,
+                        totalLoaded: allStudents.length,
+                        totalCount: data.total_count,
+                        receivedCount: data.students.length,
+                        expectedPerPage: STUDENTS_PER_PAGE
+                    });
+
+                    updatePagination(data.total_count, allStudents.length);
+
+                    // Reinitialize infinite scroll after data loads
+                    if (!reset) {
+                        reinitializeInfiniteScroll();
+                    }
+                } else {
+                    // No students returned - we've reached the end
+                    hasMoreStudents = false;
+                    if (reset) {
+                        emptyRow.classList.remove('hidden');
+                    } else {
+                        updatePagination(allStudents.length, allStudents.length);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading students:', error);
+                hasMoreStudents = false; // Stop loading on error
+                if (reset) {
+                    hideSkeletonLoading();
+                    errorRow.classList.remove('hidden');
+                } else {
+                    hideAutoLoadingStudentsState();
+                }
+            } finally {
+                isLoading = false;
             }
-
-            const result = await response.json();
-            const stats = result.data;
-
-            // Update stat values with animation
-            updateStatValue('totalStudents', stats.total_students);
-            updateStatValue('activeStudents', stats.active_students);
-            updateStatValue('newThisMonth', stats.new_this_month);
-            updateStatValue('pendingApplications', stats.pending_applications);
-
-        } catch (error) {
-            console.error('Error loading stats:', error);
-            // Show fallback values or error state
-            updateStatValue('totalStudents', '—');
-            updateStatValue('activeStudents', '—');
-            updateStatValue('newThisMonth', '—');
-            updateStatValue('pendingApplications', '—');
         }
-    }
 
-    // Update stat value with smooth animation
-    function updateStatValue(elementId, value) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            // Add a smooth transition
-            element.style.transition = 'opacity 0.3s ease';
-            element.style.opacity = '0.5';
+        // Show skeleton loading
+        function showSkeletonLoading() {
+            const skeletonRows = document.querySelectorAll('.skeleton-row');
+            skeletonRows.forEach(row => row.classList.remove('hidden'));
 
-            setTimeout(() => {
-                const displayValue = typeof value === 'number' ? value.toLocaleString() : value;
-                element.textContent = displayValue;
-                element.style.opacity = '1';
-            }, 150);
+            // Hide any existing student rows
+            const existingRows = document.querySelectorAll('#studentsTableBody tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
+            existingRows.forEach(row => row.remove());
         }
-    }
-
-    // Render students in the table (replace all)
-    function renderStudents(students) {
-        const tableBody = document.getElementById('studentsTableBody');
-
-        // Clear existing content except state rows and skeleton rows
-        const existingRows = tableBody.querySelectorAll('tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
-        existingRows.forEach(row => row.remove());
 
         // Hide skeleton loading
-        hideSkeletonLoading();
+        function hideSkeletonLoading() {
+            const skeletonRows = document.querySelectorAll('.skeleton-row');
+            skeletonRows.forEach(row => row.classList.add('hidden'));
+        }
 
-        students.forEach(student => {
-            const row = createStudentRow(student);
-            tableBody.appendChild(row);
-        });
-
-        // Update checkbox functionality for new rows
-        updateCheckboxFunctionality();
-    }
-
-    // Append students to the table (for infinite scroll)
-    function appendStudents(students) {
-        const tableBody = document.getElementById('studentsTableBody');
-        const sentinel = document.getElementById('scroll-sentinel');
-
-        students.forEach(student => {
-            const row = createStudentRow(student);
-            // Insert before the sentinel to keep sentinel at the bottom
-            if (sentinel) {
-                tableBody.insertBefore(row, sentinel);
-            } else {
-                tableBody.appendChild(row);
+        // Show auto-loading students state
+        function showAutoLoadingStudentsState() {
+            const indicator = document.getElementById('auto-loading-students-indicator');
+            if (indicator) {
+                indicator.classList.remove('hidden');
             }
-        });
+        }
 
-        // Update checkbox functionality for new rows
-        updateCheckboxFunctionality();
-    }
+        // Hide auto-loading students state
+        function hideAutoLoadingStudentsState() {
+            const indicator = document.getElementById('auto-loading-students-indicator');
+            if (indicator && !indicator.classList.contains('hidden')) {
+                indicator.classList.add('hidden');
+            }
+        }
 
-    // Create a student table row
-    function createStudentRow(student) {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 transition-colors duration-200';
+        // Load stats from API
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/students/stats', {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stats');
+                }
 
-        // Generate avatar color based on initials
-        const colors = [
-            'from-blue-500 to-blue-600',
-            'from-green-500 to-green-600',
-            'from-purple-500 to-purple-600',
-            'from-red-500 to-red-600',
-            'from-yellow-500 to-yellow-600',
-            'from-indigo-500 to-indigo-600',
-            'from-pink-500 to-pink-600',
-            'from-teal-500 to-teal-600'
-        ];
-        const colorIndex = student.initials.charCodeAt(0) % colors.length;
-        const avatarColor = colors[colorIndex];
+                const result = await response.json();
+                const stats = result.data;
 
-        // Status badge styling
-        const statusClass = student.status === 'Active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-yellow-100 text-yellow-800';
+                // Update stat values with animation
+                updateStatValue('totalStudents', stats.total_students);
+                updateStatValue('activeStudents', stats.active_students);
+                updateStatValue('newThisMonth', stats.new_this_month);
+                updateStatValue('pendingApplications', stats.pending_applications);
 
-        row.innerHTML = `
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                // Show fallback values or error state
+                updateStatValue('totalStudents', '—');
+                updateStatValue('activeStudents', '—');
+                updateStatValue('newThisMonth', '—');
+                updateStatValue('pendingApplications', '—');
+            }
+        }
+
+        // Update stat value with smooth animation
+        function updateStatValue(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                // Add a smooth transition
+                element.style.transition = 'opacity 0.3s ease';
+                element.style.opacity = '0.5';
+
+                setTimeout(() => {
+                    const displayValue = typeof value === 'number' ? value.toLocaleString() : value;
+                    element.textContent = displayValue;
+                    element.style.opacity = '1';
+                }, 150);
+            }
+        }
+
+        // Render students in the table (replace all)
+        function renderStudents(students) {
+            const tableBody = document.getElementById('studentsTableBody');
+
+            // Clear existing content except state rows and skeleton rows
+            const existingRows = tableBody.querySelectorAll('tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
+            existingRows.forEach(row => row.remove());
+
+            // Hide skeleton loading
+            hideSkeletonLoading();
+
+            students.forEach(student => {
+                const row = createStudentRow(student);
+                tableBody.appendChild(row);
+            });
+
+            // Update checkbox functionality for new rows
+            updateCheckboxFunctionality();
+        }
+
+        // Append students to the table (for infinite scroll)
+        function appendStudents(students) {
+            const tableBody = document.getElementById('studentsTableBody');
+            const sentinel = document.getElementById('scroll-sentinel');
+
+            students.forEach(student => {
+                const row = createStudentRow(student);
+                // Insert before the sentinel to keep sentinel at the bottom
+                if (sentinel) {
+                    tableBody.insertBefore(row, sentinel);
+                } else {
+                    tableBody.appendChild(row);
+                }
+            });
+
+            // Update checkbox functionality for new rows
+            updateCheckboxFunctionality();
+        }
+
+        // Create a student table row
+        function createStudentRow(student) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gray-50 transition-colors duration-200';
+
+            // Generate avatar color based on initials
+            const colors = [
+                'from-blue-500 to-blue-600',
+                'from-green-500 to-green-600',
+                'from-purple-500 to-purple-600',
+                'from-red-500 to-red-600',
+                'from-yellow-500 to-yellow-600',
+                'from-indigo-500 to-indigo-600',
+                'from-pink-500 to-pink-600',
+                'from-teal-500 to-teal-600'
+            ];
+            const colorIndex = student.initials.charCodeAt(0) % colors.length;
+            const avatarColor = colors[colorIndex];
+
+            // Status badge styling
+            const statusClass = student.status === 'Active'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-yellow-100 text-yellow-800';
+
+            row.innerHTML = `
             <td class="px-4 py-3">
                 <div class="flex items-center">
                     <div class="w-10 h-10 bg-gradient-to-br ${avatarColor} rounded-full flex items-center justify-center">
                         <span class="text-white text-sm font-medium">${student.initials}</span>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm font-medium text-gray-900 whitespace-nowrap">${student.full_name}</p>
-                        <a href="/classes/${student.class_id || ''}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">${student.class_code || 'No class'}</a>
+                        <a href="/students/${student.id}" class="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors whitespace-nowrap">${student.full_name}</a>
+                        <p><a href="/classes/${student.class_id || ''}" class="text-xs text-blue-600 hover:text-blue-800 hover:underline">${student.class_code || 'No class'}</a></p>
                     </div>
                 </div>
             </td>
@@ -1835,7 +1884,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </td>
             <td class="px-4 py-3">
                 <div class="flex items-center space-x-2">
-                    <button class="p-1 text-gray-400 hover:text-blue-600 transition-colors duration-200" title="View" onclick="viewStudent('${student.id}')">
+                    <a href="/students/${student.id}" class="p-1 text-gray-400 hover:text-indigo-600 transition-colors duration-200" title="View Detail Profile">
+                        <i class="fas fa-id-card text-sm"></i>
+                    </a>
+                    <button class="p-1 text-gray-400 hover:text-blue-600 transition-colors duration-200" title="View Quick Info" onclick="viewStudent('${student.id}')">
                         <i class="fas fa-eye text-sm"></i>
                     </button>
                     <button class="p-1 text-gray-400 hover:text-green-600 transition-colors duration-200" title="Edit" onclick="editStudent('${student.id}')">
@@ -1848,137 +1900,137 @@ document.addEventListener('DOMContentLoaded', function() {
             </td>
         `;
 
-        return row;
-    }
-
-    // Update pagination info
-    function updatePagination(totalCount, currentCount = 0) {
-        const showingCountEl = document.getElementById('showing-students-count');
-        const totalCountEl = document.getElementById('total-students-count');
-        const endOfResults = document.getElementById('end-of-students');
-        const loadMoreBtn = document.getElementById('load-more-students');
-
-        // Update counts
-        if (showingCountEl) showingCountEl.textContent = currentCount || totalCount;
-        if (totalCountEl) totalCountEl.textContent = totalCount;
-
-        // Show/hide controls based on state
-        const loadMoreContainer = document.getElementById('load-more-students');
-        const loadMoreButton = document.getElementById('load-more-btn');
-        
-        if (hasMoreStudents && currentCount > 0) {
-            if (endOfResults) endOfResults.classList.add('hidden');
-            if (loadMoreContainer) loadMoreContainer.classList.remove('hidden');
-            if (loadMoreButton) {
-                loadMoreButton.disabled = false;
-                loadMoreButton.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More Students';
-            }
-        } else if (currentCount > 0) {
-            if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
-            if (endOfResults) {
-                endOfResults.classList.remove('hidden');
-                setTimeout(() => {
-                    endOfResults.style.opacity = '0';
-                    endOfResults.style.transform = 'translateY(20px)';
-                    endOfResults.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    setTimeout(() => {
-                        endOfResults.style.opacity = '1';
-                        endOfResults.style.transform = 'translateY(0)';
-                    }, 10);
-                }, 10);
-            }
-        } else {
-            if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
-            if (endOfResults) endOfResults.classList.add('hidden');
+            return row;
         }
-    }
 
-    // Update functionality for dynamically added rows
-    function updateCheckboxFunctionality() {
-        // Checkbox functionality removed - no longer needed
-    }
+        // Update pagination info
+        function updatePagination(totalCount, currentCount = 0) {
+            const showingCountEl = document.getElementById('showing-students-count');
+            const totalCountEl = document.getElementById('total-students-count');
+            const endOfResults = document.getElementById('end-of-students');
+            const loadMoreBtn = document.getElementById('load-more-students');
 
-    // Modal elements
-    const viewStudentModal = document.getElementById('viewStudentModal');
-    const editStudentModal = document.getElementById('editStudentModal');
-    const deleteStudentModal = document.getElementById('deleteStudentModal');
+            // Update counts
+            if (showingCountEl) showingCountEl.textContent = currentCount || totalCount;
+            if (totalCountEl) totalCountEl.textContent = totalCount;
 
-    // Load classes for edit modal
-    async function loadClassesForEdit() {
-        try {
-            const response = await fetch('/api/classes');
-            if (response.ok) {
-                const data = await response.json();
-                const classSelect = document.getElementById('editClassID');
+            // Show/hide controls based on state
+            const loadMoreContainer = document.getElementById('load-more-students');
+            const loadMoreButton = document.getElementById('load-more-btn');
 
-                // Clear existing options except the first one
-                classSelect.innerHTML = '<option value="">Select Class</option>';
-
-                // Add classes to dropdown
-                data.classes.forEach(cls => {
-                    const option = document.createElement('option');
-                    option.value = cls.id;
-                    option.textContent = cls.name;
-                    classSelect.appendChild(option);
-                });
-            }
-        } catch (error) {
-            console.error('Error loading classes for edit:', error);
-        }
-    }
-
-    // Load parent information for edit modal
-    async function loadParentInfoForEdit(studentId) {
-        try {
-            // Get student details with parent information from the detailed API
-            const response = await fetch(`/api/students/${studentId}`);
-            if (response.ok) {
-                const data = await response.json();
-
-                if (data.parent) {
-                    // Populate parent fields with existing parent data
-                    document.getElementById('editParentId').value = data.parent.id || '';
-                    document.getElementById('editSelectedParentDisplay').textContent = `${data.parent.first_name} ${data.parent.last_name}`;
-                    document.getElementById('editParentRelationship').value = data.parent.relationship || 'guardian';
-                } else {
-                    // Clear parent fields if no parent exists
-                    document.getElementById('editParentId').value = '';
-                    document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
-                    document.getElementById('editParentRelationship').value = '';
+            if (hasMoreStudents && currentCount > 0) {
+                if (endOfResults) endOfResults.classList.add('hidden');
+                if (loadMoreContainer) loadMoreContainer.classList.remove('hidden');
+                if (loadMoreButton) {
+                    loadMoreButton.disabled = false;
+                    loadMoreButton.innerHTML = '<i class="fas fa-plus mr-2"></i>Load More Students';
                 }
+            } else if (currentCount > 0) {
+                if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
+                if (endOfResults) {
+                    endOfResults.classList.remove('hidden');
+                    setTimeout(() => {
+                        endOfResults.style.opacity = '0';
+                        endOfResults.style.transform = 'translateY(20px)';
+                        endOfResults.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                        setTimeout(() => {
+                            endOfResults.style.opacity = '1';
+                            endOfResults.style.transform = 'translateY(0)';
+                        }, 10);
+                    }, 10);
+                }
+            } else {
+                if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
+                if (endOfResults) endOfResults.classList.add('hidden');
             }
-        } catch (error) {
-            console.error('Error loading parent info for edit:', error);
-            // Clear fields on error
-            document.getElementById('editParentId').value = '';
-            document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
-            document.getElementById('editParentRelationship').value = '';
         }
-    }
 
-    // View Student Modal Functions
-    window.viewStudent = async function(studentId) {
-        try {
-            viewStudentModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+        // Update functionality for dynamically added rows
+        function updateCheckboxFunctionality() {
+            // Checkbox functionality removed - no longer needed
+        }
 
-            // Show loading skeleton, hide content
-            document.getElementById('viewStudentLoading').classList.remove('hidden');
-            document.getElementById('viewStudentContent').classList.add('hidden');
+        // Modal elements
+        const viewStudentModal = document.getElementById('viewStudentModal');
+        const editStudentModal = document.getElementById('editStudentModal');
+        const deleteStudentModal = document.getElementById('deleteStudentModal');
 
-            const response = await fetch(`/api/students/${studentId}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch student details');
+        // Load classes for edit modal
+        async function loadClassesForEdit() {
+            try {
+                const response = await fetch('/api/classes');
+                if (response.ok) {
+                    const data = await response.json();
+                    const classSelect = document.getElementById('editClassID');
+
+                    // Clear existing options except the first one
+                    classSelect.innerHTML = '<option value="">Select Class</option>';
+
+                    // Add classes to dropdown
+                    data.classes.forEach(cls => {
+                        const option = document.createElement('option');
+                        option.value = cls.id;
+                        option.textContent = cls.name;
+                        classSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading classes for edit:', error);
             }
+        }
 
-            const data = await response.json();
-            const student = data.student;
+        // Load parent information for edit modal
+        async function loadParentInfoForEdit(studentId) {
+            try {
+                // Get student details with parent information from the detailed API
+                const response = await fetch(`/api/students/${studentId}`);
+                if (response.ok) {
+                    const data = await response.json();
 
-            // Hide loading skeleton, show content
-            document.getElementById('viewStudentLoading').classList.add('hidden');
-            document.getElementById('viewStudentContent').classList.remove('hidden');
+                    if (data.parent) {
+                        // Populate parent fields with existing parent data
+                        document.getElementById('editParentId').value = data.parent.id || '';
+                        document.getElementById('editSelectedParentDisplay').textContent = `${data.parent.first_name} ${data.parent.last_name}`;
+                        document.getElementById('editParentRelationship').value = data.parent.relationship || 'guardian';
+                    } else {
+                        // Clear parent fields if no parent exists
+                        document.getElementById('editParentId').value = '';
+                        document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
+                        document.getElementById('editParentRelationship').value = '';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading parent info for edit:', error);
+                // Clear fields on error
+                document.getElementById('editParentId').value = '';
+                document.getElementById('editSelectedParentDisplay').textContent = 'No parent assigned';
+                document.getElementById('editParentRelationship').value = '';
+            }
+        }
 
-            document.getElementById('viewStudentContent').innerHTML = `
+        // View Student Modal Functions
+        window.viewStudent = async function (studentId) {
+            try {
+                viewStudentModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Show loading skeleton, hide content
+                document.getElementById('viewStudentLoading').classList.remove('hidden');
+                document.getElementById('viewStudentContent').classList.add('hidden');
+
+                const response = await fetch(`/api/students/${studentId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch student details');
+                }
+
+                const data = await response.json();
+                const student = data.student;
+
+                // Hide loading skeleton, show content
+                document.getElementById('viewStudentLoading').classList.add('hidden');
+                document.getElementById('viewStudentContent').classList.remove('hidden');
+
+                document.getElementById('viewStudentContent').innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2 flex items-center">
                         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4">
@@ -2060,14 +2112,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 `}
             `;
-        } catch (error) {
-            console.error('Error loading student details:', error);
+            } catch (error) {
+                console.error('Error loading student details:', error);
 
-            // Hide loading skeleton, show content with error
-            document.getElementById('viewStudentLoading').classList.add('hidden');
-            document.getElementById('viewStudentContent').classList.remove('hidden');
+                // Hide loading skeleton, show content with error
+                document.getElementById('viewStudentLoading').classList.add('hidden');
+                document.getElementById('viewStudentContent').classList.remove('hidden');
 
-            document.getElementById('viewStudentContent').innerHTML = `
+                document.getElementById('viewStudentContent').innerHTML = `
                 <div class="text-center py-8">
                     <div class="text-red-500">
                         <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
@@ -2076,252 +2128,252 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-        }
-    };
-
-    // Edit Student Modal Functions
-    window.editStudent = async function(studentId) {
-        try {
-            editStudentModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-
-            // Show loading skeleton, hide form
-            document.getElementById('editStudentLoading').classList.remove('hidden');
-            document.getElementById('editStudentForm').classList.add('hidden');
-
-            // Load student data
-            const response = await fetch(`/api/students/${studentId}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch student details');
             }
-
-            const data = await response.json();
-            const student = data.student;
-
-            // Load classes for the dropdown
-            await loadClassesForEdit();
-
-            // Populate student form
-            document.getElementById('editStudentID').value = student.student_id;
-            document.getElementById('editFirstName').value = student.first_name;
-            document.getElementById('editLastName').value = student.last_name;
-            document.getElementById('editDateOfBirth').value = student.date_of_birth || '';
-            document.getElementById('editGender').value = student.gender || '';
-            document.getElementById('editClassID').value = student.class_id || '';
-            document.getElementById('editAddress').value = student.address || '';
-
-            // Load and populate parent information
-            await loadParentInfoForEdit(studentId);
-
-            // Store student ID for form submission
-            document.getElementById('editStudentForm').dataset.studentId = studentId;
-
-            // Hide loading skeleton, show form
-            document.getElementById('editStudentLoading').classList.add('hidden');
-            document.getElementById('editStudentForm').classList.remove('hidden');
-
-        } catch (error) {
-            console.error('Error loading student for edit:', error);
-            alert('Error loading student details. Please try again.');
-            editStudentModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-    };
-
-    // Delete Student Modal Functions
-    window.deleteStudent = function(studentId) {
-        // Find student name from the table
-        const studentRow = document.querySelector(`button[onclick="deleteStudent('${studentId}')"]`).closest('tr');
-        const studentName = studentRow.querySelector('.text-sm.font-medium.text-gray-900').textContent;
-
-        document.getElementById('deleteStudentName').textContent = studentName;
-        document.getElementById('confirmDeleteStudent').dataset.studentId = studentId;
-
-        deleteStudentModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
-
-    // Modal Event Listeners
-
-    // View Student Modal
-    document.getElementById('closeViewStudentModal').addEventListener('click', function() {
-        viewStudentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    // Edit Student Modal
-    document.getElementById('closeEditStudentModal').addEventListener('click', function() {
-        editStudentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    document.getElementById('cancelEditStudent').addEventListener('click', function() {
-        editStudentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    // Edit Student Form Submission
-    document.getElementById('editStudentForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const studentId = this.dataset.studentId;
-        const submitBtn = this.querySelector('button[type="submit"]');
-
-        // Show loading state
-        setButtonLoading(submitBtn, true, '<i class="fas fa-save mr-2"></i>Update Student');
-
-        const formData = {
-            first_name: document.getElementById('editFirstName').value,
-            last_name: document.getElementById('editLastName').value,
-            date_of_birth: document.getElementById('editDateOfBirth').value,
-            gender: document.getElementById('editGender').value,
-            class_id: document.getElementById('editClassID').value,
-            address: document.getElementById('editAddress').value,
-            parent_id: document.getElementById('editParentId').value,
-            parent_relationship: document.getElementById('editParentRelationship').value
         };
 
-        console.log('Submitting edit form with data:', formData);
+        // Edit Student Modal Functions
+        window.editStudent = async function (studentId) {
+            try {
+                editStudentModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
 
-        try {
-            const response = await fetch(`/api/students/${studentId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+                // Show loading skeleton, hide form
+                document.getElementById('editStudentLoading').classList.remove('hidden');
+                document.getElementById('editStudentForm').classList.add('hidden');
 
-            const result = await response.json();
+                // Load student data
+                const response = await fetch(`/api/students/${studentId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch student details');
+                }
 
-            if (response.ok) {
-                alert('Student and parent information updated successfully!');
+                const data = await response.json();
+                const student = data.student;
+
+                // Load classes for the dropdown
+                await loadClassesForEdit();
+
+                // Populate student form
+                document.getElementById('editStudentID').value = student.student_id;
+                document.getElementById('editFirstName').value = student.first_name;
+                document.getElementById('editLastName').value = student.last_name;
+                document.getElementById('editDateOfBirth').value = student.date_of_birth || '';
+                document.getElementById('editGender').value = student.gender || '';
+                document.getElementById('editClassID').value = student.class_id || '';
+                document.getElementById('editAddress').value = student.address || '';
+
+                // Load and populate parent information
+                await loadParentInfoForEdit(studentId);
+
+                // Store student ID for form submission
+                document.getElementById('editStudentForm').dataset.studentId = studentId;
+
+                // Hide loading skeleton, show form
+                document.getElementById('editStudentLoading').classList.add('hidden');
+                document.getElementById('editStudentForm').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error loading student for edit:', error);
+                alert('Error loading student details. Please try again.');
                 editStudentModal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
-                loadStudents(); // Reload the students table
-            } else {
-                console.error('Update error:', result.error);
-                alert('Error: ' + result.error);
             }
-        } catch (error) {
-            console.error('Error updating student:', error);
-            alert('Error updating student. Please try again.');
-        } finally {
-            // Reset loading state
-            setButtonLoading(submitBtn, false, '<i class="fas fa-save mr-2"></i>Update Student');
-        }
-    });
+        };
 
-    // Delete Student Modal
-    document.getElementById('cancelDeleteStudent').addEventListener('click', function() {
-        deleteStudentModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
+        // Delete Student Modal Functions
+        window.deleteStudent = function (studentId) {
+            // Find student name from the table
+            const studentRow = document.querySelector(`button[onclick="deleteStudent('${studentId}')"]`).closest('tr');
+            const studentName = studentRow.querySelector('.text-sm.font-medium.text-gray-900').textContent;
 
-    document.getElementById('confirmDeleteStudent').addEventListener('click', async function() {
-        const studentId = this.dataset.studentId;
+            document.getElementById('deleteStudentName').textContent = studentName;
+            document.getElementById('confirmDeleteStudent').dataset.studentId = studentId;
 
-        try {
-            const response = await fetch(`/api/students/${studentId}`, {
-                method: 'DELETE'
-            });
+            deleteStudentModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
 
-            const result = await response.json();
+        // Modal Event Listeners
 
-            if (response.ok) {
-                alert('Student deleted successfully!');
-                deleteStudentModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                loadStudents(); // Reload the students table
-            } else {
-                alert('Error: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error deleting student:', error);
-            alert('Error deleting student. Please try again.');
-        }
-    });
+        // View Student Modal
+        document.getElementById('closeViewStudentModal').addEventListener('click', function () {
+            viewStudentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
 
-    // Close modals when clicking outside
-    [viewStudentModal, editStudentModal, deleteStudentModal].forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
+        // Edit Student Modal
+        document.getElementById('closeEditStudentModal').addEventListener('click', function () {
+            editStudentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+
+        document.getElementById('cancelEditStudent').addEventListener('click', function () {
+            editStudentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Edit Student Form Submission
+        document.getElementById('editStudentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const studentId = this.dataset.studentId;
+            const submitBtn = this.querySelector('button[type="submit"]');
+
+            // Show loading state
+            setButtonLoading(submitBtn, true, '<i class="fas fa-save mr-2"></i>Update Student');
+
+            const formData = {
+                first_name: document.getElementById('editFirstName').value,
+                last_name: document.getElementById('editLastName').value,
+                date_of_birth: document.getElementById('editDateOfBirth').value,
+                gender: document.getElementById('editGender').value,
+                class_id: document.getElementById('editClassID').value,
+                address: document.getElementById('editAddress').value,
+                parent_id: document.getElementById('editParentId').value,
+                parent_relationship: document.getElementById('editParentRelationship').value
+            };
+
+            console.log('Submitting edit form with data:', formData);
+
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Student and parent information updated successfully!');
+                    editStudentModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    loadStudents(); // Reload the students table
+                } else {
+                    console.error('Update error:', result.error);
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error updating student:', error);
+                alert('Error updating student. Please try again.');
+            } finally {
+                // Reset loading state
+                setButtonLoading(submitBtn, false, '<i class="fas fa-save mr-2"></i>Update Student');
             }
         });
-    });
 
-    // Search hint functions
-    function showSearchHint() {
-        const searchHint = document.getElementById('searchHint');
-        if (searchHint) {
-            searchHint.classList.remove('hidden');
+        // Delete Student Modal
+        document.getElementById('cancelDeleteStudent').addEventListener('click', function () {
+            deleteStudentModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+
+        document.getElementById('confirmDeleteStudent').addEventListener('click', async function () {
+            const studentId = this.dataset.studentId;
+
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Student deleted successfully!');
+                    deleteStudentModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    loadStudents(); // Reload the students table
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                alert('Error deleting student. Please try again.');
+            }
+        });
+
+        // Close modals when clicking outside
+        [viewStudentModal, editStudentModal, deleteStudentModal].forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Search hint functions
+        function showSearchHint() {
+            const searchHint = document.getElementById('searchHint');
+            if (searchHint) {
+                searchHint.classList.remove('hidden');
+            }
         }
-    }
 
-    function hideSearchHint() {
-        const searchHint = document.getElementById('searchHint');
-        if (searchHint) {
-            searchHint.classList.add('hidden');
+        function hideSearchHint() {
+            const searchHint = document.getElementById('searchHint');
+            if (searchHint) {
+                searchHint.classList.add('hidden');
+            }
         }
-    }
 
-    // Infinite scroll functionality
-    function setupInfiniteScroll() {
+        // Infinite scroll functionality
+        function setupInfiniteScroll() {
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            if (!loadMoreBtn) return;
+
+            // Clean up existing observer
+            if (window.scrollObserver) {
+                window.scrollObserver.disconnect();
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isLoading && hasMoreStudents) {
+                        console.log('Load more button visible - auto loading students');
+                        loadStudents(currentFilters, false);
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '100px',
+                threshold: 0
+            });
+
+            observer.observe(loadMoreBtn);
+            window.scrollObserver = observer;
+        }
+
+        // Setup infinite scroll after DOM is ready (with a small delay to ensure elements are rendered)
+        setTimeout(() => {
+            setupInfiniteScroll();
+        }, 500);
+
+        // Load more button event listener
         const loadMoreBtn = document.getElementById('load-more-btn');
-        if (!loadMoreBtn) return;
-
-        // Clean up existing observer
-        if (window.scrollObserver) {
-            window.scrollObserver.disconnect();
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !isLoading && hasMoreStudents) {
-                    console.log('Load more button visible - auto loading students');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function () {
+                if (!isLoading && hasMoreStudents) {
+                    console.log('Load more button clicked');
                     loadStudents(currentFilters, false);
                 }
             });
-        }, {
-            root: null,
-            rootMargin: '100px',
-            threshold: 0
-        });
+        }
 
-        observer.observe(loadMoreBtn);
-        window.scrollObserver = observer;
-    }
+        // Reinitialize infinite scroll when pagination updates
+        function reinitializeInfiniteScroll() {
+            setTimeout(() => {
+                setupInfiniteScroll();
+            }, 100);
+        }
 
-    // Setup infinite scroll after DOM is ready (with a small delay to ensure elements are rendered)
-    setTimeout(() => {
-        setupInfiniteScroll();
-    }, 500);
-
-    // Load more button event listener
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', function() {
-            if (!isLoading && hasMoreStudents) {
-                console.log('Load more button clicked');
-                loadStudents(currentFilters, false);
-            }
-        });
-    }
-
-    // Reinitialize infinite scroll when pagination updates
-    function reinitializeInfiniteScroll() {
-        setTimeout(() => {
-            setupInfiniteScroll();
-        }, 100);
-    }
-
-    // Make loadStudents available globally for retry button
-    window.loadStudents = function() {
-        loadStudents(currentFilters, true);
-    };
-});
+        // Make loadStudents available globally for retry button
+        window.loadStudents = function () {
+            loadStudents(currentFilters, true);
+        };
+    });
 </script>
 
 
@@ -2332,7 +2384,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900">Student Details</h3>
-                <button id="closeViewStudentModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                <button id="closeViewStudentModal"
+                    class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -2410,7 +2463,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900">Edit Student</h3>
-                <button id="closeEditStudentModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                <button id="closeEditStudentModal"
+                    class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -2498,31 +2552,39 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Student ID (Read-only) -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
-                        <input type="text" id="editStudentID" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500" readonly>
+                        <input type="text" id="editStudentID"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                            readonly>
                     </div>
 
                     <!-- First Name -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                        <input type="text" id="editFirstName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                        <input type="text" id="editFirstName"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            required>
                     </div>
 
                     <!-- Last Name -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                        <input type="text" id="editLastName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                        <input type="text" id="editLastName"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            required>
                     </div>
 
                     <!-- Date of Birth -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                        <input type="date" id="editDateOfBirth" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="date" id="editDateOfBirth"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <!-- Gender -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                        <select id="editGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select id="editGender"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -2533,7 +2595,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Class -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Class</label>
-                        <select id="editClassID" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <select id="editClassID"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">Select Class</option>
                             <!-- Classes will be loaded dynamically -->
                         </select>
@@ -2542,7 +2605,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Address -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                        <textarea id="editAddress" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Enter student's address"></textarea>
+                        <textarea id="editAddress" rows="3"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                            placeholder="Enter student's address"></textarea>
                     </div>
                 </div>
 
@@ -2558,14 +2623,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <input type="hidden" id="editParentId">
 
                                 <!-- Selected parent display -->
-                                <div id="editSelectedParentDisplay" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
+                                <div id="editSelectedParentDisplay"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 text-sm">
                                     No parent assigned
                                 </div>
 
-                                <button type="button" id="editSearchParentBtn" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm whitespace-nowrap">
+                                <button type="button" id="editSearchParentBtn"
+                                    class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm whitespace-nowrap">
                                     <i class="fas fa-search mr-1"></i>Change
                                 </button>
-                                <button type="button" id="editRemoveParentBtn" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm whitespace-nowrap">
+                                <button type="button" id="editRemoveParentBtn"
+                                    class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm whitespace-nowrap">
                                     <i class="fas fa-times mr-1"></i>Remove
                                 </button>
                             </div>
@@ -2574,7 +2642,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <!-- Relationship -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Relationship</label>
-                            <select id="editParentRelationship" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <select id="editParentRelationship"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                                 <option value="">Select Relationship</option>
                                 <option value="father">Father</option>
                                 <option value="mother">Mother</option>
@@ -2588,10 +2657,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                    <button type="button" id="cancelEditStudent" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                    <button type="button" id="cancelEditStudent"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
                         Cancel
                     </button>
-                    <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
+                    <button type="submit"
+                        class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         Update Student
                     </button>
                 </div>
@@ -2614,10 +2685,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     This action cannot be undone.
                 </p>
                 <div class="flex justify-center space-x-3">
-                    <button id="cancelDeleteStudent" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                    <button id="cancelDeleteStudent"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
                         Cancel
                     </button>
-                    <button id="confirmDeleteStudent" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                    <button id="confirmDeleteStudent"
+                        class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                         Delete Student
                     </button>
                 </div>
