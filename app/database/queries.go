@@ -319,11 +319,10 @@ func GetTeachersBySubjectOrPaper(db *sql.DB, subjectID, paperID string) ([]*mode
 	return teachers, nil
 }
 
-
 // SearchTeachersWithPagination searches teachers with pagination
 func SearchTeachersWithPagination(db *sql.DB, searchTerm string, limit, offset int) ([]*models.User, int, error) {
 	searchPattern := "%" + searchTerm + "%"
-	
+
 	// Count query
 	countQuery := `SELECT COUNT(DISTINCT u.id)
 				   FROM users u
@@ -605,7 +604,7 @@ func LinkTeacherToSubjects(db *sql.DB, teacherID string, subjectIDs []string) er
 	// Build the insert query dynamically
 	valueStrings := make([]string, 0, len(subjectIDs))
 	valueArgs := make([]interface{}, 0, len(subjectIDs)*2) // teacherID + subjectID for each
-	
+
 	for i, subjectID := range subjectIDs {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
 		valueArgs = append(valueArgs, teacherID, subjectID)
@@ -627,7 +626,7 @@ func LinkTeacherToDepartments(db *sql.DB, teacherID string, departmentIDs []stri
 	// Build the insert query dynamically
 	valueStrings := make([]string, 0, len(departmentIDs))
 	valueArgs := make([]interface{}, 0, len(departmentIDs)*2) // teacherID + departmentID for each
-	
+
 	for i, departmentID := range departmentIDs {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
 		valueArgs = append(valueArgs, teacherID, departmentID)
@@ -670,6 +669,7 @@ func GetUserDepartments(db *sql.DB, userID string) ([]*models.Department, error)
 
 	return departments, nil
 }
+
 // Placeholder functions to resolve compilation errors
 func GetAllParents(db *sql.DB) ([]*models.Parent, error) {
 	return []*models.Parent{}, nil
@@ -711,14 +711,14 @@ func GetAllAcademicYears(db *sql.DB) ([]*models.AcademicYear, error) {
 		if err != nil {
 			continue
 		}
-		
+
 		// Load terms for this academic year
 		terms, _ := GetTermsByAcademicYearID(db, year.ID)
 		if terms == nil {
 			terms = []*models.Term{}
 		}
 		year.Terms = terms
-		
+
 		years = append(years, year)
 	}
 	if years == nil {
@@ -1143,7 +1143,7 @@ func AddSubjectsToClassWithCompulsory(db *sql.DB, classID string, subjects []Sub
 
 	valueStrings := make([]string, 0, len(subjects))
 	valueArgs := make([]interface{}, 0, len(subjects)*3)
-	
+
 	for i, subject := range subjects {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
 		valueArgs = append(valueArgs, classID, subject.SubjectID, subject.IsCompulsory)
@@ -1162,8 +1162,8 @@ type PaperAssignmentForSubject struct {
 }
 
 type SubjectAssignmentWithPapers struct {
-	SubjectID       string                      `json:"subject_id"`
-	IsCompulsory    bool                        `json:"is_compulsory"`
+	SubjectID        string                      `json:"subject_id"`
+	IsCompulsory     bool                        `json:"is_compulsory"`
 	PaperAssignments []PaperAssignmentForSubject `json:"paper_assignments"`
 }
 
@@ -1213,8 +1213,6 @@ func AddSubjectsToClassWithPapers(db *sql.DB, classID string, subjects []Subject
 	return tx.Commit()
 }
 
-
-
 func GetClassSubjects(db *sql.DB, classID string) ([]*models.Subject, error) {
 	// Query to get subjects with their papers and teachers
 	query := `SELECT DISTINCT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
@@ -1235,7 +1233,7 @@ func GetClassSubjects(db *sql.DB, classID string) ([]*models.Subject, error) {
 					  LEFT JOIN departments d ON s.department_id = d.id
 					  WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
 					  ORDER BY s.name`
-		
+
 		rows, err = db.Query(fallbackQuery, classID)
 		if err != nil {
 			return []*models.Subject{}, err
@@ -1304,14 +1302,14 @@ func GetClassSubjects(db *sql.DB, classID string) ([]*models.Subject, error) {
 
 // ClassPaperWithTeacher represents a paper in a class with its assigned teacher
 type ClassPaperWithTeacher struct {
-	ID           string     `json:"id"`
-	SubjectID    string     `json:"subject_id"`
-	Name         string     `json:"name"`
-	Code         string     `json:"code"`
-	IsCompulsory bool       `json:"is_compulsory"`
-	IsActive     bool       `json:"is_active"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
+	ID           string       `json:"id"`
+	SubjectID    string       `json:"subject_id"`
+	Name         string       `json:"name"`
+	Code         string       `json:"code"`
+	IsCompulsory bool         `json:"is_compulsory"`
+	IsActive     bool         `json:"is_active"`
+	CreatedAt    time.Time    `json:"created_at"`
+	UpdatedAt    time.Time    `json:"updated_at"`
 	Teacher      *models.User `json:"teacher,omitempty"`
 }
 
@@ -1368,13 +1366,17 @@ type SubjectWithPapers struct {
 
 // GetClassSubjectsWithPapers gets subjects for a class with their papers and assigned teachers
 func GetClassSubjectsWithPapers(db *sql.DB, classID string) ([]SubjectWithPapers, error) {
-	// Get subjects assigned to the class
+	// Get subjects assigned to the class (either directly or via papers)
 	query := `SELECT DISTINCT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at,
 			  d.name as department_name
 			  FROM subjects s
-			  INNER JOIN class_subjects cs ON s.id = cs.subject_id
+			  LEFT JOIN class_subjects cs ON s.id = cs.subject_id AND cs.class_id = $1 AND cs.deleted_at IS NULL
 			  LEFT JOIN departments d ON s.department_id = d.id
-			  WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
+			  WHERE (cs.class_id = $1 OR EXISTS (
+				  SELECT 1 FROM class_papers cp 
+				  INNER JOIN papers p ON cp.paper_id = p.id 
+				  WHERE cp.class_id = $1 AND p.subject_id = s.id AND cp.deleted_at IS NULL AND p.deleted_at IS NULL
+			  )) AND s.is_active = true
 			  ORDER BY s.name`
 
 	rows, err := db.Query(query, classID)
@@ -1476,7 +1478,7 @@ func AssignPapersToClass(db *sql.DB, classID string, assignments []PaperAssignme
 
 	valueStrings := make([]string, 0, len(assignments))
 	valueArgs := make([]interface{}, 0, len(assignments)*3)
-	
+
 	for i, assignment := range assignments {
 		valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3))
 		valueArgs = append(valueArgs, classID, assignment.PaperID, assignment.TeacherID)
@@ -1683,16 +1685,16 @@ func GetStudentsWithDetails(db *sql.DB) ([]*models.Student, error) {
 		student, exists := studentMap[studentID]
 		if !exists {
 			student = &models.Student{
-				ID:        studentID,
-				StudentID: studentIDCode,
-				FirstName: firstName,
-				LastName:  lastName,
+				ID:          studentID,
+				StudentID:   studentIDCode,
+				FirstName:   firstName,
+				LastName:    lastName,
 				DateOfBirth: dateOfBirth,
-				Address:   address,
-				ClassID:   classID,
-				IsActive:  isActive,
-				CreatedAt: createdAt,
-				UpdatedAt: updatedAt,
+				Address:     address,
+				ClassID:     classID,
+				IsActive:    isActive,
+				CreatedAt:   createdAt,
+				UpdatedAt:   updatedAt,
 			}
 
 			if gender != nil {
@@ -1986,16 +1988,16 @@ func getStudentsWithFiltersInternal(db *sql.DB, filters StudentFilters, withPagi
 		}
 
 		student := &models.Student{
-			ID:        studentID,
-			StudentID: studentIDCode,
-			FirstName: firstName,
-			LastName:  lastName,
+			ID:          studentID,
+			StudentID:   studentIDCode,
+			FirstName:   firstName,
+			LastName:    lastName,
 			DateOfBirth: dateOfBirth,
-			Address:   address,
-			ClassID:   classID,
-			IsActive:  isActive,
-			CreatedAt: createdAt,
-			UpdatedAt: updatedAt,
+			Address:     address,
+			ClassID:     classID,
+			IsActive:    isActive,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
 		}
 
 		if gender != nil {
@@ -2046,16 +2048,16 @@ func GetStudentByID(db *sql.DB, id string) (*models.Student, error) {
 	}
 
 	student := &models.Student{
-		ID:        studentID,
-		StudentID: studentIDCode,
-		FirstName: firstName,
-		LastName:  lastName,
+		ID:          studentID,
+		StudentID:   studentIDCode,
+		FirstName:   firstName,
+		LastName:    lastName,
 		DateOfBirth: dateOfBirth,
-		Address:   address,
-		ClassID:   classID,
-		IsActive:  isActive,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
+		Address:     address,
+		ClassID:     classID,
+		IsActive:    isActive,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
 	}
 
 	if gender != nil {
@@ -2127,6 +2129,7 @@ func UpdateSubject(db *sql.DB, subject *models.Subject) error {
 func DeleteSubject(db *sql.DB, id string) error {
 	return nil
 }
+
 // Additional missing functions
 func UpdateTerm(db *sql.DB, term *models.Term) error {
 	query := `UPDATE terms
@@ -2290,16 +2293,16 @@ func SearchStudents(db *sql.DB, query string) ([]*models.Student, error) {
 		}
 
 		student := &models.Student{
-			ID:        studentID,
-			StudentID: studentIDCode,
-			FirstName: firstName,
-			LastName:  lastName,
+			ID:          studentID,
+			StudentID:   studentIDCode,
+			FirstName:   firstName,
+			LastName:    lastName,
 			DateOfBirth: dateOfBirth,
-			Address:   address,
-			ClassID:   classID,
-			IsActive:  isActive,
-			CreatedAt: createdAt,
-			UpdatedAt: updatedAt,
+			Address:     address,
+			ClassID:     classID,
+			IsActive:    isActive,
+			CreatedAt:   createdAt,
+			UpdatedAt:   updatedAt,
 		}
 
 		if gender != nil {
@@ -2324,7 +2327,6 @@ func SearchStudents(db *sql.DB, query string) ([]*models.Student, error) {
 
 	return students, nil
 }
-
 
 func GetAllStudents(db *sql.DB) ([]*models.Student, error) {
 	return []*models.Student{}, nil
@@ -2442,6 +2444,7 @@ func UpdateTeacherAvailability(db *sql.DB, teacherID string, availability []*mod
 
 	return tx.Commit()
 }
+
 // GetAttendanceByTimetableEntryAndDate gets attendance records for a timetable entry and date
 func GetAttendanceByTimetableEntryAndDate(db *sql.DB, timetableEntryID string, date time.Time) ([]*models.Attendance, error) {
 	return []*models.Attendance{}, nil
@@ -2508,7 +2511,7 @@ func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string)
 		if err != nil {
 			continue
 		}
-		
+
 		// Add subject and class names for display
 		if subjectName != nil {
 			entry.SubjectName = *subjectName
@@ -2516,7 +2519,7 @@ func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string)
 		if className != nil {
 			entry.ClassName = *className
 		}
-		
+
 		entries = append(entries, entry)
 	}
 
@@ -2554,7 +2557,7 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 		if err != nil {
 			continue
 		}
-		
+
 		// Add subject and class names for display
 		if subjectName != nil {
 			entry.SubjectName = *subjectName
@@ -2562,7 +2565,7 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 		if className != nil {
 			entry.ClassName = *className
 		}
-		
+
 		entries = append(entries, entry)
 	}
 

@@ -1,1263 +1,1272 @@
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200 no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <a href="/classes/{{.classID}}" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                    </a>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{.class.Name}} - Timetable</h1>
-                        <p class="text-xs text-gray-400 mb-1">Code: {{.class.Code}}</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button id="settingsBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Settings
-                    </button>
-                    <button id="editTimetableBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Edit Timetable
-                    </button>
-                    <button id="printTimetableBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                        Print Timetable
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.class.Name}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Hide scrollbar for clean UI but allow scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+
+            .no-print,
+            header,
+            aside,
+            nav,
+            .mb-5,
+            .grid-cols-1.md\:grid-cols-3,
+            #emptyTimetable {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                color: black !important;
+            }
+
+            .px-4.py-4.lg\:px-6.lg\:py-5 {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: none !important;
+            }
+
+            .bg-white.rounded-lg.border.border-slate-200 {
+                border: 1px solid #e2e8f0 !important;
+                /* Keep border for structure */
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            /* Ensure grids print correctly and fill the page */
+            .grid {
+                display: grid !important;
+            }
+
+            #timetableScrollArea {
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            /* High contrast for printing */
+            .text-slate-400,
+            .text-slate-500 {
+                color: #475569 !important;
+            }
+
+            .bg-slate-50 {
+                background-color: #f8fafc !important;
+            }
+
+            /* Force to fit on one page */
+            html,
+            body {
+                width: 297mm;
+                /* A4 Landscape width */
+                height: 210mm;
+                /* A4 Landscape height */
+            }
+
+            .grid-cols-\[100px_repeat\(6\,1fr\)\] {
+                grid-template-columns: 90px repeat(6, 1fr) !important;
+            }
+
+            .subject-select,
+            .paper-select,
+            .teacher-select {
+                border: none !important;
+                background: transparent !important;
+                appearance: none !important;
+                -webkit-appearance: none !important;
+            }
+
+            /* Hide the dropdown icons in print */
+            select {
+                background-image: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-600 antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Timetable Grid -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">{{.class.Name}} - Weekly Timetable</h2>
-            </div>
-            
-            <!-- Loading State -->
-            <div id="timetableLoading" class="p-6">
-                <div class="animate-pulse">
-                    <div class="grid grid-cols-6 gap-4">
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                        <div class="h-8 bg-gray-200 rounded"></div>
-                    </div>
-                    <div class="mt-4 space-y-3">
-                        <div class="grid grid-cols-6 gap-4">
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                        </div>
-                        <div class="grid grid-cols-6 gap-4">
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                            <div class="h-16 bg-gray-200 rounded"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="px-4 py-4 lg:px-6 lg:py-5">
 
-            <!-- Timetable Content -->
-            <div id="timetableContent" class="hidden overflow-x-auto overflow-y-visible">
-                <table class="min-w-full table-auto">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="pl-8 pr-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Time</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Monday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Tuesday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Wednesday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Thursday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Friday</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-32">Saturday</th>
-                        </tr>
-                    </thead>
-                    <tbody id="timetableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Timetable rows will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Empty State -->
-            <div id="emptyTimetable" class="hidden text-center py-12">
-                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 4v10m6-10v10m-6-4h6"/>
-                </svg>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No Timetable Created</h3>
-                <p class="text-gray-500 mb-6">Create a timetable for this class to get started.</p>
-                <button onclick="openEditTimetableModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                    Create Timetable
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Timetable Settings Modal -->
-<div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Timetable Settings</h3>
-            <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+        <!-- Print-only Header -->
+        <div class="hidden print:block text-center mb-1 border-b border-slate-900 pb-0.5">
+            <h1 class="text-xl font-black uppercase tracking-tighter text-slate-900">{{.class.Name}}</h1>
+            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-0">Weekly Class Timetable</p>
         </div>
 
-        <div class="p-6 space-y-6">
-            <!-- Load Default Settings Button -->
-            <div class="flex justify-end">
-                <button onclick="loadDefaultSettings()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
-                    Load Default Settings
-                </button>
-            </div>
-            
-            <!-- Days Selection -->
-            <div>
-                <h4 class="font-medium text-gray-900 mb-3">School Days</h4>
-                <div class="grid grid-cols-3 gap-3">
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_monday" value="monday" checked class="day-checkbox">
-                        <span>Monday</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_tuesday" value="tuesday" checked class="day-checkbox">
-                        <span>Tuesday</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_wednesday" value="wednesday" checked class="day-checkbox">
-                        <span>Wednesday</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_thursday" value="thursday" checked class="day-checkbox">
-                        <span>Thursday</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_friday" value="friday" checked class="day-checkbox">
-                        <span>Friday</span>
-                    </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="day_saturday" value="saturday" class="day-checkbox">
-                        <span>Saturday</span>
-                    </label>
-                </div>
-            </div>
 
-            <!-- Time Settings -->
-            <div class="grid grid-cols-2 gap-6">
+        <!-- Page Header -->
+        <div class="mb-5">
+            <div class="flex items-center justify-between">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">School Start Time</label>
-                    <input type="time" id="schoolStartTime" value="08:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">Class Timetable</h1>
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        {{.class.Name}} <span class="w-1 h-1 rounded-full bg-slate-300"></span> {{.class.Code}}
+                    </p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">School End Time</label>
-                    <input type="time" id="schoolEndTime" value="16:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Duration (minutes)</label>
-                <input type="number" id="lessonDuration" value="60" min="30" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-            </div>
-
-            <!-- Breaks Configuration -->
-            <div>
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-medium text-gray-900">Breaks</h4>
-                    <button onclick="addBreak()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                        Add Break
+                <div class="flex items-center space-x-2">
+                    <button onclick="window.print()"
+                        class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold flex items-center gap-2">
+                        <i class="fas fa-print opacity-70"></i>Print
+                    </button>
+                    <button onclick="openSettingsModal()"
+                        class="hidden sm:flex px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-all duration-200 text-[11px] font-bold items-center gap-2">
+                        <i class="fas fa-cog opacity-50"></i>Settings
+                    </button>
+                    <button onclick="openEditTimetableModal()"
+                        class="px-4 py-1.5 premium-gradient text-white rounded-lg hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50">
+                        <i class="fas fa-pen-to-square mr-1.5"></i><span class="hidden sm:inline">Edit Timetable</span>
                     </button>
                 </div>
-                <div id="breaksContainer" class="space-y-3">
-                    <!-- Breaks will be added here -->
+            </div>
+        </div>
+
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+            <!-- Total Lessons Card -->
+            <div
+                class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-indigo-100 uppercase tracking-wide mb-1">Total Lessons</p>
+                        <p id="totalLessonsCount" class="text-2xl font-black text-white leading-none">-</p>
+                        <div
+                            class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-book-open text-white text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Hours Card -->
+            <div
+                class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-emerald-100 uppercase tracking-wide mb-1">School Hours</p>
+                        <p class="text-xl font-black text-white leading-none flex items-center gap-1">
+                            <span id="schoolStartTimeDisplay">08:00</span> <span class="text-white/50 text-lg">-</span>
+                            <span id="schoolEndTimeDisplay">16:00</span>
+                        </p>
+                        <div
+                            class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-clock text-white text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Teacher Card -->
+            <div
+                class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-xs font-semibold text-purple-100 uppercase tracking-wide mb-1">Class Teacher</p>
+                        <p class="text-xl font-black text-white leading-none truncate max-w-[180px]">
+                            {{if .class.Teacher}}
+                            {{.class.Teacher.FirstName}} {{.class.Teacher.LastName}}
+                            {{else}}
+                            <span class="text-white/70 italic font-medium text-lg">Not Assigned</span>
+                            {{end}}
+                        </p>
+                        <div
+                            class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chalkboard-user text-white text-lg"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
-            <button onclick="closeSettingsModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
-                Cancel
-            </button>
-            <button onclick="saveSettings()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg">
-                Save Settings
-            </button>
-        </div>
-    </div>
-</div>
+        <!-- Timetable View -->
+        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden relative">
 
-<!-- Edit Timetable Modal -->
-<div id="editTimetableModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Edit Timetable</h3>
-            <button onclick="closeEditTimetableModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
+            <!-- Loading Skeleton -->
+            <div id="timetableLoading" class="">
+                <!-- Header Skeleton -->
+                <div
+                    class="grid grid-cols-[90px_repeat(6,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200">
+                    <div class="p-2 flex items-center justify-center">
+                        <div class="w-4 h-4 bg-slate-200 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                </div>
 
-        <div class="p-6">
-            <div id="editTimetableContent">
-                <!-- Edit timetable form will be loaded here -->
+                <!-- Rows Skeleton -->
+                <div class="divide-y divide-slate-200">
+                    <!-- Row 1 -->
+                    <div class="grid grid-cols-[90px_repeat(6,1fr)] divide-x divide-slate-200">
+                        <div class="p-5 bg-slate-50 flex flex-col items-center justify-center gap-1">
+                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
+                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="grid grid-cols-[90px_repeat(6,1fr)] divide-x divide-slate-200">
+                        <div class="p-5 bg-slate-50 flex flex-col items-center justify-center gap-1">
+                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
+                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-10 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                    </div>
+                    <!-- Row 3 -->
+                    <div class="grid grid-cols-[90px_repeat(6,1fr)] divide-x divide-slate-200">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="emptyTimetable"
+                class="hidden absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-50">
+                <div
+                    class="w-20 h-20 bg-white rounded-lg border border-slate-200 flex items-center justify-center shadow-lg mb-6 rotate-3">
+                    <i class="fas fa-calendar-plus text-3xl text-indigo-400"></i>
+                </div>
+                <h3 class="text-lg font-black text-slate-800 uppercase tracking-tight mb-2">No Schedule Yet</h3>
+                <p class="text-slate-400 text-sm font-medium mb-6 max-w-xs text-center">Create a weekly schedule for
+                    this
+                    class to start organizing lessons.</p>
+                <div class="flex gap-3">
+                    <button onclick="applyDefaultSettings()"
+                        class="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                        Use Default Template
+                    </button>
+                    <button onclick="openEditTimetableModal()"
+                        class="px-5 py-2.5 bg-indigo-600 text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all">
+                        Create Manually
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header Row -->
+            <div class="grid grid-cols-[90px_repeat(6,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10 shadow-sm"
+                id="timetableHeader">
+                <div class="p-3 flex items-center justify-center bg-white"><i
+                        class="fas fa-clock text-slate-300 text-lg"></i></div>
+                <!-- Days will be injected here -->
+            </div>
+
+            <!-- Grid Content -->
+            <div class="bg-slate-50/50 relative" id="timetableScrollArea">
+                <div id="timetableBody">
+                    <!-- Rows will be injected here -->
+                </div>
             </div>
         </div>
 
-        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
-            <button onclick="closeEditTimetableModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                Cancel
-            </button>
-            <button id="saveTimetableBtn" onclick="saveTimetable()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center">
-                <span id="saveTimetableBtnText">Save Timetable</span>
-                <svg id="saveTimetableSpinner" class="hidden animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </button>
+        <!-- Modals -->
+
+        <!-- Edit Timetable Modal -->
+        <div id="editTimetableModal"
+            class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] transition-opacity duration-300">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div
+                    class="bg-white w-full max-w-[95vw] h-[90vh] rounded-lg shadow-2xl flex flex-col ring-1 ring-slate-900/5 animate-scale-up">
+
+                    <!-- Modal Header -->
+                    <div
+                        class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur-xl rounded-t-2xl z-10">
+                        <div>
+                            <h3 class="text-lg font-black text-slate-800 tracking-tight">Edit Schedule</h3>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Modify weekly
+                                lessons
+                                and breaks</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-[10px] font-bold text-amber-500 bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-lg flex items-center gap-2 hidden"
+                                id="unsavedChangesIndicator">
+                                <i class="fas fa-circle text-[6px] animate-pulse"></i> Unsaved Changes
+                            </div>
+                            <button onclick="closeEditTimetableModal()"
+                                class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="flex-1 overflow-hidden relative bg-slate-50/50">
+                        <div class="absolute inset-0 overflow-auto custom-scrollbar p-6">
+                            <div id="editTimetableContent"
+                                class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                                <!-- Edit Grid -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="px-6 py-4 border-t border-slate-100 bg-white rounded-b-2xl flex justify-end gap-3 z-10">
+                        <button onclick="closeEditTimetableModal()"
+                            class="px-5 py-2.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider hover:bg-slate-50 rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button onclick="saveTimetable()" id="saveTimetableBtn"
+                            class="px-6 py-2.5 bg-indigo-600 text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            <span>Save Changes</span>
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<script>
-    const classID = '{{.classID}}';
-    let timetableSettings = {
-        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-        startTime: '08:00',
-        endTime: '16:00',
-        lessonDuration: 60,
-        breaks: [
-            { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
-            { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
-        ]
-    };
 
-    document.addEventListener('DOMContentLoaded', function() {
-        loadTimetable();
-        loadSettings();
-        
-        document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
-        document.getElementById('editTimetableBtn').addEventListener('click', openEditTimetableModal);
-        document.getElementById('printTimetableBtn').addEventListener('click', printTimetable);
+        <!-- Settings Modal -->
+        <div id="settingsModal"
+            class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] transition-opacity duration-300">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div
+                    class="bg-white w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden ring-1 ring-slate-900/5 animate-scale-up">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-cog text-slate-400"></i> Configuration
+                        </h3>
+                        <button onclick="closeSettingsModal()"
+                            class="text-slate-400 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
 
-        const editContent = document.getElementById('editTimetableContent');
-        if (editContent) {
-            editContent.addEventListener('change', async (e) => {
-                if (e.target && e.target.dataset.field === 'subject') {
-                    const subjectSelect = e.target;
-                    const subjectId = subjectSelect.value;
-                    const time = subjectSelect.dataset.time;
-                    const day = subjectSelect.dataset.day;
-                    
-                    const paperSelect = document.querySelector(`select[data-time='${time}'][data-day='${day}'][data-field='paper']`);
-                    const teacherSelect = document.querySelector(`select[data-time='${time}'][data-day='${day}'][data-field='teacher']`);
+                    <div class="p-6 max-h-[70vh] overflow-y-auto custom-scrollbar space-y-8">
 
-                    if (!paperSelect || !teacherSelect) return;
+                        <!-- School Days -->
+                        <section>
+                            <h4
+                                class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
+                                School Days</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_monday" value="monday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Monday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                                <!-- Repeat for other days -->
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_tuesday" value="tuesday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Tuesday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_wednesday" value="wednesday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Wednesday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_thursday" value="thursday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Thursday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_friday" value="friday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Friday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                                <label class="relative flex cursor-pointer group">
+                                    <input type="checkbox" id="day_saturday" value="saturday"
+                                        class="day-checkbox peer sr-only">
+                                    <div
+                                        class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                                        <span
+                                            class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Saturday</span>
+                                    </div>
+                                    <div
+                                        class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                                    </div>
+                                </label>
+                            </div>
+                        </section>
 
-                    teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-                    teacherSelect.disabled = true;
+                        <!-- Timing -->
+                        <section>
+                            <h4
+                                class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
+                                Daily Schedule</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">School
+                                        Starts</label>
+                                    <input type="time" id="schoolStartTime"
+                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">School
+                                        Ends</label>
+                                    <input type="time" id="schoolEndTime"
+                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lesson
+                                        (Min)</label>
+                                    <input type="number" id="lessonDuration"
+                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors"
+                                        min="30" max="120">
+                                </div>
+                            </div>
+                        </section>
 
-                    paperSelect.innerHTML = '<option>Loading...</option>';
-                    paperSelect.disabled = true;
+                        <!-- Breaks -->
+                        <section>
+                            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                                <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Breaks & Recess
+                                </h4>
+                                <button type="button" onclick="addBreak()"
+                                    class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-wider flex items-center gap-1">
+                                    <i class="fas fa-plus"></i> Add Break
+                                </button>
+                            </div>
+                            <div id="breaksContainer" class="space-y-2">
+                                <!-- Breaks injected here -->
+                            </div>
+                        </section>
 
-                    if (!subjectId) {
-                        paperSelect.innerHTML = '<option value="">Select Paper</option>';
-                        paperSelect.disabled = true;
-                        return;
-                    }
+                    </div>
 
-                    try {
-                        const response = await fetch(`/api/papers/subject/${subjectId}`);
-                        const data = await response.json();
-                        
-                        paperSelect.innerHTML = '<option value="">Select Paper</option>';
-                        if (data.papers) {
-                            data.papers.forEach(paper => {
-                                const option = document.createElement('option');
-                                option.value = paper.id;
-                                option.textContent = paper.name;
-                                paperSelect.appendChild(option);
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error fetching papers:', error);
-                        paperSelect.innerHTML = '<option value="">Error loading</option>';
-                    } finally {
-                        paperSelect.disabled = false;
-                    }
-                }
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" onclick="loadDefaultSettings()"
+                            class="mr-auto text-[10px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-wider">
+                            Load Defaults
+                        </button>
+                        <button onclick="closeSettingsModal()"
+                            class="px-4 py-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider hover:bg-white rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button onclick="saveSettings()"
+                            class="px-5 py-2 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-wider rounded-lg hover:bg-slate-800 transition-all shadow-md">
+                            Save Configuration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                if (e.target && e.target.dataset.field === 'paper') {
-                    const paperSelect = e.target;
-                    const paperId = paperSelect.value;
-                    const time = paperSelect.dataset.time;
-                    const day = paperSelect.dataset.day;
-                    
-                    const teacherSelect = document.querySelector(`select[data-time='${time}'][data-day='${day}'][data-field='teacher']`);
-                    if (!teacherSelect) return;
 
-                    teacherSelect.innerHTML = '<option>Loading...</option>';
-                    teacherSelect.disabled = true;
+        <script>
+            const classID = '{{.classID}}';
+            let timetableSettings = {
+                days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+                startTime: '08:00',
+                endTime: '16:00',
+                lessonDuration: 60,
+                breaks: []
+            };
+            let subjectsCache = [];
+            let papersCache = {};
+            let teachersCache = [];
 
-                    if (!paperId) {
-                        teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-                        teacherSelect.disabled = true;
-                        return;
-                    }
+            // Formatting Utilities
+            const formatTime = (timeStr) => {
+                if (!timeStr) return '';
+                const [hours, minutes] = timeStr.split(':');
+                const hour = parseInt(hours);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                return `${displayHour}:${minutes} <span class="text-[9px] text-slate-300 font-bold ml-0.5">${ampm}</span>`;
+            };
 
-                    // Extract start and end time from time slot (e.g., "07:20 - 08:40")
-                    const timeParts = time.split(' - ');
-                    const startTime = timeParts[0];
-                    const endTime = timeParts[1];
-
-                    let url = '/api/teachers/for-timetable';
-                    const params = new URLSearchParams();
-                    if (paperId) params.append('paper_id', paperId);
-                    if (day) params.append('day_of_week', day);
-                    if (startTime) params.append('start_time', startTime);
-                    if (endTime) params.append('end_time', endTime);
-                    
-                    if (params.toString()) {
-                        url += '?' + params.toString();
-                    }
-
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-                        if (data.teachers) {
-                            data.teachers.forEach(teacher => {
-                                const option = document.createElement('option');
-                                option.value = teacher.id;
-                                option.textContent = `${teacher.first_name} ${teacher.last_name}`;
-                                teacherSelect.appendChild(option);
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error fetching teachers:', error);
-                        teacherSelect.innerHTML = '<option value="">Error loading</option>';
-                    } finally {
-                        teacherSelect.disabled = false;
-                    }
-                }
-            });
-        }
-    });
-
-    async function loadTimetable() {
-        const loading = document.getElementById('timetableLoading');
-        const content = document.getElementById('timetableContent');
-        const empty = document.getElementById('emptyTimetable');
-        
-        try {
-            const response = await fetch(`/api/timetable/class/${classID}`);
-            
-            if (response.ok) {
-                const data = await response.json();
-                
-                if (data.timetable && data.timetable.length > 0) {
-                    displayTimetable(data.timetable);
-                    loading.classList.add('hidden');
-                    content.classList.remove('hidden');
-                } else {
-                    loading.classList.add('hidden');
-                    empty.classList.remove('hidden');
-                }
-            } else {
-                loading.classList.add('hidden');
-                empty.classList.remove('hidden');
-            }
-        } catch (error) {
-            console.error('Error loading timetable:', error);
-            loading.classList.add('hidden');
-            empty.classList.remove('hidden');
-        }
-    }
-
-    function formatTimeSlot(timeSlot) {
-        // Extract time from ISO format like "0000-01-01T07:20:00Z - 0000-01-01T08:40:00Z"
-        const parts = timeSlot.split(' - ');
-        if (parts.length === 2) {
-            const startTime = parts[0].includes('T') ? parts[0].split('T')[1].substring(0, 5) : parts[0];
-            const endTime = parts[1].includes('T') ? parts[1].split('T')[1].substring(0, 5) : parts[1];
-            
-            // Convert to 12-hour format with AM/PM
-            const formatTo12Hour = (time24) => {
-                const [hours, minutes] = time24.split(':');
+            const formatSimpleTime = (timeStr) => {
+                if (!timeStr) return '';
+                const [hours, minutes] = timeStr.split(':');
                 const hour = parseInt(hours);
                 const ampm = hour >= 12 ? 'PM' : 'AM';
                 const displayHour = hour % 12 || 12;
                 return `${displayHour}:${minutes} ${ampm}`;
-            };
-            
-            return `<div class="text-xs leading-tight">
-                        <div class="whitespace-nowrap">${formatTo12Hour(startTime)}</div>
-                        <div class="whitespace-nowrap">${formatTo12Hour(endTime)}</div>
-                    </div>`;
-        }
-        return timeSlot;
-    }
-
-    function displayTimetable(timetable) {
-        const tbody = document.getElementById('timetableBody');
-        
-        // Group timetable by time slots
-        const timeSlots = {};
-        timetable.forEach(entry => {
-            if (!timeSlots[entry.time_slot]) {
-                timeSlots[entry.time_slot] = {};
             }
-            timeSlots[entry.time_slot][entry.day] = entry;
-        });
 
-        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        
-        tbody.innerHTML = Object.keys(timeSlots).map(timeSlot => {
-            return `
-                <tr class="hover:bg-gray-50">
-                    <td class="pl-8 pr-4 py-4 font-medium text-gray-900">${formatTimeSlot(timeSlot)}</td>
-                    ${days.map(day => {
-                        const entry = timeSlots[timeSlot][day];
-                        if (entry) {
-                            return `
-                                <td class="px-4 py-4">
-                                    <div class="${entry.is_break ? 'bg-orange-50 border border-orange-200' : 'bg-blue-50 border border-blue-200'} rounded-lg p-3 min-w-0">
-                                        <div class="flex justify-between items-start mb-1">
-                                            <div class="font-medium ${entry.is_break ? 'text-orange-900' : 'text-blue-900'} text-sm leading-tight flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">${entry.subject_name}</div>
-                                            ${entry.is_break ? '' : `<div class="text-xs text-blue-600 font-mono ml-2 whitespace-nowrap flex-shrink-0">${entry.paper_code || ''}</div>`}
-                                        </div>
-                                        ${entry.is_break ? '' : `<div class="text-xs text-blue-700 whitespace-nowrap overflow-hidden text-ellipsis">${entry.teacher_name || 'No teacher assigned'}</div>`}
-                                    </div>
-                                </td>
-                            `;
-                        } else {
-                            return `<td class="px-4 py-4 text-gray-400 text-center">-</td>`;
-                        }
-                    }).join('')}
-                </tr>
-            `;
-        }).join('');
-    }
+            const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-    function openEditTimetableModal() {
-        document.getElementById('editTimetableModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        loadEditTimetableForm();
-    }
+            // Toast Notification
+            function showNotification(message, type = 'success') {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
 
-    function closeEditTimetableModal() {
-        document.getElementById('editTimetableModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
+                Toast.fire({
+                    icon: type,
+                    title: message
+                });
+            }
 
-    async function loadEditTimetableForm() {
-        const content = document.getElementById('editTimetableContent');
-        content.innerHTML = '<div class="text-center py-4">Loading...</div>';
-        
-        try {
-            // Load subjects and existing timetable for this class
-            const [subjectsResponse, timetableResponse] = await Promise.all([
-                fetch(`/api/classes/${classID}/subjects`),
-                fetch(`/api/timetable/class/${classID}`)
-            ]);
-            
-            const subjectsData = await subjectsResponse.json();
-            const timetableData = await timetableResponse.json();
-            
-            const subjects = subjectsData.subjects || [];
-            const existingTimetable = timetableData.timetable || [];
-            
-            // Create edit form
-            content.innerHTML = createEditTimetableForm(subjects);
-            
-            // Load existing timetable entries
-            await loadExistingTimetableEntries(existingTimetable);
-        } catch (error) {
-            console.error('Error loading edit form:', error);
-            content.innerHTML = '<div class="text-red-500 text-center py-4">Error loading form</div>';
-        }
-    }
+            document.addEventListener('DOMContentLoaded', async () => {
+                await loadSettings();
+                await Promise.all([loadSubjects(), loadTeachers()]); // Preload common data
+                loadTimetable();
+            });
 
-    function generateSchedule() {
-        const schedule = [];
-        const startTime = new Date(`2000-01-01T${timetableSettings.startTime}:00`);
-        const endTime = new Date(`2000-01-01T${timetableSettings.endTime}:00`);
-        const lessonDuration = timetableSettings.lessonDuration * 60000; // Convert to milliseconds
-        
-        // Sort breaks by start time
-        const sortedBreaks = (timetableSettings.breaks || []).sort((a, b) => {
-            const aTime = a.startTime || a.start_time || '00:00';
-            const bTime = b.startTime || b.start_time || '00:00';
-            return aTime.localeCompare(bTime);
-        });
-        
-        let currentTime = new Date(startTime);
-        let breakIndex = 0;
-        
-        while (currentTime < endTime) {
-            const slotStart = currentTime.toTimeString().slice(0, 5);
-            
-            // Check if we should insert a break at this time
-            let breakToInsert = null;
-            if (breakIndex < sortedBreaks.length) {
-                const nextBreak = sortedBreaks[breakIndex];
-                const breakStartTime = nextBreak.startTime || nextBreak.start_time || '00:00';
-                const breakEndTime = nextBreak.endTime || nextBreak.end_time || '00:00';
-                
-                if (slotStart >= breakStartTime && breakStartTime !== breakEndTime) {
-                    breakToInsert = {
-                        name: nextBreak.name || 'Break',
-                        startTime: breakStartTime,
-                        endTime: breakEndTime
-                    };
-                    breakIndex++;
+            // --- Data Loading ---
+
+            async function loadSubjects() {
+                try {
+                    const response = await fetch(`/api/classes/${classID}/subjects`);
+                    const data = await response.json();
+                    subjectsCache = data.subjects || [];
+                } catch (e) { console.error("Failed to load subjects", e); }
+            }
+
+            async function loadTeachers() {
+                try {
+                    const response = await fetch(`/api/teachers`);
+                    const data = await response.json();
+                    teachersCache = data.teachers || [];
+                } catch (e) { console.error("Failed to load teachers", e); }
+            }
+
+            async function getPapersForSubject(subjectId) {
+                if (papersCache[subjectId]) return papersCache[subjectId];
+                try {
+                    const response = await fetch(`/api/papers/by-subject/${subjectId}`);
+                    const data = await response.json();
+                    papersCache[subjectId] = data.papers || [];
+                    return papersCache[subjectId];
+                } catch (e) {
+                    console.error("Failed paper fetch", e);
+                    return [];
                 }
             }
-            
-            if (breakToInsert) {
-                schedule.push({
-                    time: `${breakToInsert.startTime} - ${breakToInsert.endTime}`,
-                    type: 'break',
-                    label: breakToInsert.name
-                });
-                currentTime = new Date(`2000-01-01T${breakToInsert.endTime}:00`);
-            } else {
-                const slotEnd = new Date(currentTime.getTime() + lessonDuration).toTimeString().slice(0, 5);
-                const timeSlot = `${slotStart} - ${slotEnd}`;
-                
-                schedule.push({
-                    time: timeSlot,
-                    type: 'lesson'
-                });
-                currentTime = new Date(currentTime.getTime() + lessonDuration);
-            }
-        }
-        
-        return schedule;
-    }
 
-    function createEditTimetableForm(subjects) {
-        const schedule = generateSchedule();
-        
-        return `
-            <div class="overflow-x-auto">
-                <table class="w-full border border-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                            ${timetableSettings.days.map(day => `<th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">${day}</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${schedule.map(slot => {
-                            if (slot.type === 'break') {
+            async function loadSettings() {
+                try {
+                    const response = await fetch(`/api/timetable/settings/class/${classID}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.settings) {
+                            // Parse safely
+                            const parseJSON = (val, fallback) => {
+                                if (typeof val === 'string') {
+                                    try { return JSON.parse(val); } catch { return fallback; }
+                                }
+                                return val || fallback;
+                            };
+
+                            // Helper to extract HH:MM from various time formats
+                            const extractTime = (timeStr) => {
+                                if (!timeStr) return '08:00';
+                                // If it's an ISO timestamp like "0000-01-01T07:20:00Z"
+                                if (timeStr.includes('T')) {
+                                    return timeStr.split('T')[1].substring(0, 5);
+                                }
+                                // If it's already HH:MM format
+                                return timeStr;
+                            };
+
+                            timetableSettings = {
+                                days: parseJSON(data.settings.days, ['monday']),
+                                startTime: extractTime(data.settings.start_time),
+                                endTime: extractTime(data.settings.end_time),
+                                lessonDuration: data.settings.lesson_duration || 60,
+                                breaks: parseJSON(data.settings.breaks, [])
+                            };
+
+                            // Update UI Stats
+                            document.getElementById('schoolStartTimeDisplay').textContent = formatSimpleTime(timetableSettings.startTime);
+                            document.getElementById('schoolEndTimeDisplay').textContent = formatSimpleTime(timetableSettings.endTime);
+                        }
+                    }
+                } catch (e) { console.error("Err loading settings", e); }
+            }
+
+            async function applyDefaultSettings() {
+                try {
+                    const btn = document.querySelector('#emptyTimetable button');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+
+                    const response = await fetch(`/api/timetable/settings/apply-default`, { method: 'POST' });
+                    if (response.ok) {
+                        await loadSettings();
+                        loadTimetable();
+                        showNotification('Default template applied');
+                    }
+                } catch (e) {
+                    showNotification('Failed to apply defaults', 'error');
+                }
+            }
+
+
+            // --- Timetable Display Logic ---
+
+            async function loadTimetable() {
+                const loading = document.getElementById('timetableLoading');
+                const empty = document.getElementById('emptyTimetable');
+                const header = document.getElementById('timetableHeader');
+                const body = document.getElementById('timetableBody');
+
+                loading.classList.remove('hidden');
+                empty.classList.add('hidden');
+
+                try {
+                    // 1. Generate Time Slots based on Settings
+                    const schedule = generateScheduleStructure();
+
+                    // 2. Fetch Data
+                    const response = await fetch(`/api/timetable/class/${classID}`);
+                    const data = await response.json();
+                    const entries = data.timetable || [];
+
+                    // Update total lessons count
+                    const lessonCount = entries.filter(e => !e.is_break).length;
+                    document.getElementById('totalLessonsCount').textContent = lessonCount;
+
+                    if (lessonCount === 0 && (!entries.length)) {
+                        // empty.classList.remove('hidden');
+                        // We probably still want to show the grid structure even if empty, 
+                        // OR show the empty state if it's truly unconfigured.
+                        // checking if settings are "default" enough to show grid
+                    }
+
+                    // 3. Render Header (Days)
+                    // Filter days based on settings
+                    const activeDays = timetableSettings.days;
+                    header.style.gridTemplateColumns = `90px repeat(${activeDays.length}, 1fr)`;
+
+                    const headerHTML = `
+                    <div class="p-2 flex items-center justify-center bg-white/50 backdrop-blur border-r border-slate-200 sticky left-0 z-20">
+                        <i class="fas fa-clock text-indigo-300 text-xs"></i>
+                    </div>
+                    ${activeDays.map(day => `
+                        <div class="p-2 text-center border-r border-slate-200 last:border-0 bg-slate-50">
+                            <span class="block text-indigo-900 font-extrabold text-xs mb-0.5">${capitalize(day)}</span>
+                        </div>
+                    `).join('')}
+                `;
+                    header.innerHTML = headerHTML;
+
+                    // 4. Render Body (Time Slots)
+                    const bodyHTML = schedule.map(slot => {
+                        // Check if it's a break
+                        if (slot.type === 'break') {
+                            return `
+                            <div class="grid border-b border-indigo-100 bg-indigo-50/30" style="grid-template-columns: 90px 1fr;" >
+                                <div class="px-2 py-2.5 flex flex-col items-center justify-center border-r border-indigo-100/50 text-[9px] font-bold text-indigo-400">
+                                    <span>${formatTime(slot.start)}</span>
+                                    <div class="w-px h-1.5 bg-indigo-200 my-0.5"></div>
+                                    <span>${formatTime(slot.end)}</span>
+                                </div>
+                                <div class="flex items-center justify-center p-1.5">
+                                     <div class="px-2 py-2 rounded-full bg-indigo-100/50 border border-indigo-200/50 text-indigo-600 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fas fa-mug-hot text-[8px]"></i> ${slot.name}
+                                     </div>
+                                </div>
+                            </div>
+                        `;
+                        }
+
+                        // Regular Slot
+                        const rowHTML = `
+                        <div class="grid border-b border-slate-200 hover:bg-white transition-colors group" style="grid-template-columns: 90px repeat(${activeDays.length}, 1fr);">
+                            <!-- Time Column -->
+                            <div class="px-2 py-2.5 flex flex-col items-center justify-center border-r border-slate-200 bg-slate-50/30 group-hover:bg-indigo-50/10 transition-colors text-[9px] font-bold text-slate-500">
+                                <span>${formatTime(slot.start)}</span>
+                                <div class="w-px h-2 bg-slate-200 my-0.5"></div>
+                                <span>${formatTime(slot.end)}</span>
+                            </div>
+                            
+                            <!-- Days Columns -->
+                            ${activeDays.map(day => {
+                            // Find entry for this slot & day
+                            // Matches logic in backend or simple time range check
+                            const entry = entries.find(e => e.day === day && e.time_slot.startsWith(slot.start)); // Simple match
+
+                            if (entry && !entry.is_break) {
                                 return `
-                                    <tr class="border-t bg-orange-50">
-                                        <td class="px-4 py-3 font-medium text-orange-800 bg-orange-100">${slot.time}</td>
-                                        ${timetableSettings.days.map(() => `
-                                            <td class="px-4 py-3 text-center text-orange-700 font-medium">
-                                                ${slot.label}
-                                            </td>
-                                        `).join('')}
-                                    </tr>
-                                `;
-                            } else {
-                                return `
-                                    <tr class="border-t">
-                                        <td class="px-4 py-3 font-medium text-gray-900 bg-gray-50">${slot.time}</td>
-                                        ${timetableSettings.days.map(day => `
-                                            <td class="px-4 py-3">
-                                                <div class="space-y-2">
-                                                    <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="subject">
-                                                        <option value="">Select Subject</option>
-                                                        ${subjects.map(subject => `<option value="${subject.id}">${subject.name}</option>`).join('')}
-                                                    </select>
-                                                    <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="paper" disabled>
-                                                        <option value="">Select Paper</option>
-                                                    </select>
-                                                    <select class="w-full text-sm border border-gray-300 rounded px-2 py-1" data-time="${slot.time}" data-day="${day}" data-field="teacher" disabled>
-                                                        <option value="">Select Teacher</option>
-                                                    </select>
+                                        <div class="p-2.5 border-r border-slate-100 last:border-0 relative group/cell">
+                                            <div class="h-full w-full bg-white rounded-lg border border-slate-200 p-3 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all cursor-default">
+                                                <div class="flex justify-between items-start mb-0.5">
+                                                     <span class="text-[9px] font-black text-slate-700 uppercase leading-tight line-clamp-2">${entry.subject_name}</span>
+                                                     ${entry.paper_code ? `<span class="text-[8px] font-bold text-indigo-500 bg-indigo-50 px-1 rounded border border-indigo-100 ml-1 whitespace-nowrap">${entry.paper_code}</span>` : ''}
                                                 </div>
-                                            </td>
-                                        `).join('')}
-                                    </tr>
-                                `;
+                                                <div class="flex items-center gap-1 mt-1 pt-1 border-t border-slate-50">
+                                                    <div class="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center text-[7px] text-slate-400 font-bold border border-slate-200">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <span class="text-[9px] font-bold text-slate-500 truncate">${entry.teacher_name || 'No Teacher'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                            } else {
+                                // Empty slot
+                                return `
+                                        <div class="border-r border-slate-100 last:border-0 p-2.5">
+                                            <div class="h-full w-full rounded-lg border border-dashed border-slate-200 bg-slate-50/20 hover:bg-slate-50 hover:border-slate-300 transition-all"></div>
+                                        </div>
+                                    `;
                             }
                         }).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    }
+                        </div>
+                    `;
+                        return rowHTML;
+                    }).join('');
 
-    function openSettingsModal() {
-        document.getElementById('settingsModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        loadSettingsForm();
-    }
+                    body.innerHTML = bodyHTML;
+                    loading.classList.add('hidden');
 
-    function closeSettingsModal() {
-        document.getElementById('settingsModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-
-    function loadSettingsForm() {
-        console.log('Loading settings form with:', timetableSettings);
-        
-        // Load days - first uncheck all, then check the ones in settings
-        document.querySelectorAll('.day-checkbox').forEach(cb => {
-            cb.checked = false;
-        });
-        
-        if (timetableSettings.days && Array.isArray(timetableSettings.days)) {
-            timetableSettings.days.forEach(day => {
-                const checkbox = document.getElementById(`day_${day}`);
-                console.log(`Looking for checkbox day_${day}:`, checkbox);
-                if (checkbox) {
-                    checkbox.checked = true;
-                    console.log(`Checked ${day}`);
+                } catch (error) {
+                    console.error('Timetable load error', error);
+                    loading.classList.add('hidden');
+                    // show empty state on error?
                 }
-            });
-        }
-        
-        // Load times
-        const startTimeInput = document.getElementById('schoolStartTime');
-        const endTimeInput = document.getElementById('schoolEndTime');
-        const durationInput = document.getElementById('lessonDuration');
-        
-        console.log('Time inputs:', { startTimeInput, endTimeInput, durationInput });
-        
-        if (startTimeInput) startTimeInput.value = timetableSettings.startTime || '08:00';
-        if (endTimeInput) endTimeInput.value = timetableSettings.endTime || '16:00';
-        if (durationInput) durationInput.value = timetableSettings.lessonDuration || 60;
-        
-        // Load breaks
-        loadBreaks();
-    }
-
-    function loadBreaks() {
-        const container = document.getElementById('breaksContainer');
-        const breaks = timetableSettings.breaks || [];
-        container.innerHTML = breaks.map((breakItem, index) => `
-            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                <input type="text" value="${breakItem.name}" placeholder="Break name" 
-                       class="flex-1 px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="name">
-                <input type="time" value="${breakItem.startTime}" 
-                       class="px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="startTime">
-                <input type="time" value="${breakItem.endTime}" 
-                       class="px-3 py-2 border border-gray-300 rounded" data-break-index="${index}" data-field="endTime">
-                <button onclick="removeBreak(${index})" class="text-red-600 hover:text-red-800">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
-            </div>
-        `).join('');
-    }
-
-    function addBreak() {
-        timetableSettings.breaks.push({
-            name: 'New Break',
-            startTime: '10:00',
-            endTime: '10:30'
-        });
-        loadBreaks();
-    }
-
-    function removeBreak(index) {
-        timetableSettings.breaks.splice(index, 1);
-        loadBreaks();
-    }
-
-    async function saveSettings() {
-        const saveBtn = document.querySelector('#settingsModal button[onclick="saveSettings()"]');
-        const originalText = saveBtn.textContent;
-        saveBtn.disabled = true;
-        saveBtn.textContent = 'Saving...';
-        
-        try {
-            // Collect settings from form
-            const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
-            const startTime = document.getElementById('schoolStartTime').value;
-            const endTime = document.getElementById('schoolEndTime').value;
-            const lessonDuration = parseInt(document.getElementById('lessonDuration').value);
-            
-            // Collect breaks
-            const breaks = [];
-            const breakInputs = document.querySelectorAll('#breaksContainer input');
-            const breaksByIndex = {};
-            
-            breakInputs.forEach(input => {
-                const index = parseInt(input.dataset.breakIndex);
-                const field = input.dataset.field;
-                if (!breaksByIndex[index]) {
-                    breaksByIndex[index] = {};
-                }
-                breaksByIndex[index][field] = input.value;
-            });
-            
-            Object.values(breaksByIndex).forEach(breakItem => {
-                if (breakItem.name && breakItem.startTime && breakItem.endTime) {
-                    breaks.push({
-                        name: breakItem.name,
-                        start_time: breakItem.startTime,
-                        end_time: breakItem.endTime
-                    });
-                }
-            });
-            
-            const response = await fetch(`/api/timetable/settings/class/${classID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    days,
-                    start_time: startTime,
-                    end_time: endTime,
-                    lesson_duration: lessonDuration,
-                    breaks
-                })
-            });
-            
-            if (response.ok) {
-                // Update local settings
-                timetableSettings = {
-                    days,
-                    startTime,
-                    endTime,
-                    lessonDuration,
-                    breaks: breaks.map(b => ({
-                        name: b.name,
-                        startTime: b.start_time,
-                        endTime: b.end_time
-                    }))
-                };
-                
-                closeSettingsModal();
-                showNotification('Settings saved successfully', 'success');
-            } else {
-                const error = await response.json();
-                showNotification(error.error || 'Failed to save settings', 'error');
             }
-        } catch (error) {
-            console.error('Error saving settings:', error);
-            showNotification('Failed to save settings', 'error');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.textContent = originalText;
-        }
-    }
 
-    async function loadSettings() {
-        try {
-            const response = await fetch(`/api/timetable/settings/class/${classID}`, {
-                credentials: 'include'
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.settings) {
-                    const settings = data.settings;
-                    
-                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
-                    const extractTime = (timeStr) => {
-                        if (timeStr && timeStr.includes('T')) {
-                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+
+            // --- Schedule Generation (Client Side for rendering) ---
+            // --- Schedule Generation (Client Side for rendering) ---
+            function generateScheduleStructure() {
+                const schedule = [];
+                let { startTime, endTime, lessonDuration, breaks } = timetableSettings;
+
+                // Fallback defaults if missing
+                if (!startTime) startTime = '08:00';
+                if (!endTime) endTime = '16:00';
+                if (!lessonDuration) lessonDuration = 60;
+                if (!breaks) breaks = [];
+
+                console.log('Generating Structure:', { startTime, endTime, lessonDuration });
+
+                // Use a fixed date for comparison
+                const baseDate = '2000-01-01';
+                let current = new Date(`${baseDate}T${startTime}`);
+                const end = new Date(`${baseDate}T${endTime}`);
+                const durationMs = lessonDuration * 60000;
+
+                // Safety check
+                if (isNaN(current.getTime()) || isNaN(end.getTime())) {
+                    console.error("Invalid start/end time");
+                    return [];
+                }
+
+
+                // Sort breaks
+                const sortedBreaks = [...breaks].sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+                let safety = 0;
+                while (current < end && safety < 50) {
+                    safety++;
+                    // Format HH:MM
+                    const timeString = current.toTimeString().slice(0, 5);
+
+                    // Check for break starting at this time
+                    const breakItem = sortedBreaks.find(b => b.start_time === timeString);
+
+                    if (breakItem) {
+                        schedule.push({
+                            type: 'break',
+                            name: breakItem.name,
+                            start: breakItem.start_time,
+                            end: breakItem.end_time
+                        });
+                        current = new Date(`${baseDate}T${breakItem.end_time}`);
+                    } else {
+                        // Regular lesson
+                        const slotStart = timeString;
+                        const nextTime = new Date(current.getTime() + durationMs);
+                        const slotEnd = nextTime.toTimeString().slice(0, 5);
+
+                        // Stop if next slot ends after school end time, UNLESS it ends exactly at school end time
+                        // or if it wraps around midnight (nextTime < current)
+                        if (nextTime > end && slotEnd > endTime) {
+                            break;
                         }
-                        return timeStr || '08:00';
-                    };
-                    
-                    // Parse days and breaks if they are strings
-                    let days = settings.days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                    if (typeof days === 'string') {
-                        try {
-                            days = JSON.parse(days);
-                        } catch (e) {
-                            days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                        }
+
+                        schedule.push({
+                            type: 'lesson',
+                            start: slotStart,
+                            end: slotEnd
+                        });
+                        current = nextTime;
                     }
-                    
-                    let breaks = settings.breaks || [];
-                    if (typeof breaks === 'string') {
-                        try {
-                            breaks = JSON.parse(breaks);
-                        } catch (e) {
-                            breaks = [];
-                        }
+                }
+                console.log('Generated Schedule Result:', schedule);
+                return schedule;
+            }
+
+            // --- Edit Modal Logic ---
+
+            function openEditTimetableModal() {
+                document.getElementById('editTimetableModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                renderEditGrid();
+            }
+
+            function closeEditTimetableModal() {
+                document.getElementById('editTimetableModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Using a modified version of the render logic for the edit grid
+            async function renderEditGrid() {
+                const container = document.getElementById('editTimetableContent');
+                container.innerHTML = '<div class="p-8 text-center"><i class="fas fa-spinner fa-spin text-indigo-500 text-2xl"></i></div>';
+
+                // Re-fetch latest data to be sure
+                const [subjectsResp, timetableResp] = await Promise.all([
+                    fetch(`/api/classes/${classID}/subjects`).then(r => r.json()),
+                    fetch(`/api/timetable/class/${classID}`).then(r => r.json())
+                ]);
+
+                const subjects = subjectsResp.subjects || [];
+                const existingEntries = timetableResp.timetable || [];
+                const activeDays = timetableSettings.days;
+                const schedule = generateScheduleStructure();
+
+                // Build Grid HTML
+                let html = `
+                <div class="grid bg-slate-50 gap-px border border-slate-200" style="grid-template-columns: 95px repeat(${activeDays.length}, minmax(180px, 1fr));">
+                    <!-- Header -->
+                    <div class="bg-indigo-600 p-4 sticky top-0 left-0 z-30 flex items-center justify-center border-b border-indigo-700 shadow-[2px_0_10px_rgba(0,0,0,0.1)]">
+                         <i class="fas fa-clock text-white/70 text-sm"></i>
+                    </div>
+                    ${activeDays.map(day => `
+                        <div class="bg-indigo-600 p-4 sticky top-0 z-20 border-b border-indigo-700 shadow-sm">
+                            <div class="text-[10px] font-black text-white/60 uppercase tracking-widest mb-0.5 text-center">Day</div>
+                            <div class="text-xs font-black text-white uppercase tracking-wider text-center">${day}</div>
+                        </div>
+                    `).join('')}
+            `;
+
+                schedule.forEach(slot => {
+                    if (slot.type === 'break') {
+                        html += `
+                        <div class="bg-indigo-50/80 p-3 sticky left-0 z-20 flex flex-col items-center justify-center border-r border-indigo-100/50 backdrop-blur-sm">
+                            <span class="text-[9px] font-black text-indigo-400/80 uppercase mb-0.5">Break</span>
+                            <span class="text-[10px] font-black text-indigo-600">${formatSimpleTime(slot.start)}</span>
+                        </div>
+                        <div class="col-span-${activeDays.length} bg-indigo-50/50 p-3 flex items-center justify-center border-b border-indigo-100">
+                            <div class="flex items-center gap-3 bg-white/80 px-4 py-1.5 rounded-full border border-indigo-200/50 shadow-sm backdrop-blur-sm group hover:border-indigo-300 transition-all">
+                                <i class="fas fa-mug-hot text-indigo-400 group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">${slot.name}</span>
+                                <span class="text-[9px] font-bold text-indigo-300">${formatSimpleTime(slot.start)} - ${formatSimpleTime(slot.end)}</span>
+                            </div>
+                        </div>
+                     `;
+                    } else {
+                        html += `
+                        <div class="bg-white p-3 sticky left-0 z-20 flex flex-col items-center justify-center border-r border-slate-200 shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
+                             <span class="text-[9px] font-black text-slate-300 uppercase mb-1">Lesson</span>
+                             <div class="text-[10px] font-black text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">${formatSimpleTime(slot.start)}</div>
+                             <div class="w-px h-3 bg-slate-100 my-1"></div>
+                             <div class="text-[10px] font-black text-slate-400 bg-slate-50/50 px-2 py-0.5 rounded border border-slate-100">${formatSimpleTime(slot.end)}</div>
+                        </div>
+                     `;
+
+                        activeDays.forEach(day => {
+                            const entry = existingEntries.find(e => e.day === day && e.time_slot.startsWith(slot.start)) || {};
+                            const uid = `${day}_${slot.start}`;
+
+                            html += `
+                            <div class="bg-white p-3 group/slot hover:bg-slate-50 transition-all border-b border-slate-100">
+                                <div class="bg-white rounded-xl border border-slate-200 p-2.5 shadow-sm group-hover/slot:border-indigo-300 group-hover/slot:shadow-indigo-500/5 transition-all flex flex-col gap-3">
+                                    <div class="space-y-1">
+                                        <label class="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-wider px-1">
+                                            <i class="fas fa-book-open text-indigo-300"></i> Subject
+                                        </label>
+                                        <select class="w-full text-xs font-bold text-slate-700 bg-slate-50/50 border border-slate-200 rounded-lg px-2.5 py-2 outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all cursor-pointer subject-select appearance-none"
+                                                data-uid="${uid}" data-day="${day}" data-time="${slot.start} - ${slot.end}" onchange="handleSubjectChange(this)">
+                                            <option value="">Choose Subject...</option>
+                                            ${subjects.map(s => `<option value="${s.id}" ${entry.subject_id === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="space-y-1">
+                                            <label class="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-wider px-1">
+                                                <i class="fas fa-file-alt text-amber-400"></i> Paper
+                                            </label>
+                                            <select class="w-full text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1.5 outline-none disabled:opacity-30 disabled:cursor-not-allowed focus:border-indigo-500 transition-all cursor-pointer paper-select"
+                                                    id="paper_${uid}" data-current="${entry.paper_id || ''}">
+                                                 <option value="">Paper...</option> 
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="space-y-1">
+                                            <label class="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-wider px-1">
+                                                <i class="fas fa-user-tie text-emerald-400"></i> Teacher
+                                            </label>
+                                            <select class="w-full text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1.5 outline-none disabled:opacity-30 disabled:cursor-not-allowed focus:border-indigo-500 transition-all cursor-pointer teacher-select"
+                                                    id="teacher_${uid}" data-current="${entry.teacher_id || ''}">
+                                                 <option value="">Teacher...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         `;
+                        });
                     }
-                    
-                    // Ensure breaks have correct property names and extract times
-                    breaks = breaks.map(b => ({
-                        name: b.name || 'Break',
-                        startTime: extractTime(b.startTime || b.start_time),
-                        endTime: extractTime(b.endTime || b.end_time)
-                    }));
-                    
-                    timetableSettings = {
-                        days: days,
-                        startTime: extractTime(settings.start_time),
-                        endTime: extractTime(settings.end_time),
-                        lessonDuration: settings.lesson_duration,
-                        breaks: breaks
-                    };
+                });
+
+                html += `</div>`;
+                container.innerHTML = html;
+
+                // Hydrate papers and teachers for already selected items
+                document.querySelectorAll('.subject-select').forEach(select => {
+                    if (select.value) handleSubjectChange(select, true); // true = initial load
+                });
+            }
+
+            async function handleSubjectChange(selectEl, isInit = false) {
+                const uid = selectEl.dataset.uid;
+                const subjectId = selectEl.value;
+                const paperSelect = document.getElementById(`paper_${uid}`);
+                const teacherSelect = document.getElementById(`teacher_${uid}`);
+
+                // clear dropdowns
+                paperSelect.innerHTML = '<option value="">Paper...</option>';
+                teacherSelect.innerHTML = '<option value="">Teacher...</option>';
+
+                if (!subjectId) {
+                    paperSelect.disabled = true;
+                    teacherSelect.disabled = true;
+                    return;
+                }
+
+                paperSelect.disabled = false;
+                teacherSelect.disabled = false;
+
+                // Populate Teachers (Global list for now, ideally filtered by subject association if data exists)
+                teachersCache.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = `${t.first_name} ${t.last_name}`;
+                    if (isInit && teacherSelect.dataset.current === t.id) opt.selected = true;
+                    teacherSelect.appendChild(opt);
+                });
+
+                // Populate Papers
+                const papers = await getPapersForSubject(subjectId);
+                papers.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.code || p.name;
+                    if (isInit && paperSelect.dataset.current === p.id) opt.selected = true;
+                    paperSelect.appendChild(opt);
+                });
+
+                if (!isInit) {
+                    document.getElementById('saveTimetableBtn').classList.add('animate-pulse');
                 }
             }
-        } catch (error) {
-            console.error('Error loading settings:', error);
-        }
-    }
 
-    async function loadDefaultSettings() {
-        try {
-            const response = await fetch('/api/timetable/settings/default', {
-                credentials: 'include'
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Default settings response:', data);
-                
-                if (data.success && data.settings) {
-                    const settings = data.settings;
-                    
-                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
-                    const extractTime = (timeStr) => {
-                        if (timeStr && timeStr.includes('T')) {
-                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+            async function saveTimetable() {
+                const btn = document.getElementById('saveTimetableBtn');
+                const originalContent = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                try {
+                    const entries = [];
+                    document.querySelectorAll('.subject-select').forEach(select => {
+                        const subjectId = select.value;
+                        if (!subjectId) return;
+
+                        const uid = select.dataset.uid;
+                        const day = select.dataset.day;
+                        const timeSlot = select.dataset.time;
+                        const paperId = document.getElementById(`paper_${uid}`).value;
+                        const teacherId = document.getElementById(`teacher_${uid}`).value;
+
+                        // Basic validation: require teacher if subject selected?
+                        if (!teacherId || !paperId) {
+                            // Warning? or allow partial
                         }
-                        return timeStr || '08:00';
-                    };
-                    
-                    // Parse days and breaks if they are strings
-                    let days = settings.days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                    if (typeof days === 'string') {
-                        try {
-                            days = JSON.parse(days);
-                        } catch (e) {
-                            days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-                        }
-                    }
-                    
-                    let breaks = settings.breaks || [
-                        { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
-                        { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
-                    ];
-                    if (typeof breaks === 'string') {
-                        try {
-                            breaks = JSON.parse(breaks);
-                        } catch (e) {
-                            breaks = [
-                                { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
-                                { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
-                            ];
-                        }
-                    }
-                    
-                    // Ensure breaks have correct property names and extract times
-                    breaks = breaks.map(b => ({
-                        name: b.name || 'Break',
-                        startTime: extractTime(b.startTime || b.start_time),
-                        endTime: extractTime(b.endTime || b.end_time)
-                    }));
-                    
-                    timetableSettings = {
-                        days: days,
-                        startTime: extractTime(settings.start_time || settings.startTime),
-                        endTime: extractTime(settings.end_time || settings.endTime),
-                        lessonDuration: settings.lesson_duration || settings.lessonDuration || 60,
-                        breaks: breaks
-                    };
-                    
-                    console.log('Updated timetableSettings:', timetableSettings);
-                    
-                    // Update the form with default settings
-                    loadSettingsForm();
-                    showNotification('Default settings loaded successfully', 'success');
-                } else {
-                    // Use hardcoded defaults if no settings found
-                    timetableSettings = {
-                        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
-                        startTime: '08:00',
-                        endTime: '16:00',
-                        lessonDuration: 60,
-                        breaks: [
-                            { name: 'Breakfast Break', startTime: '10:00', endTime: '10:30' },
-                            { name: 'Lunch Break', startTime: '12:30', endTime: '13:30' }
-                        ]
-                    };
-                    loadSettingsForm();
-                    showNotification('Default settings loaded successfully', 'success');
-                }
-            } else {
-                showNotification('Failed to load default settings', 'error');
-            }
-        } catch (error) {
-            console.error('Error loading default settings:', error);
-            showNotification('Failed to load default settings', 'error');
-        }
-    }
 
-    async function saveTimetable() {
-        const saveBtn = document.getElementById('saveTimetableBtn');
-        const btnText = document.getElementById('saveTimetableBtnText');
-        const spinner = document.getElementById('saveTimetableSpinner');
-        
-        saveBtn.disabled = true;
-        btnText.textContent = 'Saving...';
-        spinner.classList.remove('hidden');
-        
-        try {
-            const timetableData = [];
-            const selects = document.querySelectorAll('#editTimetableContent select');
-            
-            const entries = {};
-            selects.forEach(element => {
-                const time = element.dataset.time;
-                const day = element.dataset.day;
-                const field = element.dataset.field;
-                
-                // Skip if no time or day (break rows don't have these)
-                if (!time || !day) return;
-                
-                const key = `${time}-${day}`;
-                
-                if (!entries[key]) {
-                    entries[key] = { time_slot: time, day: day };
-                }
-                
-                if (field === 'paper') {
-                    entries[key].paper_id = element.value;
-                } else if (field === 'teacher') {
-                    entries[key].teacher_id = element.value;
-                }
-            });
-            
-            // Only include entries with at least a paper
-            Object.values(entries).forEach(entry => {
-                if (entry.paper_id) {
-                    timetableData.push(entry);
-                }
-            });
-            
-            const response = await fetch(`/api/timetable/class/${classID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ timetable: timetableData })
-            });
-            
-            if (response.ok) {
-                showNotification('Timetable saved successfully', 'success');
-                closeEditTimetableModal();
-                loadTimetable();
-            } else {
-                const error = await response.json();
-                showNotification(error.message || 'Failed to save timetable', 'error');
-            }
-        } catch (error) {
-            console.error('Error saving timetable:', error);
-            showNotification('Failed to save timetable', 'error');
-        } finally {
-            saveBtn.disabled = false;
-            btnText.textContent = 'Save Timetable';
-            spinner.classList.add('hidden');
-        }
-    }
-
-    function printTimetable() {
-        // Store original title
-        const originalTitle = document.title;
-        
-        // Set empty title for printing
-        document.title = '';
-        
-        // Add print-specific styles
-        const printStyle = document.createElement('style');
-        printStyle.textContent = `
-            @media print {
-                @page { margin: 0 !important; }
-                html, body { margin: 0 !important; padding: 0 !important; }
-            }
-        `;
-        document.head.appendChild(printStyle);
-        
-        // Print
-        window.print();
-        
-        // Cleanup
-        setTimeout(() => {
-            document.title = originalTitle;
-            document.head.removeChild(printStyle);
-        }, 100);
-    }
-
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white ${
-            type === 'success' ? 'bg-green-500' :
-            type === 'error' ? 'bg-red-500' :
-            'bg-blue-500'
-        }`;
-        notification.textContent = message;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
-    }
-    async function loadExistingTimetableEntries(timetable) {
-        console.log('Loading existing timetable entries:', timetable);
-        
-        for (const entry of timetable) {
-            let timeSlot = entry.time_slot;
-            const day = entry.day;
-            
-            // Convert time format from "0000-01-01T07:20:00Z - 0000-01-01T08:40:00Z" to "07:20 - 08:40"
-            const parts = timeSlot.split(' - ');
-            if (parts.length === 2) {
-                const startTime = parts[0].includes('T') ? parts[0].split('T')[1].substring(0, 5) : parts[0];
-                const endTime = parts[1].includes('T') ? parts[1].split('T')[1].substring(0, 5) : parts[1];
-                timeSlot = `${startTime} - ${endTime}`;
-            }
-            
-            console.log(`Loading entry for ${day} at ${timeSlot}:`, entry);
-            
-            // Find the selects for this time slot and day
-            const subjectSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='subject']`);
-            const paperSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='paper']`);
-            const teacherSelect = document.querySelector(`select[data-time='${timeSlot}'][data-day='${day}'][data-field='teacher']`);
-            
-            console.log('Found selects:', { subjectSelect: !!subjectSelect, paperSelect: !!paperSelect, teacherSelect: !!teacherSelect });
-            
-            if (!subjectSelect || !paperSelect || !teacherSelect) {
-                console.log('Missing selects for', timeSlot, day);
-                continue;
-            }
-            
-            try {
-                // Set subject
-                if (entry.subject_id) {
-                    console.log('Setting subject:', entry.subject_id);
-                    subjectSelect.value = entry.subject_id;
-                    
-                    // Manually load papers for this subject
-                    try {
-                        const response = await fetch(`/api/papers/subject/${entry.subject_id}`);
-                        const data = await response.json();
-                        
-                        paperSelect.innerHTML = '<option value="">Select Paper</option>';
-                        if (data.papers) {
-                            data.papers.forEach(paper => {
-                                const option = document.createElement('option');
-                                option.value = paper.id;
-                                option.textContent = paper.name;
-                                paperSelect.appendChild(option);
+                        if (paperId && teacherId) {
+                            entries.push({
+                                time_slot: timeSlot,
+                                day: day,
+                                paper_id: paperId,
+                                teacher_id: teacherId
                             });
                         }
-                        paperSelect.disabled = false;
-                        
-                        // Set paper
-                        if (entry.paper_id) {
-                            console.log('Setting paper:', entry.paper_id);
-                            paperSelect.value = entry.paper_id;
-                            
-                            // Load all teachers for this paper (including currently assigned)
-                            const teacherResponse = await fetch(`/api/teachers/all-for-paper?paper_id=${entry.paper_id}`);
-                            const teacherData = await teacherResponse.json();
-                            
-                            teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-                            if (teacherData.teachers) {
-                                teacherData.teachers.forEach(teacher => {
-                                    const option = document.createElement('option');
-                                    option.value = teacher.id;
-                                    option.textContent = `${teacher.first_name} ${teacher.last_name}`;
-                                    teacherSelect.appendChild(option);
-                                });
-                            }
-                            teacherSelect.disabled = false;
-                            
-                            // Set teacher
-                            if (entry.teacher_id) {
-                                console.log('Setting teacher:', entry.teacher_id);
-                                teacherSelect.value = entry.teacher_id;
-                            }
+                    });
+
+                    const response = await fetch(`/api/timetable/class/${classID}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ timetable: entries })
+                    });
+
+                    if (response.ok) {
+                        showNotification('Timetable saved successfully');
+                        closeEditTimetableModal();
+                        loadTimetable();
+                    } else {
+                        const err = await response.json();
+                        // Check for conflict error
+                        if (response.status === 400 && err.error) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Conflict Detected',
+                                text: err.error
+                            });
+                        } else {
+                            showNotification('Failed to save', 'error');
                         }
-                    } catch (error) {
-                        console.error('Error loading papers/teachers:', error);
                     }
+                } catch (e) {
+                    console.error(e);
+                    showNotification('Error saving timetable', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    btn.classList.remove('animate-pulse');
                 }
-            } catch (error) {
-                console.error('Error loading entry:', error);
             }
-        }
-    }
-</script>
 
-<style>
-    /* Show horizontal scrollbar for timetable */
-    #timetableContent::-webkit-scrollbar {
-        height: 8px;
-    }
-    
-    #timetableContent::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-    
-    #timetableContent::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-    }
-    
-    #timetableContent::-webkit-scrollbar-thumb:hover {
-        background: #555;
-    }
-    
-    #timetableContent {
-        scrollbar-width: thin;
-        scrollbar-color: #888 #f1f1f1;
-    }
-    
-    @media print {
-        .no-print {
-            display: none !important;
-        }
-        
-        @page {
-            size: A4 landscape;
-            margin: 0;
-        }
-        
-        body {
-            background: white !important;
-            margin: 0;
-            padding: 0;
-        }
-        
-        /* Hide everything except timetable */
-        body * {
-            visibility: hidden;
-        }
-        
-        .bg-white.rounded-xl,
-        .bg-white.rounded-xl * {
-            visibility: visible;
-        }
-        
-        .bg-white.rounded-xl {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background: white !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            padding: 20px !important;
-        }
-        
-        /* Timetable header */
-        .px-6.py-4.border-b {
-            padding: 0 0 15px 0 !important;
-            border-bottom: 2px solid #e5e7eb !important;
-            margin-bottom: 20px !important;
-        }
-        
-        .px-6.py-4.border-b h2 {
-            font-size: 18px !important;
-            font-weight: 600 !important;
-            color: #111827 !important;
-        }
-        
-        /* Table styling */
-        table {
-            width: 100% !important;
-            border-collapse: separate !important;
-            border-spacing: 0 !important;
-            font-size: 11px !important;
-        }
-        
-        /* Remove all table borders */
-        th, td {
-            border: none !important;
-            padding: 8px 4px !important;
-        }
-        
-        /* Header styling */
-        thead th {
-            background-color: #f9fafb !important;
-            font-weight: 500 !important;
-            color: #6b7280 !important;
-            text-transform: uppercase !important;
-            font-size: 10px !important;
-            letter-spacing: 0.05em !important;
-            padding: 12px 8px !important;
-        }
-        
-        /* Row styling */
-        tbody tr {
-            border-bottom: 1px solid #f3f4f6 !important;
-        }
-        
-        tbody tr:hover {
-            background: transparent !important;
-        }
-        
-        /* Subject cards */
-        .bg-blue-50, .bg-orange-50 {
-            border-radius: 6px !important;
-            padding: 8px !important;
-            margin: 2px 0 !important;
-        }
-        
-        .bg-blue-50 {
-            background-color: #eff6ff !important;
-            border: 1px solid #dbeafe !important;
-        }
-        
-        .bg-orange-50 {
-            background-color: #fff7ed !important;
-            border: 1px solid #fed7aa !important;
-        }
-        
-        /* Text colors */
-        .text-blue-900, .text-blue-700, .text-blue-600 {
-            color: #1e3a8a !important;
-        }
-        
-        .text-orange-900, .text-orange-700 {
-            color: #9a3412 !important;
-        }
-        
-        .text-gray-900 {
-            color: #111827 !important;
-        }
-        
-        .text-gray-400 {
-            color: #9ca3af !important;
-        }
-        
-        /* Time column specific styling */
-        tbody td:first-child {
-            font-size: 10px !important;
-            line-height: 1.2 !important;
-            white-space: nowrap !important;
-            vertical-align: middle !important;
-        }
-    }
 
-    }
-</style>
+            // --- Settings Logic ---
+            function openSettingsModal() {
+                document.getElementById('settingsModal').classList.remove('hidden');
+            }
+            function closeSettingsModal() {
+                document.getElementById('settingsModal').classList.add('hidden');
+            }
+
+            function addBreak() {
+                const container = document.getElementById('breaksContainer');
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-2 border border-slate-200 rounded-lg bg-slate-50";
+                div.innerHTML = `
+                    <input type="text" placeholder="Break Name" class="break-name flex-1 text-[10px] font-bold bg-white border border-slate-200 rounded px-2 py-1 outline-none focus:border-indigo-500">
+                    <input type="time" class="break-start w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none">
+                    <span class="text-slate-400 text-xs">-</span>
+                    <input type="time" class="break-end w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none">
+                    <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 px-1"><i class="fas fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            }
+
+            // Populate settings inputs
+            // ... (This would be similar to loadSettings logic but targeting input values)
+            // For brevity, skipping the input population logic here but it needs to be connected to `timetableSettings` data.
+
+            // Need to populate the inputs when modal opens
+            const originalOpenSettings = openSettingsModal;
+            openSettingsModal = function () {
+                document.getElementById('settingsModal').classList.remove('hidden');
+                // Populate fields
+                document.getElementById('schoolStartTime').value = timetableSettings.startTime;
+                document.getElementById('schoolEndTime').value = timetableSettings.endTime;
+                document.getElementById('lessonDuration').value = timetableSettings.lessonDuration;
+
+                // Days
+                document.querySelectorAll('.day-checkbox').forEach(cb => cb.checked = timetableSettings.days.includes(cb.value));
+
+                // Breaks
+                const container = document.getElementById('breaksContainer');
+                container.innerHTML = '';
+                timetableSettings.breaks.forEach(b => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center gap-2 p-2 border border-slate-200 rounded-lg bg-slate-50";
+                    div.innerHTML = `
+                                <input type="text" value="${b.name}" class="break-name flex-1 text-[10px] font-bold bg-white border border-slate-200 rounded px-2 py-1 outline-none focus:border-indigo-500">
+                                    <input type="time" value="${b.start_time}" class="break-start w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none">
+                                        <span class="text-slate-400 text-xs">-</span>
+                                        <input type="time" value="${b.end_time}" class="break-end w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none">
+                                            <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 px-1"><i class="fas fa-trash"></i></button>
+                                            `;
+                    container.appendChild(div);
+                });
+            }
+
+            async function saveSettings() {
+                const days = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+                const startTime = document.getElementById('schoolStartTime').value;
+                const endTime = document.getElementById('schoolEndTime').value;
+                const lessonDuration = parseInt(document.getElementById('lessonDuration').value);
+
+                const breaks = [];
+                document.querySelectorAll('#breaksContainer > div').forEach(div => {
+                    breaks.push({
+                        name: div.querySelector('.break-name').value,
+                        start_time: div.querySelector('.break-start').value,
+                        end_time: div.querySelector('.break-end').value,
+                    });
+                });
+
+                const payload = { days, start_time: startTime, end_time: endTime, lesson_duration: lessonDuration, breaks };
+
+                try {
+                    const res = await fetch(`/api/timetable/settings/class/${classID}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        showNotification('Settings saved');
+                        closeSettingsModal();
+                        await loadSettings(); // reload globally
+                        loadTimetable(); // refresh grid
+                    } else { showNotification('Failed to save', 'error'); }
+                } catch (e) { showNotification('Error saving', 'error'); }
+            }
+
+        </script>
+</body>
+
+</html>

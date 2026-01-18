@@ -1,144 +1,310 @@
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Timetable Management</h1>
-                    <p class="text-sm text-gray-600 mt-1">Manage class timetables and schedules</p>
-                </div>
-                <button id="defaultSettingsBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                    Default Settings
+<!-- Timetable Management Content -->
+<div class="px-4 py-4 lg:px-6 lg:py-5">
+    <!-- Header Section -->
+    <div class="mb-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">Timetable Management</h1>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Manage class schedules and
+                    timetables</p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openDefaultSettingsModal()"
+                    class="px-4 py-1.5 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50">
+                    <i class="fas fa-cog mr-1.5"></i>Default Settings
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Classes Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-900">Select a Class</h2>
-                    <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Search classes..."
-                               class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
+    <!-- Classes Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/30">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Class Timetables
+                    </h2>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Schedule Registry
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative group">
+                        <i
+                            class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] group-focus-within:text-indigo-500 transition-colors"></i>
+                        <input type="text" id="searchInput" placeholder="SEARCH CLASSES..."
+                            class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-[11px] font-bold uppercase tracking-tight focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all w-full sm:w-64 placeholder:text-slate-300">
                     </div>
                 </div>
             </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Name</th>
-                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Class Teacher</th>
-                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
-                            <th class="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="classesTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Loading skeleton -->
-                        <tr class="skeleton-row">
-                            <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                                <div class="flex items-center justify-center">
-                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                                    <span class="ml-2">Loading classes...</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-100 bg-slate-50/50">
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Class Details</th>
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Class Teacher</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Students</th>
+                        <th
+                            class="px-5 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="classesTableBody" class="divide-y divide-slate-100">
+                    <!-- Loading State -->
+                    <tr id="loadingRow1" class="skeleton-row">
+                        <td class="px-5 py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 animate-pulse"></div>
+                                <div class="ml-3">
+                                    <div class="h-4 bg-slate-100 rounded animate-pulse w-32 mb-2"></div>
+                                    <div class="h-3 bg-slate-100 rounded animate-pulse w-20"></div>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-28"></div>
+                        </td>
+                        <td class="px-5 py-4 text-center">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-20 mx-auto"></div>
+                        </td>
+                        <td class="px-5 py-4 text-right">
+                            <div class="h-8 w-24 bg-slate-100 rounded-lg animate-pulse ml-auto"></div>
+                        </td>
+                    </tr>
+                    <tr id="loadingRow2" class="skeleton-row">
+                        <td class="px-5 py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 animate-pulse"></div>
+                                <div class="ml-3">
+                                    <div class="h-4 bg-slate-100 rounded animate-pulse w-36 mb-2"></div>
+                                    <div class="h-3 bg-slate-100 rounded animate-pulse w-24"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-32"></div>
+                        </td>
+                        <td class="px-5 py-4 text-center">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-20 mx-auto"></div>
+                        </td>
+                        <td class="px-5 py-4 text-right">
+                            <div class="h-8 w-24 bg-slate-100 rounded-lg animate-pulse ml-auto"></div>
+                        </td>
+                    </tr>
+                    <tr id="loadingRow3" class="skeleton-row">
+                        <td class="px-5 py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100 animate-pulse"></div>
+                                <div class="ml-3">
+                                    <div class="h-4 bg-slate-100 rounded animate-pulse w-32 mb-2"></div>
+                                    <div class="h-3 bg-slate-100 rounded animate-pulse w-20"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-28"></div>
+                        </td>
+                        <td class="px-5 py-4 text-center">
+                            <div class="h-4 bg-slate-100 rounded animate-pulse w-20 mx-auto"></div>
+                        </td>
+                        <td class="px-5 py-4 text-right">
+                            <div class="h-8 w-24 bg-slate-100 rounded-lg animate-pulse ml-auto"></div>
+                        </td>
+                    </tr>
+                    <!-- Empty state -->
+                    <tr id="emptyRow" class="hidden">
+                        <td colspan="4" class="px-5 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-calendar-week text-slate-300 text-2xl"></i>
+                                </div>
+                                <p class="text-[13px] font-black text-slate-800 uppercase tracking-wider">No classes
+                                    found</p>
+                                <p class="text-[11px] font-bold text-slate-400 mt-1 uppercase tracking-wide">Create
+                                    classes to manage timetables.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Error state -->
+                    <tr id="errorRow" class="hidden">
+                        <td colspan="4" class="px-5 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fas fa-triangle-exclamation text-rose-300 text-2xl"></i>
+                                </div>
+                                <p class="text-[13px] font-black text-slate-800 uppercase tracking-wider">Error loading
+                                    classes</p>
+                                <p class="text-[11px] font-bold text-slate-400 mt-1 mb-4 uppercase tracking-wide">Please
+                                    try refreshing the page.</p>
+                                <button onclick="loadClasses()"
+                                    class="px-5 py-2 premium-gradient text-white rounded-xl text-[11px] font-bold shadow-sm">
+                                    Retry Loading
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<!-- Default Timetable Settings Modal -->
-<div id="defaultSettingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Default Timetable Settings</h3>
-            <button onclick="closeDefaultSettingsModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+<!-- Default Settings Modal -->
+<div id="defaultSettingsModal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+            <div>
+                <h2 class="text-sm font-black text-slate-900 uppercase tracking-tight">Default Settings</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Configure school-wide
+                    defaults</p>
+            </div>
+            <button onclick="closeDefaultSettingsModal()"
+                class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white text-slate-400 hover:text-slate-600 transition-all duration-200">
+                <i class="fas fa-xmark text-sm"></i>
             </button>
         </div>
 
-        <div class="p-6 space-y-6">
-            <!-- Days Selection -->
-            <div>
-                <h4 class="font-medium text-gray-900 mb-3">Default School Days</h4>
-                <div class="grid grid-cols-3 gap-3">
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_monday" value="monday" checked class="default-day-checkbox">
-                        <span>Monday</span>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-8">
+
+            <!-- School Days -->
+            <section>
+                <h4
+                    class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
+                    School Days</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_monday" value="monday" checked
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Monday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_tuesday" value="tuesday" checked class="default-day-checkbox">
-                        <span>Tuesday</span>
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_tuesday" value="tuesday" checked
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Tuesday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_wednesday" value="wednesday" checked class="default-day-checkbox">
-                        <span>Wednesday</span>
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_wednesday" value="wednesday" checked
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Wednesday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_thursday" value="thursday" checked class="default-day-checkbox">
-                        <span>Thursday</span>
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_thursday" value="thursday" checked
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Thursday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_friday" value="friday" checked class="default-day-checkbox">
-                        <span>Friday</span>
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_friday" value="friday" checked
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Friday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" id="default_day_saturday" value="saturday" class="default-day-checkbox">
-                        <span>Saturday</span>
+                    <label class="relative flex cursor-pointer">
+                        <input type="checkbox" id="default_day_saturday" value="saturday"
+                            class="default-day-checkbox peer sr-only">
+                        <div
+                            class="w-full p-3 bg-white border border-slate-200 rounded-lg text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 transition-all">
+                            <span
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider peer-checked:text-indigo-600">Saturday</span>
+                        </div>
+                        <div class="absolute top-2 right-2 opacity-0 peer-checked:opacity-100 transition-opacity">
+                            <i class="fas fa-check-circle text-indigo-500 text-xs"></i>
+                        </div>
                     </label>
                 </div>
-            </div>
+            </section>
 
-            <!-- Time Settings -->
-            <div class="grid grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Default Start Time</label>
-                    <input type="time" id="defaultStartTime" value="08:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+            <!-- Timing -->
+            <section>
+                <h4
+                    class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
+                    Daily Schedule</h4>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">School
+                            Starts</label>
+                        <input type="time" id="defaultStartTime" value="08:00"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">School
+                            Ends</label>
+                        <input type="time" id="defaultEndTime" value="16:00"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lesson
+                            (Min)</label>
+                        <input type="number" id="defaultLessonDuration" value="60" min="30" max="120"
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 transition-colors">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Default End Time</label>
-                    <input type="time" id="defaultEndTime" value="16:00" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                </div>
-            </div>
+            </section>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Default Lesson Duration (minutes)</label>
-                <input type="number" id="defaultLessonDuration" value="60" min="30" max="120" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-            </div>
-
-            <!-- Default Breaks Configuration -->
-            <div>
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="font-medium text-gray-900">Default Breaks</h4>
-                    <button onclick="addDefaultBreak()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                        Add Break
+            <!-- Breaks -->
+            <section>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Breaks & Recess</h4>
+                    <button type="button" onclick="addDefaultBreak()"
+                        class="text-[10px] font-bold text-indigo-500 hover:text-indigo-700 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fas fa-plus"></i> Add Break
                     </button>
                 </div>
-                <div id="defaultBreaksContainer" class="space-y-3">
-                    <!-- Default breaks will be added here -->
-                </div>
-            </div>
+                <div id="defaultBreaksContainer" class="space-y-2"></div>
+            </section>
+
         </div>
 
-        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
-            <button onclick="closeDefaultSettingsModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">
+        <!-- Modal Footer -->
+        <div class="flex items-center justify-end space-x-2 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+            <button onclick="closeDefaultSettingsModal()"
+                class="px-5 py-2 text-[11px] font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all duration-200">
                 Cancel
             </button>
-            <button onclick="saveDefaultSettings()" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg">
-                Save Default Settings
+            <button onclick="saveDefaultSettings()"
+                class="px-6 py-2 premium-gradient text-white rounded-lg text-[11px] font-bold shadow-sm hover:scale-[1.02] transition-all duration-200">
+                Save Configuration
             </button>
         </div>
     </div>
@@ -156,37 +322,39 @@
         ]
     };
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         loadClasses();
         loadDefaultSettings();
-        
-        document.getElementById('defaultSettingsBtn').addEventListener('click', openDefaultSettingsModal);
     });
+
+    function showNotification(message, type = 'success') {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+
+        Toast.fire({ icon: type, title: message });
+    }
 
     async function loadClasses(search = '') {
         const tableBody = document.getElementById('classesTableBody');
+        const skeletonRows = document.querySelectorAll('.skeleton-row');
+        const emptyRow = document.getElementById('emptyRow');
+        const errorRow = document.getElementById('errorRow');
 
         // Show loading
-        tableBody.innerHTML = `
-            <tr class="skeleton-row">
-                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                    <div class="flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                        <span class="ml-2">Loading classes...</span>
-                    </div>
-                </td>
-            </tr>
-        `;
+        skeletonRows.forEach(row => row.classList.remove('hidden'));
+        emptyRow.classList.add('hidden');
+        errorRow.classList.add('hidden');
 
         try {
             const url = search ? `/api/classes/table?search=${encodeURIComponent(search)}` : '/api/classes/table';
-            const response = await fetch(url, {
-                credentials: 'include'
-            });
+            const response = await fetch(url, { credentials: 'include' });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
             const result = await response.json();
 
@@ -203,90 +371,79 @@
 
     function displayClasses(classes) {
         const tableBody = document.getElementById('classesTableBody');
+        const skeletonRows = document.querySelectorAll('.skeleton-row');
+        const emptyRow = document.getElementById('emptyRow');
+        const errorRow = document.getElementById('errorRow');
+
+        skeletonRows.forEach(row => row.classList.add('hidden'));
 
         if (classes.length === 0) {
             showEmptyState();
             return;
         }
 
-        tableBody.innerHTML = classes.map(classItem => `
-            <tr class="hover:bg-gray-50">
-                <td class="px-2 sm:px-4 py-3">
+        emptyRow.classList.add('hidden');
+        errorRow.classList.add('hidden');
+
+        const classesHTML = classes.map(classItem => `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-5 py-4">
                     <div class="flex items-center">
-                        <div class="bg-primary-100 p-1 sm:p-2 rounded-lg mr-2 sm:mr-3 flex-shrink-0">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-100/50 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-school text-indigo-600"></i>
                         </div>
-                        <div class="min-w-0">
-                            <p class="text-xs sm:text-sm font-medium text-gray-900 truncate">${classItem.name}</p>
-                            <p class="text-xs text-gray-500">Code: ${classItem.code || 'N/A'}</p>
+                        <div class="ml-3">
+                            <p class="text-xs font-bold text-slate-800">${classItem.name}</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Code: ${classItem.code || 'N/A'}</p>
                         </div>
                     </div>
                 </td>
-                <td class="px-2 sm:px-4 py-3 text-xs sm:text-sm text-gray-900">
-                    <div class="truncate">
+                <td class="px-5 py-4">
+                    <p class="text-xs font-medium text-slate-600">
                         ${classItem.teacher ?
-                            `${classItem.teacher.first_name} ${classItem.teacher.last_name}` :
-                            '<span class="text-gray-400">Not assigned</span>'
-                        }
-                    </div>
+                `${classItem.teacher.first_name} ${classItem.teacher.last_name}` :
+                '<span class="text-slate-400 italic">Not assigned</span>'}
+                    </p>
                 </td>
-                <td class="px-2 sm:px-4 py-3 text-xs sm:text-sm text-gray-900">
-                    <div class="whitespace-nowrap">
+                <td class="px-5 py-4 text-center">
+                    <p class="text-xs font-medium text-slate-600">
                         ${classItem.student_count && classItem.student_count > 0 ?
-                            `${classItem.student_count} students` :
-                            '<span class="text-gray-400">No students</span>'
-                        }
-                    </div>
+                classItem.student_count :
+                '<span class="text-slate-400 italic">0</span>'}
+                    </p>
                 </td>
-                <td class="px-2 sm:px-4 py-3">
-                    <a href="/timetable/class/${classItem.id}" class="text-primary-600 hover:text-primary-800 text-xs sm:text-sm font-medium whitespace-nowrap">
-                        View Timetable
+                <td class="px-5 py-4 text-right">
+                    <a href="/timetable/class/${classItem.id}" 
+                        class="inline-flex items-center gap-1.5 px-4 py-2 premium-gradient text-white text-[11px] font-bold uppercase tracking-wider rounded-xl hover:opacity-90 transition-all shadow-sm">
+                        <i class="fas fa-calendar-alt"></i> View Timetable
                     </a>
                 </td>
             </tr>
         `).join('');
+
+        tableBody.innerHTML = classesHTML + emptyRow.outerHTML + errorRow.outerHTML;
     }
 
     function showEmptyState() {
-        const tableBody = document.getElementById('classesTableBody');
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                    <div class="flex flex-col items-center">
-                        <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        <p class="text-lg font-medium text-gray-900 mb-1">No classes found</p>
-                        <p class="text-sm text-gray-500 mb-4">Create classes first to manage their timetables</p>
-                        <a href="/classes" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-                            Go to Classes
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        `;
+        const skeletonRows = document.querySelectorAll('.skeleton-row');
+        const emptyRow = document.getElementById('emptyRow');
+        const errorRow = document.getElementById('errorRow');
+
+        skeletonRows.forEach(row => row.classList.add('hidden'));
+        emptyRow.classList.remove('hidden');
+        errorRow.classList.add('hidden');
     }
 
     function showErrorState() {
-        const tableBody = document.getElementById('classesTableBody');
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="4" class="px-4 py-8 text-center text-gray-500">
-                    <div class="flex flex-col items-center">
-                        <svg class="w-12 h-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                        </svg>
-                        <p class="text-lg font-medium text-gray-900 mb-1">Error loading classes</p>
-                        <p class="text-sm text-gray-500">Please try refreshing the page</p>
-                    </div>
-                </td>
-            </tr>
-        `;
+        const skeletonRows = document.querySelectorAll('.skeleton-row');
+        const emptyRow = document.getElementById('emptyRow');
+        const errorRow = document.getElementById('errorRow');
+
+        skeletonRows.forEach(row => row.classList.add('hidden'));
+        emptyRow.classList.add('hidden');
+        errorRow.classList.remove('hidden');
     }
 
-    // Default Settings Modal Functions
     function openDefaultSettingsModal() {
         document.getElementById('defaultSettingsModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -300,23 +457,20 @@
 
     async function loadDefaultSettings() {
         try {
-            const response = await fetch('/api/timetable/settings/default', {
-                credentials: 'include'
-            });
-            
+            const response = await fetch('/api/timetable/settings/default', { credentials: 'include' });
+
             if (response.ok) {
                 const data = await response.json();
                 if (data.success && data.settings) {
                     const settings = data.settings;
-                    
-                    // Extract time from RFC3339 format or use as-is if already in HH:MM format
+
                     const extractTime = (timeStr) => {
                         if (timeStr.includes('T')) {
-                            return timeStr.split('T')[1].substring(0, 5); // Extract HH:MM from RFC3339
+                            return timeStr.split('T')[1].substring(0, 5);
                         }
                         return timeStr;
                     };
-                    
+
                     defaultSettings = {
                         days: typeof settings.days === 'string' ? JSON.parse(settings.days) : settings.days,
                         startTime: extractTime(settings.start_time),
@@ -332,34 +486,30 @@
     }
 
     function loadDefaultSettingsForm() {
-        // Load days
         document.querySelectorAll('.default-day-checkbox').forEach(cb => {
             cb.checked = defaultSettings.days.includes(cb.value);
         });
-        
-        // Load times
+
         document.getElementById('defaultStartTime').value = defaultSettings.startTime;
         document.getElementById('defaultEndTime').value = defaultSettings.endTime;
         document.getElementById('defaultLessonDuration').value = defaultSettings.lessonDuration;
-        
-        // Load breaks
+
         loadDefaultBreaks();
     }
 
     function loadDefaultBreaks() {
         const container = document.getElementById('defaultBreaksContainer');
         container.innerHTML = defaultSettings.breaks.map((breakItem, index) => `
-            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+            <div class="flex items-center gap-2 p-2 border border-slate-200 rounded-xl bg-slate-50">
                 <input type="text" value="${breakItem.name}" placeholder="Break name" 
-                       class="flex-1 px-3 py-2 border border-gray-300 rounded" data-default-break-index="${index}" data-field="name">
+                       class="break-name flex-1 text-[10px] font-bold bg-white border border-slate-200 rounded px-2 py-1 outline-none focus:border-indigo-500" data-default-break-index="${index}" data-field="name">
                 <input type="time" value="${breakItem.start_time || breakItem.startTime}" 
-                       class="px-3 py-2 border border-gray-300 rounded" data-default-break-index="${index}" data-field="startTime">
+                       class="break-start w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none" data-default-break-index="${index}" data-field="startTime">
+                <span class="text-slate-400 text-xs">-</span>
                 <input type="time" value="${breakItem.end_time || breakItem.endTime}" 
-                       class="px-3 py-2 border border-gray-300 rounded" data-default-break-index="${index}" data-field="endTime">
-                <button onclick="removeDefaultBreak(${index})" class="text-red-600 hover:text-red-800">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
+                       class="break-end w-20 text-[10px] font-bold bg-white border border-slate-200 rounded px-1 py-1 outline-none" data-default-break-index="${index}" data-field="endTime">
+                <button onclick="removeDefaultBreak(${index})" class="text-red-400 hover:text-red-600 px-1">
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         `).join('');
@@ -379,26 +529,22 @@
         loadDefaultBreaks();
     }
 
-
-
     async function saveDefaultSettings() {
         const saveBtn = document.querySelector('#defaultSettingsModal button[onclick="saveDefaultSettings()"]');
         const originalText = saveBtn.textContent;
         saveBtn.disabled = true;
         saveBtn.textContent = 'Saving...';
-        
+
         try {
-            // Collect settings from form
             const days = Array.from(document.querySelectorAll('.default-day-checkbox:checked')).map(cb => cb.value);
             const startTime = document.getElementById('defaultStartTime').value;
             const endTime = document.getElementById('defaultEndTime').value;
             const lessonDuration = parseInt(document.getElementById('defaultLessonDuration').value);
-            
-            // Collect breaks
+
             const breaks = [];
             const breakInputs = document.querySelectorAll('#defaultBreaksContainer input');
             const breaksByIndex = {};
-            
+
             breakInputs.forEach(input => {
                 const index = parseInt(input.dataset.defaultBreakIndex);
                 const field = input.dataset.field;
@@ -407,7 +553,7 @@
                 }
                 breaksByIndex[index][field] = input.value;
             });
-            
+
             Object.values(breaksByIndex).forEach(breakItem => {
                 if (breakItem.name && breakItem.startTime && breakItem.endTime) {
                     breaks.push({
@@ -417,7 +563,7 @@
                     });
                 }
             });
-            
+
             const response = await fetch('/api/timetable/settings/default', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -430,9 +576,8 @@
                     breaks
                 })
             });
-            
+
             if (response.ok) {
-                // Update local settings
                 defaultSettings = {
                     days,
                     startTime,
@@ -444,9 +589,9 @@
                         endTime: b.end_time
                     }))
                 };
-                
+
                 closeDefaultSettingsModal();
-                showNotification('Default settings saved successfully', 'success');
+                showNotification('Default settings saved successfully');
             } else {
                 const error = await response.json();
                 showNotification(error.error || 'Failed to save default settings', 'error');
@@ -460,25 +605,9 @@
         }
     }
 
-    function showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white ${
-            type === 'success' ? 'bg-green-500' :
-            type === 'error' ? 'bg-red-500' :
-            'bg-blue-500'
-        }`;
-        notification.textContent = message;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
-    }
-
     // Search functionality
     let searchTimeout = null;
-    document.getElementById('searchInput').addEventListener('input', function() {
+    document.getElementById('searchInput').addEventListener('input', function () {
         const query = this.value.trim();
 
         if (searchTimeout) {
