@@ -2,6 +2,8 @@ package exams
 
 import (
 	"database/sql"
+	"swadiq-schools/app/models"
+	"swadiq-schools/app/routes/auth"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,9 +19,15 @@ func SetupExamRoutes(app *fiber.App, db *sql.DB) {
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteExam(c, db) })
 
 	// Page routes
-	app.Get("/exams", func(c *fiber.Ctx) error {
+	app.Get("/exams", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
 		return c.Render("exams/index", fiber.Map{
-			"title": "Exams Management",
+			"title":       "Exams Management",
+			"CurrentPage": "exams",
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
+			"user":        user,
 		})
 	})
 }

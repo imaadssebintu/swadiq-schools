@@ -136,9 +136,9 @@
 
             <!-- Profile Section -->
             <div class="text-center mb-6">
-                <div class="relative inline-block mb-3">
+                <div class="relative inline-block mb-4">
                     <div
-                        class="w-16 h-16 rounded-lg premium-gradient shadow-lg flex items-center justify-center text-white text-xl font-extrabold mx-auto">
+                        class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl flex items-center justify-center text-white text-2xl font-black border-4 border-white/30">
                         <span>
                             {{if .student.FirstName}}
                             {{if .student.LastName}}
@@ -149,65 +149,88 @@
                             {{else}}?{{end}}
                         </span>
                     </div>
-                    <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center shadow-md"
-                        title="Active">
-                        <i class="fas fa-check text-[8px] text-white"></i>
-                    </div>
                 </div>
-                <h2 class="text-lg font-bold text-slate-900 tracking-tight break-words">{{.student.FirstName}}
+                <h2 class="text-xl font-black text-slate-900 tracking-tight leading-tight px-2">{{.student.FirstName}}
                     {{.student.LastName}}</h2>
-                <div class="inline-flex items-center px-2 py-0.5 mt-1 bg-indigo-50 border border-indigo-100 rounded">
-                    <span class="text-[10px] font-bold text-indigo-600 tracking-wider uppercase">ID:
-                        {{.student.StudentID}}</span>
+                <div class="inline-flex items-center px-2.5 py-1 mt-3 bg-slate-900 text-white rounded-lg shadow-sm">
+                    <span class="text-[10px] font-black tracking-widest uppercase">ID: {{.student.StudentID}}</span>
                 </div>
             </div>
 
-            <div class="space-y-5 pb-6">
+            <div class="space-y-6 pb-6">
                 <!-- Academic Stats -->
                 <div>
-                    <h3 class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-2 ml-1">Academic
-                        Status</h3>
-                    <div class="bg-white/50 border border-white/40 p-3 rounded-lg space-y-2">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500">Class</span>
-                            <span class="font-bold text-slate-800 text-right">{{if
-                                .student.Class}}{{.student.Class.Name}}{{else}}N/A{{end}}</span>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Academic
+                        Profile</h3>
+                    <div
+                        class="bg-white border border-slate-200/60 p-4 rounded-xl space-y-3 shadow-sm shadow-slate-200/50">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Current
+                                Class</span>
+                            <span
+                                class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-black tracking-widest uppercase border border-indigo-100/50">
+                                {{if .student.Class}}{{.student.Class.Name}}{{else}}UNASSIGNED{{end}}
+                            </span>
                         </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500">Gender</span>
-                            <span class="font-bold text-slate-800 capitalize">{{if
-                                .student.Gender}}{{.student.Gender}}{{else}}N/A{{end}}</span>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Gender</span>
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-widest">
+                                {{if .student.Gender}}{{.student.Gender}}{{else}}N/A{{end}}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Enrollment</span>
+                            <span
+                                class="inline-flex items-center px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-widest border border-emerald-100/50">
+                                <i class="fas fa-circle-check mr-1 text-[8px]"></i>ACTIVE
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Guardian Info -->
                 <div>
-                    <h3 class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-2 ml-1">Guardian
-                        Details</h3>
-                    <div class="bg-white/50 border border-white/40 p-3 rounded-lg space-y-3">
-                        <div class="flex items-start gap-2">
-                            <i class="fas fa-user-shield text-emerald-600 text-xs mt-1 shrink-0"></i>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Guardian
+                        Network</h3>
+                    <div
+                        class="bg-white border border-slate-200/60 p-4 rounded-xl space-y-4 shadow-sm shadow-slate-200/50">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                                <i class="fas fa-user-shield text-emerald-600 text-xs"></i>
+                            </div>
                             <div class="overflow-hidden">
                                 <p
-                                    class="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-1">
-                                    Guardian</p>
-                                <p class="text-xs font-bold text-slate-800 break-words line-clamp-1">
+                                    class="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1.5">
+                                    Primary Contact</p>
+                                <p class="text-[12px] font-black text-slate-800 break-words leading-tight">
                                     {{if .student.Parents}}
                                     {{with index .student.Parents 0}}{{.FirstName}} {{.LastName}}{{end}}
-                                    {{else}}Not Assigned{{end}}
+                                    {{else}}SYSTEM UNASSIGNED{{end}}
                                 </p>
                             </div>
                         </div>
-                        <div class="flex items-start gap-2">
-                            <i class="fas fa-phone text-blue-600 text-[10px] mt-1 shrink-0"></i>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
+                                <i class="fas fa-phone-alt text-indigo-600 text-xs"></i>
+                            </div>
                             <div class="overflow-hidden">
                                 <p
-                                    class="text-[9px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-1">
-                                    Phone</p>
-                                <p class="text-xs font-bold text-slate-800 break-all">
+                                    class="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1.5">
+                                    Cellular Line</p>
+                                <p class="text-[12px] font-black text-slate-800 break-all leading-tight">
                                     {{if .student.Parents}}
-                                    {{with index .student.Parents 0}}{{if .Phone}}{{.Phone}}{{else}}N/A{{end}}{{end}}
+                                    {{with index .student.Parents 0}}
+                                    {{if .Phone}}
+                                    <a href="tel:{{.Phone}}"
+                                        class="hover:text-indigo-600 transition-colors inline-flex items-center gap-1.5">
+                                        {{.Phone}}
+                                        <i class="fas fa-external-link-alt text-[8px] opacity-30"></i>
+                                    </a>
+                                    {{else}}
+                                    N/A
+                                    {{end}}
+                                    {{end}}
                                     {{else}}N/A{{end}}
                                 </p>
                             </div>
@@ -217,9 +240,9 @@
 
                 <div class="pt-2 sticky bottom-0 bg-transparent pb-4 lg:relative lg:p-0">
                     <button id="addFeeForStudentBtn"
-                        class="w-full py-3 bg-slate-900 hover:bg-black text-white rounded-lg font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2">
-                        <i class="fas fa-plus text-[10px]"></i>
-                        Assign New Fee
+                        class="w-full py-4 premium-gradient text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-100 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5">
+                        <i class="fas fa-plus-circle text-xs"></i>
+                        Assign New Record
                     </button>
                 </div>
             </div>
@@ -245,53 +268,54 @@
             </div>
 
             <!-- Major Stats Dashboard -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
                 <!-- Total Invoiced -->
-                <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
-                    <div class="flex items-center justify-between mb-2">
-                        <div
-                            class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs text-xs">
-                            <i class="fas fa-file-invoice-dollar"></i>
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-file-invoice-dollar text-sm"></i>
                         </div>
-                        <span class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Invoiced</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Invoiced</span>
                     </div>
-                    <h3 id="totalPayable" class="text-lg font-black text-slate-900 mb-0.5 break-words">UGX 0</h3>
-                    <p class="text-[9px] text-slate-400 font-medium">Lifetime generated billing</p>
+                    <h3 id="totalPayable" class="text-2xl font-black text-slate-900 mb-1 break-words">UGX 0</h3>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Lifetime
+                        Billing</p>
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12"></div>
                 </div>
 
                 <!-- Total Collections -->
-                <div class="glass-card p-4 rounded-xl relative overflow-hidden group border-emerald-100/30">
-                    <div class="flex items-center justify-between mb-2">
+                <div class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
                         <div
-                            class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 text-xs">
-                            <i class="fas fa-hand-holding-dollar"></i>
+                            class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <i class="fas fa-hand-holding-dollar text-sm"></i>
                         </div>
-                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Collected</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Collected</span>
                     </div>
-                    <h3 id="totalPaid" class="text-lg font-black text-slate-900 mb-2 break-words">UGX 0</h3>
-                    <div class="flex items-center gap-2">
-                        <div class="flex-1 bg-slate-100 rounded-full h-1 overflow-hidden">
+                    <h3 id="totalPaid" class="text-2xl font-black text-slate-900 mb-3 break-words">UGX 0</h3>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                             <div id="paymentProgress"
-                                class="bg-emerald-500 h-full rounded-full transition-all duration-1000"
+                                class="bg-emerald-500 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
                                 style="width: 0%"></div>
                         </div>
-                        <span class="text-[9px] font-black text-slate-400 shrink-0" id="progressPct">0%</span>
+                        <span class="text-[10px] font-black text-emerald-600 shrink-0" id="progressPct">0%</span>
                     </div>
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12"></div>
                 </div>
 
                 <!-- Current Liabilities -->
                 <div
-                    class="glass-card p-4 rounded-xl relative overflow-hidden group border-rose-100/30 md:col-span-2 xl:col-span-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <div
-                            class="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center text-rose-600 text-xs">
-                            <i class="fas fa-stopwatch"></i>
+                    class="bg-white border border-rose-100 p-5 rounded-2xl relative overflow-hidden group shadow-sm md:col-span-2 xl:col-span-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                            <i class="fas fa-receipt text-sm"></i>
                         </div>
-                        <span class="text-[9px] font-black text-rose-400 uppercase tracking-widest">Balance</span>
+                        <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Balance Due</span>
                     </div>
-                    <h3 id="totalBalance" class="text-lg font-black text-rose-600 mb-0.5 break-words">UGX 0</h3>
-                    <p class="text-[9px] text-rose-400 font-bold uppercase tracking-tight line-clamp-1">Outstanding dues
-                    </p>
+                    <h3 id="totalBalance" class="text-2xl font-black text-rose-600 mb-1 break-words">UGX 0</h3>
+                    <p class="text-[10px] text-rose-400 font-black uppercase tracking-widest">Outstanding</p>
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -mr-12 -mt-12"></div>
                 </div>
             </div>
 
@@ -309,23 +333,23 @@
 
                 <div class="overflow-x-auto">
                     <table class="w-full responsive-table">
-                        <thead class="bg-slate-100/50">
+                        <thead class="bg-slate-50/50 border-b border-slate-100">
                             <tr>
                                 <th
-                                    class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Code</th>
+                                    class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                    Entity Code</th>
                                 <th
-                                    class="px-6 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Academic Info</th>
+                                    class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                    Academic Cycle</th>
                                 <th
-                                    class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Financials</th>
+                                    class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                    Financial Statement</th>
                                 <th
-                                    class="px-6 py-3 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Status</th>
+                                    class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                    Flow Status</th>
                                 <th
-                                    class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                    Action</th>
+                                    class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                    Operations</th>
                             </tr>
                         </thead>
                         <tbody id="studentFeesTableBody" class="divide-y divide-slate-100">
@@ -399,20 +423,20 @@
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-100/50">
+                            <thead class="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
                                     <th
-                                        class="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                        Date & Method</th>
+                                        class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Timestamp & Gateway</th>
                                     <th
-                                        class="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                        Fees Paid</th>
+                                        class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Allocation Summary</th>
                                     <th
-                                        class="px-6 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                        Amount</th>
+                                        class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Gross Amount</th>
                                     <th
-                                        class="px-6 py-3 text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">
-                                        Status</th>
+                                        class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Verification</th>
                                 </tr>
                             </thead>
                             <tbody id="paymentHistoryTableBody" class="divide-y divide-slate-100 text-sm">
@@ -447,13 +471,13 @@
     <!-- Record Payment Modal -->
     <div id="paymentModal"
         class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
-        <div class="bg-white rounded shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-95"
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-95"
             id="paymentModalContent">
-            <div class="px-6 py-4 flex justify-between items-center border-b border-slate-100">
-                <h3 class="text-lg font-bold text-slate-900">Record Payment</h3>
+            <div class="px-8 py-5 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+                <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest">Revenue Collection</h3>
                 <button onclick="closePaymentModal()"
-                    class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 transition-all flex items-center justify-center">
-                    <i class="fas fa-times text-sm"></i>
+                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-xs"></i>
                 </button>
             </div>
 
@@ -516,33 +540,37 @@
     <!-- Add Fee Modal -->
     <div id="addFeeModal"
         class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
-        <div class="bg-white rounded shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-95"
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-95"
             id="addFeeModalContent">
-            <div class="px-8 py-5 flex justify-between items-center border-b border-slate-100 text-slate-900 font-bold">
-                <h3 class="text-lg">Assign New Fee</h3>
+            <div class="px-10 py-6 flex justify-between items-center border-b border-slate-100 bg-slate-50/30">
+                <div>
+                    <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest leading-none">Assign
+                        Revenue Record</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5 opacity-60">
+                        Financial Debit Entry</p>
+                </div>
                 <button onclick="closeAddFeeModal()"
-                    class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-400 transition-all flex items-center justify-center">
-                    <i class="fas fa-times text-sm"></i>
+                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-xs"></i>
                 </button>
             </div>
 
             <form id="addFeeForm" class="p-8 space-y-4">
                 <input type="hidden" id="addFeeStudentId" value="{{.studentID}}">
 
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Fee
-                        Description</label>
-                    <input type="text" id="addFeeTitle" required placeholder="e.g. Activity Fees Term 2"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-sm">
-                </div>
+                <input type="hidden" id="addFeeTitle">
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label
                             class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Category</label>
-                        <select id="addFeeType" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-xs appearance-none">
-                        </select>
+                        <button type="button" onclick="openFeeTypeSelectionModal()" id="categorySelectBtn"
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-lg hover:border-indigo-200 focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-[11px] text-left flex items-center justify-between group">
+                            <span id="selectedCategoryName" class="text-slate-400">Choose category...</span>
+                            <i
+                                class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-indigo-500 transition-colors"></i>
+                        </button>
+                        <input type="hidden" id="addFeeType" required>
                     </div>
                     <div>
                         <label
@@ -592,9 +620,49 @@
         </div>
     </div>
 
+    <!-- Fee Category Selection Modal (Visual Model) -->
+    <div id="feeTypeSelectionModal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden transform transition-all scale-95"
+            id="feeTypeSelectionModalContent">
+            <div class="px-8 py-6 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+                <div>
+                    <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest">Category Library</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">Select Financial
+                        Classification</p>
+                </div>
+                <button onclick="closeFeeTypeSelectionModal()"
+                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+
+            <div class="p-4 border-b border-slate-50 bg-slate-50/30">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="feeTypeSearch" oninput="filterFeeTypes(this.value)"
+                        placeholder="Search categories by name or code..."
+                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-medium text-sm">
+                </div>
+            </div>
+
+            <div class="max-h-[400px] overflow-y-auto p-4 custom-scrollbar bg-slate-50/20">
+                <div id="feeTypesGrid" class="flex flex-col gap-2">
+                    <!-- Fee types will be rendered here as list items -->
+                </div>
+                <div id="feeTypesEmptyState" class="hidden py-12 text-center" style="display: none;">
+                    <i class="fas fa-search text-slate-200 text-4xl mb-4"></i>
+                    <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">No categories found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const studentID = "{{.studentID}}";
+        const classID = "{{if .student.ClassID}}{{.student.ClassID}}{{end}}";
         let studentFees = [];
+        let allFeeTypes = [];
 
         document.addEventListener('DOMContentLoaded', function () {
             loadStudentFees();
@@ -653,34 +721,23 @@
                 const allocationsHtml = p.allocations.map(a => {
                     const cumulativePaid = a.total_fee_amount - a.balance;
                     return `
-                    <div class="flex flex-col gap-1 mt-2 first:mt-0 p-2 bg-slate-50/50 rounded border border-slate-100/50 min-w-[200px]">
+                    <div class="flex flex-col gap-1.5 mt-2 first:mt-0 p-2.5 bg-slate-50 border border-slate-100 rounded-lg min-w-[220px]">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[9px] font-bold uppercase tracking-wider">${a.fee_type_name}</span>
-                            ${a.is_fully_paid ? '<i class="fas fa-check-circle text-emerald-500 text-[10px]"></i>' : ''}
+                            <span class="px-1.5 py-0.5 bg-white text-[9px] font-black text-slate-500 rounded border border-slate-200 uppercase tracking-widest">${a.fee_type_name}</span>
+                            ${a.is_fully_paid ? '<span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest"><i class="fas fa-check-circle mr-1"></i>Settled</span>' : ''}
                         </div>
                         
-                        <!-- Payment Context -->
-                        <div class="flex items-center justify-between text-[10px] font-bold">
-                            <div class="flex items-center gap-1.5 whitespace-nowrap">
-                                <span class="text-slate-400 uppercase tracking-tighter text-[9px]">Now Paid:</span>
-                                <span class="text-indigo-600">UGX ${new Intl.NumberFormat().format(a.amount)}</span>
-                            </div>
-                            <div class="flex items-center gap-1.5 whitespace-nowrap">
-                                <span class="text-slate-400 uppercase tracking-tighter text-[9px]">Total Paid:</span>
-                                <span class="text-slate-700">UGX ${new Intl.NumberFormat().format(cumulativePaid)}</span>
-                            </div>
+                        <div class="flex items-center justify-between text-[10px] font-black">
+                            <span class="text-slate-400 uppercase tracking-tighter text-[8px]">Session Credit:</span>
+                            <span class="text-indigo-600">UGX ${new Intl.NumberFormat().format(a.amount)}</span>
                         </div>
 
-                        <!-- Fee Context -->
-                        <div class="flex items-center justify-between mt-1 pt-1 border-t border-slate-100/30 whitespace-nowrap">
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Balance</span>
-                                <span class="text-[10px] font-bold ${a.balance > 0 ? 'text-rose-600' : 'text-emerald-600'}">
+                        <div class="flex items-center justify-between mt-1 pt-1.5 border-t border-slate-100">
+                            <div class="flex items-center gap-1">
+                                <span class="text-[8px] text-slate-400 font-black uppercase tracking-tighter">Balance Due:</span>
+                                <span class="text-[10px] font-black ${a.balance > 0 ? 'text-rose-500' : 'text-emerald-500'}">
                                     UGX ${new Intl.NumberFormat().format(a.balance)}
                                 </span>
-                            </div>
-                            <div class="text-[10px] text-slate-500 font-bold">
-                                of UGX ${new Intl.NumberFormat().format(a.total_fee_amount)}
                             </div>
                         </div>
                     </div>
@@ -739,7 +796,7 @@
                 const [yearsRes, termsRes, typesRes] = await Promise.all([
                     fetch('/api/academic-years'),
                     fetch('/api/terms'),
-                    fetch('/api/fee-types')
+                    fetch(`/api/fee-types?class_id=${classID}&student_id=${studentID}`)
                 ]);
 
                 const [yearsInfo, termsInfo, typesInfo] = await Promise.all([
@@ -750,18 +807,104 @@
 
                 const yearSelect = document.getElementById('addFeeYear');
                 const termSelect = document.getElementById('addFeeTerm');
-                const typeSelect = document.getElementById('addFeeType');
 
                 const years = Array.isArray(yearsInfo) ? yearsInfo : (yearsInfo.data || []);
                 const terms = Array.isArray(termsInfo) ? termsInfo : (termsInfo.data || []);
-                const types = Array.isArray(typesInfo) ? typesInfo : (typesInfo.data || []);
+                allFeeTypes = Array.isArray(typesInfo) ? typesInfo : (typesInfo.data || []);
 
                 yearSelect.innerHTML = years.map(y => `<option value="${y.id}" ${y.is_current ? 'selected' : ''}>${y.name}</option>`).join('');
                 termSelect.innerHTML = terms.map(t => `<option value="${t.id}" ${t.is_current ? 'selected' : ''}>${t.name}</option>`).join('');
-                typeSelect.innerHTML = types.map(t => `<option value="${t.id}">${t.name} (${t.code})</option>`).join('');
+
+                // Render the selection grid
+                renderFeeTypeSelection(allFeeTypes);
             } catch (error) {
                 console.error('Error loading form data:', error);
             }
+        }
+
+        function renderFeeTypeSelection(types) {
+            const grid = document.getElementById('feeTypesGrid');
+            const emptyState = document.getElementById('feeTypesEmptyState');
+
+            if (types.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = types.map(t => `
+                <button type="button" onclick="selectFeeType('${t.id}', '${t.name}', ${t.amount})"
+                    class="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-lg text-left hover:border-indigo-600 hover:bg-indigo-50/20 transition-all group w-full">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-file-invoice-dollar text-xs"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">${t.name}</span>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">${t.code}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-right">
+                            <p class="text-[10px] font-black text-slate-700">UGX ${new Intl.NumberFormat().format(t.amount)}</p>
+                            <p class="text-[8px] text-slate-400 font-bold uppercase">Standard Rate</p>
+                        </div>
+                        <i class="fas fa-plus-circle text-slate-200 group-hover:text-indigo-500 transition-colors"></i>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function filterFeeTypes(query) {
+            const filtered = allFeeTypes.filter(t =>
+                t.name.toLowerCase().includes(query.toLowerCase()) ||
+                t.code.toLowerCase().includes(query.toLowerCase())
+            );
+            renderFeeTypeSelection(filtered);
+        }
+
+        function selectFeeType(id, name, amount) {
+            document.getElementById('addFeeType').value = id;
+            document.getElementById('addFeeTitle').value = name;
+            document.getElementById('selectedCategoryName').textContent = name;
+            document.getElementById('selectedCategoryName').classList.remove('text-slate-400');
+            document.getElementById('selectedCategoryName').classList.add('text-slate-900');
+
+            // Auto fill amount
+            const amountInput = document.getElementById('addFeeAmount');
+            amountInput.value = amount;
+
+            closeFeeTypeSelectionModal();
+        }
+
+        function openFeeTypeSelectionModal() {
+            const modal = document.getElementById('feeTypeSelectionModal');
+            const content = document.getElementById('feeTypeSelectionModalContent');
+
+            // Clear search
+            document.getElementById('feeTypeSearch').value = '';
+            renderFeeTypeSelection(allFeeTypes);
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeFeeTypeSelectionModal() {
+            const modal = document.getElementById('feeTypeSelectionModal');
+            const content = document.getElementById('feeTypeSelectionModalContent');
+
+            modal.classList.remove('opacity-100');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         function renderFees(fees) {
@@ -784,52 +927,81 @@
                 const statusText = isPaid ? 'Settled' : (balance < amount ? 'Partial' : 'Due');
 
                 return `
-                    <tr class="hover:bg-slate-50/50 transition-colors group">
-                        <td class="px-6 py-4" data-label="Code">
+                    <tr class="hover:bg-slate-50/50 transition-colors group border-b border-slate-50 last:border-0">
+                        <td class="px-6 py-4">
                             <div class="flex flex-col items-start gap-1">
-                                <span class="text-sm font-bold text-slate-700 tracking-tight">${fee.fee_type_code || 'GEN'}</span>
-                                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-bold uppercase tracking-wider whitespace-nowrap">Ref: ${fee.id.substring(0, 8)}</span>
+                                <span class="text-[13px] font-black text-slate-900 tracking-tight uppercase">${fee.fee_type_code || 'GEN'}</span>
+                                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200/50">ID: ${fee.id.substring(0, 8)}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Academic Info">
+                        <td class="px-6 py-4">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-slate-600">${fee.academic_year_name || '-'}</span>
-                                <span class="text-[10px] font-medium text-slate-400 mt-0.5">${fee.term_name || '-'}</span>
+                                <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider">${fee.academic_year_name || '-'}</span>
+                                <span class="text-[9px] font-black text-slate-400 mt-1 uppercase tracking-widest">${fee.term_name || '-'}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Financials">
-                            <div class="max-w-[120px] md:ml-auto flex flex-col gap-1.5">
+                        <td class="px-6 py-4">
+                            <div class="max-w-[150px] md:ml-auto flex flex-col gap-1.5">
                                 <div class="flex justify-between items-center whitespace-nowrap">
-                                    <span class="text-xs font-bold text-slate-400">TOT: UGX ${new Intl.NumberFormat().format(amount)}</span>
-                                    <span class="text-[10px] font-bold text-emerald-600 ml-2">${Math.round(progress)}%</span>
+                                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gross</span>
+                                    <span class="text-[10px] font-black text-indigo-600">${Math.round(progress)}%</span>
                                 </div>
-                                <div class="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
-                                     <div class="bg-emerald-500 h-full rounded-full transition-all duration-700" style="width: ${progress}%"></div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden shadow-inner">
+                                     <div class="bg-indigo-500 h-full rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(99,102,241,0.3)]" style="width: ${progress}%"></div>
                                 </div>
-                                <div class="flex justify-end items-center whitespace-nowrap">
-                                    <span class="text-[10px] font-bold text-slate-400 mr-2">BAL:</span>
-                                    <span class="text-sm font-bold ${balance > 0 ? 'text-rose-600' : 'text-slate-400'}">UGX ${new Intl.NumberFormat().format(balance)}</span>
+                                <div class="flex justify-end items-center whitespace-nowrap mt-0.5">
+                                    <span class="text-[10px] font-black text-slate-400 mr-2 uppercase tracking-widest">Bal:</span>
+                                    <span class="text-[12px] font-black ${balance > 0 ? 'text-rose-500' : 'text-slate-400'} uppercase">UGX ${new Intl.NumberFormat().format(balance)}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-center" data-label="Status">
-                            <span class="inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ${statusClass}">${statusText}</span>
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${statusClass} shadow-sm border border-black/5">
+                                <i class="fas ${isPaid ? 'fa-circle-check' : (balance < amount ? 'fa-circle-half-stroke' : 'fa-circle-dot')} mr-1.5 text-[9px]"></i>${statusText}
+                            </span>
                         </td>
-                        <td class="px-6 py-4 text-right" data-label="Action">
-                            ${!isPaid ? `
-                                <button onclick="openPaymentModal('${fee.id}', '${fee.student_id}', '${fee.student_name}', '${fee.title}', ${fee.balance})" 
-                                    class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded transition-all shadow-sm">
-                                    Pay Record
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-1.5">
+                                ${!isPaid ? `
+                                    <button onclick="openPaymentModal('${fee.id}', '${fee.student_id}', '${fee.student_name}', '${fee.title}', ${fee.balance})" 
+                                        class="h-8 px-4 bg-slate-900 hover:bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md hover:scale-[1.05] active:scale-95">
+                                        Collect
+                                    </button>
+                                ` : `
+                                    <button class="w-9 h-9 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-400 rounded-xl transition-all flex items-center justify-center border border-slate-200/50 group" title="Print Receipt">
+                                        <i class="fas fa-receipt text-xs transition-transform group-hover:scale-110"></i>
+                                    </button>
+                                `}
+                                <button onclick="deleteFee('${fee.id}')" 
+                                    class="w-9 h-9 bg-rose-50 hover:bg-rose-100 text-rose-400 rounded-xl transition-all flex items-center justify-center border border-rose-100 group"
+                                    title="Purge Record">
+                                    <i class="fas fa-trash-alt text-xs transition-transform group-hover:scale-110"></i>
                                 </button>
-                            ` : `
-                                <button class="w-8 h-8 bg-slate-50 hover:bg-slate-100 text-slate-400 rounded transition-all flex items-center justify-center mx-auto">
-                                    <i class="fas fa-print text-sm"></i>
-                                </button>
-                            `}
+                            </div>
                         </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        async function deleteFee(feeId) {
+            if (!confirm('Are you sure you want to remove this fee record? This action cannot be undone.')) return;
+
+            try {
+                const res = await fetch(`/api/fees/${feeId}`, { method: 'DELETE' });
+                const data = await res.json();
+
+                if (data.success) {
+                    loadStudentFees();
+                    // Also refresh payments in case allocations were affected
+                    loadStudentPayments();
+                } else {
+                    alert(data.error || 'Failed to delete fee');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Connection failure');
+            }
         }
 
         function updateStats(fees) {

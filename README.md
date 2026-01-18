@@ -66,7 +66,7 @@ The application will start on `http://localhost:3000`
 
 ## Default Login Credentials
 
-- **Admin**: admin@swadiq.com / password123
+- **Admin**: imaad.ssebintu@gmail.com / Ertdfgx@0
 - **Head Teacher**: headteacher@swadiq.com / password123
 - **Class Teacher**: teacher1@swadiq.com / password123
 - **Subject Teacher**: teacher2@swadiq.com / password123

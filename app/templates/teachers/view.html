@@ -1,86 +1,126 @@
 <!-- Teacher Details Content -->
-<div class="p-4 lg:p-6">
+<div class="p-6 lg:p-10 bg-[#f8fafc]">
     <!-- Header Section -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="/teachers" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                    <i class="fas fa-arrow-left text-xl"></i>
+    <div class="mb-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-6">
+                <a href="/teachers"
+                    class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-2xl shadow-sm transition-all group">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
                 </a>
                 <div>
-                    <h1 id="teacherName" class="text-2xl font-bold text-gray-900 mb-1">Loading...</h1>
-                    <p class="text-gray-600 text-sm">Teacher Details</p>
+                    <h1 id="teacherName" class="text-3xl font-black text-slate-900 tracking-tight uppercase">Loading...
+                    </h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Personnel Record /
+                            Faculty Division</span>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center space-x-3">
-                <button id="assignSubjectsBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm">
-                    <i class="fas fa-book mr-2"></i>Assign Subjects
+            <div class="flex items-center gap-3">
+                <button id="assignSubjectsBtn"
+                    class="flex items-center px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                    <i class="fas fa-book mr-2 opacity-50"></i>Assign Modules
                 </button>
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
-                    <i class="fas fa-edit mr-2"></i>Edit
+                <button
+                    class="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                    <i class="fas fa-edit mr-2"></i>Modify Stats
                 </button>
-                <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm">
-                    <i class="fas fa-trash mr-2"></i>Delete
+                <button
+                    class="flex items-center w-12 h-12 justify-center bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl hover:bg-rose-100 transition-all shadow-sm">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Teacher Information Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Personal Information -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
-                <div id="teacherInfo" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-[2rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i class="fas fa-id-card text-indigo-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Base Configuration
+                        </h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Primary
+                            Personnel Data</p>
+                    </div>
+                </div>
+                <div id="teacherInfo" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Loading skeleton -->
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-16 mb-1"></div>
-                        <div class="h-5 bg-gray-200 rounded w-32"></div>
+                    <div class="space-y-2 animate-pulse">
+                        <div class="h-3 bg-slate-100 rounded w-20"></div>
+                        <div class="h-5 bg-slate-50 rounded w-40"></div>
                     </div>
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-20 mb-1"></div>
-                        <div class="h-5 bg-gray-200 rounded w-24"></div>
-                    </div>
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-                        <div class="h-5 bg-gray-200 rounded w-40"></div>
-                    </div>
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-12 mb-1"></div>
-                        <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                    <div class="space-y-2 animate-pulse">
+                        <div class="h-3 bg-slate-100 rounded w-24"></div>
+                        <div class="h-5 bg-slate-50 rounded w-32"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Subjects Teaching -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-gray-900">Subjects & Papers Teaching</h2>
-                    <button id="assignSubjectsBtn2" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm">
-                        <i class="fas fa-plus mr-1"></i>Assign
+            <div class="bg-white rounded-[2rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center shadow-inner">
+                            <i class="fas fa-microscope text-purple-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Operational
+                                Domains</h2>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Active
+                                Subject & Paper Matrix</p>
+                        </div>
+                    </div>
+                    <button id="assignSubjectsBtn2"
+                        class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200">
+                        <i class="fas fa-plus mr-2"></i>Assign Domain
                     </button>
                 </div>
-                <div id="teacherSubjects" class="space-y-4">
+                <div id="teacherSubjects" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Loading skeleton -->
-                    <div class="animate-pulse">
-                        <div class="h-16 bg-gray-200 rounded-lg"></div>
-                    </div>
-                    <div class="animate-pulse">
-                        <div class="h-16 bg-gray-200 rounded-lg"></div>
-                    </div>
+                    <div class="h-24 bg-slate-50 rounded-2xl animate-pulse"></div>
+                    <div class="h-24 bg-slate-50 rounded-2xl animate-pulse"></div>
                 </div>
             </div>
 
             <!-- Classes Assigned -->
             {{if .classes}}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-4">Classes Assigned</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-[2rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i class="fas fa-users text-emerald-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Node Deployments</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Assigned Class
+                            Units</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {{range .classes}}
-                    <div class="border border-gray-200 rounded-lg p-4">
-                        <h3 class="font-medium text-gray-900">{{.Name}}</h3>
-                        <p class="text-sm text-gray-500 mt-1">{{len .Students}} students</p>
+                    <div
+                        class="group bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-100 rounded-2xl p-6 transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-[15px] font-black text-slate-800 tracking-tight uppercase">{{.Name}}
+                                </h3>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <span
+                                        class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded-md border border-emerald-100/50">{{len
+                                        .Students}} PERSONNEL</span>
+                                </div>
+                            </div>
+                            <div
+                                class="w-10 h-10 bg-white border border-slate-100 group-hover:border-emerald-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-emerald-500 transition-all shadow-sm">
+                                <i class="fas fa-chevron-right text-[12px]"></i>
+                            </div>
+                        </div>
                     </div>
                     {{end}}
                 </div>
@@ -88,71 +128,97 @@
             {{end}}
 
             <!-- Teacher Availability -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-6">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Weekly Availability</h2>
-                        <p class="text-sm text-gray-500 mt-1">Set working hours for each day of the week</p>
+            <div class="bg-white rounded-[2rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center shadow-inner">
+                            <i class="fas fa-calendar-alt text-rose-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Operational
+                                Window</h2>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Weekly
+                                Availability Matrix</p>
+                        </div>
                     </div>
-                    <button id="saveAvailabilityBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 text-sm font-medium shadow-sm">
-                        <i class="fas fa-save mr-2"></i>Save Changes
+                    <button id="saveAvailabilityBtn"
+                        class="px-6 py-3 bg-emerald-600 text-white rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
+                        <i class="fas fa-save mr-2"></i>Sync Configuration
                     </button>
                 </div>
-                <div id="availabilityGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
+                <div id="availabilityGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Availability cards will be injected here by JavaScript -->
                 </div>
             </div>
         </div>
 
         <!-- Quick Stats -->
-        <div class="space-y-6">
+        <div class="space-y-8">
             <!-- Profile Card -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
-                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-user text-white text-2xl"></i>
+            <div
+                class="bg-white rounded-[2.5rem] border border-slate-200/60 p-8 text-center shadow-sm relative overflow-hidden group">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity">
                 </div>
-                <h3 class="font-semibold text-gray-900">{{.teacher.FirstName}} {{.teacher.LastName}}</h3>
-                <p class="text-sm text-gray-500 mt-1">{{if .roles}}{{range $i, $role := .roles}}{{if $i}}, {{end}}{{$role.Name}}{{end}}{{else}}Teacher{{end}}</p>
+                <div class="relative z-10">
+                    <div
+                        class="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-100 border-4 border-white transform group-hover:scale-105 transition-transform duration-500">
+                        <span class="text-white text-3xl font-black uppercase">{{slice .teacher.FirstName 0 1}}{{slice
+                            .teacher.LastName 0 1}}</span>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight uppercase">{{.teacher.FirstName}}
+                        {{.teacher.LastName}}</h3>
+                    <div class="flex flex-wrap justify-center gap-2 mt-3">
+                        {{if .roles}}
+                        {{range .roles}}
+                        <span
+                            class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-indigo-100/50">{{.Name}}</span>
+                        {{end}}
+                        {{else}}
+                        <span
+                            class="px-3 py-1 bg-slate-50 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-100/50">Instructional
+                            Staff</span>
+                        {{end}}
+                    </div>
+                </div>
             </div>
 
             <!-- Statistics -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 class="font-semibold text-gray-900 mb-4">Statistics</h3>
-                <div id="teacherStats" class="space-y-4">
+            <div class="bg-white rounded-[2.5rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center gap-4 mb-8">
+                    <div
+                        class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center shadow-inner text-amber-600">
+                        <i class="fas fa-chart-line text-[14px]"></i>
+                    </div>
+                    <h3 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Performance Metrics</h3>
+                </div>
+                <div id="teacherStats" class="space-y-5">
                     <!-- Loading skeleton -->
-                    <div class="animate-pulse">
-                        <div class="flex items-center justify-between">
-                            <div class="h-4 bg-gray-200 rounded w-16"></div>
-                            <div class="h-4 bg-gray-200 rounded w-8"></div>
-                        </div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-50 animate-pulse">
+                        <div class="h-3 bg-slate-50 rounded w-16"></div>
+                        <div class="h-3 bg-slate-50 rounded w-8"></div>
                     </div>
-                    <div class="animate-pulse">
-                        <div class="flex items-center justify-between">
-                            <div class="h-4 bg-gray-200 rounded w-16"></div>
-                            <div class="h-4 bg-gray-200 rounded w-8"></div>
-                        </div>
-                    </div>
-                    <div class="animate-pulse">
-                        <div class="flex items-center justify-between">
-                            <div class="h-4 bg-gray-200 rounded w-24"></div>
-                            <div class="h-4 bg-gray-200 rounded w-8"></div>
-                        </div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-50 animate-pulse">
+                        <div class="h-3 bg-slate-50 rounded w-20"></div>
+                        <div class="h-3 bg-slate-50 rounded w-8"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 class="font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                <div id="teacherActivity" class="space-y-3">
-                    <!-- Loading skeleton -->
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-16 mb-1"></div>
-                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+            <div class="bg-white rounded-[2.5rem] border border-slate-200/60 p-8 shadow-sm">
+                <div class="flex items-center gap-4 mb-8">
+                    <div
+                        class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center shadow-inner text-slate-400">
+                        <i class="fas fa-history text-[14px]"></i>
                     </div>
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-gray-200 rounded w-20 mb-1"></div>
-                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+                    <h3 class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Log Activity</h3>
+                </div>
+                <div id="teacherActivity" class="space-y-6">
+                    <!-- Loading skeleton -->
+                    <div class="animate-pulse space-y-2">
+                        <div class="h-3 bg-slate-50 rounded w-20"></div>
+                        <div class="h-4 bg-slate-50 rounded w-32"></div>
                     </div>
                 </div>
             </div>
@@ -163,35 +229,45 @@
 
 
 <!-- Assign Subjects & Papers Modal -->
-<div id="assignSubjectsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Assign Subjects & Papers</h2>
-            <button id="closeAssignSubjectsBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+<div id="assignSubjectsModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-[2.5rem] shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-8 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase">Domain Allocation</h2>
+                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">Assigning Modules and
+                    Examination Papers</p>
+            </div>
+            <button id="closeAssignSubjectsBtn"
+                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all">
+                <i class="fas fa-times text-lg"></i>
             </button>
         </div>
-        
-        <div class="p-6">
+
+        <div class="p-8 overflow-y-auto">
             <form id="assignSubjectsForm">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Available Subjects & Papers</label>
-                    <div id="subjectsList" class="space-y-4 max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                <div class="mb-8">
+                    <label
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-1">Available
+                        Institutional Modules</label>
+                    <div id="subjectsList"
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                         <!-- Loading skeleton -->
-                        <div class="animate-pulse space-y-2">
-                            <div class="h-4 bg-gray-200 rounded w-full"></div>
-                            <div class="h-4 bg-gray-200 rounded w-full"></div>
-                            <div class="h-4 bg-gray-200 rounded w-full"></div>
-                        </div>
+                        <div class="animate-pulse h-20 bg-slate-50 rounded-2xl"></div>
+                        <div class="animate-pulse h-20 bg-slate-50 rounded-2xl"></div>
                     </div>
                 </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <button type="button" id="cancelAssignSubjects" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                        Cancel
+
+                <div class="flex items-center justify-end gap-3 pt-4">
+                    <button type="button" id="cancelAssignSubjects"
+                        class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                        Abort
                     </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                        <i class="fas fa-save mr-2"></i>Assign
+                    <button type="submit"
+                        class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all font-bold">
+                        <i class="fas fa-save mr-2"></i>Sync Assignments
                     </button>
                 </div>
             </form>
@@ -200,578 +276,620 @@
 </div>
 
 <script>
-const teacherID = '{{.teacherID}}';
-const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const displayDayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const teacherID = '{{.teacherID}}';
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const displayDayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-// Helper function to format time range
-function formatTimeRange(startTime, endTime) {
-    const formatTime = (time) => {
-        const [hours, minutes] = time.split(':');
-        const hour = parseInt(hours);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const displayHour = hour % 12 || 12;
-        return `${displayHour}:${minutes} ${ampm}`;
-    };
-    return `${formatTime(startTime)} - ${formatTime(endTime)}`;
-}
+    // Helper function to format time range
+    function formatTimeRange(startTime, endTime) {
+        const formatTime = (time) => {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        };
+        return `${formatTime(startTime)} - ${formatTime(endTime)}`;
+    }
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadTeacherData();
-    loadTeacherAvailability();
-    
-    // Modal event listeners
-    document.getElementById('assignSubjectsBtn').addEventListener('click', openAssignSubjectsModal);
-    document.getElementById('assignSubjectsBtn2').addEventListener('click', openAssignSubjectsModal);
-    document.getElementById('closeAssignSubjectsBtn').addEventListener('click', closeAssignSubjectsModal);
-    document.getElementById('cancelAssignSubjects').addEventListener('click', closeAssignSubjectsModal);
-    document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
+    document.addEventListener('DOMContentLoaded', function () {
+        loadTeacherData();
+        loadTeacherAvailability();
 
-    // Event listener for paper and subject checkboxes
-    document.getElementById('subjectsList').addEventListener('change', function(e) {
-        // Handle paper checkboxes
-        if (e.target.matches('input[type="checkbox"][name^="papers_"]')) {
-            if (e.target.checked) {
-                const subjectId = e.target.dataset.subjectId;
-                const subjectCheckbox = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`);
-                if (subjectCheckbox) {
-                    subjectCheckbox.checked = true;
+        // Modal event listeners
+        document.getElementById('assignSubjectsBtn').addEventListener('click', openAssignSubjectsModal);
+        document.getElementById('assignSubjectsBtn2').addEventListener('click', openAssignSubjectsModal);
+        document.getElementById('closeAssignSubjectsBtn').addEventListener('click', closeAssignSubjectsModal);
+        document.getElementById('cancelAssignSubjects').addEventListener('click', closeAssignSubjectsModal);
+        document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
+
+        // Event listener for paper and subject checkboxes
+        document.getElementById('subjectsList').addEventListener('change', function (e) {
+            // Handle paper checkboxes
+            if (e.target.matches('input[type="checkbox"][name^="papers_"]')) {
+                if (e.target.checked) {
+                    const subjectId = e.target.dataset.subjectId;
+                    const subjectCheckbox = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`);
+                    if (subjectCheckbox) {
+                        subjectCheckbox.checked = true;
+                    }
                 }
             }
-        }
 
-        // Handle subject checkboxes
-        if (e.target.matches('input[type="checkbox"][name="subjects"]')) {
-            const subjectId = e.target.value;
-            const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
-            if (!e.target.checked) {
-                // Uncheck all papers for this subject
-                paperCheckboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                });
+            // Handle subject checkboxes
+            if (e.target.matches('input[type="checkbox"][name="subjects"]')) {
+                const subjectId = e.target.value;
+                const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
+                if (!e.target.checked) {
+                    // Uncheck all papers for this subject
+                    paperCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
             }
-        }
+        });
+
+        // Event listener for saving availability
+        document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
     });
 
-    // Event listener for saving availability
-    document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
-});
+    async function loadTeacherData() {
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}`);
+            const data = await response.json();
 
-async function loadTeacherData() {
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}`);
-        const data = await response.json();
-        
-        if (response.ok && data.teacher) {
-            const teacher = data.teacher;
-            
-            // Update header
-            document.getElementById('teacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
-            
-            // Update personal information
-            const teacherInfo = document.getElementById('teacherInfo');
-            teacherInfo.innerHTML = `
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
-                    <p class="text-gray-900">${teacher.first_name} ${teacher.last_name}</p>
+            if (response.ok && data.teacher) {
+                const teacher = data.teacher;
+
+                // Update header
+                document.getElementById('teacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
+
+                // Update personal information
+                const teacherInfo = document.getElementById('teacherInfo');
+                teacherInfo.innerHTML = `
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:border-indigo-100 transition-all">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 opacity-70">Digital Identity</label>
+                    <p class="text-[14px] font-black text-slate-800 break-all">${teacher.email}</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-1">Employee ID</label>
-                    <p class="text-gray-900">EMP-${teacher.id}</p>
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:border-indigo-100 transition-all">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 opacity-70">Personnel Ref</label>
+                    <p class="text-[14px] font-black text-slate-800">FAC-REF-${teacher.id.toString().padStart(4, '0')}</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-                    <p class="text-gray-900">${teacher.email}</p>
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:border-indigo-100 transition-all">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 opacity-70">Comms Line</label>
+                    <p class="text-[14px] font-black text-slate-800">${teacher.phone || 'SECURE LINE UNSET'}</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-1">Status</label>
-                    <span class="inline-flex px-2 py-1 text-xs font-medium ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full">
-                        ${teacher.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:border-indigo-100 transition-all">
+                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 opacity-70">Operational Status</label>
+                    <div class="flex items-center mt-1">
+                        <span class="inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm ${teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' : 'bg-rose-50 text-rose-600 border border-rose-100/50'}">
+                            <span class="w-1.5 h-1.5 rounded-full mr-2 ${teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
+                            ${teacher.is_active ? 'Live' : 'Standby'}
+                        </span>
+                    </div>
                 </div>
             `;
-            
-            // Update statistics
-            const teacherStats = document.getElementById('teacherStats');
-            const classesCount = teacher.classes ? teacher.classes.length : 0;
-            const subjectsCount = teacher.subjects ? teacher.subjects.length : 0;
-            let totalStudents = 0;
-            if (teacher.classes) {
-                totalStudents = teacher.classes.reduce((sum, cls) => sum + (cls.students ? cls.students.length : 0), 0);
+
+                // Update statistics
+                const teacherStats = document.getElementById('teacherStats');
+                const classesCount = teacher.classes ? teacher.classes.length : 0;
+                const subjectsCount = teacher.subjects ? teacher.subjects.length : 0;
+                let totalStudents = 0;
+                if (teacher.classes) {
+                    totalStudents = teacher.classes.reduce((sum, cls) => sum + (cls.students ? cls.students.length : 0), 0);
+                }
+
+                teacherStats.innerHTML = `
+                <div class="flex items-center justify-between pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nodes</span>
+                        <span class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Assigned Units</span>
+                    </div>
+                    <span class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center font-black text-sm shadow-inner">${classesCount}</span>
+                </div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Domains</span>
+                        <span class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Core Subjects</span>
+                    </div>
+                    <span class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center font-black text-sm shadow-inner">${subjectsCount}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Personnel</span>
+                        <span class="text-[14px] font-black text-slate-800 tracking-tight uppercase">Total Managed</span>
+                    </div>
+                    <span class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center font-black text-sm shadow-inner">${totalStudents}</span>
+                </div>
+            `;
+
+                // Update recent activity
+                const teacherActivity = document.getElementById('teacherActivity');
+                const createdDate = new Date(teacher.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const updatedDate = new Date(teacher.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+                teacherActivity.innerHTML = `
+                <div class="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex items-start gap-4">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 shadow-sm shrink-0">
+                        <i class="fas fa-door-open text-indigo-500 text-[12px]"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 opacity-70">Induction Log</p>
+                        <p class="text-[12px] font-black text-slate-700 tracking-tight uppercase">Officer Joined: ${createdDate}</p>
+                    </div>
+                </div>
+                <div class="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex items-start gap-4">
+                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 shadow-sm shrink-0">
+                        <i class="fas fa-sync-alt text-emerald-500 text-[12px]"></i>
+                    </div>
+                    <div>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 opacity-70">Integrity Check</p>
+                        <p class="text-[12px] font-black text-slate-700 tracking-tight uppercase">Last Modified: ${updatedDate}</p>
+                    </div>
+                </div>
+            `;
+
+                // Load and display subjects
+                loadTeacherSubjects();
+            } else {
+                document.getElementById('teacherName').textContent = 'PERSONNEL NOT FOUND';
             }
-            
-            teacherStats.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">Classes</span>
-                    <span class="font-medium text-gray-900">${classesCount}</span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">Subjects</span>
-                    <span class="font-medium text-gray-900">${subjectsCount}</span>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600">Total Students</span>
-                    <span class="font-medium text-gray-900">${totalStudents}</span>
-                </div>
-            `;
-            
-            // Update recent activity
-            const teacherActivity = document.getElementById('teacherActivity');
-            const createdDate = new Date(teacher.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            const updatedDate = new Date(teacher.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            
-            teacherActivity.innerHTML = `
-                <div class="text-sm">
-                    <p class="text-gray-600">Joined on</p>
-                    <p class="font-medium text-gray-900">${createdDate}</p>
-                </div>
-                <div class="text-sm">
-                    <p class="text-gray-600">Last Updated</p>
-                    <p class="font-medium text-gray-900">${updatedDate}</p>
-                </div>
-            `;
-            
-            // Load and display subjects
-            loadTeacherSubjects();
-        } else {
-            document.getElementById('teacherName').textContent = 'Teacher Not Found';
-            document.getElementById('teacherInfo').innerHTML = '<p class="text-red-500">Error loading teacher data</p>';
+        } catch (error) {
+            console.error('Error loading teacher:', error);
         }
-    } catch (error) {
-        console.error('Error loading teacher:', error);
-        document.getElementById('teacherName').textContent = 'Error Loading Teacher';
-        document.getElementById('teacherInfo').innerHTML = '<p class="text-red-500">Error loading teacher data</p>';
     }
-}
 
-async function loadTeacherSubjects() {
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}/subjects`);
-        const data = await response.json();
-        
-        const teacherSubjects = document.getElementById('teacherSubjects');
-        
-        if (response.ok) {
-            const subjects = data.subjects || [];
-            
-            if (subjects.length > 0) {
-                teacherSubjects.innerHTML = subjects.map(subject => {
-                    const papers = subject.papers || [];
-                    const papersHtml = papers.length > 0 ? `
-                        <div class="mt-2 space-y-1">
+    async function loadTeacherSubjects() {
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}/subjects`);
+            const data = await response.json();
+
+            const teacherSubjects = document.getElementById('teacherSubjects');
+
+            if (response.ok) {
+                const subjects = data.subjects || [];
+
+                if (subjects.length > 0) {
+                    teacherSubjects.innerHTML = subjects.map(subject => {
+                        const papers = subject.papers || [];
+                        const papersHtml = papers.length > 0 ? `
+                        <div class="mt-4 space-y-2">
                             ${papers.map(paper => `
-                                <div class="flex items-center justify-between text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-file-alt mr-1"></i>
-                                        ${paper.name} (${paper.code})
+                                <div class="flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-6 bg-slate-50 rounded flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors">
+                                            <i class="fas fa-file-invoice text-[10px]"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[12px] font-black text-slate-700 uppercase tracking-tight">${paper.name}</p>
+                                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">${paper.code}</p>
+                                        </div>
                                     </div>
-                                    <button onclick="removeTeacherPaper('${subject.id}', '${paper.id}')" class="text-red-500 hover:text-red-700 ml-2">
-                                        <i class="fas fa-times"></i>
+                                    <button onclick="removeTeacherPaper('${subject.id}', '${paper.id}')" class="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all">
+                                        <i class="fas fa-times text-[12px]"></i>
                                     </button>
                                 </div>
                             `).join('')}
                         </div>
                     ` : '';
-                    
-                    return `
-                        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
+
+                        return `
+                        <div class="bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-purple-100 rounded-[1.5rem] p-6 transition-all duration-300 group shadow-sm">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="font-medium text-gray-900">${subject.name}</h3>
-                                    <p class="text-sm text-gray-500">${subject.code}</p>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-100 group-hover:border-purple-100 shadow-sm text-purple-600 transition-all">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-[15px] font-black text-slate-800 tracking-tight uppercase">${subject.name}</h3>
+                                        <span class="px-2 py-0.5 bg-purple-50 text-purple-600 text-[9px] font-black uppercase tracking-widest rounded-md border border-purple-100/50">${subject.code}</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xs text-gray-400">
-                                        ${papers.length} paper${papers.length !== 1 ? 's' : ''}
-                                    </span>
-                                    <button onclick="removeTeacherSubject('${subject.id}')" class="text-red-500 hover:text-red-700 text-sm">
-                                        <i class="fas fa-trash"></i>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="removeTeacherSubject('${subject.id}')" class="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                                        <i class="fas fa-trash-alt text-[14px]"></i>
                                     </button>
                                 </div>
                             </div>
-                            ${papersHtml}
+                            <div class="mt-4 border-t border-slate-100/50 pt-4">
+                                <div class="flex items-center justify-between mb-3 px-1">
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">Sub-Modules</span>
+                                    <span class="text-[9px] font-black text-purple-600 uppercase tracking-widest bg-purple-50 px-2 py-0.5 rounded-md">${papers.length} UNITS</span>
+                                </div>
+                                ${papersHtml}
+                            </div>
                         </div>
                     `;
-                }).join('');
-            } else {
-                teacherSubjects.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fas fa-book text-gray-300 text-3xl mb-3"></i>
-                        <p class="text-gray-500">No subjects assigned</p>
-                        <p class="text-sm text-gray-400 mt-1">Click "Assign" to add subjects and papers</p>
+                    }).join('');
+                } else {
+                    teacherSubjects.className = "col-span-1 md:col-span-2";
+                    teacherSubjects.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-inner mb-4">
+                            <i class="fas fa-book-medical text-2xl"></i>
+                        </div>
+                        <p class="text-[12px] font-black text-slate-400 uppercase tracking-widest">No Operational Domains Assigned</p>
+                        <p class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest opacity-70">Initialize deployment parameters to begin</p>
                     </div>
                 `;
+                }
+            } else {
+                teacherSubjects.innerHTML = '<div class="text-center text-rose-500 uppercase font-black text-[10px] tracking-widest">Error Loading Deployment Matrix</div>';
             }
-        } else {
-            teacherSubjects.innerHTML = '<div class="text-center text-red-500">Error loading subjects</div>';
+        } catch (error) {
+            console.error('Error loading teacher subjects:', error);
+            document.getElementById('teacherSubjects').innerHTML = '<div class="text-center text-rose-500 uppercase font-black text-[10px] tracking-widest">Error Loading Deployment Matrix</div>';
         }
-    } catch (error) {
-        console.error('Error loading teacher subjects:', error);
-        document.getElementById('teacherSubjects').innerHTML = '<div class="text-center text-red-500">Error loading subjects</div>';
     }
-}
 
-async function loadTeacherAvailability() {
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}/availability`);
-        const data = await response.json();
-        
-        const availabilityGrid = document.getElementById('availabilityGrid');
-        availabilityGrid.innerHTML = ''; // Clear existing cards
+    async function loadTeacherAvailability() {
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}/availability`);
+            const data = await response.json();
 
-        const availabilityMap = new Map();
-        (data.availability || []).forEach(item => {
-            availabilityMap.set(item.day_of_week, item);
-        });
+            const availabilityGrid = document.getElementById('availabilityGrid');
+            availabilityGrid.innerHTML = ''; // Clear existing cards
 
-        for (let i = 0; i < 7; i++) {
-            const dbDayOfWeek = (i + 1) % 7; // Map display order (0=Mon, 6=Sun) to DB day_of_week (0=Sun, 6=Sat)
-            const dayAvailability = availabilityMap.get(dbDayOfWeek) || {
-                day_of_week: dbDayOfWeek,
-                is_available: false,
-                start_time: { String: '', Valid: false },
-                end_time: { String: '', Valid: false }
-            };
+            const availabilityMap = new Map();
+            (data.availability || []).forEach(item => {
+                availabilityMap.set(item.day_of_week, item);
+            });
 
-            const card = document.createElement('div');
-            const isAvailable = dayAvailability.is_available;
-            card.className = `relative p-3 rounded-lg border transition-all duration-200 ${isAvailable ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`;
-            
-            card.innerHTML = `
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-gray-300'} transition-colors duration-200"></div>
-                        <h3 class="font-medium text-gray-900 text-sm">${displayDayNames[i]}</h3>
+            for (let i = 0; i < 7; i++) {
+                const dbDayOfWeek = (i + 1) % 7; // Map display order (0=Mon, 6=Sun) to DB day_of_week (0=Sun, 6=Sat)
+                const dayAvailability = availabilityMap.get(dbDayOfWeek) || {
+                    day_of_week: dbDayOfWeek,
+                    is_available: false,
+                    start_time: { String: '', Valid: false },
+                    end_time: { String: '', Valid: false }
+                };
+
+                const card = document.createElement('div');
+                const isAvailable = dayAvailability.is_available;
+                card.className = `relative p-5 rounded-[1.5rem] border transition-all duration-300 group ${isAvailable ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-100 bg-slate-50/30'}`;
+
+                card.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-1.5 h-1.5 rounded-full ${isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'} transition-colors duration-200"></div>
+                        <h3 class="text-[12px] font-black text-slate-800 uppercase tracking-widest">${displayDayNames[i]}</h3>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="availability-checkbox sr-only peer" 
                                data-day-of-week="${dbDayOfWeek}" ${isAvailable ? 'checked' : ''}>
-                        <div class="relative w-10 h-5 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-green-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                        <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
                     </label>
                 </div>
-                <div class="time-inputs space-y-2 ${isAvailable ? '' : 'opacity-40 pointer-events-none'}">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">Start</label>
-                            <input type="time" class="availability-start-time w-full px-2 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 text-xs bg-white" 
+                <div class="time-inputs space-y-3 ${isAvailable ? '' : 'opacity-40 pointer-events-none filter grayscale'}">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">Start</label>
+                            <input type="time" class="availability-start-time w-full px-3 py-2 bg-white border border-slate-100 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 text-[11px] font-black outline-none transition-all" 
                                    data-day-of-week="${dbDayOfWeek}" value="${dayAvailability.start_time.String || ''}" ${!isAvailable ? 'disabled' : ''}>
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">End</label>
-                            <input type="time" class="availability-end-time w-full px-2 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 text-xs bg-white" 
+                        <div class="space-y-1">
+                            <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">End</label>
+                            <input type="time" class="availability-end-time w-full px-3 py-2 bg-white border border-slate-100 rounded-xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 text-[11px] font-black outline-none transition-all" 
                                    data-day-of-week="${dbDayOfWeek}" value="${dayAvailability.end_time.String || ''}" ${!isAvailable ? 'disabled' : ''}>
                         </div>
                     </div>
-                    ${isAvailable && dayAvailability.start_time.String && dayAvailability.end_time.String ? `
-                        <div class="text-xs text-gray-500 bg-white px-2 py-1 rounded text-center">
-                            <i class="fas fa-clock mr-1"></i>
-                            ${formatTimeRange(dayAvailability.start_time.String, dayAvailability.end_time.String)}
-                        </div>
-                    ` : ''}
                 </div>
             `;
 
-            availabilityGrid.appendChild(card);
+                availabilityGrid.appendChild(card);
 
-            // Add event listener for checkbox to toggle time inputs and card style
+                const checkbox = card.querySelector('.availability-checkbox');
+                const timeInputsContainer = card.querySelector('.time-inputs');
+                const startTimeInput = card.querySelector('.availability-start-time');
+                const endTimeInput = card.querySelector('.availability-end-time');
+
+                checkbox.addEventListener('change', function () {
+                    const isChecked = this.checked;
+                    const statusDot = card.querySelector('.w-1.5');
+
+                    if (isChecked) {
+                        card.className = 'relative p-5 rounded-[1.5rem] border transition-all duration-300 border-emerald-100 bg-emerald-50/30';
+                        statusDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse transition-colors duration-200';
+                    } else {
+                        card.className = 'relative p-5 rounded-[1.5rem] border transition-all duration-300 border-slate-100 bg-slate-50/30';
+                        statusDot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300 transition-colors duration-200';
+                    }
+
+                    timeInputsContainer.classList.toggle('opacity-40', !isChecked);
+                    timeInputsContainer.classList.toggle('pointer-events-none', !isChecked);
+                    timeInputsContainer.classList.toggle('filter', !isChecked);
+                    timeInputsContainer.classList.toggle('grayscale', !isChecked);
+                    startTimeInput.disabled = !isChecked;
+                    endTimeInput.disabled = !isChecked;
+
+                    if (!isChecked) {
+                        startTimeInput.value = '';
+                        endTimeInput.value = '';
+                    } else {
+                        if (!startTimeInput.value) startTimeInput.value = '08:00';
+                        if (!endTimeInput.value) endTimeInput.value = '17:00';
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error loading teacher availability:', error);
+            document.getElementById('availabilityGrid').innerHTML = `<p class="text-rose-500 uppercase font-black text-[10px] tracking-widest">Error Loading Deployment Window</p>`;
+        }
+    }
+
+    async function handleSaveAvailability() {
+        const saveBtn = document.getElementById('saveAvailabilityBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+
+        const availabilityData = [];
+        const cards = document.querySelectorAll('#availabilityGrid > div');
+
+        let validationError = false;
+
+        cards.forEach(card => {
+            if (validationError) return;
+
             const checkbox = card.querySelector('.availability-checkbox');
-            const timeInputsContainer = card.querySelector('.time-inputs');
             const startTimeInput = card.querySelector('.availability-start-time');
             const endTimeInput = card.querySelector('.availability-end-time');
 
-            checkbox.addEventListener('change', function() {
-                const isChecked = this.checked;
-                const statusDot = card.querySelector('.w-2');
-                
-                // Update card styling
-                if (isChecked) {
-                    card.className = 'relative p-3 rounded-lg border transition-all duration-200 border-green-200 bg-green-50';
-                    statusDot.className = 'w-2 h-2 rounded-full bg-green-500 transition-colors duration-200';
-                } else {
-                    card.className = 'relative p-3 rounded-lg border transition-all duration-200 border-gray-200 bg-gray-50';
-                    statusDot.className = 'w-2 h-2 rounded-full bg-gray-300 transition-colors duration-200';
+            const dayOfWeek = parseInt(checkbox.dataset.dayOfWeek); // This is already the DB day_of_week
+            const isAvailable = checkbox.checked;
+            let startTime = startTimeInput.value || null;
+            let endTime = endTimeInput.value || null;
+
+            if (isAvailable) {
+                if (!startTime || !endTime) {
+                    alert(`Please enter both start and end times for ${displayDayNames[dayOfWeek === 0 ? 6 : dayOfWeek - 1]}.`); // Adjust for alert message
+                    validationError = true;
+                    return;
                 }
-                
-                // Update time inputs
-                timeInputsContainer.classList.toggle('opacity-40', !isChecked);
-                timeInputsContainer.classList.toggle('pointer-events-none', !isChecked);
-                startTimeInput.disabled = !isChecked;
-                endTimeInput.disabled = !isChecked;
-                
-                if (!isChecked) {
-                    startTimeInput.value = '';
-                    endTimeInput.value = '';
-                } else {
-                    // Set default times when enabling
-                    if (!startTimeInput.value) startTimeInput.value = '08:00';
-                    if (!endTimeInput.value) endTimeInput.value = '17:00';
+                if (startTime >= endTime) {
+                    alert(`Start time must be before end time for ${displayDayNames[dayOfWeek === 0 ? 6 : dayOfWeek - 1]}.`); // Adjust for alert message
+                    validationError = true;
+                    return;
                 }
+            }
+
+            availabilityData.push({
+                day_of_week: dayOfWeek,
+                is_available: isAvailable,
+                start_time: startTime,
+                end_time: endTime
             });
+        });
+
+        if (validationError) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+            return;
         }
-    } catch (error) {
-        console.error('Error loading teacher availability:', error);
-        document.getElementById('availabilityGrid').innerHTML = `<p class="text-red-500">Error loading availability</p>`;
-    }
-}
 
-async function handleSaveAvailability() {
-    const saveBtn = document.getElementById('saveAvailabilityBtn');
-    const originalText = saveBtn.innerHTML;
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}/availability`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ availability: availabilityData })
+            });
 
-    const availabilityData = [];
-    const cards = document.querySelectorAll('#availabilityGrid > div');
-
-    let validationError = false;
-
-    cards.forEach(card => {
-        if (validationError) return;
-
-        const checkbox = card.querySelector('.availability-checkbox');
-        const startTimeInput = card.querySelector('.availability-start-time');
-        const endTimeInput = card.querySelector('.availability-end-time');
-
-        const dayOfWeek = parseInt(checkbox.dataset.dayOfWeek); // This is already the DB day_of_week
-        const isAvailable = checkbox.checked;
-        let startTime = startTimeInput.value || null;
-        let endTime = endTimeInput.value || null;
-
-        if (isAvailable) {
-            if (!startTime || !endTime) {
-                alert(`Please enter both start and end times for ${displayDayNames[dayOfWeek === 0 ? 6 : dayOfWeek - 1]}.`); // Adjust for alert message
-                validationError = true;
-                return;
+            if (response.ok) {
+                loadTeacherAvailability();
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.error || 'Failed to update availability'));
             }
-            if (startTime >= endTime) {
-                alert(`Start time must be before end time for ${displayDayNames[dayOfWeek === 0 ? 6 : dayOfWeek - 1]}.`); // Adjust for alert message
-                validationError = true;
-                return;
-            }
+        } catch (error) {
+            console.error('Error saving availability:', error);
+            alert('An error occurred while saving availability');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         }
-
-        availabilityData.push({
-            day_of_week: dayOfWeek,
-            is_available: isAvailable,
-            start_time: startTime,
-            end_time: endTime
-        });
-    });
-
-    if (validationError) {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = originalText;
-        return;
     }
 
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}/availability`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ availability: availabilityData })
-        });
 
-        if (response.ok) {
-            loadTeacherAvailability();
-        } else {
-            const error = await response.json();
-            alert('Error: ' + (error.error || 'Failed to update availability'));
-        }
-    } catch (error) {
-        console.error('Error saving availability:', error);
-        alert('An error occurred while saving availability');
-    } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = originalText;
+    function openAssignSubjectsModal() {
+        document.getElementById('assignSubjectsModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        loadSubjectsForAssignment();
     }
-}
 
+    function closeAssignSubjectsModal() {
+        document.getElementById('assignSubjectsModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
-function openAssignSubjectsModal() {
-    document.getElementById('assignSubjectsModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    loadSubjectsForAssignment();
-}
+    async function loadSubjectsForAssignment() {
+        try {
+            const [subjectsResponse, teacherSubjectsResponse] = await Promise.all([
+                fetch('/api/subjects/with-papers'),
+                fetch(`/api/teachers/${teacherID}/subjects`)
+            ]);
 
-function closeAssignSubjectsModal() {
-    document.getElementById('assignSubjectsModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
+            const subjectsData = await subjectsResponse.json();
+            const teacherSubjectsData = await teacherSubjectsResponse.json();
 
-async function loadSubjectsForAssignment() {
-    try {
-        const [subjectsResponse, teacherSubjectsResponse] = await Promise.all([
-            fetch('/api/subjects/with-papers'),
-            fetch(`/api/teachers/${teacherID}/subjects`)
-        ]);
-        
-        const subjectsData = await subjectsResponse.json();
-        const teacherSubjectsData = await teacherSubjectsResponse.json();
-        
-        const allSubjects = subjectsData.subjects || [];
-        const teacherSubjects = teacherSubjectsData.subjects || [];
-        const teacherSubjectIds = teacherSubjects.map(s => s.id);
-        
-        // Create a map of teacher's assigned papers by subject
-        const teacherPapersBySubject = {};
-        teacherSubjects.forEach(subject => {
-            teacherPapersBySubject[subject.id] = (subject.papers || []).map(p => p.id);
-        });
-        
-        const subjectsList = document.getElementById('subjectsList');
-        subjectsList.innerHTML = allSubjects.map(subject => {
-            const papers = subject.papers || [];
-            const isSubjectAssigned = teacherSubjectIds.includes(subject.id);
-            const assignedPaperIds = teacherPapersBySubject[subject.id] || [];
-            
-            const papersHtml = papers.length > 0 ? `
-                <div class="ml-6 mt-2 space-y-1 border-l-2 border-gray-100 pl-3">
+            const allSubjects = subjectsData.subjects || [];
+            const teacherSubjects = teacherSubjectsData.subjects || [];
+            const teacherSubjectIds = teacherSubjects.map(s => s.id);
+
+            const teacherPapersBySubject = {};
+            teacherSubjects.forEach(subject => {
+                teacherPapersBySubject[subject.id] = (subject.papers || []).map(p => p.id);
+            });
+
+            const subjectsList = document.getElementById('subjectsList');
+            subjectsList.innerHTML = allSubjects.map(subject => {
+                const papers = subject.papers || [];
+                const isSubjectAssigned = teacherSubjectIds.includes(subject.id);
+                const assignedPaperIds = teacherPapersBySubject[subject.id] || [];
+
+                const papersHtml = papers.length > 0 ? `
+                <div class="mt-4 grid grid-cols-1 gap-2">
                     ${papers.map(paper => `
-                        <label class="flex items-center space-x-2 p-1 hover:bg-gray-50 rounded cursor-pointer">
-                            <input type="checkbox" name="papers_${subject.id}" value="${paper.id}" 
-                                   data-subject-id="${subject.id}"
-                                   ${assignedPaperIds.includes(paper.id) ? 'checked' : ''}
-                                   class="text-green-600 focus:ring-green-500 text-xs">
-                            <div class="flex-1">
-                                <span class="text-xs font-medium text-gray-700">${paper.name}</span>
-                                <span class="text-xs text-gray-400 ml-1">(${paper.code})</span>
+                        <label class="flex items-center justify-between p-3 bg-white hover:bg-slate-50 border border-slate-100 rounded-xl cursor-pointer group/paper transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="w-5 h-5 flex items-center justify-center">
+                                    <input type="checkbox" name="papers_${subject.id}" value="${paper.id}" 
+                                           data-subject-id="${subject.id}"
+                                           ${assignedPaperIds.includes(paper.id) ? 'checked' : ''}
+                                           class="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${paper.name}</p>
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">${paper.code}</p>
+                                </div>
                             </div>
                         </label>
                     `).join('')}
                 </div>
             ` : '';
-            
-            return `
-                <div class="border border-gray-200 rounded-lg p-3">
-                    <label class="flex items-center space-x-3 cursor-pointer">
+
+                return `
+                <div class="bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-indigo-100 rounded-[1.5rem] p-5 transition-all duration-300 group shadow-sm">
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100 group-hover:border-indigo-100 shadow-sm text-indigo-600 transition-all shrink-0">
+                                <i class="fas fa-layer-group text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-[13px] font-black text-slate-800 tracking-tight uppercase">${subject.name}</h3>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-70">${subject.code}</p>
+                            </div>
+                        </div>
                         <input type="checkbox" name="subjects" value="${subject.id}" 
                                ${isSubjectAssigned ? 'checked' : ''}
-                               class="text-blue-600 focus:ring-blue-500">
-                        <div class="flex-1">
-                            <span class="text-sm font-medium text-gray-900">${subject.name}</span>
-                            <span class="text-xs text-gray-500 ml-2">(${subject.code})</span>
-                            ${papers.length > 0 ? `<span class="text-xs text-gray-400 ml-2">• ${papers.length} papers</span>` : ''}
-                        </div>
+                               class="w-5 h-5 text-indigo-600 rounded-lg border-slate-300 focus:ring-indigo-500 shadow-sm">
                     </label>
-                    ${papersHtml}
+                    <div class="mt-4 pl-4 border-l-2 border-slate-100 group-hover:border-indigo-50 transition-colors">
+                        ${papers.length > 0 ? `
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest opacity-70">Examination Papers</span>
+                                <span class="text-[9px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md">${papers.length} AVAILABLE</span>
+                            </div>
+                        ` : ''}
+                        ${papersHtml}
+                    </div>
                 </div>
             `;
-        }).join('');
-    } catch (error) {
-        console.error('Error loading subjects:', error);
-        document.getElementById('subjectsList').innerHTML = '<p class="text-red-500 text-sm">Error loading subjects</p>';
+            }).join('');
+        } catch (error) {
+            console.error('Error loading subjects:', error);
+            document.getElementById('subjectsList').innerHTML = '<div class="text-center text-rose-500 uppercase font-black text-[10px] tracking-widest">Error Loading Domain Options</div>';
+        }
     }
-}
 
-async function handleAssignSubjects(e) {
-    e.preventDefault();
-    
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Assigning...';
-    
-    const formData = new FormData(e.target);
-    const selectedSubjects = formData.getAll('subjects');
+    async function handleAssignSubjects(e) {
+        e.preventDefault();
 
-    // Validation: At least one paper must be selected for subjects with papers
-    for (const subjectId of selectedSubjects) {
-        const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
-        if (paperCheckboxes.length > 0) {
-            const selectedPapers = formData.getAll(`papers_${subjectId}`);
-            if (selectedPapers.length === 0) {
-                const subjectName = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`).parentElement.querySelector('span').textContent;
-                alert(`Please select at least one paper for the subject: ${subjectName.trim()}`);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-                return;
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Assigning...';
+
+        const formData = new FormData(e.target);
+        const selectedSubjects = formData.getAll('subjects');
+
+        // Validation: At least one paper must be selected for subjects with papers
+        for (const subjectId of selectedSubjects) {
+            const paperCheckboxes = document.querySelectorAll(`input[type="checkbox"][name="papers_${subjectId}"]`);
+            if (paperCheckboxes.length > 0) {
+                const selectedPapers = formData.getAll(`papers_${subjectId}`);
+                if (selectedPapers.length === 0) {
+                    const subjectName = document.querySelector(`input[type="checkbox"][name="subjects"][value="${subjectId}"]`).parentElement.querySelector('span').textContent;
+                    alert(`Please select at least one paper for the subject: ${subjectName.trim()}`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    return;
+                }
             }
         }
-    }
-        
-    try {
-        
-        // Collect papers for each subject
-        const papers = {};
-        selectedSubjects.forEach(subjectId => {
-            const paperInputs = formData.getAll(`papers_${subjectId}`);
-            if (paperInputs.length > 0) {
-                papers[subjectId] = paperInputs;
+
+        try {
+
+            // Collect papers for each subject
+            const papers = {};
+            selectedSubjects.forEach(subjectId => {
+                const paperInputs = formData.getAll(`papers_${subjectId}`);
+                if (paperInputs.length > 0) {
+                    papers[subjectId] = paperInputs;
+                }
+            });
+
+            const response = await fetch(`/api/teachers/${teacherID}/subjects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subject_ids: selectedSubjects,
+                    papers: papers
+                })
+            });
+
+            if (response.ok) {
+                closeAssignSubjectsModal();
+                loadTeacherData(); // Reload teacher data to update subjects count
+                loadTeacherSubjects(); // Reload subjects section
+                alert('Subjects and papers assigned successfully!');
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.error || 'Failed to assign subjects and papers'));
             }
-        });
-        
-        const response = await fetch(`/api/teachers/${teacherID}/subjects`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                subject_ids: selectedSubjects,
-                papers: papers
-            })
-        });
-        
-        if (response.ok) {
-            closeAssignSubjectsModal();
-            loadTeacherData(); // Reload teacher data to update subjects count
-            loadTeacherSubjects(); // Reload subjects section
-            alert('Subjects and papers assigned successfully!');
-        } else {
-            const error = await response.json();
-            alert('Error: ' + (error.error || 'Failed to assign subjects and papers'));
+        } catch (error) {
+            console.error('Error assigning subjects:', error);
+            alert('Error assigning subjects and papers');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
         }
-    } catch (error) {
-        console.error('Error assigning subjects:', error);
-        alert('Error assigning subjects and papers');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
     }
-}
 
-async function removeTeacherSubject(subjectId) {
-    if (!confirm('Are you sure you want to remove this entire subject and all its papers?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            loadTeacherSubjects();
-            loadTeacherData();
-            alert('Subject removed successfully!');
-        } else {
-            const error = await response.json();
-            alert('Error: ' + (error.error || 'Failed to remove subject'));
+    async function removeTeacherSubject(subjectId) {
+        if (!confirm('Are you sure you want to remove this entire subject and all its papers?')) {
+            return;
         }
-    } catch (error) {
-        console.error('Error removing subject:', error);
-        alert('Error removing subject');
-    }
-}
 
-async function removeTeacherPaper(subjectId, paperId) {
-    if (!confirm('Are you sure you want to remove this paper? If this is the last paper, the entire subject will be removed.')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}?paper_id=${paperId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            loadTeacherSubjects();
-            loadTeacherData();
-            alert('Paper removed successfully!');
-        } else {
-            const error = await response.json();
-            alert('Error: ' + (error.error || 'Failed to remove paper'));
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                loadTeacherSubjects();
+                loadTeacherData();
+                alert('Subject removed successfully!');
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.error || 'Failed to remove subject'));
+            }
+        } catch (error) {
+            console.error('Error removing subject:', error);
+            alert('Error removing subject');
         }
-    } catch (error) {
-        console.error('Error removing paper:', error);
-        alert('Error removing paper');
     }
-}
+
+    async function removeTeacherPaper(subjectId, paperId) {
+        if (!confirm('Are you sure you want to remove this paper? If this is the last paper, the entire subject will be removed.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}?paper_id=${paperId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                loadTeacherSubjects();
+                loadTeacherData();
+                alert('Paper removed successfully!');
+            } else {
+                const error = await response.json();
+                alert('Error: ' + (error.error || 'Failed to remove paper'));
+            }
+        } catch (error) {
+            console.error('Error removing paper:', error);
+            alert('Error removing paper');
+        }
+    }
 </script>

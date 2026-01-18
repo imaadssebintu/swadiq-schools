@@ -1,548 +1,67 @@
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}} - Swadiq Schools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        secondary: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                        }
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-in': 'slideIn 0.3s ease-out',
-                    }
-                }
-            }
-        }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        .sidebar-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .sidebar-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-        }
-        .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-    </style>
-</head>
-<body class="bg-gray-50 font-sans antialiased">
-    <!-- Top Navigation Bar -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
-        <div class="flex items-center justify-between h-14 px-4 lg:px-6">
-            <!-- Left Section -->
-            <div class="flex items-center space-x-4">
-                <!-- Mobile Menu Button -->
-                <button id="sidebarToggle"
-                        class="lg:hidden p-1.5 rounded-md text-gray-600 hover:text-primary-600 hover:bg-primary-50 focus:outline-none transition-all duration-200">
-                    <i id="menuIcon" class="fas fa-bars text-base"></i>
-                    <i id="closeIcon" class="fas fa-times text-base hidden"></i>
-                </button>
-
-                <!-- Logo & Title -->
-                <div class="flex items-center">
-                    <h1 class="text-base font-semibold text-gray-900">Swadiq Schools</h1>
-                </div>
-            </div>
-
-            <!-- Right Section -->
-            <div class="flex items-center space-x-2">
-                <!-- Search Bar (Hidden on mobile) -->
-                <div class="hidden lg:flex items-center">
-                    <div class="relative">
-                        <input type="text"
-                               placeholder="Search..."
-                               class="w-48 pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-transparent bg-gray-50">
-                        <i class="fas fa-search absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs"></i>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <button class="relative p-1.5 rounded-md text-gray-600 hover:text-primary-600 hover:bg-primary-50 focus:outline-none transition-all duration-200">
-                    <i class="fas fa-bell text-base"></i>
-                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
-                </button>
-
-                <!-- User Menu -->
-                <div class="relative">
-                    <button id="userMenuButton"
-                            class="flex items-center space-x-2 p-1.5 rounded-md text-gray-600 hover:text-primary-600 hover:bg-primary-50 focus:outline-none transition-all duration-200">
-                        <div class="w-7 h-7 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-xs"></i>
-                        </div>
-                        <div class="hidden sm:block text-left">
-                            <p class="text-sm font-medium text-gray-900">{{.FirstName}} {{.LastName}}</p>
-                        </div>
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </button>
-
-                    <!-- Dropdown Menu -->
-                    <div id="userDropdown"
-                         class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 animate-fade-in">
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-sm font-medium text-gray-900">{{.FirstName}} {{.LastName}}</p>
-                            <p class="text-xs text-gray-500">{{.Email}}</p>
-                        </div>
-                        <a href="/auth/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                            <i class="fas fa-user-circle w-4 mr-3 text-gray-400"></i>
-                            My Profile
-                        </a>
-                        <a href="/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                            <i class="fas fa-cog w-4 mr-3 text-gray-400"></i>
-                            Settings
-                        </a>
-                        <a href="/help" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                            <i class="fas fa-question-circle w-4 mr-3 text-gray-400"></i>
-                            Help & Support
-                        </a>
-                        <div class="border-t border-gray-100 mt-2 pt-2">
-                            <form method="POST" action="/auth/logout">
-                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200">
-                                    <i class="fas fa-sign-out-alt w-4 mr-3"></i>
-                                    Sign Out
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+<div class="min-h-[calc(100vh-3.5rem)] flex items-center justify-center p-6">
+    <div class="max-w-md w-full text-center">
+        <!-- Luxury 404 Visual -->
+        <div class="relative mb-12">
+            <div class="absolute inset-0 bg-indigo-500/10 blur-[100px] rounded-full"></div>
+            <h1
+                class="text-[12rem] font-black leading-none tracking-tighter text-slate-900/5 select-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                404
+            </h1>
+            <div class="relative flex justify-center">
+                <div
+                    class="w-24 h-24 premium-gradient rounded-[2rem] rotate-12 flex items-center justify-center shadow-xl shadow-indigo-200">
+                    <i class="fas fa-ghost text-4xl text-white -rotate-12 animate-bounce"></i>
                 </div>
             </div>
         </div>
-    </header>
 
-    <!-- Layout Container -->
-    <div class="flex h-screen pt-14">
-        <!-- Sidebar -->
-        <aside id="sidebar"
-               class="fixed lg:static inset-y-0 left-0 z-40 w-56 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out mt-14 lg:mt-0">
-
-            <!-- Sidebar Content -->
-            <div class="flex flex-col h-full">
-                <!-- Navigation Menu -->
-                <nav class="flex-1 overflow-y-auto sidebar-scrollbar p-3 pt-4 space-y-4">
-                    <!-- Main Section -->
-                    <div>
-                        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 px-2">Main</h3>
-                        <div class="space-y-0.5">
-                            <a href="/dashboard"
-                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "dashboard"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-tachometer-alt w-4 mr-2.5 {{if eq .CurrentPage "dashboard"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Dashboard
-                            </a>
-
-                            <a href="/students"
-                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "students"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-user-graduate w-4 mr-2.5 {{if eq .CurrentPage "students"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Students
-                            </a>
-
-                            <a href="/teachers"
-                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "teachers"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-chalkboard-teacher w-4 mr-2.5 {{if eq .CurrentPage "teachers"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Teachers
-                            </a>
-
-                            <a href="/classes"
-                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "classes"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-school w-4 mr-2.5 {{if eq .CurrentPage "classes"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Classes
-                            </a>
-
-                            <a href="/subjects"
-                               class="flex items-center px-2.5 py-2 text-sm font-medium rounded-md transition-all duration-200 {{if eq .CurrentPage "subjects"}}bg-primary-50 text-primary-700{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-book w-4 mr-2.5 {{if eq .CurrentPage "subjects"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Subjects
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Academic Section -->
-                    <div>
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Academic</h3>
-                        <div class="space-y-1">
-                            <a href="/attendance"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "attendance"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-calendar-check w-5 mr-3 {{if eq .CurrentPage "attendance"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Attendance
-                            </a>
-
-                            <a href="/exams"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "exams"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-clipboard-list w-5 mr-3 {{if eq .CurrentPage "exams"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Exams
-                            </a>
-
-                            <a href="/grades"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "grades"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-medal w-5 mr-3 {{if eq .CurrentPage "grades"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Grades
-                            </a>
-
-                            <a href="/timetable"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "timetable"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-calendar-alt w-5 mr-3 {{if eq .CurrentPage "timetable"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Timetable
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Financial Section -->
-                    <div>
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Financial</h3>
-                        <div class="space-y-1">
-                            <a href="/fees"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "fees"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-money-bill-wave w-5 mr-3 {{if eq .CurrentPage "fees"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Fees
-                            </a>
-
-                            <a href="/expenses"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "expenses"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-receipt w-5 mr-3 {{if eq .CurrentPage "expenses"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Expenses
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Reports Section -->
-                    <div>
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Reports</h3>
-                        <div class="space-y-1">
-                            <a href="/reports"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "reports"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-chart-bar w-5 mr-3 {{if eq .CurrentPage "reports"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Analytics
-                            </a>
-
-                            <a href="/notifications"
-                               class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 {{if eq .CurrentPage "notifications"}}bg-primary-50 text-primary-700 border-r-2 border-primary-600{{else}}text-gray-700 hover:bg-gray-50 hover:text-gray-900{{end}}">
-                                <i class="fas fa-bell w-5 mr-3 {{if eq .CurrentPage "notifications"}}text-primary-600{{else}}text-gray-400{{end}}"></i>
-                                Notifications
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-
-                <!-- Sidebar Footer -->
-                <div class="flex-shrink-0 p-4 border-t border-gray-200">
-                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-check text-white text-sm"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate">System Status</p>
-                            <p class="text-xs text-green-600">All systems operational</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Mobile Overlay -->
-        <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col overflow-hidden lg:ml-0">
-
-            <!-- Page Content -->
-            <div class="flex-1 overflow-auto bg-gray-50">
-                <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 text-center">
-        <!-- 404 Icon -->
-        <div class="mx-auto flex items-center justify-center h-32 w-32 rounded-full bg-red-100">
-            <i class="fas fa-exclamation-triangle text-6xl text-red-600"></i>
-        </div>
-        
-        <!-- Error Message -->
-        <div class="space-y-4">
-            <h1 class="text-6xl font-bold text-gray-900">404</h1>
-            <h2 class="text-2xl font-semibold text-gray-700">Page Not Found</h2>
-            <p class="text-gray-600 max-w-sm mx-auto">
-                Sorry, the page you are looking for doesn't exist or has been moved.
+        <!-- Messaging -->
+        <div class="space-y-4 mb-10">
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">Lost in the Hallways?</h2>
+            <p class="text-slate-500 font-medium text-sm leading-relaxed max-w-[280px] mx-auto">
+                The page you're looking for seems to have skipped class. It might have been moved or deleted.
             </p>
         </div>
-        
-        <!-- Action Buttons -->
-        <div class="space-y-4">
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onclick="history.back()" 
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Go Back
-                </button>
-                <a href="/dashboard" 
-                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
-                    <i class="fas fa-home mr-2"></i>
-                    Go to Dashboard
-                </a>
-            </div>
-            
-            <!-- Search Box -->
-            <div class="mt-6">
-                <div class="relative max-w-xs mx-auto">
-                    <input type="text" 
-                           id="searchInput"
-                           placeholder="Search for pages..." 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <div id="searchResults" class="mt-2 hidden">
-                    <div class="bg-white border border-gray-200 rounded-md shadow-sm max-w-xs mx-auto">
-                        <!-- Search results will be populated here -->
-                    </div>
-                </div>
-            </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onclick="history.back()"
+                class="w-full sm:w-auto px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold text-xs rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                Go Back
+            </button>
+            <a href="/dashboard"
+                class="w-full sm:w-auto px-8 py-3 premium-gradient text-white font-bold text-xs rounded-2xl shadow-lg shadow-indigo-100 ring-2 ring-indigo-50/50 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2">
+                <i class="fas fa-grid-2"></i>
+                Dashboard
+            </a>
         </div>
-        
-        <!-- Quick Links -->
-        <div class="mt-8 pt-6 border-t border-gray-200">
-            <h3 class="text-sm font-medium text-gray-500 mb-3">Quick Links</h3>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-                <a href="/dashboard" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+
+        <!-- Helper Links -->
+        <div class="mt-16 pt-8 border-t border-slate-100">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Quick Destinations</p>
+            <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+                <a href="/students"
+                    class="text-[11px] font-bold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                    <i class="fas fa-user-graduate text-[13px] opacity-50"></i>
+                    Students
                 </a>
-                <a href="/students" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-user-graduate mr-1"></i> Students
+                <a href="/teachers"
+                    class="text-[11px] font-bold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                    <i class="fas fa-chalkboard-teacher text-[13px] opacity-50"></i>
+                    Teachers
                 </a>
-                <a href="/teachers" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-chalkboard-teacher mr-1"></i> Teachers
+                <a href="/fees"
+                    class="text-[11px] font-bold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                    <i class="fas fa-wallet text-[13px] opacity-50"></i>
+                    Fees
                 </a>
-                <a href="/classes" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-school mr-1"></i> Classes
-                </a>
-                <a href="/subjects" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-book mr-1"></i> Subjects
-                </a>
-                <a href="/auth/profile" class="text-primary-600 hover:text-primary-800 transition-colors duration-200">
-                    <i class="fas fa-user mr-1"></i> Profile
+                <a href="/help"
+                    class="text-[11px] font-bold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                    <i class="fas fa-headset text-[13px] opacity-50"></i>
+                    Support
                 </a>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-
-    // Available pages for search
-    const pages = [
-        { name: 'Dashboard', url: '/dashboard', icon: 'fas fa-tachometer-alt' },
-        { name: 'Students', url: '/students', icon: 'fas fa-user-graduate' },
-        { name: 'Teachers', url: '/teachers', icon: 'fas fa-chalkboard-teacher' },
-        { name: 'Classes', url: '/classes', icon: 'fas fa-school' },
-        { name: 'Subjects', url: '/subjects', icon: 'fas fa-book' },
-        { name: 'Profile', url: '/auth/profile', icon: 'fas fa-user' },
-        { name: 'Add Student', url: '/students/add', icon: 'fas fa-user-plus' }
-    ];
-
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-
-        if (query.length === 0) {
-            searchResults.classList.add('hidden');
-            return;
-        }
-
-        const filteredPages = pages.filter(page =>
-            page.name.toLowerCase().includes(query)
-        );
-
-        if (filteredPages.length > 0) {
-            const resultsHTML = filteredPages.map(page => `
-                <a href="${page.url}" class="block px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
-                    <i class="${page.icon} mr-2 text-gray-400"></i>
-                    <span class="text-sm text-gray-700">${page.name}</span>
-                </a>
-            `).join('');
-
-            searchResults.innerHTML = `<div class="py-1">${resultsHTML}</div>`;
-            searchResults.classList.remove('hidden');
-        } else {
-            searchResults.innerHTML = `
-                <div class="px-3 py-2 text-sm text-gray-500">
-                    No pages found for "${query}"
-                </div>
-            `;
-            searchResults.classList.remove('hidden');
-        }
-    });
-
-    // Hide search results when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.classList.add('hidden');
-        }
-    });
-
-    // Handle Enter key in search
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const firstResult = searchResults.querySelector('a');
-            if (firstResult) {
-                window.location.href = firstResult.href;
-            }
-        }
-    });
-});
-</script>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Initialize components
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSidebar();
-            initializeUserDropdown();
-            initializeSearch();
-        });
-
-        // Sidebar functionality
-        function initializeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const menuIcon = document.getElementById('menuIcon');
-            const closeIcon = document.getElementById('closeIcon');
-
-            function toggleSidebar() {
-                sidebar.classList.toggle('-translate-x-full');
-                overlay.classList.toggle('hidden');
-                menuIcon.classList.toggle('hidden');
-                closeIcon.classList.toggle('hidden');
-            }
-
-            sidebarToggle?.addEventListener('click', toggleSidebar);
-            overlay?.addEventListener('click', toggleSidebar);
-
-            // Auto-hide on mobile route change
-            window.addEventListener('popstate', function() {
-                if (window.innerWidth < 1024) {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden');
-                    menuIcon.classList.remove('hidden');
-                    closeIcon.classList.add('hidden');
-                }
-            });
-
-            // Responsive handling
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
-                    sidebar.classList.remove('-translate-x-full');
-                    overlay.classList.add('hidden');
-                    menuIcon.classList.remove('hidden');
-                    closeIcon.classList.add('hidden');
-                }
-            });
-        }
-
-        // User dropdown functionality
-        function initializeUserDropdown() {
-            const userMenuButton = document.getElementById('userMenuButton');
-            const userDropdown = document.getElementById('userDropdown');
-
-            userMenuButton?.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('hidden');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (userDropdown && !userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.add('hidden');
-                }
-            });
-
-            // Close dropdown on escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && userDropdown) {
-                    userDropdown.classList.add('hidden');
-                }
-            });
-        }
-
-        // Search functionality
-        function initializeSearch() {
-            const searchInput = document.querySelector('input[placeholder="Search..."]');
-
-            searchInput?.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    // Implement search functionality here
-                    console.log('Search:', this.value);
-                }
-            });
-        }
-
-        // Utility functions
-        function showNotification(message, type = 'info') {
-            // Implement notification system
-            console.log(`${type}: ${message}`);
-        }
-
-        // Page loading indicator
-        function showPageLoader() {
-            // Implement page loader
-        }
-
-        function hidePageLoader() {
-            // Hide page loader
-        }
-    </script>
-</body>
-</html>

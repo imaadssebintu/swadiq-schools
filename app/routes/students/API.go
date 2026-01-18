@@ -76,9 +76,9 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 	gender := c.Query("gender")
 	dateFrom := c.Query("date_from")
 	dateTo := c.Query("date_to")
-	sortBy := c.Query("sort_by", "student_id")  // default to student_id
-	sortOrder := c.Query("sort_order", "asc")    // default to ascending
-	
+	sortBy := c.Query("sort_by", "student_id") // default to student_id
+	sortOrder := c.Query("sort_order", "asc")  // default to ascending
+
 	// Get pagination parameters
 	limit := c.QueryInt("limit", 10)  // default to 10 students per page
 	offset := c.QueryInt("offset", 0) // default to start from beginning
@@ -112,9 +112,9 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 			searchLower := strings.ToLower(filters.Search)
 			fullName := strings.ToLower(student.FirstName + " " + student.LastName)
 			if !strings.Contains(strings.ToLower(student.FirstName), searchLower) &&
-			   !strings.Contains(strings.ToLower(student.LastName), searchLower) &&
-			   !strings.Contains(fullName, searchLower) &&
-			   !strings.Contains(strings.ToLower(student.StudentID), searchLower) {
+				!strings.Contains(strings.ToLower(student.LastName), searchLower) &&
+				!strings.Contains(fullName, searchLower) &&
+				!strings.Contains(strings.ToLower(student.StudentID), searchLower) {
 				continue
 			}
 		}
@@ -122,7 +122,7 @@ func GetStudentsTableAPI(c *fiber.Ctx) error {
 		// Apply status filter
 		if filters.Status != "" {
 			if (filters.Status == "active" && !student.IsActive) ||
-			   (filters.Status == "inactive" && student.IsActive) {
+				(filters.Status == "inactive" && student.IsActive) {
 				continue
 			}
 		}
@@ -287,9 +287,46 @@ func GetStudentByIDAPI(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "Student not found"})
 	}
 
+	// Extract class name if available
+	className := ""
+	if student.Class != nil {
+		className = student.Class.Name
+	}
+
 	// Format response for edit modal
 	response := fiber.Map{
-		"student": student,
+		"student": fiber.Map{
+			"id":         student.ID,
+			"student_id": student.StudentID,
+			"first_name": student.FirstName,
+			"last_name":  student.LastName,
+			"date_of_birth": func() string {
+				if student.DateOfBirth != nil {
+					return student.DateOfBirth.Format("2006-01-02")
+				}
+				return ""
+			}(),
+			"gender": func() string {
+				if student.Gender != nil {
+					return string(*student.Gender)
+				}
+				return ""
+			}(),
+			"address": func() string {
+				if student.Address != nil {
+					return *student.Address
+				}
+				return ""
+			}(),
+			"class_id": func() string {
+				if student.ClassID != nil {
+					return *student.ClassID
+				}
+				return ""
+			}(),
+			"class_name": className,
+			"is_active":  student.IsActive,
+		},
 	}
 
 	// Add parent information if available
@@ -560,7 +597,7 @@ func GetParentsAPI(c *fiber.Ctx) error {
 // SearchStudentsAPI searches for students by name or student ID
 func SearchStudentsAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")
-	
+
 	if query == "" {
 		return c.JSON(fiber.Map{
 			"students": []interface{}{},

@@ -1,338 +1,351 @@
 <!-- Teachers Management Content -->
-<div class="p-4 lg:p-6">
+<div class="px-4 py-4 lg:px-6 lg:py-5">
     <!-- Header Section -->
-    <div class="mb-6">
+    <div class="mb-5">
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 mb-1">Teachers Management</h1>
-                <p class="text-gray-600 text-sm">Manage teacher records, assignments, and information</p>
+                <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">Teachers Management</h1>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Instructional Staff & Faculty
+                    Logistics</p>
             </div>
-            <div class="flex items-center space-x-3">
-                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm">
-                    <i class="fas fa-download mr-2"></i>Export
-                </button>
-                <button id="addTeacherBtn" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-sm">
-                    <i class="fas fa-plus mr-2"></i>Add Teacher
-                </button>
-                <button id="manageRolesBtn" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                    <i class="fas fa-users-cog mr-2"></i>Manage Roles
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Department Overview -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Department Overview</h2>
-        <div id="departmentOverview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Skeleton loading for departments -->
-            <div class="animate-pulse">
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                </div>
-            </div>
-            <div class="animate-pulse">
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                </div>
-            </div>
-            <div class="animate-pulse">
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                </div>
-            </div>
-            <div class="animate-pulse">
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div class="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-                    <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="statsCards">
-        <!-- Total Teachers -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Teachers</p>
-                    <p id="totalTeachersCount" class="text-2xl font-bold text-gray-900 mt-1">
-                        <div class="h-8 bg-gray-200 rounded animate-pulse w-12"></div>
-                    </p>
-                </div>
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-chalkboard-teacher text-blue-600"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Active Teachers -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Active Teachers</p>
-                    <p id="activeTeachersCount" class="text-2xl font-bold text-gray-900 mt-1">
-                        <div class="h-8 bg-gray-200 rounded animate-pulse w-12"></div>
-                    </p>
-                </div>
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-circle text-green-600"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Class Teachers -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Class Teachers</p>
-                    <p id="classTeachersCount" class="text-2xl font-bold text-gray-900 mt-1">
-                        <div class="h-8 bg-gray-200 rounded animate-pulse w-12"></div>
-                    </p>
-                </div>
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-school text-purple-600"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Subject Teachers -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Subject Teachers</p>
-                    <p id="subjectTeachersCount" class="text-2xl font-bold text-gray-900 mt-1">
-                        <div class="h-8 bg-gray-200 rounded animate-pulse w-12"></div>
-                    </p>
-                </div>
-                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-book text-orange-600"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
-            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                <!-- Search -->
-                <div class="relative">
-                    <input type="text" placeholder="Search teachers..." 
-                           class="w-full sm:w-64 pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                
-                <!-- Department Filter -->
-                <select class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
-                    <option value="">All Departments</option>
-                    <option value="mathematics">Mathematics</option>
-                    <option value="science">Science</option>
-                    <option value="english">English</option>
-                    <option value="history">History</option>
-                    <option value="physical_education">Physical Education</option>
-                    <option value="arts">Arts</option>
-                </select>
-
-                <!-- Role Filter -->
-                <select class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
-                    <option value="">All Roles</option>
-                    <option value="class_teacher">Class Teacher</option>
-                    <option value="subject_teacher">Subject Teacher</option>
-                    <option value="head_teacher">Head Teacher</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-
             <div class="flex items-center space-x-2">
-                <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-filter mr-1"></i>More Filters
+                <button
+                    class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all duration-200 text-[11px] font-bold">
+                    <i class="fas fa-arrow-up-from-bracket mr-1.5 opacity-50"></i>Export
                 </button>
-                <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-sort mr-1"></i>Sort
+                <button id="addTeacherBtn"
+                    class="px-4 py-1.5 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50">
+                    <i class="fas fa-plus mr-1.5"></i>Add Faculty
+                </button>
+                <button id="manageDeptsBtn"
+                    class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm">
+                    <i class="fas fa-building mr-1.5 opacity-50"></i>Divisions
+                </button>
+                <button id="manageSubjectsBtn"
+                    class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm">
+                    <i class="fas fa-book-open mr-1.5 opacity-50"></i>Modules
+                </button>
+                <button id="manageRolesBtn"
+                    class="px-4 py-1.5 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all duration-200 text-[11px] font-bold shadow-sm">
+                    <i class="fas fa-users-cog mr-1.5 opacity-50"></i>Access Levels
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Teachers Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <!-- Departmental Architecture (Compact) -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-5 shadow-sm overflow-hidden relative">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Departmental Architecture
+                </h2>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Faculty Concentration
+                    Matrix</p>
+            </div>
+        </div>
+        <div id="departmentOverview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Loading Skeletons -->
+            <div class="animate-pulse bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <div class="h-3 bg-slate-200 rounded w-3/4 mb-3"></div>
+                <div class="h-6 bg-slate-200 rounded-lg w-full"></div>
+            </div>
+            <div class="animate-pulse bg-slate-50 rounded-xl p-3 border border-slate-100">
+                <div class="h-3 bg-slate-200 rounded w-3/4 mb-3"></div>
+                <div class="h-6 bg-slate-200 rounded-lg w-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards (Gradient Style) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5" id="statsCards">
+        <!-- Progress Skeletons -->
+        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+                </div>
+                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
+            </div>
+        </div>
+        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+                </div>
+                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
+            </div>
+        </div>
+        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+                </div>
+                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
+            </div>
+        </div>
+        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+                </div>
+                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search (Compact) -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-3 mb-5">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <!-- Search -->
+                <div class="relative group">
+                    <input id="searchInput" type="text" placeholder="Search faculty..."
+                        class="w-full sm:w-72 pl-9 pr-4 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 transition-all duration-300 group-hover:bg-white">
+                    <i
+                        class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-[10px] group-hover:text-indigo-500 transition-colors"></i>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <select id="departmentFilter"
+                        class="px-3 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300">
+                        <option value="">All Departments</option>
+                    </select>
+
+                    <select id="roleFilter"
+                        class="px-3 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300">
+                        <option value="">All Roles</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-1.5">
+                <button
+                    class="px-3 py-1.5 text-[11px] font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200">
+                    <i class="fas fa-filter mr-1.5 opacity-50"></i>Filters
+                </button>
+                <button
+                    class="px-3 py-1.5 text-[11px] font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200">
+                    <i class="fas fa-arrow-down-wide-short mr-1.5 opacity-50"></i>Sort
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers Table (Compact) -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classes</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-100 bg-slate-50/50">
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Faculty Member</th>
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Specialization</th>
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Access Level</th>
+                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Deployments</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Status</th>
+                        <th
+                            class="px-5 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Admin Controls</th>
                     </tr>
                 </thead>
-                <tbody id="teachers-table-body" class="bg-white divide-y divide-gray-200">
+                <tbody id="teachers-table-body" class="divide-y divide-slate-100">
                     <!-- Teachers will be loaded here via JavaScript -->
                 </tbody>
             </table>
         </div>
 
-        <!-- Pagination -->
-        <div class="bg-gray-50 px-4 py-3 border-t border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="text-sm text-gray-700">
-                    Showing <span class="font-medium">1</span> to <span class="font-medium">{{if .teachers}}{{len .teachers}}{{else}}0{{end}}</span> of <span class="font-medium">{{if .teachers}}{{len .teachers}}{{else}}0{{end}}</span> results
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors duration-200" disabled>
-                        Previous
-                    </button>
-                    <button class="px-3 py-1 text-sm bg-primary-600 text-white rounded">1</button>
-                    <button class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors duration-200">
-                        Next
-                    </button>
-                </div>
+        <!-- Pagination (Compact) -->
+        <div class="px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Showing <span class="text-slate-700">1</span> to <span class="text-slate-700">{{if .teachers}}{{len
+                    .teachers}}{{else}}0{{end}}</span> of <span class="text-slate-700">{{if .teachers}}{{len
+                    .teachers}}{{else}}0{{end}}</span> Entries
+            </p>
+            <div class="flex items-center space-x-1">
+                <button
+                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white transition-all disabled:opacity-50"
+                    disabled>
+                    <i class="fas fa-chevron-left text-[10px]"></i>
+                </button>
+                <button
+                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-[10px] shadow-sm shadow-indigo-200">1</button>
+                <button
+                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-white transition-all disabled:opacity-50"
+                    disabled>
+                    <i class="fas fa-chevron-right text-[10px]"></i>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- More Info Modal -->
-<div id="moreInfoModal" class="fixed z-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-xs">
-        <div class="flex items-center justify-between mb-3">
-            <h3 id="moreInfoModalTitle" class="text-sm font-semibold text-gray-900">Details</h3>
-            <button id="closeMoreInfoModalBtn" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times text-xs"></i>
-            </button>
-        </div>
-        <div id="moreInfoModalBody" class="space-y-1">
-            <!-- Content will be injected here -->
-        </div>
-    </div>
-</div>
 
 <!-- Add Teacher Modal -->
-<div id="addTeacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+<div id="addTeacherModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Add New Teacher</h2>
-            <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-lg font-black text-slate-900 tracking-tight uppercase">Faculty Induction</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Registering New
+                    Instructional Asset</p>
+            </div>
+            <button id="closeModalBtn"
+                class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <i class="fas fa-times text-md"></i>
             </button>
         </div>
 
         <!-- Modal Body -->
-        <form id="addTeacherForm" class="p-6 space-y-6">
-            <!-- Personal Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Personal Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                        <input type="text" id="firstName" name="firstName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter first name">
+        <form id="addTeacherForm" class="p-6 space-y-6 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+                <!-- Professional Information -->
+                <div class="md:col-span-2 flex items-center gap-3 pb-1.5 border-b border-slate-50">
+                    <div class="w-7 h-7 bg-purple-50 rounded-md flex items-center justify-center shadow-inner">
+                        <i class="fas fa-briefcase text-purple-600 text-[11px]"></i>
                     </div>
-                    <div>
-                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                        <input type="text" id="lastName" name="lastName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter last name">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                        <input type="email" id="email" name="email" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="teacher@swadiqschools.com">
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                        <input type="tel" id="phone" name="phone"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="+256 XXX XXX XXX">
-                    </div>
+                    <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Professional Parameters
+                    </h3>
                 </div>
-            </div>
 
-            <!-- Account Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Account Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password *</label>
-                        <input type="password" id="password" name="password" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter secure password">
-                        <p class="text-xs text-gray-500 mt-1">Password must be at least 8 characters long</p>
+                <div class="md:col-span-2">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Assigned
+                        Division / Department *</label>
+                    <div class="flex items-center gap-3">
+                        <input type="text" id="selectedDepartment" name="selectedDepartment" readonly required
+                            class="flex-1 px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[12px] font-bold text-slate-900 shadow-inner"
+                            placeholder="Select administrative unit">
+                        <button type="button" id="selectDeptBtn"
+                            class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200">
+                            <i class="fas fa-building mr-1.5 text-[9px]"></i>Division
+                        </button>
                     </div>
-                    <div>
-                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">Confirm Password *</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Confirm password">
-                    </div>
+                    <input type="hidden" id="departmentId" name="department">
                 </div>
-            </div>
 
-            <!-- Professional Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Professional Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Role *</label>
-                        <div class="flex items-center space-x-3">
-                            <input type="text" id="selectedRole" name="selectedRole" readonly required
-                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-900"
-                                   placeholder="Click to select role">
-                            <button type="button" id="selectRoleBtn" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                                <i class="fas fa-users-cog mr-2"></i>Select Role
-                            </button>
+                <div class="md:col-span-2">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Core
+                        Modules / Subjects</label>
+                    <div class="flex items-center gap-3">
+                        <div id="selectedSubjectsContainer"
+                            class="flex-1 min-h-[42px] px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg flex flex-wrap gap-1.5 items-center shadow-inner">
+                            <span class="text-[12px] font-bold text-slate-400">No modules selected</span>
                         </div>
-                        <input type="hidden" id="roleValue" name="role">
+                        <button type="button" id="selectSubjectsBtn"
+                            class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200">
+                            <i class="fas fa-book-open mr-1.5 text-[9px]"></i>Modules
+                        </button>
                     </div>
-                    <div>
-                        <label for="department" class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                        <select id="department" name="department"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
-                            <option value="">Select Department</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                    <input type="hidden" id="selectedSubjectIds" name="subjects">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Access
+                        Hierarchy / Role *</label>
+                    <div class="flex items-center gap-3">
+                        <input type="text" id="selectedRole" name="selectedRole" readonly required
+                            class="flex-1 px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[12px] font-bold text-slate-900 shadow-inner"
+                            placeholder="Click to select role">
+                        <button type="button" id="selectRoleBtn"
+                            class="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200">
+                            <i class="fas fa-users-cog mr-1.5 text-[9px]"></i>Hierarchy
+                        </button>
                     </div>
-                    <div>
-                        <label for="subjects" class="block text-sm font-medium text-gray-700 mb-2">Subjects</label>
-                        <select id="subjects" name="subjects" multiple
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
-                                style="min-height: 80px;">
-                            <option value="">Select subjects (hold Ctrl/Cmd for multiple)</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                        <p class="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple subjects</p>
+                    <input type="hidden" id="roleValue" name="role">
+                </div>
+
+                <!-- Personal Information -->
+                <div class="md:col-span-2 flex items-center gap-3 mt-2 pb-1.5 border-b border-slate-50">
+                    <div class="w-7 h-7 bg-indigo-50 rounded-md flex items-center justify-center shadow-inner">
+                        <i class="fas fa-user-circle text-indigo-600 text-[11px]"></i>
                     </div>
+                    <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Personal Identification
+                    </h3>
+                </div>
+
+                <div>
+                    <label for="firstName"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">First
+                        Designation *</label>
+                    <input type="text" id="firstName" name="firstName" required
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="Enter first name">
+                </div>
+                <div>
+                    <label for="lastName"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Surname
+                        *</label>
+                    <input type="text" id="lastName" name="lastName" required
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="Enter last name">
+                </div>
+                <div>
+                    <label for="email"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Digital
+                        Identity *</label>
+                    <input type="email" id="email" name="email" required
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="teacher@swadiqschools.com">
+                </div>
+                <div>
+                    <label for="phone"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Comms
+                        Protocol</label>
+                    <input type="tel" id="phone" name="phone"
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="+256 XXX XXX XXX">
+                </div>
+
+                <!-- Account Information -->
+                <div class="md:col-span-2 flex items-center gap-3 mt-2 pb-1.5 border-b border-slate-50">
+                    <div class="w-7 h-7 bg-emerald-50 rounded-md flex items-center justify-center shadow-inner">
+                        <i class="fas fa-lock text-emerald-600 text-[11px]"></i>
+                    </div>
+                    <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Security Credentials
+                    </h3>
+                </div>
+
+                <div>
+                    <label for="password"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Secure
+                        Key *</label>
+                    <input type="password" id="password" name="password" required
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="Enter secure password">
+                </div>
+                <div>
+                    <label for="confirmPassword"
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 px-0.5">Confirm
+                        Integrity *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required
+                        class="w-full px-3 py-2 bg-slate-50/50 border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[12px] font-bold"
+                        placeholder="Confirm password">
                 </div>
             </div>
 
             <!-- Form Actions -->
-            <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-end gap-3 pb-1 pt-3">
                 <button type="button" id="cancelBtn"
-                        class="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    Cancel
+                    class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all">
+                    Abort
                 </button>
                 <button type="submit"
-                        class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                    <i class="fas fa-plus mr-2"></i>Add Teacher
+                    class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-lg shadow-indigo-200 transition-all">
+                    Finalize Induction
                 </button>
             </div>
         </form>
@@ -340,241 +353,185 @@
 </div>
 
 <!-- View Teacher Modal -->
-<div id="viewTeacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Teacher Details</h2>
-            <button id="closeViewModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <div class="p-6">
-            <div class="flex items-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-white text-xl"></i>
+<div id="viewTeacherModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        <!-- Modal Header -->
+        <div class="p-8 pb-0">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg shadow-indigo-200 border-2 border-white">
+                        <span id="viewTeacherInitials" class="text-white text-2xl font-black uppercase"></span>
+                    </div>
+                    <div>
+                        <h3 id="viewTeacherName" class="text-2xl font-black text-slate-900 tracking-tight uppercase">
+                        </h3>
+                        <p id="viewTeacherID"
+                            class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-70"></p>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <h3 id="viewTeacherName" class="text-lg font-semibold text-gray-900"></h3>
-                    <p id="viewTeacherEmail" class="text-gray-600"></p>
-                </div>
+                <button id="closeViewModalBtn"
+                    class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID</label>
-                    <p id="viewTeacherID" class="text-gray-900"></p>
+        </div>
+
+        <div class="p-8 pt-0 space-y-6 overflow-y-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Digital
+                        Identity</label>
+                    <p id="viewTeacherEmail" class="text-[14px] font-black text-slate-800 break-all"></p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <p id="viewTeacherPhone" class="text-gray-900"></p>
+                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Comms
+                        Line</label>
+                    <p id="viewTeacherPhone" class="text-[14px] font-black text-slate-800"></p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
-                    <p id="viewTeacherDepartment" class="text-gray-900"></p>
+                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Assigned
+                        Division</label>
+                    <p id="viewTeacherDepartment"
+                        class="text-[14px] font-black text-slate-800 uppercase tracking-tight"></p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <span id="viewTeacherStatus" class="inline-flex px-2 py-1 text-xs font-medium rounded-full"></span>
+                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Service
+                        Status</label>
+                    <div id="viewTeacherStatusContainer" class="mt-1">
+                        <span id="viewTeacherStatus"
+                            class="inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm"></span>
+                    </div>
                 </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Roles</label>
+                <div class="md:col-span-2 bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 opacity-70">Hierarchy
+                        Clearances</label>
                     <div id="viewTeacherRoles" class="flex flex-wrap gap-2"></div>
                 </div>
-                
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Classes</label>
-                    <div id="viewTeacherClasses" class="text-gray-900"></div>
+                <div class="md:col-span-2 bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 opacity-70">Active
+                        Deployments</label>
+                    <div id="viewTeacherClasses" class="space-y-2"></div>
                 </div>
             </div>
-        </div>
-        
-        <div class="flex justify-end p-6 border-t border-gray-200">
-            <button id="closeViewModalBtn2" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                Close
-            </button>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button id="closeViewModalBtn2"
+                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                    Dismiss
+                </button>
+                <a id="fullProfileBtn" href="#"
+                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all">
+                    Full Personnel Record
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-// Function to open the view teacher modal
-function openViewModal(teacher) {
-    document.getElementById('viewTeacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
-    document.getElementById('viewTeacherEmail').textContent = teacher.email;
-    document.getElementById('viewTeacherID').textContent = `EMP-${teacher.id}`;
-    document.getElementById('viewTeacherPhone').textContent = teacher.phone || 'Not provided';
-    const departmentElement = document.getElementById('viewTeacherDepartment');
-    if (teacher.departments && teacher.departments.length > 0) {
-        departmentElement.innerHTML = teacher.departments.map(dept => 
-            `<span class="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full mr-1">${dept.name}</span>`
-        ).join('');
-    } else {
-        departmentElement.innerHTML = '<span class="text-gray-500">Not Assigned</span>';
-    }
-    
-    const statusElement = document.getElementById('viewTeacherStatus');
-    statusElement.textContent = teacher.is_active ? 'Active' : 'Inactive';
-    statusElement.className = `inline-flex px-2 py-1 text-xs font-medium rounded-full ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-    
-    const rolesElement = document.getElementById('viewTeacherRoles');
-    if (teacher.roles && teacher.roles.length > 0) {
-        rolesElement.innerHTML = teacher.roles.map(role => 
-            `<span class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">${role.name}</span>`
-        ).join('');
-    } else {
-        rolesElement.innerHTML = '<span class="text-gray-500">No roles assigned</span>';
-    }
-    
-    const classesElement = document.getElementById('viewTeacherClasses');
-    if (teacher.classes && teacher.classes.length > 0) {
-        classesElement.textContent = teacher.classes.map(cls => cls.name).join(', ');
-    } else {
-        classesElement.innerHTML = '<span class="text-gray-500">No classes assigned</span>';
-    }
-    
-    document.getElementById('viewTeacherModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-// Function to close the view teacher modal
-function closeViewModal() {
-    document.getElementById('viewTeacherModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Function to show classes modal
-function showClassesModal(button, teacherName, event) {
-    const modal = document.getElementById('classesModal');
-    const title = document.getElementById('classesModalTitle');
-    const classesList = document.getElementById('classesList');
-    const classes = JSON.parse(button.dataset.classes);
-    
-    title.textContent = `${teacherName}'s Classes`;
-    
-    classesList.innerHTML = '';
-    classes.forEach(cls => {
-        const classDiv = document.createElement('div');
-        classDiv.className = 'py-1 text-sm text-gray-700';
-        classDiv.innerHTML = `<span>${cls.name}</span>`;
-        classesList.appendChild(classDiv);
-    });
-    
-    // Position the modal next to the button using fixed positioning
-    const rect = event.target.getBoundingClientRect();
-    modal.style.left = `${rect.left}px`;
-    modal.style.top = `${rect.bottom + 5}px`;
-    
-    modal.classList.remove('hidden');
-}
-
-// Function to close classes modal
-function closeClassesModal() {
-    document.getElementById('classesModal').classList.add('hidden');
-}
-</script>
+<!-- View Functions moved to main script -->
 
 <!-- Edit Teacher Modal -->
-<div id="editTeacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+<!-- Edit Teacher Modal -->
+<div id="editTeacherModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Edit Teacher</h2>
-            <button id="closeEditModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+        <div class="flex items-center justify-between p-8 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase">Update Record</h2>
+                <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1">Modifying Faculty
+                    Parameters</p>
+            </div>
+            <button id="closeEditModalBtn"
+                class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all">
+                <i class="fas fa-times text-lg"></i>
             </button>
         </div>
 
         <!-- Modal Body -->
-        <form id="editTeacherForm" class="p-6 space-y-6">
+        <form id="editTeacherForm" class="p-8 space-y-8 overflow-y-auto">
             <input type="hidden" id="editTeacherId" name="teacherId">
 
-            <!-- Personal Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Personal Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                        <input type="text" id="editFirstName" name="firstName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter first name">
-                    </div>
-                    <div>
-                        <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                        <input type="text" id="editLastName" name="lastName" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter last name">
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label for="editFirstName"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">First
+                        Designation *</label>
+                    <input type="text" id="editFirstName" name="firstName" required
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[13px] font-bold">
                 </div>
-            </div>
-
-            <!-- Contact Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Contact Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="editEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                        <input type="email" id="editEmail" name="email" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter email address">
-                    </div>
-                    <div>
-                        <label for="editPhone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                        <input type="tel" id="editPhone" name="phone"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                               placeholder="Enter phone number">
-                    </div>
+                <div>
+                    <label for="editLastName"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Surname
+                        *</label>
+                    <input type="text" id="editLastName" name="lastName" required
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[13px] font-bold">
                 </div>
-            </div>
-
-            <!-- Professional Information -->
-            <div>
-                <h3 class="text-md font-medium text-gray-900 mb-4">Professional Information</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Roles *</label>
-                        <div class="space-y-2 p-3 border border-gray-300 rounded-lg bg-gray-50">
-                            <label class="flex items-center">
-                                <input type="checkbox" name="roles" value="class_teacher" class="mr-2 text-primary-600 focus:ring-primary-500">
-                                <span class="text-sm text-gray-700">Class Teacher</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" name="roles" value="subject_teacher" class="mr-2 text-primary-600 focus:ring-primary-500">
-                                <span class="text-sm text-gray-700">Subject Teacher</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" name="roles" value="head_teacher" class="mr-2 text-primary-600 focus:ring-primary-500">
-                                <span class="text-sm text-gray-700">Head Teacher</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" name="roles" value="admin" class="mr-2 text-primary-600 focus:ring-primary-500">
-                                <span class="text-sm text-gray-700">Admin</span>
-                            </label>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Select one or more roles for this teacher</p>
+                <div>
+                    <label for="editEmail"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Digital
+                        Identity *</label>
+                    <input type="email" id="editEmail" name="email" required
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[13px] font-bold">
+                </div>
+                <div>
+                    <label for="editPhone"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Comms
+                        Protocol</label>
+                    <input type="tel" id="editPhone" name="phone"
+                        class="w-full px-4 py-3 bg-slate-50/50 border border-slate-100 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 transition-all text-[13px] font-bold">
+                </div>
+                <div class="md:col-span-2">
+                    <label
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Access
+                        Hierarchy *</label>
+                    <div class="flex items-center gap-3">
+                        <input type="text" id="editSelectedRole" readonly required
+                            class="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[13px] font-bold text-slate-900 shadow-inner"
+                            placeholder="Select clearance level">
+                        <button type="button" id="editSelectRoleBtn"
+                            class="px-5 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200">
+                            Change
+                        </button>
                     </div>
-                    <div>
-                        <label for="editDepartment" class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                        <select id="editDepartment" name="department"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
-                            <option value="">Select Department</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                    <input type="hidden" id="editRoleValue" name="role">
+                </div>
+                <div class="md:col-span-2">
+                    <label
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Assigned
+                        Division</label>
+                    <div class="flex items-center gap-3">
+                        <input type="text" id="editSelectedDepartment" readonly required
+                            class="flex-1 px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-[13px] font-bold text-slate-900 shadow-inner"
+                            placeholder="Select administrative unit">
+                        <button type="button" id="editSelectDeptBtn"
+                            class="px-5 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200">
+                            Change
+                        </button>
                     </div>
+                    <input type="hidden" id="editDepartmentId" name="department">
                 </div>
             </div>
 
             <!-- Modal Footer -->
-            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="editCancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    Cancel
+            <div class="flex items-center justify-end gap-3 pt-4">
+                <button type="button" id="editCancelBtn"
+                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                    Abort
                 </button>
-                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                    <i class="fas fa-save mr-2"></i>Update Teacher
+                <button type="submit"
+                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all font-bold">
+                    <i class="fas fa-save mr-2"></i>Apply Changes
                 </button>
             </div>
         </form>
@@ -582,73 +539,76 @@ function closeClassesModal() {
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteTeacherModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Delete Teacher</h2>
-            <button id="closeDeleteModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-
-        <!-- Modal Body -->
-        <div class="p-6">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900">Are you sure?</h3>
-                    <p class="text-sm text-gray-500">This action cannot be undone.</p>
-                </div>
+<div id="deleteTeacherModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-[2rem] shadow-2xl max-w-md w-full border border-slate-200/60 overflow-hidden transform transition-all duration-300">
+        <div class="p-8 text-center">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i class="fas fa-exclamation-triangle text-rose-500 text-3xl"></i>
             </div>
-            <p class="text-gray-700 mb-4">
-                Are you sure you want to delete <span id="deleteTeacherName" class="font-medium"></span>?
-                This will remove the teacher from the system and they will no longer be able to access their account.
-            </p>
-            <input type="hidden" id="deleteTeacherId">
-        </div>
+            <h2 class="text-xl font-black text-slate-900 tracking-tight uppercase mb-2">Decommission Asset?</h2>
+            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-6">This action will purge the
+                personnel record</p>
 
-        <!-- Modal Footer -->
-        <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
-            <button type="button" id="deleteCancelBtn" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                Cancel
-            </button>
-            <button type="button" id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
-                <i class="fas fa-trash mr-2"></i>Delete Teacher
-            </button>
+            <p class="text-[13px] text-slate-600 font-medium mb-8 leading-relaxed">
+                Are you certain you want to remove <span id="deleteTeacherName"
+                    class="font-black text-slate-900"></span> from active duty? This data cannot be recovered.
+            </p>
+
+            <input type="hidden" id="deleteTeacherId">
+
+            <div class="flex flex-col gap-3">
+                <button type="button" id="confirmDeleteBtn"
+                    class="w-full py-4 bg-rose-600 text-white rounded-2xl hover:bg-rose-700 transition-all text-[11px] font-black uppercase tracking-widest shadow-lg shadow-rose-200">
+                    <i class="fas fa-trash mr-2 text-[10px]"></i>Confirm Deletion
+                </button>
+                <button type="button" id="deleteCancelBtn"
+                    class="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all text-[11px] font-black uppercase tracking-widest">
+                    Abort Protocol
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Manage Roles Modal -->
-<div id="manageRolesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Manage Roles</h2>
-            <button id="closeRolesModalBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+<div id="manageRolesModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-lg font-black text-slate-900 tracking-tight uppercase">Security Hierarchy</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Managing Access Levels
+                </p>
+            </div>
+            <button id="closeRolesModalBtn"
+                class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <i class="fas fa-times text-md"></i>
             </button>
         </div>
 
-        <div class="p-6">
+        <div class="p-6 space-y-6 overflow-y-auto">
             <!-- Add New Role -->
-            <div class="mb-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Role</h3>
-                <form id="addRoleForm" class="flex gap-3">
-                    <input type="text" id="roleName" placeholder="Role name" required
-                           class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
-                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
-                        <i class="fas fa-plus mr-2"></i>Add Role
+            <div class="bg-indigo-50/30 rounded-xl border border-indigo-100/50 p-5">
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 px-0.5">Initialize New
+                    Clearances</h3>
+                <form id="addRoleForm" class="flex gap-2.5">
+                    <input type="text" id="roleName" placeholder="Define role designation..." required
+                        class="flex-1 px-3.5 py-2.5 bg-white border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 text-[12px] font-bold">
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200">
+                        <i class="fas fa-plus mr-1.5 text-[9px]"></i>Induct
                     </button>
                 </form>
             </div>
 
             <!-- Existing Roles -->
             <div>
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Existing Roles</h3>
-                <div id="rolesList" class="space-y-2">
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3.5 px-1">Active Protocols
+                </h3>
+                <div id="rolesList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <!-- Roles will be loaded here -->
                 </div>
             </div>
@@ -656,317 +616,624 @@ function closeClassesModal() {
     </div>
 </div>
 
-<!-- Role Selection Modal -->
-<div id="roleSelectionModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Select Role</h2>
-            <button id="closeRoleSelectionBtn" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+<!-- Manage Divisions Modal -->
+<div id="manageDeptsModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-lg font-black text-slate-900 tracking-tight uppercase">Departmental Architecture</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Defining Divisions
+                </p>
+            </div>
+            <button id="closeDeptsModalBtn"
+                class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <i class="fas fa-times text-md"></i>
             </button>
         </div>
 
+        <div class="p-6 space-y-6 overflow-y-auto">
+            <!-- Add New Department -->
+            <div class="bg-indigo-50/30 rounded-xl border border-indigo-100/50 p-5">
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 px-0.5">Register New
+                    Division</h3>
+                <form id="addDeptForm" class="grid grid-cols-1 gap-3">
+                    <div class="flex gap-2.5">
+                        <input type="text" id="deptCode" placeholder="Code (e.g. ENG)" required
+                            class="w-24 px-3.5 py-2.5 bg-white border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 text-[12px] font-bold">
+                        <input type="text" id="deptName" placeholder="Division Name..." required
+                            class="flex-1 px-3.5 py-2.5 bg-white border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 text-[12px] font-bold">
+                    </div>
+                    <button type="submit"
+                        class="w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200">
+                        <i class="fas fa-plus mr-1.5 text-[9px]"></i>Authorize Division
+                    </button>
+                </form>
+            </div>
+
+            <!-- Existing Divisions -->
+            <div>
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3.5 px-1">Active
+                    Architecture</h3>
+                <div id="deptsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Departments will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Modules Modal -->
+<div id="manageSubjectsModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <div>
+                <h2 class="text-lg font-black text-slate-900 tracking-tight uppercase">Instructional Matrices</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Defining Core Modules
+                </p>
+            </div>
+            <button id="closeSubjectsModalBtn"
+                class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <i class="fas fa-times text-md"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6 overflow-y-auto">
+            <!-- Add New Module -->
+            <div class="bg-indigo-50/30 rounded-xl border border-indigo-100/50 p-5">
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 px-0.5">Initialize New
+                    Module</h3>
+                <form id="addSubjectForm" class="grid grid-cols-1 gap-3">
+                    <div class="flex gap-2.5">
+                        <select id="subjectDeptId" required
+                            class="w-32 px-3.5 py-2.5 bg-white border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 text-[11px] font-bold">
+                            <option value="">Division...</option>
+                        </select>
+                        <input type="text" id="subjectName" placeholder="Module Title..." required
+                            class="flex-1 px-3.5 py-2.5 bg-white border border-slate-100 rounded-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/10 text-[12px] font-bold">
+                    </div>
+                    <button type="submit"
+                        class="w-full py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200">
+                        <i class="fas fa-plus mr-1.5 text-[9px]"></i>Register Module
+                    </button>
+                </form>
+            </div>
+
+            <!-- Existing Modules -->
+            <div>
+                <h3 class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3.5 px-1">Active Modules
+                </h3>
+                <div id="subjectsManagementList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Subjects will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Role Selection Modal -->
+<div id="roleSelectionModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-sm w-full border border-slate-200/60 overflow-hidden transform transition-all duration-300">
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <h2 class="text-base font-black text-slate-900 tracking-tight uppercase">Select Clearances</h2>
+            <div class="flex items-center gap-2">
+                <button onclick="openManageRoles()"
+                    class="text-[9px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-widest px-2 py-1 bg-indigo-50 rounded-lg transition-all">Manage</button>
+                <button id="closeRoleSelectionBtn"
+                    class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="p-6">
-            <div id="roleSelectionList" class="space-y-3">
+            <div id="roleSelectionList" class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
                 <!-- Roles will be loaded here -->
             </div>
         </div>
     </div>
 </div>
 
-<!-- Classes Modal -->
+<!-- Department Selection Modal -->
+<div id="deptSelectionModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-sm w-full border border-slate-200/60 overflow-hidden transform transition-all duration-300">
+        <div class="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/30">
+            <h2 class="text-base font-black text-slate-900 tracking-tight uppercase">Select Division</h2>
+            <div class="flex items-center gap-2">
+                <button onclick="openManageDepts()"
+                    class="text-[9px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-widest px-2 py-1 bg-indigo-50 rounded-lg transition-all">Manage</button>
+                <button id="closeDeptSelectionBtn"
+                    class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div id="deptSelectionList" class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+                <!-- Departments will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subject Selection Modal -->
+<div id="subjectSelectionModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-xs w-full border border-slate-200/60 overflow-hidden transform transition-all duration-300">
+        <div class="flex items-center justify-between p-5 border-b border-slate-50 bg-slate-50/30">
+            <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase">Select Modules</h2>
+            <div class="flex items-center gap-2">
+                <button onclick="openManageSubjects()"
+                    class="text-[9px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-widest px-2 py-1 bg-indigo-50 rounded-lg transition-all">Manage</button>
+                <button id="closeSubjectSelectionBtn"
+                    class="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-5 space-y-3">
+            <div id="subjectSelectionList" class="space-y-1.5 max-h-[40vh] overflow-y-auto pr-1">
+                <!-- Subjects will be loaded here -->
+            </div>
+
+            <div class="pt-3 border-t border-slate-50 flex justify-end">
+                <button id="confirmSubjectsBtn"
+                    class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-[9px] font-black uppercase tracking-widest shadow-lg shadow-indigo-200">
+                    Confirm Selection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Classes Modal (Popover style) -->
 <div id="classesModal" class="fixed z-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-xs">
-        <div class="flex items-center justify-between mb-3">
-            <h3 id="classesModalTitle" class="text-sm font-semibold text-gray-900">Classes</h3>
-            <button id="closeClassesModalBtn" class="text-gray-400 hover:text-gray-600">
+    <div
+        class="bg-white rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 p-5 max-w-xs animate-in fade-in zoom-in duration-200">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
+            <h3 id="classesModalTitle" class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Active
+                Deployments</h3>
+            <button id="closeClassesModalBtn" class="text-slate-400 hover:text-rose-500 transition-colors">
                 <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div id="classesList" class="space-y-1">
+        <div id="classesList" class="space-y-2">
             <!-- Classes will be loaded here -->
         </div>
     </div>
 </div>
 
+<!-- More Info Modal (Pop-over style for badges) -->
+<div id="moreInfoModal" class="fixed z-50 hidden">
+    <div
+        class="bg-white rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 p-5 max-w-xs animate-in fade-in zoom-in duration-200">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
+            <h3 id="moreInfoModalTitle" class="text-[10px] font-black text-slate-900 uppercase tracking-widest">
+                Additional
+                Intel</h3>
+            <button id="closeMoreInfoModalBtn" class="text-slate-400 hover:text-rose-500 transition-colors">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        </div>
+        <div id="moreInfoModalBody" class="space-y-2">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
 <script>
-let allTeachers = [];
+    /**
+     * GLOBAL STATE & CACHES
+     */
+    let allTeachers = [];
+    let cachedSubjects = {}; // Cache for module names
+    let deptTarget = { name: null, id: null };
+    let roleTarget = { name: null, id: null };
+    let selectedSubjectIdsArray = [];
 
-function generateBadgesHtml(items, type, teacherId) {
-    if (!items || items.length === 0) {
-        const itemType = type === 'role' ? 'Role' : 'Department';
-        return `<span class="text-gray-500">No ${itemType}</span>`;
+    /**
+     * UTILITY FUNCTIONS
+     */
+    function setButtonLoading(button, isLoading, originalText = null) {
+        if (!button) return;
+        if (isLoading) {
+            button.disabled = true;
+            button.dataset.originalText = originalText || button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+            button.classList.add('opacity-75', 'cursor-not-allowed');
+        } else {
+            button.disabled = false;
+            button.innerHTML = button.dataset.originalText || originalText;
+            button.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
     }
 
-    const maxVisible = 1;
-    let html = '';
-    const visibleItems = items.slice(0, maxVisible);
-    const hiddenItemsCount = items.length - maxVisible;
+    function generateBadgesHtml(items, type, teacherId) {
+        if (!items || items.length === 0) {
+            return `<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">None</span>`;
+        }
 
-    html = visibleItems.map(item => {
-        const badgeClass = type === 'role' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800';
-        return `<span class="inline-flex px-2 py-1 text-xs font-medium ${badgeClass} rounded-full">${item.name}</span>`;
-    }).join(' ');
+        const maxVisible = 1;
+        let html = '';
+        const visibleItems = items.slice(0, maxVisible);
+        const hiddenItemsCount = items.length - maxVisible;
 
-    if (hiddenItemsCount > 0) {
-        html += `<button class="ml-2 text-xs text-blue-600 hover:underline focus:outline-none" onclick="showMoreModal('${type}', '${teacherId}', event)">+${hiddenItemsCount} more</button>`;
+        html = visibleItems.map(item => {
+            const badgeClass = type === 'role' ? 'bg-indigo-50 text-indigo-600 border-indigo-100/50' : 'bg-slate-50 text-slate-600 border-slate-100/50';
+            return `<span class="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-widest ${badgeClass} border rounded-lg shadow-sm">${item.name}</span>`;
+        }).join(' ');
+
+        if (hiddenItemsCount > 0) {
+            html += `<button class="text-[10px] font-black text-indigo-500 hover:text-indigo-700 uppercase tracking-widest ml-2 transition-colors" onclick="showMoreModal('${type}', '${teacherId}', event)">+${hiddenItemsCount} more</button>`;
+        }
+
+        return `<div class="flex flex-wrap items-center gap-1.5">${html}</div>`;
     }
 
-    return `<div class="flex flex-wrap items-center gap-1">${html}</div>`;
-}
+    /**
+     * MODAL OPERATIONS (GLOBAL)
+     */
+    window.openViewModal = function (teacher) {
+        const viewTeacherModal = document.getElementById('viewTeacherModal');
+        if (!viewTeacherModal) return;
 
-function showMoreModal(type, teacherId, event) {
-    const teacher = allTeachers.find(t => t.id === teacherId);
-    if (!teacher) return;
+        document.getElementById('viewTeacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
+        document.getElementById('viewTeacherEmail').textContent = teacher.email;
+        document.getElementById('viewTeacherID').textContent = `FAC-REF-${teacher.id.toString().padStart(4, '0')}`;
+        document.getElementById('viewTeacherPhone').textContent = teacher.phone || 'SECURE LINE UNSET';
 
-    const modal = document.getElementById('moreInfoModal');
-    const title = document.getElementById('moreInfoModalTitle');
-    const body = document.getElementById('moreInfoModalBody');
+        const deptDisplay = teacher.department ? teacher.department.name : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].name : 'UNASSIGNED');
+        document.getElementById('viewTeacherDepartment').textContent = deptDisplay;
 
-    let items = [];
-    if (type === 'role') {
-        title.textContent = `All Roles`;
-        items = teacher.roles;
-    } else if (type === 'department') {
-        title.textContent = `All Departments`;
-        items = teacher.departments;
-    }
+        // Initials
+        document.getElementById('viewTeacherInitials').textContent = `${teacher.first_name[0]}${teacher.last_name[0]}`;
 
-    body.innerHTML = items.map(item => {
-        const badgeClass = type === 'role' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800';
-        return `<div class="py-1"><span class="inline-flex px-2 py-1 text-xs font-medium ${badgeClass} rounded-full">${item.name}</span></div>`;
-    }).join('');
+        // Status
+        const statusSpan = document.getElementById('viewTeacherStatus');
+        statusSpan.textContent = teacher.is_active ? 'Active Pursuit' : 'Stationary / Inactive';
+        statusSpan.className = `inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm ${teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' : 'bg-rose-50 text-rose-600 border border-rose-100/50'}`;
+        statusSpan.innerHTML = `<span class="w-1.5 h-1.5 rounded-full mr-2 ${teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>${statusSpan.textContent}`;
 
-    // Position the modal
-    const rect = event.target.getBoundingClientRect();
-    modal.style.left = `${rect.left}px`;
-    modal.style.top = `${rect.bottom + 5}px`;
-    
-    modal.classList.remove('hidden');
-}
+        // Roles
+        const rolesContainer = document.getElementById('viewTeacherRoles');
+        rolesContainer.innerHTML = '';
+        if (teacher.roles && teacher.roles.length > 0) {
+            teacher.roles.forEach(role => {
+                const badge = document.createElement('span');
+                badge.className = 'px-3 py-1.5 bg-white text-indigo-600 border border-indigo-50 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-sm';
+                badge.textContent = role.name;
+                rolesContainer.appendChild(badge);
+            });
+        } else {
+            rolesContainer.innerHTML = '<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">No Clearances</span>';
+        }
 
-function closeMoreInfoModal() {
-    const modal = document.getElementById('moreInfoModal');
-    modal.classList.add('hidden');
-}// Load teacher stats via API
-function loadTeacherStats() {
-    fetch('/api/teachers/stats')
-        .then(response => response.json())
-        .then(data => {
-            // Replace entire stats cards with actual data
-            const statsCards = document.getElementById('statsCards');
-            statsCards.innerHTML = `
-                <!-- Total Teachers -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Teachers</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">${data.total_teachers || 0}</p>
-                        </div>
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chalkboard-teacher text-blue-600"></i>
-                        </div>
-                    </div>
-                </div>
+        // Classes
+        const classesContainer = document.getElementById('viewTeacherClasses');
+        classesContainer.innerHTML = '';
+        if (teacher.classes && teacher.classes.length > 0) {
+            teacher.classes.forEach(cls => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm';
+                classDiv.innerHTML = `
+                    <span class="text-[12px] font-bold text-slate-700 uppercase tracking-tight">${cls.name}</span>
+                    <span class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Active Node</span>
+                `;
+                classesContainer.appendChild(classDiv);
+            });
+        } else {
+            classesContainer.innerHTML = '<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">No Active Deployments</span>';
+        }
 
-                <!-- Active Teachers -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Active Teachers</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">${data.active_teachers || 0}</p>
-                        </div>
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                        </div>
-                    </div>
-                </div>
+        // Link to full profile
+        document.getElementById('fullProfileBtn').href = `/teachers/${teacher.id}`;
 
-                <!-- Class Teachers -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Class Teachers</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">${data.class_teachers || 0}</p>
-                        </div>
-                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-school text-purple-600"></i>
-                        </div>
-                    </div>
-                </div>
+        viewTeacherModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
 
-                <!-- Subject Teachers -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Subject Teachers</p>
-                            <p class="text-2xl font-bold text-gray-900 mt-1">${data.subject_teachers || 0}</p>
-                        </div>
-                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-book text-orange-600"></i>
-                        </div>
-                    </div>
-                </div>
+    window.closeViewModal = function () {
+        const viewTeacherModal = document.getElementById('viewTeacherModal');
+        if (viewTeacherModal) {
+            viewTeacherModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+    window.showClassesModal = function (button, teacherName, event) {
+        const modal = document.getElementById('classesModal');
+        const title = document.getElementById('classesModalTitle');
+        const classesList = document.getElementById('classesList');
+        if (!modal || !button.dataset.classes) return;
+
+        const classes = JSON.parse(button.dataset.classes);
+        title.textContent = `${teacherName}'s Active Deployments`;
+
+        classesList.innerHTML = '';
+        classes.forEach(cls => {
+            const classDiv = document.createElement('div');
+            classDiv.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl shadow-sm mb-2 last:mb-0';
+            classDiv.innerHTML = `
+                <span class="text-[12px] font-bold text-slate-700 uppercase tracking-tight">${cls.name}</span>
+                <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest bg-white px-2 py-1 rounded-lg border border-indigo-50">Operational</span>
             `;
-        })
-        .catch(error => {
-            console.error('Error loading teacher stats:', error);
-            // Show error state
-            const statsCards = document.getElementById('statsCards');
-            statsCards.innerHTML = `
-                <div class="col-span-full text-center py-8">
-                    <i class="fas fa-exclamation-triangle text-red-400 text-3xl mb-3"></i>
-                    <p class="text-red-500">Error loading teacher stats</p>
-                </div>
-            `;
+            classesList.appendChild(classDiv);
         });
-}
 
-// Load department overview via teachers API
-function loadDepartmentOverview() {
-    fetch('/api/teachers/department-overview')
-        .then(response => response.json())
-        .then(data => {
-            const departmentOverview = document.getElementById('departmentOverview');
-            if (data.departments && data.departments.length > 0) {
-                departmentOverview.innerHTML = data.departments.map(dept => `
-                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors duration-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-semibold text-gray-900">${dept.name}</h3>
-                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">${dept.code}</span>
+        // Position the modal
+        const rect = event.target.getBoundingClientRect();
+        modal.style.left = `${rect.left}px`;
+        modal.style.top = `${rect.bottom + 10}px`;
+        modal.classList.remove('hidden');
+    };
+
+    window.closeClassesModal = function () {
+        const modal = document.getElementById('classesModal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.showMoreModal = function (type, teacherId, event) {
+        const teacher = allTeachers.find(t => t.id == teacherId);
+        if (!teacher) return;
+
+        const modal = document.getElementById('moreInfoModal');
+        const title = document.getElementById('moreInfoModalTitle');
+        const body = document.getElementById('moreInfoModalBody');
+        if (!modal) return;
+
+        let items = [];
+        if (type === 'role') {
+            title.textContent = `All Roles`;
+            items = teacher.roles;
+        } else if (type === 'department') {
+            title.textContent = `All Departments`;
+            items = teacher.departments;
+        }
+
+        body.innerHTML = items && items.length > 0 ? items.map(item => {
+            const badgeClass = type === 'role' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800';
+            return `<div class="py-1"><span class="inline-flex px-2 py-1 text-xs font-medium ${badgeClass} rounded-full">${item.name}</span></div>`;
+        }).join('') : '<p class="text-xs text-slate-400 italic">None</p>';
+
+        // Position the modal
+        const rect = event.target.getBoundingClientRect();
+        modal.style.left = `${rect.left}px`;
+        modal.style.top = `${rect.bottom + 5}px`;
+        modal.classList.remove('hidden');
+    };
+
+    window.closeMoreInfoModal = function () {
+        const modal = document.getElementById('moreInfoModal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.openEditModal = function (teacherId, firstName, lastName, teacherEmail, teacherPhone, teacherRole, teacherDepartmentId, teacherDepartmentName) {
+        const editTeacherModal = document.getElementById('editTeacherModal');
+        if (!editTeacherModal) return;
+
+        document.getElementById('editTeacherId').value = teacherId;
+        document.getElementById('editFirstName').value = firstName || '';
+        document.getElementById('editLastName').value = lastName || '';
+        document.getElementById('editEmail').value = teacherEmail || '';
+        document.getElementById('editPhone').value = teacherPhone || '';
+        document.getElementById('editSelectedRole').value = teacherRole ? teacherRole.replace('_', ' ') : '';
+        document.getElementById('editRoleValue').value = teacherRole || '';
+        document.getElementById('editSelectedDepartment').value = teacherDepartmentName || '';
+        document.getElementById('editDepartmentId').value = teacherDepartmentId || '';
+
+        editTeacherModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeEditModal = function () {
+        const editTeacherModal = document.getElementById('editTeacherModal');
+        const editTeacherForm = document.getElementById('editTeacherForm');
+        if (editTeacherModal) {
+            editTeacherModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            if (editTeacherForm) editTeacherForm.reset();
+        }
+    };
+
+    window.openDeleteModal = function (teacherId, teacherName) {
+        const deleteTeacherModal = document.getElementById('deleteTeacherModal');
+        if (!deleteTeacherModal) return;
+
+        document.getElementById('deleteTeacherId').value = teacherId;
+        document.getElementById('deleteTeacherName').textContent = teacherName;
+        deleteTeacherModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeDeleteModal = function () {
+        const deleteTeacherModal = document.getElementById('deleteTeacherModal');
+        if (deleteTeacherModal) {
+            deleteTeacherModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+    /**
+     * API LOADING FUNCTIONS
+     */
+    async function loadTeacherStats() {
+        try {
+            const response = await fetch('/api/teachers/stats');
+            const data = await response.json();
+            const statsCards = document.getElementById('statsCards');
+            if (!statsCards) return;
+
+            statsCards.innerHTML = `
+                <!-- Total Force -->
+                <div class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wide mb-1">Total Force</p>
+                            <p class="text-2xl font-black text-white leading-none">${data.total_teachers || 0}</p>
+                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
                         </div>
-                        <div class="space-y-2 text-sm">
+                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-chalkboard-teacher text-white text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Active Duty -->
+                <div class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wide mb-1">Active Duty</p>
+                            <p class="text-2xl font-black text-white leading-none">${data.active_teachers || 0}</p>
+                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-check-circle text-white text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Commanders -->
+                <div class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-semibold text-purple-100 uppercase tracking-wide mb-1">Commanders</p>
+                            <p class="text-2xl font-black text-white leading-none">${data.class_teachers || 0}</p>
+                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-school text-white text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Specialists -->
+                <div class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wide mb-1">Specialists</p>
+                            <p class="text-2xl font-black text-white leading-none">${data.subject_teachers || 0}</p>
+                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-book text-white text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error loading teacher stats:', error);
+        }
+    }
+
+    async function loadDepartmentOverview() {
+        try {
+            const response = await fetch('/api/teachers/department-overview');
+            const data = await response.json();
+            const container = document.getElementById('departmentOverview');
+            if (!container) return;
+
+            if (data.departments && data.departments.length > 0) {
+                container.innerHTML = data.departments.map(dept => `
+                    <div class="bg-slate-50/50 rounded-xl p-4 border border-slate-100 shadow-sm hover:bg-white hover:border-indigo-100 transition-all duration-300">
+                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100/50">
+                            <h3 class="text-[11px] font-black text-slate-800 tracking-tight uppercase">${dept.name}</h3>
+                            <span class="px-2 py-0.5 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">${dept.code}</span>
+                        </div>
+                        <div class="space-y-3">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <span class="text-gray-600">Head:</span>
-                                    <span class="text-gray-900 font-medium">${dept.head_name}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Unit Command</span>
+                                    <span class="text-[11px] font-bold text-slate-700">${dept.head_name}</span>
                                 </div>
-                                <div class="text-xs text-blue-600 font-medium">
-                                    ${dept.teacher_count || 0} ${(dept.teacher_count || 0) === 1 ? 'Teacher' : 'Teachers'}
+                                <div class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">
+                                    ${dept.teacher_count || 0} PERS
                                 </div>
                             </div>
-                            <div>
-                                <span class="text-gray-600">Assistant:</span>
-                                <span class="text-gray-900 font-medium">${dept.assistant_name}</span>
+                            <div class="flex flex-col">
+                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Executive Liaison</span>
+                                <span class="text-[11px] font-bold text-slate-700">${dept.assistant_name}</span>
                             </div>
                         </div>
                     </div>
                 `).join('');
             } else {
-                departmentOverview.innerHTML = `
-                    <div class="col-span-full text-center py-8">
-                        <i class="fas fa-building text-gray-400 text-3xl mb-3"></i>
-                        <p class="text-gray-500">No departments found</p>
-                    </div>
-                `;
+                container.innerHTML = `<p class="col-span-full text-center py-8 text-slate-400 uppercase font-black tracking-widest text-[10px]">No divisions mapped</p>`;
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error loading department overview:', error);
-            const departmentOverview = document.getElementById('departmentOverview');
-            departmentOverview.innerHTML = `
-                <div class="col-span-full text-center py-8">
-                    <i class="fas fa-exclamation-triangle text-red-400 text-3xl mb-3"></i>
-                    <p class="text-red-500">Error loading departments</p>
-                </div>
-            `;
-        });
-}
-
-// Loading utility functions
-function setButtonLoading(button, isLoading, originalText = null) {
-    if (isLoading) {
-        button.disabled = true;
-        button.dataset.originalText = originalText || button.textContent;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
-        button.classList.add('opacity-75', 'cursor-not-allowed');
-    } else {
-        button.disabled = false;
-        button.innerHTML = button.dataset.originalText || originalText;
-        button.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
     }
-}
 
-// Load teachers via API
-function loadTeachers() {
-    const tbody = document.getElementById('teachers-table-body');
-    
-    // Show loading skeleton
-    tbody.innerHTML = Array(5).fill().map(() => `
-        <tr class="animate-pulse">
-            <td class="px-4 py-3">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
-                    <div class="ml-3">
-                        <div class="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-                        <div class="h-3 bg-gray-200 rounded w-32"></div>
-                    </div>
-                </div>
-            </td>
-            <td class="px-4 py-3">
-                <div class="h-4 bg-gray-200 rounded w-16"></div>
-            </td>
-            <td class="px-4 py-3">
-                <div class="h-6 bg-gray-200 rounded-full w-20"></div>
-            </td>
-            <td class="px-4 py-3">
-                <div class="h-4 bg-gray-200 rounded w-16"></div>
-            </td>
-            <td class="px-4 py-3">
-                <div class="h-6 bg-gray-200 rounded-full w-16"></div>
-            </td>
-            <td class="px-4 py-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 bg-gray-200 rounded"></div>
-                    <div class="w-6 h-6 bg-gray-200 rounded"></div>
-                    <div class="w-6 h-6 bg-gray-200 rounded"></div>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    async function loadTeachers() {
+        const tbody = document.getElementById('teachers-table-body');
+        if (!tbody) return;
 
-    fetch('/api/teachers')
-        .then(response => response.json())
-        .then(data => {
+        // Loading skeletons
+        tbody.innerHTML = Array(5).fill().map(() => `
+            <tr class="animate-pulse">
+                <td class="px-5 py-4"><div class="flex items-center"><div class="w-10 h-10 bg-slate-100 rounded-xl mr-3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded w-24"></div><div class="h-2 bg-slate-50 rounded w-32"></div></div></div></td>
+                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-20"></div></td>
+                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-24"></div></td>
+                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-16"></div></td>
+                <td class="px-5 py-4 text-center"><div class="h-4 bg-slate-50 rounded-lg w-12 mx-auto"></div></td>
+                <td class="px-5 py-4 text-right"><div class="flex justify-end gap-2"><div class="w-8 h-8 bg-slate-50 rounded-lg"></div><div class="w-8 h-8 bg-slate-50 rounded-lg"></div></div></td>
+            </tr>
+        `).join('');
+
+        try {
+            const response = await fetch('/api/teachers');
+            const data = await response.json();
             allTeachers = data.teachers || [];
+
             if (allTeachers.length > 0) {
                 tbody.innerHTML = allTeachers.map(teacher => `
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-4 py-3">
+                    <tr class="group hover:bg-slate-50 transition-all duration-300">
+                        <td class="px-5 py-4">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-sm"></i>
+                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                                    <span class="text-indigo-600 font-black text-[11px] uppercase">${teacher.first_name[0]}${teacher.last_name[0]}</span>
                                 </div>
-                                <div class="ml-3">
-                                    <a href="/teachers/${teacher.id}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200">${teacher.first_name} ${teacher.last_name}</a>
-                                    <p class="text-xs text-gray-500">${teacher.email}</p>
+                                <div class="flex flex-col">
+                                    <a href="/teachers/${teacher.id}" class="text-[13px] font-black text-slate-800 hover:text-indigo-600 transition-colors tracking-tight uppercase">${teacher.first_name} ${teacher.last_name}</a>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-70">${teacher.email}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-900">
+                        <td class="px-5 py-4">
                             ${generateBadgesHtml(teacher.departments, 'department', teacher.id)}
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-900">
+                        <td class="px-5 py-4">
                             ${generateBadgesHtml(teacher.roles, 'role', teacher.id)}
                         </td>
-                        <td class="px-4 py-3">
+                        <td class="px-5 py-4">
                             ${teacher.classes && teacher.classes.length > 0
-                                ? `<button class="text-blue-600 hover:text-blue-800 font-medium cursor-pointer whitespace-nowrap" onclick="showClassesModal(this, '${teacher.first_name} ${teacher.last_name}', event)" data-classes='${JSON.stringify(teacher.classes)}'>${teacher.classes.length} ${teacher.classes.length === 1 ? 'Class' : 'Classes'}</button>`
-                                : '<span class="text-xs text-gray-500">No Classes</span>'
-                            }
+                        ? `<button class="inline-flex items-center px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-indigo-50 hover:text-indigo-600 border border-slate-100 transition-all" 
+                                    onclick="showClassesModal(this, '${teacher.first_name} ${teacher.last_name}', event)" data-classes='${JSON.stringify(teacher.classes)}'>
+                                    <i class="fas fa-layer-group mr-1.5 opacity-50"></i>${teacher.classes.length} Nodes
+                                   </button>`
+                        : '<span class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">No Deployments</span>'
+                    }
                         </td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex px-2 py-1 text-xs font-medium ${teacher.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full">
-                                ${teacher.is_active ? 'Active' : 'Inactive'}
+                        <td class="px-5 py-4 text-center">
+                            <span class="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-lg shadow-sm ${teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}">
+                                <span class="w-1 h-1 rounded-full mr-1.5 ${teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
+                                ${teacher.is_active ? 'Live' : 'Standby'}
                             </span>
                         </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center space-x-2">
-                                <button class="view-teacher-btn p-1 text-gray-400 hover:text-blue-600 transition-colors duration-200" title="View" data-teacher='${JSON.stringify(teacher)}'>
-                                    <i class="fas fa-eye text-sm"></i>
+                        <td class="px-5 py-4 text-right">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button class="view-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-lg shadow-sm transition-all" title="Review Profile" data-teacher='${JSON.stringify(teacher)}'>
+                                    <i class="fas fa-eye text-[11px]"></i>
                                 </button>
-                                <button class="edit-teacher-btn p-1 text-gray-400 hover:text-green-600 transition-colors duration-200"
-                                        title="Edit"
+                                <button class="edit-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-100 rounded-lg shadow-sm transition-all"
+                                        title="Modify Record"
                                         data-teacher-id="${teacher.id}"
                                         data-teacher-name="${teacher.first_name} ${teacher.last_name}"
                                         data-teacher-email="${teacher.email}"
@@ -974,666 +1241,612 @@ function loadTeachers() {
                                         data-teacher-first-name="${teacher.first_name}"
                                         data-teacher-last-name="${teacher.last_name}"
                                         data-teacher-role="${teacher.roles && teacher.roles.length > 0 ? teacher.roles[0].name : ''}"
-                                        data-teacher-department-id="${teacher.department ? teacher.department.id : ''}">
-                                    <i class="fas fa-edit text-sm"></i>
+                                        data-teacher-department-id="${teacher.department ? teacher.department.id : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].id : '')}"
+                                        data-teacher-department-name="${teacher.department ? teacher.department.name : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].name : '')}">
+                                    <i class="fas fa-edit text-[11px]"></i>
                                 </button>
-                                <button class="delete-teacher-btn p-1 text-gray-400 hover:text-red-600 transition-colors duration-200"
-                                        title="Delete"
+                                <button class="delete-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-100 rounded-lg shadow-sm transition-all"
+                                        title="Purge Record"
                                         data-teacher-id="${teacher.id}"
                                         data-teacher-name="${teacher.first_name} ${teacher.last_name}">
-                                    <i class="fas fa-trash text-sm"></i>
+                                    <i class="fas fa-trash text-[11px]"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
                 `).join('');
-                
-                // Add event listeners for view buttons
-                document.querySelectorAll('.view-teacher-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const teacher = JSON.parse(this.dataset.teacher);
-                        openViewModal(teacher);
-                    });
-                });
-                
-                // Add event listeners for edit buttons
-                document.querySelectorAll('.edit-teacher-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const teacherId = this.dataset.teacherId;
-                        const firstName = this.dataset.teacherFirstName;
-                        const lastName = this.dataset.teacherLastName;
-                        const teacherEmail = this.dataset.teacherEmail;
-                        const teacherPhone = this.dataset.teacherPhone;
-                        const teacherRole = this.dataset.teacherRole;
-                        const teacherDepartmentId = this.dataset.teacherDepartmentId;
-                        openEditModal(teacherId, firstName, lastName, teacherEmail, teacherPhone, teacherRole, teacherDepartmentId);
-                    });
-                });
-                
-                // Add event listeners for delete buttons
-                document.querySelectorAll('.delete-teacher-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const teacherId = this.dataset.teacherId;
-                        const teacherName = this.dataset.teacherName;
-                        openDeleteModal(teacherId, teacherName);
-                    });
-                });
+
+                attachTeacherActionListeners();
             } else {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
-                            <i class="fas fa-chalkboard-teacher text-4xl mb-4 text-gray-300"></i>
-                            <p class="text-lg font-medium">No teachers found</p>
-                            <p class="text-sm">Add your first teacher to get started</p>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center"><i class="fas fa-chalkboard-teacher text-3xl mb-4 text-slate-200"></i><p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">No faculty records found</p></td></tr>`;
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error loading teachers:', error);
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-red-500">
-                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                        <p class="text-lg font-medium">Error loading teachers</p>
-                        <p class="text-sm">Please refresh the page to try again</p>
-                    </td>
-                </tr>
-            `;
+            tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-rose-500"><i class="fas fa-exclamation-triangle text-3xl mb-4"></i><p class="text-[11px] font-black uppercase tracking-widest">System Liaison Failed</p></td></tr>`;
+        }
+    }
+
+    function attachTeacherActionListeners() {
+        document.querySelectorAll('.view-teacher-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const teacher = JSON.parse(this.dataset.teacher);
+                window.openViewModal(teacher);
+            });
         });
-}
 
+        document.querySelectorAll('.edit-teacher-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const d = this.dataset;
+                window.openEditModal(d.teacherId, d.teacherFirstName, d.teacherLastName, d.teacherEmail, d.teacherPhone, d.teacherRole, d.teacherDepartmentId, d.teacherDepartmentName);
+            });
+        });
 
-
-
-// Global modal functions
-function openEditModal(teacherId, firstName, lastName, teacherEmail, teacherPhone, teacherRole, teacherDepartment) {
-    const editTeacherId = document.getElementById('editTeacherId');
-    const editFirstName = document.getElementById('editFirstName');
-    const editLastName = document.getElementById('editLastName');
-    const editEmail = document.getElementById('editEmail');
-    const editPhone = document.getElementById('editPhone');
-    const editRole = document.getElementById('editRole');
-    const editDepartment = document.getElementById('editDepartment');
-    const editTeacherModal = document.getElementById('editTeacherModal');
-
-    editTeacherId.value = teacherId;
-    editFirstName.value = firstName || '';
-    editLastName.value = lastName || '';
-    editEmail.value = teacherEmail || '';
-    editPhone.value = teacherPhone || '';
-
-    // Load roles and departments
-    loadEditRoles(teacherRole);
-    loadEditDepartments(teacherDepartment);
-
-    editTeacherModal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeEditModal() {
-    const editTeacherModal = document.getElementById('editTeacherModal');
-    const editTeacherForm = document.getElementById('editTeacherForm');
-    editTeacherModal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    editTeacherForm.reset();
-}
-
-function openDeleteModal(teacherId, teacherName) {
-    const deleteTeacherId = document.getElementById('deleteTeacherId');
-    const deleteTeacherName = document.getElementById('deleteTeacherName');
-    const deleteTeacherModal = document.getElementById('deleteTeacherModal');
-
-    deleteTeacherId.value = teacherId;
-    deleteTeacherName.textContent = teacherName;
-    deleteTeacherModal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeDeleteModal() {
-    const deleteTeacherModal = document.getElementById('deleteTeacherModal');
-    deleteTeacherModal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-// Initialize teachers page functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Load teachers and stats on page load
-    loadTeachers();
-    loadTeacherStats();
-    loadDepartmentOverview();
-
-    // Modal elements
-    const addTeacherBtn = document.getElementById('addTeacherBtn');
-    const addTeacherModal = document.getElementById('addTeacherModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const addTeacherForm = document.getElementById('addTeacherForm');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    
-    // View modal elements
-    const viewTeacherModal = document.getElementById('viewTeacherModal');
-    const closeViewModalBtn = document.getElementById('closeViewModalBtn');
-    const closeViewModalBtn2 = document.getElementById('closeViewModalBtn2');
-
-    const moreInfoModal = document.getElementById('moreInfoModal');
-    document.getElementById('closeMoreInfoModalBtn').addEventListener('click', closeMoreInfoModal);
-
-
-
-    // Modal functionality
-    function openModal() {
-        addTeacherModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        loadDepartments();
-        loadSubjects();
+        document.querySelectorAll('.delete-teacher-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                window.openDeleteModal(this.dataset.teacherId, this.dataset.teacherName);
+            });
+        });
     }
 
-    function closeModal() {
-        addTeacherModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        addTeacherForm.reset();
-    }
-    
-    // Remove this duplicate code since event listeners are already defined
+    // Initialize teachers page functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load teachers and stats on page load
+        loadTeachers();
+        loadTeacherStats();
+        loadDepartmentOverview();
 
-    // Event listeners for modal
-    addTeacherBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    
-    // Event listeners for view modal
-    closeViewModalBtn.addEventListener('click', closeViewModal);
-    closeViewModalBtn2.addEventListener('click', closeViewModal);
-    
-    // Event listener for classes modal
-    const closeClassesModalBtn = document.getElementById('closeClassesModalBtn');
-    closeClassesModalBtn.addEventListener('click', closeClassesModal);
-    
-    // Remove this duplicate code since event listeners are already defined
+        // Modal elements
+        const addTeacherBtn = document.getElementById('addTeacherBtn');
+        const addTeacherModal = document.getElementById('addTeacherModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const addTeacherForm = document.getElementById('addTeacherForm');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
 
-    // Close modal when clicking outside
-    addTeacherModal.addEventListener('click', function(e) {
-        if (e.target === addTeacherModal) {
-            closeModal();
-        }
-    });
+        // View modal elements
+        const viewTeacherModal = document.getElementById('viewTeacherModal');
+        const closeViewModalBtn = document.getElementById('closeViewModalBtn');
+        const closeViewModalBtn2 = document.getElementById('closeViewModalBtn2');
 
-    // Close view modal when clicking outside
-    viewTeacherModal.addEventListener('click', function(e) {
-        if (e.target === viewTeacherModal) {
-            closeViewModal();
-        }
-    });
+        const editTeacherModal = document.getElementById('editTeacherModal');
+        const editTeacherForm = document.getElementById('editTeacherForm');
+        const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+        const editCancelBtn = document.getElementById('editCancelBtn');
 
-    // Close classes modal when clicking anywhere else
-    document.addEventListener('click', function(e) {
+        const deleteTeacherModal = document.getElementById('deleteTeacherModal');
+        const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+        const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
         const classesModal = document.getElementById('classesModal');
-        if (!classesModal.contains(e.target) && !e.target.closest('button[onclick*="showClassesModal"]')) {
-            closeClassesModal();
-        }
-
+        const closeClassesModalBtn = document.getElementById('closeClassesModalBtn');
         const moreInfoModal = document.getElementById('moreInfoModal');
-        if (!moreInfoModal.classList.contains('hidden') && !moreInfoModal.contains(e.target) && !e.target.closest('button[onclick*="showMoreModal"]')) {
-            closeMoreInfoModal();
-        }
-    });
+        const closeMoreInfoModalBtn = document.getElementById('closeMoreInfoModalBtn');
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !addTeacherModal.classList.contains('hidden')) {
-            closeModal();
-        }
-        if (e.key === 'Escape' && !viewTeacherModal.classList.contains('hidden')) {
-            closeViewModal();
-        }
-        if (e.key === 'Escape' && !document.getElementById('moreInfoModal').classList.contains('hidden')) {
-            closeMoreInfoModal();
-        }
-        if (e.key === 'Escape' && !document.getElementById('classesModal').classList.contains('hidden')) {
-            closeClassesModal();
-        }
-    });
+        // Selection Modals
+        const selectDeptBtn = document.getElementById('selectDeptBtn');
+        const editSelectDeptBtn = document.getElementById('editSelectDeptBtn');
+        const deptSelectionModal = document.getElementById('deptSelectionModal');
+        const closeDeptSelectionBtn = document.getElementById('closeDeptSelectionBtn');
+        const deptSelectionList = document.getElementById('deptSelectionList');
 
-    // Password validation
-    function validatePasswords() {
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
+        const selectRoleBtn = document.getElementById('selectRoleBtn');
+        const editSelectRoleBtn = document.getElementById('editSelectRoleBtn');
+        const roleSelectionModal = document.getElementById('roleSelectionModal');
+        const closeRoleSelectionBtn = document.getElementById('closeRoleSelectionBtn');
+        const roleSelectionList = document.getElementById('roleSelectionList');
 
-        if (password !== confirmPassword) {
-            confirmPasswordInput.setCustomValidity('Passwords do not match');
-        } else {
-            confirmPasswordInput.setCustomValidity('');
-        }
-    }
+        const selectSubjectsBtn = document.getElementById('selectSubjectsBtn');
+        const subjectSelectionModal = document.getElementById('subjectSelectionModal');
+        const closeSubjectSelectionBtn = document.getElementById('closeSubjectSelectionBtn');
+        const subjectSelectionList = document.getElementById('subjectSelectionList');
+        const confirmSubjectsBtn = document.getElementById('confirmSubjectsBtn');
+        const selectedSubjectsContainer = document.getElementById('selectedSubjectsContainer');
+        const selectedSubjectIdsInput = document.getElementById('selectedSubjectIds');
 
-    passwordInput.addEventListener('input', validatePasswords);
-    confirmPasswordInput.addEventListener('input', validatePasswords);
+        // Management Modals
+        const manageDeptsBtn = document.getElementById('manageDeptsBtn');
+        const manageDeptsModal = document.getElementById('manageDeptsModal');
+        const closeDeptsModalBtn = document.getElementById('closeDeptsModalBtn');
+        const deptsList = document.getElementById('deptsList');
+        const addDeptForm = document.getElementById('addDeptForm');
 
+        const manageSubjectsBtn = document.getElementById('manageSubjectsBtn');
+        const manageSubjectsModal = document.getElementById('manageSubjectsModal');
+        const closeSubjectsModalBtn = document.getElementById('closeSubjectsModalBtn');
+        const subjectsManagementList = document.getElementById('subjectsManagementList');
+        const addSubjectForm = document.getElementById('addSubjectForm');
 
+        const manageRolesBtn = document.getElementById('manageRolesBtn');
+        const manageRolesModal = document.getElementById('manageRolesModal');
+        const closeRolesModalBtn = document.getElementById('closeRolesModalBtn');
+        const rolesList = document.getElementById('rolesList');
+        const addRoleForm = document.getElementById('addRoleForm');
 
-    // Load departments from API
-    async function loadDepartments() {
-        try {
-            const response = await fetch('/api/departments');
-            const data = await response.json();
+        /** ---------------------------------------------------------
+         *  MODAL EVENT LISTENERS
+         *  --------------------------------------------------------- */
 
-            const departmentSelect = document.getElementById('department');
-            departmentSelect.innerHTML = '<option value="">Select Department</option>';
+        // Add Teacher
+        if (addTeacherBtn) addTeacherBtn.addEventListener('click', () => {
+            addTeacherModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        const closeAddModal = () => {
+            addTeacherModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            addTeacherForm.reset();
+            selectedSubjectIdsArray = [];
+            updateSelectedSubjectsUI();
+        };
+        if (closeModalBtn) closeModalBtn.addEventListener('click', closeAddModal);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeAddModal);
 
-            data.departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.id;
+        // View Modal
+        if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', window.closeViewModal);
+        if (closeViewModalBtn2) closeViewModalBtn2.addEventListener('click', window.closeViewModal);
 
-                // Create department display text with head info
-                let displayText = department.name;
-                if (department.head_of_department) {
-                    displayText += ` (Head: ${department.head_of_department.first_name} ${department.head_of_department.last_name})`;
-                }
+        // Edit Modal
+        if (closeEditModalBtn) closeEditModalBtn.addEventListener('click', window.closeEditModal);
+        if (editCancelBtn) editCancelBtn.addEventListener('click', window.closeEditModal);
 
-                option.textContent = displayText;
-                option.title = `${department.description || ''}\nHead: ${department.head_of_department ? department.head_of_department.first_name + ' ' + department.head_of_department.last_name : 'Not assigned'}\nAssistant: ${department.assistant_head ? department.assistant_head.first_name + ' ' + department.assistant_head.last_name : 'Not assigned'}`;
-                departmentSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading departments:', error);
-        }
-    }
+        // Delete Modal
+        if (closeDeleteModalBtn) closeDeleteModalBtn.addEventListener('click', window.closeDeleteModal);
+        if (deleteCancelBtn) deleteCancelBtn.addEventListener('click', window.closeDeleteModal);
 
-    // Load roles and departments from API for edit modal
-    async function loadEditRoles(currentRole = '') {
-        try {
-            const response = await fetch('/api/roles');
-            const data = await response.json();
+        // Popovers
+        if (closeClassesModalBtn) closeClassesModalBtn.addEventListener('click', window.closeClassesModal);
+        if (closeMoreInfoModalBtn) closeMoreInfoModalBtn.addEventListener('click', window.closeMoreInfoModal);
 
-            const editRoleSelect = document.getElementById('editRole');
-            editRoleSelect.innerHTML = '<option value="">Select Role</option>';
-
-            data.roles.forEach(role => {
-                if (role.is_active) {
-                    const option = document.createElement('option');
-                    option.value = role.name;
-                    option.textContent = role.name.replace('_', ' ');
-                    if (role.name === currentRole) {
-                        option.selected = true;
+        // Backdrop Clicks
+        [addTeacherModal, viewTeacherModal, editTeacherModal, deleteTeacherModal,
+            manageDeptsModal, manageSubjectsModal, manageRolesModal,
+            deptSelectionModal, roleSelectionModal, subjectSelectionModal].forEach(modal => {
+                if (modal) modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = 'auto';
                     }
-                    editRoleSelect.appendChild(option);
-                }
+                });
             });
-        } catch (error) {
-            console.error('Error loading roles for edit:', error);
-        }
-    }
 
-    async function loadEditDepartments(currentDepartmentId = '') {
-        try {
-            const response = await fetch('/api/departments');
-            const data = await response.json();
+        // Global Escape Key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                [addTeacherModal, viewTeacherModal, editTeacherModal, deleteTeacherModal,
+                    manageDeptsModal, manageSubjectsModal, manageRolesModal,
+                    deptSelectionModal, roleSelectionModal, subjectSelectionModal,
+                    classesModal, moreInfoModal].forEach(m => {
+                        if (m) m.classList.add('hidden');
+                    });
+                document.body.style.overflow = 'auto';
+            }
+        });
 
-            const editDepartmentSelect = document.getElementById('editDepartment');
-            editDepartmentSelect.innerHTML = '<option value="">Select Department</option>';
+        /** ---------------------------------------------------------
+         *  SELECTION LOGIC
+         *  --------------------------------------------------------- */
 
-            data.departments.forEach(department => {
-                const option = document.createElement('option');
-                option.value = department.id;
-                option.textContent = department.name;
-                if (department.id == currentDepartmentId) {
-                    option.selected = true;
-                }
-                editDepartmentSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading departments for edit:', error);
-        }
-    }
+        const setupSelectionTarget = (type, nameId, hiddenId) => {
+            const target = type === 'dept' ? deptTarget : roleTarget;
+            const modal = type === 'dept' ? deptSelectionModal : roleSelectionModal;
+            target.name = document.getElementById(nameId);
+            target.id = document.getElementById(hiddenId);
+            modal.classList.remove('hidden');
+            if (type === 'dept') loadDepartmentsForSelection();
+            else loadRolesForSelection();
+        };
 
-    // Load subjects from API
-    async function loadSubjects(departmentId = '') {
-        try {
-            const url = departmentId ? `/api/subjects?department_id=${departmentId}` : '/api/subjects';
-            const response = await fetch(url);
-            const data = await response.json();
+        if (selectDeptBtn) selectDeptBtn.addEventListener('click', () => setupSelectionTarget('dept', 'selectedDepartment', 'departmentId'));
+        if (editSelectDeptBtn) editSelectDeptBtn.addEventListener('click', () => setupSelectionTarget('dept', 'editSelectedDepartment', 'editDepartmentId'));
+        if (closeDeptSelectionBtn) closeDeptSelectionBtn.addEventListener('click', () => deptSelectionModal.classList.add('hidden'));
 
-            const subjectsSelect = document.getElementById('subjects');
-            subjectsSelect.innerHTML = '<option value="">Select subjects (hold Ctrl/Cmd for multiple)</option>';
+        if (selectRoleBtn) selectRoleBtn.addEventListener('click', () => setupSelectionTarget('role', 'selectedRole', 'roleValue'));
+        if (editSelectRoleBtn) editSelectRoleBtn.addEventListener('click', () => setupSelectionTarget('role', 'editSelectedRole', 'editRoleValue'));
+        if (closeRoleSelectionBtn) closeRoleSelectionBtn.addEventListener('click', () => roleSelectionModal.classList.add('hidden'));
 
-            data.subjects.forEach(subject => {
-                const option = document.createElement('option');
-                option.value = subject.id;
-                option.textContent = subject.name;
-                subjectsSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading subjects:', error);
-        }
-    }
+        if (selectSubjectsBtn) selectSubjectsBtn.addEventListener('click', () => {
+            const departmentId = document.getElementById('departmentId').value;
+            subjectSelectionModal.classList.remove('hidden');
+            loadSubjectsForSelection(departmentId);
+        });
+        if (closeSubjectSelectionBtn) closeSubjectSelectionBtn.addEventListener('click', () => subjectSelectionModal.classList.add('hidden'));
+        if (confirmSubjectsBtn) confirmSubjectsBtn.addEventListener('click', () => {
+            subjectSelectionModal.classList.add('hidden');
+            updateSelectedSubjectsUI();
+        });
 
-    // Role Selection Modal
-    const selectRoleBtn = document.getElementById('selectRoleBtn');
-    const roleSelectionModal = document.getElementById('roleSelectionModal');
-    const closeRoleSelectionBtn = document.getElementById('closeRoleSelectionBtn');
-    const roleSelectionList = document.getElementById('roleSelectionList');
-    const selectedRoleInput = document.getElementById('selectedRole');
-    const roleValueInput = document.getElementById('roleValue');
-
-    selectRoleBtn.addEventListener('click', () => {
-        roleSelectionModal.classList.remove('hidden');
-        loadRolesForSelection();
-    });
-
-    closeRoleSelectionBtn.addEventListener('click', () => {
-        roleSelectionModal.classList.add('hidden');
-    });
-
-    async function loadRolesForSelection() {
-        try {
-            const response = await fetch('/api/roles');
-            const data = await response.json();
-            
-            roleSelectionList.innerHTML = '';
-            
-            data.roles.forEach(role => {
-                if (role.is_active) {
-                    const roleDiv = document.createElement('div');
-                    roleDiv.className = 'p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors duration-200';
-                    roleDiv.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <span class="font-medium text-gray-900 capitalize">${role.name.replace('_', ' ')}</span>
-                            <i class="fas fa-chevron-right text-gray-400"></i>
+        async function loadDepartmentsForSelection() {
+            try {
+                const response = await fetch('/api/departments');
+                const data = await response.json();
+                deptSelectionList.innerHTML = '';
+                data.departments.forEach(dept => {
+                    const div = document.createElement('div');
+                    div.className = 'p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-all flex items-center justify-between shadow-sm mb-2';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-8 flex items-center justify-center bg-slate-100 rounded text-[9px] font-black text-slate-400 uppercase tracking-tighter">${dept.code || 'DIV'}</div>
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${dept.name}</span>
                         </div>
+                        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
                     `;
-                    
-                    roleDiv.addEventListener('click', () => {
-                        selectedRoleInput.value = role.name.replace('_', ' ');
-                        roleValueInput.value = role.name;
+                    div.addEventListener('click', () => {
+                        if (deptTarget.name) deptTarget.name.value = dept.name;
+                        if (deptTarget.id) deptTarget.id.value = dept.id;
+                        deptSelectionModal.classList.add('hidden');
+                        if (deptTarget.id.id === 'departmentId') {
+                            loadSubjectsForSelection(dept.id);
+                            selectedSubjectIdsArray = [];
+                            updateSelectedSubjectsUI();
+                        }
+                    });
+                    deptSelectionList.appendChild(div);
+                });
+            } catch (err) { console.error('Error loading depts:', err); }
+        }
+
+        async function loadRolesForSelection() {
+            try {
+                const response = await fetch('/api/roles');
+                const data = await response.json();
+                roleSelectionList.innerHTML = '';
+                data.roles.forEach(role => {
+                    if (!role.is_active) return;
+                    const div = document.createElement('div');
+                    div.className = 'p-3 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer transition-all flex items-center justify-between shadow-sm mb-2';
+                    div.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-[11px] font-black text-slate-800 uppercase tracking-tight">${role.name.replace('_', ' ')}</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">AUTHORITY LEVEL</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+                    `;
+                    div.addEventListener('click', () => {
+                        if (roleTarget.name) roleTarget.name.value = role.name.replace('_', ' ');
+                        if (roleTarget.id) roleTarget.id.value = role.name;
                         roleSelectionModal.classList.add('hidden');
                     });
-                    
-                    roleSelectionList.appendChild(roleDiv);
+                    roleSelectionList.appendChild(div);
+                });
+            } catch (err) { console.error('Error loading roles:', err); }
+        }
+
+        async function loadSubjectsForSelection(departmentId = '') {
+            try {
+                const url = departmentId ? `/api/subjects?department_id=${departmentId}` : '/api/subjects';
+                const response = await fetch(url);
+                const data = await response.json();
+                subjectSelectionList.innerHTML = '';
+                if (data.subjects.length === 0) {
+                    subjectSelectionList.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-4 font-bold uppercase tracking-widest">No modules available</p>';
+                    return;
                 }
-            });
-        } catch (error) {
-            console.error('Error loading roles:', error);
-        }
-    }
-
-    // Handle department change to filter subjects
-    document.getElementById('department').addEventListener('change', function() {
-        const departmentId = this.value;
-        if (departmentId) {
-            loadSubjects(departmentId);
-        } else {
-            loadSubjects();
-        }
-    });
-
-    // Form submission
-    addTeacherForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        
-        // Show loading state
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
-
-        const formData = new FormData(addTeacherForm);
-
-        // Get selected subjects
-        const subjectsSelect = document.getElementById('subjects');
-        const selectedSubjects = Array.from(subjectsSelect.selectedOptions).map(option => option.value);
-
-        // Get selected role
-        const roleValue = document.getElementById('roleValue').value;
-        if (!roleValue) {
-            alert('Please select a role');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-            return;
+                data.subjects.forEach(subject => {
+                    cachedSubjects[subject.id] = subject.name;
+                    const isChecked = selectedSubjectIdsArray.includes(subject.id.toString());
+                    const div = document.createElement('div');
+                    div.className = `p-2.5 border ${isChecked ? 'border-indigo-200 bg-indigo-50/30' : 'border-slate-100'} rounded-lg cursor-pointer transition-all flex items-center justify-between shadow-sm mb-1.5`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-3.5 h-3.5 rounded border ${isChecked ? 'bg-indigo-600 border-indigo-600' : 'border-slate-200 bg-white'} flex items-center justify-center transition-all">
+                                ${isChecked ? '<i class="fas fa-check text-[8px] text-white"></i>' : ''}
+                            </div>
+                            <span class="text-[10px] font-black text-slate-800 uppercase tracking-tight">${subject.name}</span>
+                        </div>
+                    `;
+                    div.addEventListener('click', () => {
+                        const sid = subject.id.toString();
+                        if (selectedSubjectIdsArray.includes(sid)) {
+                            selectedSubjectIdsArray = selectedSubjectIdsArray.filter(id => id !== sid);
+                        } else {
+                            selectedSubjectIdsArray.push(sid);
+                        }
+                        loadSubjectsForSelection(departmentId);
+                    });
+                    subjectSelectionList.appendChild(div);
+                });
+            } catch (err) { console.error('Error loading subjects:', err); }
         }
 
-        const data = {
-            first_name: formData.get('firstName'),
-            last_name: formData.get('lastName'),
-            email: formData.get('email'),
-            password: formData.get('password'),
-            role: roleValue,
-            phone: formData.get('phone'),
-            department_id: formData.get('department'),
-            subject_ids: selectedSubjects
-        };
-
-        try {
-            const response = await fetch('/api/teachers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Teacher added successfully!');
-                closeModal();
-                loadTeachers();
-            } else {
-                alert('Error: ' + result.error);
+        function updateSelectedSubjectsUI() {
+            selectedSubjectIdsInput.value = selectedSubjectIdsArray.join(',');
+            if (selectedSubjectIdsArray.length === 0) {
+                selectedSubjectsContainer.innerHTML = '<span class="text-[12px] font-bold text-slate-400">No modules selected</span>';
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while adding the teacher');
-        } finally {
-            // Reset button state
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+            selectedSubjectsContainer.innerHTML = selectedSubjectIdsArray.map(id => `
+                <span class="px-2 py-1 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">${cachedSubjects[id] || `MOD-${id}`}</span>
+            `).join('');
         }
-    });
 
-    // Search functionality
-    const searchInput = document.querySelector('input[placeholder="Search teachers..."]');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            // Add search functionality here
-            console.log('Searching for:', this.value);
+        /** ---------------------------------------------------------
+         *  MANAGEMENT LOGIC
+         *  --------------------------------------------------------- */
+
+        // Departments
+        if (manageDeptsBtn) manageDeptsBtn.addEventListener('click', () => {
+            manageDeptsModal.classList.remove('hidden');
+            loadDeptsManagement();
         });
-    }
+        if (closeDeptsModalBtn) closeDeptsModalBtn.addEventListener('click', () => manageDeptsModal.classList.add('hidden'));
 
-    // Edit Teacher Modal functionality
-    const editTeacherModal = document.getElementById('editTeacherModal');
-    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
-    const editCancelBtn = document.getElementById('editCancelBtn');
-    const editTeacherForm = document.getElementById('editTeacherForm');
+        async function loadDeptsManagement() {
+            try {
+                const res = await fetch('/api/departments');
+                const data = await res.json();
+                deptsList.innerHTML = '';
+                const subjectDeptSelect = document.getElementById('subjectDeptId');
+                if (subjectDeptSelect) subjectDeptSelect.innerHTML = '<option value="">Division...</option>';
 
-    // Edit button event listeners are added dynamically when teachers are loaded
-
-    // Edit modal event listeners
-    closeEditModalBtn.addEventListener('click', closeEditModal);
-    editCancelBtn.addEventListener('click', closeEditModal);
-
-    // Close edit modal when clicking outside
-    editTeacherModal.addEventListener('click', function(e) {
-        if (e.target === editTeacherModal) {
-            closeEditModal();
+                data.departments.forEach(dept => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-6 flex items-center justify-center bg-slate-200/50 rounded text-[8px] font-black text-slate-500 uppercase">${dept.code || 'DIV'}</div>
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${dept.name}</span>
+                        </div>
+                        <button onclick="window.deleteDept('${dept.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    `;
+                    deptsList.appendChild(div);
+                    if (subjectDeptSelect) {
+                        const opt = document.createElement('option');
+                        opt.value = dept.id;
+                        opt.textContent = dept.name;
+                        subjectDeptSelect.appendChild(opt);
+                    }
+                });
+            } catch (err) { console.error('Error loading depts mgmt:', err); }
         }
-    });
 
-    // Edit teacher form submission
-    editTeacherForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const editTeacherId = document.getElementById('editTeacherId');
-        const submitBtn = this.querySelector('button[type="submit"]');
-        setButtonLoading(submitBtn, true, '<i class="fas fa-save mr-2"></i>Update Teacher');
-
-        const formData = new FormData(this);
-        const data = {
-            first_name: formData.get('firstName'),
-            last_name: formData.get('lastName'),
-            email: formData.get('email'),
-            role: formData.get('role'),
-            phone: formData.get('phone'),
-            department_id: formData.get('department')
+        window.deleteDept = async (id) => {
+            if (!confirm('Warning: Deleting a division may impact associated faculty records. Proceed?')) return;
+            try {
+                const res = await fetch(`/api/departments/${id}`, { method: 'DELETE' });
+                if (res.ok) loadDeptsManagement();
+                else alert('Error deauthorizing division');
+            } catch (err) { console.error(err); }
         };
 
-        try {
-            const response = await fetch(`/api/teachers/${editTeacherId.value}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
+        if (addDeptForm) addDeptForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('deptCode').value;
+            const name = document.getElementById('deptName').value;
+            try {
+                const res = await fetch('/api/departments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, name })
+                });
+                if (res.ok) {
+                    addDeptForm.reset();
+                    loadDeptsManagement();
+                } else alert('Error authorizing division');
+            } catch (err) { console.error(err); }
+        });
+
+        // Subjects
+        if (manageSubjectsBtn) manageSubjectsBtn.addEventListener('click', () => {
+            manageSubjectsModal.classList.remove('hidden');
+            loadDeptsManagement(); // To populate dropdown
+            loadSubjectsManagement();
+        });
+        if (closeSubjectsModalBtn) closeSubjectsModalBtn.addEventListener('click', () => manageSubjectsModal.classList.add('hidden'));
+
+        async function loadSubjectsManagement() {
+            try {
+                const res = await fetch('/api/subjects');
+                const data = await res.json();
+                subjectsManagementList.innerHTML = '';
+                data.subjects.forEach(subject => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
+                    div.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${subject.name}</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${subject.department_name || 'Instructional Module'}</span>
+                        </div>
+                        <button onclick="window.deleteSubject('${subject.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    `;
+                    subjectsManagementList.appendChild(div);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        window.deleteSubject = async (id) => {
+            if (!confirm('Are you certain you want to decommission this module?')) return;
+            try {
+                const res = await fetch(`/api/subjects/${id}`, { method: 'DELETE' });
+                if (res.ok) loadSubjectsManagement();
+                else alert('Error decommissioning module');
+            } catch (err) { console.error(err); }
+        };
+
+        if (addSubjectForm) addSubjectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const deptId = document.getElementById('subjectDeptId').value;
+            const name = document.getElementById('subjectName').value;
+            try {
+                const res = await fetch('/api/subjects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ department_id: deptId, name: name })
+                });
+                if (res.ok) {
+                    addSubjectForm.reset();
+                    loadSubjectsManagement();
+                } else alert('Error registering module');
+            } catch (err) { console.error(err); }
+        });
+
+        // Roles
+        if (manageRolesBtn) manageRolesBtn.addEventListener('click', () => {
+            manageRolesModal.classList.remove('hidden');
+            loadRolesManagement();
+        });
+        if (closeRolesModalBtn) closeRolesModalBtn.addEventListener('click', () => manageRolesModal.classList.add('hidden'));
+
+        async function loadRolesManagement() {
+            try {
+                const res = await fetch('/api/roles');
+                const data = await res.json();
+                rolesList.innerHTML = '';
+                data.roles.forEach(role => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
+                    div.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${role.name}</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${role.is_active ? 'Active protocol' : 'Disabled'}</span>
+                        </div>
+                        <button onclick="window.deleteRole('${role.name}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    `;
+                    rolesList.appendChild(div);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        window.deleteRole = async (name) => {
+            if (!confirm(`Are you certain you want to decommissioning the '${name}' protocol?`)) return;
+            try {
+                const res = await fetch(`/api/roles/${name}`, { method: 'DELETE' });
+                if (res.ok) loadRolesManagement();
+                else alert('Error decommissioning protocol');
+            } catch (err) { console.error(err); }
+        };
+
+        if (addRoleForm) addRoleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('roleName').value;
+            try {
+                const res = await fetch('/api/roles', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                if (res.ok) {
+                    addRoleForm.reset();
+                    loadRolesManagement();
+                } else alert('Error indexing protocol');
+            } catch (err) { console.error(err); }
+        });
+
+        // Bridge Helpers
+        window.openManageRoles = () => { roleSelectionModal.classList.add('hidden'); manageRolesBtn.click(); };
+        window.openManageDepts = () => { deptSelectionModal.classList.add('hidden'); manageDeptsBtn.click(); };
+        window.openManageSubjects = () => { subjectSelectionModal.classList.add('hidden'); manageSubjectsBtn.click(); };
+
+        /** ---------------------------------------------------------
+         *  FORM SUBMISSIONS (TEACHER)
+         *  --------------------------------------------------------- */
+
+        if (addTeacherForm) addTeacherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = addTeacherForm.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true, 'Finalize Induction');
+
+            const formData = new FormData(addTeacherForm);
+            const data = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                role: formData.get('role'),
+                phone: formData.get('phone'),
+                department_id: formData.get('department'),
+                subject_ids: selectedSubjectIdsArray
+            };
+
+            try {
+                const res = await fetch('/api/teachers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert('Faculty Induction Complete');
+                    closeAddModal();
+                    loadTeachers();
+                    loadTeacherStats();
+                } else alert('Error: ' + result.error);
+            } catch (err) { console.error(err); } finally {
+                setButtonLoading(submitBtn, false, 'Finalize Induction');
+            }
+        });
+
+        if (editTeacherForm) editTeacherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherId = document.getElementById('editTeacherId').value;
+            const submitBtn = editTeacherForm.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true, '<i class="fas fa-save mr-2"></i>Apply Changes');
+
+            const formData = new FormData(editTeacherForm);
+            const data = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                email: formData.get('email'),
+                role: formData.get('role'),
+                phone: formData.get('phone'),
+                department_id: formData.get('department')
+            };
+
+            try {
+                const res = await fetch(`/api/teachers/${teacherId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert('Record Updated Successfully');
+                    window.closeEditModal();
+                    loadTeachers();
+                } else {
+                    const result = await res.json();
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) { console.error(err); } finally {
+                setButtonLoading(submitBtn, false, '<i class="fas fa-save mr-2"></i>Apply Changes');
+            }
+        });
+
+        if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', async () => {
+            const teacherId = document.getElementById('deleteTeacherId').value;
+            setButtonLoading(confirmDeleteBtn, true, '<i class="fas fa-trash mr-2"></i>Confirm Deletion');
+
+            try {
+                const res = await fetch(`/api/teachers/${teacherId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('Personnel Record Purged');
+                    window.closeDeleteModal();
+                    loadTeachers();
+                    loadTeacherStats();
+                    loadDepartmentOverview();
+                } else alert('Error decommission asset');
+            } catch (err) { console.error(err); } finally {
+                setButtonLoading(confirmDeleteBtn, false, '<i class="fas fa-trash mr-2"></i>Confirm Deletion');
+            }
+        });
+
+
+        // Search Input Simple Filtering
+        const searchInputSelection = document.getElementById('searchInput');
+        if (searchInputSelection) searchInputSelection.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#teachers-table-body tr');
+            rows.forEach(row => {
+                if (row.cells.length < 2) return;
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Teacher updated successfully!');
-                closeEditModal();
-                location.reload();
-            } else {
-                alert('Error: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while updating the teacher');
-        } finally {
-            setButtonLoading(submitBtn, false, '<i class="fas fa-save mr-2"></i>Update Teacher');
-        }
+        });
     });
-
-    // Delete Teacher Modal functionality
-    const deleteTeacherModal = document.getElementById('deleteTeacherModal');
-    const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
-    const deleteCancelBtn = document.getElementById('deleteCancelBtn');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-
-    // Delete button event listeners are added dynamically when teachers are loaded
-
-    // Delete modal event listeners
-    closeDeleteModalBtn.addEventListener('click', closeDeleteModal);
-    deleteCancelBtn.addEventListener('click', closeDeleteModal);
-
-    // Close delete modal when clicking outside
-    deleteTeacherModal.addEventListener('click', function(e) {
-        if (e.target === deleteTeacherModal) {
-            closeDeleteModal();
-        }
-    });
-
-    // Confirm delete button
-    confirmDeleteBtn.addEventListener('click', async function() {
-        const deleteTeacherId = document.getElementById('deleteTeacherId');
-        setButtonLoading(this, true, '<i class="fas fa-trash mr-2"></i>Delete Teacher');
-
-        try {
-            const response = await fetch(`/api/teachers/${deleteTeacherId.value}`, {
-                method: 'DELETE'
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert('Teacher deleted successfully!');
-                closeDeleteModal();
-                location.reload(); // Refresh the page to remove the deleted teacher
-            } else {
-                alert('Error: ' + result.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the teacher');
-        } finally {
-            setButtonLoading(this, false, '<i class="fas fa-trash mr-2"></i>Delete Teacher');
-        }
-    });
-
-    // Close popovers on scroll
-    window.addEventListener('scroll', () => {
-        if (!document.getElementById('moreInfoModal').classList.contains('hidden')) {
-            closeMoreInfoModal();
-        }
-        if (!document.getElementById('classesModal').classList.contains('hidden')) {
-            closeClassesModal();
-        }
-    }, true);
-
-    // Close modals with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (!editTeacherModal.classList.contains('hidden')) {
-                closeEditModal();
-            }
-            if (!deleteTeacherModal.classList.contains('hidden')) {
-                closeDeleteModal();
-            }
-        }
-    });
-
-    // Manage Roles Modal
-    const manageRolesBtn = document.getElementById('manageRolesBtn');
-    const manageRolesModal = document.getElementById('manageRolesModal');
-    const closeRolesModalBtn = document.getElementById('closeRolesModalBtn');
-    const addRoleForm = document.getElementById('addRoleForm');
-    const rolesList = document.getElementById('rolesList');
-
-    manageRolesBtn.addEventListener('click', () => {
-        manageRolesModal.classList.remove('hidden');
-        loadRoles();
-    });
-
-    closeRolesModalBtn.addEventListener('click', () => {
-        manageRolesModal.classList.add('hidden');
-    });
-
-    async function loadRoles() {
-        try {
-            const response = await fetch('/api/roles');
-            const data = await response.json();
-            
-            rolesList.innerHTML = '';
-            data.roles.forEach(role => {
-                const roleDiv = document.createElement('div');
-                roleDiv.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
-                roleDiv.innerHTML = `
-                    <span class="font-medium">${role.name}</span>
-                    <span class="text-xs px-2 py-1 ${role.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full">
-                        ${role.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                `;
-                rolesList.appendChild(roleDiv);
-            });
-        } catch (error) {
-            console.error('Error loading roles:', error);
-        }
-    }
-
-    addRoleForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const roleName = document.getElementById('roleName').value;
-        
-        try {
-            const response = await fetch('/api/roles', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: roleName })
-            });
-            
-            if (response.ok) {
-                document.getElementById('roleName').value = '';
-                loadRoles();
-                alert('Role added successfully!');
-            } else {
-                alert('Error adding role');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error adding role');
-        }
-    });
-});
 </script>
