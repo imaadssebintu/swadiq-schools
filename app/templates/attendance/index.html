@@ -460,7 +460,7 @@
                         </p>
                     </div>
                 </div>
-                <button onclick="takeAttendanceForLesson('${lesson.id}', '${date}', ${JSON.stringify(lesson).replace(/"/g, '&quot;')})" 
+                <button onclick="takeAttendanceForLesson('${lesson.id}', '${date}', ${JSON.stringify(lesson).replace(new RegExp('&quot;', 'g'), '&quot;')})" 
                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm">
                     Take Roll
                 </button>
