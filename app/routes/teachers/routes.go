@@ -1,6 +1,8 @@
 package teachers
 
 import (
+	"swadiq-schools/app/config"
+	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
@@ -53,16 +55,39 @@ func TeachersPage(c *fiber.Ctx) error {
 func TeacherViewPage(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	teacherID := c.Params("id")
-	
+	db := config.GetDB()
+
+	// Fetch teacher data for initial render
+	teacher, err := database.GetTeacherByID(db, teacherID)
+	if err != nil {
+		return c.Redirect("/teachers")
+	}
+
+	// Fetch teacher roles
+	var roles []models.Role
+	roleQuery := `SELECT r.id, r.name FROM roles r 
+				  INNER JOIN user_roles ur ON r.id = ur.role_id 
+				  WHERE ur.user_id = $1`
+	rows, err := db.Query(roleQuery, teacherID)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var r models.Role
+			if err := rows.Scan(&r.ID, &r.Name); err == nil {
+				roles = append(roles, r)
+			}
+		}
+	}
+
 	return c.Render("teachers/view", fiber.Map{
 		"Title":       "Teacher Details - Swadiq Schools",
 		"CurrentPage": "teachers",
 		"teacherID":   teacherID,
+		"teacher":     teacher,
+		"roles":       roles,
 		"user":        user,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,
 		"Email":       user.Email,
 	})
 }
-
-

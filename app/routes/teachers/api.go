@@ -358,6 +358,25 @@ func GetTeacherAPI(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "Teacher not found"})
 	}
 
+	// Fetch classes assigned to this teacher with student counts
+	db := config.GetDB()
+	query := `SELECT c.id, c.name, 
+			  (SELECT COUNT(*) FROM students s WHERE s.class_id = c.id AND s.is_active = true) as student_count
+			  FROM classes c WHERE c.teacher_id = $1 AND c.is_active = true`
+
+	rows, err := db.Query(query, teacherID)
+	if err == nil {
+		defer rows.Close()
+		classes := make([]*models.Class, 0)
+		for rows.Next() {
+			cls := &models.Class{}
+			if err := rows.Scan(&cls.ID, &cls.Name, &cls.StudentCount); err == nil {
+				classes = append(classes, cls)
+			}
+		}
+		teacher.Classes = classes
+	}
+
 	return c.JSON(fiber.Map{
 		"teacher": teacher,
 	})

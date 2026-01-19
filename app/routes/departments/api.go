@@ -40,13 +40,13 @@ func GetDepartmentsAPI(c *fiber.Ctx) error {
 
 		if err := rows.Scan(&id, &name, &code, &description, &headID, &assistantID, &isActive, &createdAt, &updatedAt, &headFirstName, &headLastName, &headEmail, &assistantFirstName, &assistantLastName, &assistantEmail, &teacherCount); err == nil {
 			dept := map[string]interface{}{
-				"id":          id,
-				"name":        name,
-				"code":        code,
-				"description": description,
-				"is_active":   isActive,
-				"created_at":  createdAt,
-				"updated_at":  updatedAt,
+				"id":            id,
+				"name":          name,
+				"code":          code,
+				"description":   description,
+				"is_active":     isActive,
+				"created_at":    createdAt,
+				"updated_at":    updatedAt,
 				"teacher_count": teacherCount,
 			}
 
@@ -80,11 +80,11 @@ func GetDepartmentsAPI(c *fiber.Ctx) error {
 
 func CreateDepartmentAPI(c *fiber.Ctx) error {
 	type CreateDepartmentRequest struct {
-		Name                string  `json:"name"`
-		Code                string  `json:"code"`
-		Description         *string `json:"description"`
-		HeadOfDepartmentID  *string `json:"head_of_department_id"`
-		AssistantHeadID     *string `json:"assistant_head_id"`
+		Name               string  `json:"name"`
+		Code               string  `json:"code"`
+		Description        *string `json:"description"`
+		HeadOfDepartmentID *string `json:"head_of_department_id"`
+		AssistantHeadID    *string `json:"assistant_head_id"`
 	}
 
 	var req CreateDepartmentRequest
@@ -118,11 +118,11 @@ func UpdateDepartmentAPI(c *fiber.Ctx) error {
 	}
 
 	type UpdateDepartmentRequest struct {
-		Name                string  `json:"name"`
-		Code                string  `json:"code"`
-		Description         *string `json:"description"`
-		HeadOfDepartmentID  *string `json:"head_of_department_id"`
-		AssistantHeadID     *string `json:"assistant_head_id"`
+		Name               string  `json:"name"`
+		Code               string  `json:"code"`
+		Description        *string `json:"description"`
+		HeadOfDepartmentID *string `json:"head_of_department_id"`
+		AssistantHeadID    *string `json:"assistant_head_id"`
 	}
 
 	var req UpdateDepartmentRequest
@@ -170,10 +170,28 @@ func GetDepartmentTeachersAPI(c *fiber.Ctx) error {
 	}
 
 	db := config.GetDB()
-	// Get department info first
-	deptQuery := `SELECT head_of_department_id, assistant_head_id FROM departments WHERE id = $1`
+
+	// Get department info and stats
+	var deptName, deptCode string
 	var headID, assistantID *string
-	err := db.QueryRow(deptQuery, departmentID).Scan(&headID, &assistantID)
+	var headFirstName, headLastName, headEmail, assistantFirstName, assistantLastName, assistantEmail *string
+	var subjectCount int
+
+	deptQuery := `SELECT d.name, d.code, d.head_of_department_id, d.assistant_head_id,
+		h.first_name as head_first_name, h.last_name as head_last_name, h.email as head_email,
+		a.first_name as assistant_first_name, a.last_name as assistant_last_name, a.email as assistant_email,
+		(SELECT COUNT(*) FROM subjects WHERE department_id = d.id AND deleted_at IS NULL) as subject_count
+		FROM departments d
+		LEFT JOIN users h ON d.head_of_department_id = h.id
+		LEFT JOIN users a ON d.assistant_head_id = a.id
+		WHERE d.id = $1`
+
+	err := db.QueryRow(deptQuery, departmentID).Scan(
+		&deptName, &deptCode, &headID, &assistantID,
+		&headFirstName, &headLastName, &headEmail,
+		&assistantFirstName, &assistantLastName, &assistantEmail,
+		&subjectCount,
+	)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch department info"})
 	}
@@ -215,8 +233,46 @@ func GetDepartmentTeachersAPI(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"teachers": teachers,
-		"count":    len(teachers),
+		"teachers":        teachers,
+		"count":           len(teachers),
+		"department_name": deptName,
+		"department_code": deptCode,
+		"subject_count":   subjectCount,
+		"head_of_department": fiber.Map{
+			"first_name": headFirstName,
+			"last_name":  headLastName,
+			"email":      headEmail,
+		},
+		"assistant_head": fiber.Map{
+			"first_name": assistantFirstName,
+			"last_name":  assistantLastName,
+			"email":      assistantEmail,
+		},
+	})
+}
+
+func GetDepartmentStatsAPI(c *fiber.Ctx) error {
+	db := config.GetDB()
+
+	var totalDepts, activeDepts, totalTeachers, totalSubjects int
+
+	// Total Departments
+	db.QueryRow("SELECT COUNT(*) FROM departments WHERE deleted_at IS NULL").Scan(&totalDepts)
+
+	// Active Departments
+	db.QueryRow("SELECT COUNT(*) FROM departments WHERE is_active = true AND deleted_at IS NULL").Scan(&activeDepts)
+
+	// Total Teachers (Active and assigned to at least one department)
+	db.QueryRow("SELECT COUNT(DISTINCT ud.user_id) FROM user_departments ud JOIN users u ON ud.user_id = u.id WHERE u.is_active = true").Scan(&totalTeachers)
+
+	// Total Subjects
+	db.QueryRow("SELECT COUNT(*) FROM subjects WHERE deleted_at IS NULL").Scan(&totalSubjects)
+
+	return c.JSON(fiber.Map{
+		"total_departments":  totalDepts,
+		"active_departments": activeDepts,
+		"total_teachers":     totalTeachers,
+		"total_subjects":     totalSubjects,
 	})
 }
 
@@ -289,7 +345,7 @@ func SetDepartmentLeadershipAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
 	var query string
 	var args []interface{}
-	
+
 	if req.Role == "head" {
 		query = `UPDATE departments SET head_of_department_id = $1 WHERE id = $2`
 		args = []interface{}{req.TeacherID, departmentID}
@@ -309,6 +365,3 @@ func SetDepartmentLeadershipAPI(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Leadership updated successfully"})
 }
-
-
-

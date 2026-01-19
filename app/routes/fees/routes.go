@@ -2,6 +2,7 @@ package fees
 
 import (
 	"swadiq-schools/app/config"
+	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,9 +25,14 @@ func SetupFeesRoutes(app *fiber.App) {
 
 	// Web routes
 	fees.Get("/", func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
 		return c.Render("fees/index", fiber.Map{
 			"Title":       "Fees Management - Swadiq Schools",
 			"CurrentPage": "fees",
+			"user":        user,
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
 		})
 	})
 
@@ -72,17 +78,27 @@ func SetupFeesRoutes(app *fiber.App) {
 
 	// Fee Types web route
 	feeTypes.Get("/", func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
 		return c.Render("fees/fee_types", fiber.Map{
 			"Title":       "Fee Types - Swadiq Schools",
 			"CurrentPage": "fees",
+			"user":        user,
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
 		})
 	})
 
 	// Active Fees web route
 	fees.Get("/active", func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
 		return c.Render("fees/active_fees", fiber.Map{
 			"Title":       "Active Fees - Swadiq Schools",
 			"CurrentPage": "fees",
+			"user":        user,
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
 		})
 	})
 

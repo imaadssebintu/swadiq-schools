@@ -999,7 +999,7 @@
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold text-slate-500 bg-slate-50 border border-slate-100 uppercase tracking-wider mt-1">${subject.code}</span>
                             </div>
                         </div>
-                        <button onclick="event.stopPropagation(); removeSubject('${subject.id}')" class="w-6 h-6 flex items-center justify-center rounded-full bg-slate-50 text-slate-300 hover:text-white hover:bg-red-500 transition-all opacity-0 group-hover:opacity-100">
+                        <button onclick="event.stopPropagation(); removeSubject('${subject.id}')" class="w-6 h-6 flex items-center justify-center rounded-full bg-slate-50 text-slate-300 hover:text-white hover:bg-red-500 transition-all">
                             <i class="fas fa-times text-[10px]"></i>
                         </button>
                     </div>
@@ -1437,7 +1437,7 @@
                         <div class="text-[11px] font-black text-slate-700 uppercase tracking-wide group-hover:text-indigo-700 transition-colors">${teacher.first_name} ${teacher.last_name}</div>
                         <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">${teacher.email}</div>
                     </div>
-                    <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="ml-auto transition-opacity">
                          <i class="fas fa-check text-indigo-500 text-xs"></i>
                     </div>
                 </div>

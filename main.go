@@ -67,7 +67,7 @@ func customErrorHandler(c *fiber.Ctx, err error) error {
 			"ErrorMessage": "Please log in to access this resource.",
 		})
 	case 500:
-		return c.Status(500).Render("error", fiber.Map{
+		return c.Status(500).Render("500", fiber.Map{
 			"Title":        "Server Error - Swadiq Schools",
 			"CurrentPage":  "",
 			"ErrorCode":    "500",

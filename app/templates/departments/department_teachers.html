@@ -1,134 +1,214 @@
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div>
-                    <h1 id="pageTitle" class="text-2xl font-bold text-gray-900">Department Teachers</h1>
-                    <p class="mt-1 text-sm text-gray-500">Teachers assigned to this department</p>
+<div class="p-6 space-y-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <a href="/departments"
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 hover:bg-indigo-50 transition-all shadow-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 id="pageTitle" class="text-2xl font-black text-slate-900 tracking-tight">Department Faculty</h1>
+                <p class="text-xs font-bold text-slate-500 mt-1 flex items-center gap-2">
+                    <span id="headerDeptName" class="text-indigo-600">Loading...</span>
+                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                    <span id="headerDeptCode"
+                        class="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] uppercase">...</span>
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="relative group">
+                <i
+                    class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors text-xs"></i>
+                <input type="text" id="teacherSearch" placeholder="Search faculty..."
+                    class="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all w-full md:w-64 appearance-none">
+            </div>
+            <button onclick="openAddTeacherModal()"
+                class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all shadow-sm hover:shadow-indigo-200 active:scale-95">
+                <i class="fas fa-plus"></i>
+                Assign Teacher
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Faculty -->
+        <div
+            class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wider mb-1">Total Faculty</p>
+                    <p id="totalFacultyCount" class="text-2xl font-black text-white leading-none">0</p>
+                    <div class="h-1 w-12 bg-white/30 rounded-full group-hover:w-20 transition-all duration-300 mt-2">
+                    </div>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="openAddTeacherModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        Add Teacher
-                    </button>
-                    <a href="/departments" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                        </svg>
-                        Back to Departments
-                    </a>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-2.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-users text-white text-lg transition-transform group-hover:rotate-12"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Subjects -->
+        <div
+            class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wider mb-1">Department
+                        Subjects</p>
+                    <p id="totalSubjectsCount" class="text-2xl font-black text-white leading-none">0</p>
+                    <div class="h-1 w-12 bg-white/30 rounded-full group-hover:w-20 transition-all duration-300 mt-2">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-2.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-book-open text-white text-lg transition-transform group-hover:rotate-12"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Head of Department -->
+        <div
+            class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-semibold text-purple-100 uppercase tracking-wider mb-1">Head of
+                        Department</p>
+                    <p id="hodName" class="text-sm font-black text-white leading-tight mt-1 truncate max-w-[150px]">Not
+                        Assigned</p>
+                    <div class="h-1 w-12 bg-white/30 rounded-full group-hover:w-20 transition-all duration-300 mt-2">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-2.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-user-tie text-white text-lg transition-transform group-hover:rotate-12"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assistant Head -->
+        <div
+            class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wider mb-1">Assistant Head
+                    </p>
+                    <p id="assistantName"
+                        class="text-sm font-black text-white leading-tight mt-1 truncate max-w-[150px]">Not Assigned</p>
+                    <div class="h-1 w-12 bg-white/30 rounded-full group-hover:w-20 transition-all duration-300 mt-2">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-2.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-user-shield text-white text-lg transition-transform group-hover:rotate-12"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 id="departmentName" class="text-lg font-semibold text-gray-900">Loading...</h2>
+    <!-- Main Content Table -->
+    <div class="glass-card rounded-2xl overflow-hidden border border-slate-200">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="teachersTable">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Faculty
+                            Member</th>
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Contact
+                            Information</th>
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Department
+                            Role</th>
+                        <th
+                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="teachersTableBody" class="divide-y divide-slate-100 bg-white">
+                    <!-- Skeleton rows -->
+                    <tr class="skeleton-row animate-pulse">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-100"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 w-32 bg-slate-100 rounded"></div>
+                                    <div class="h-2 w-20 bg-slate-50 rounded"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="h-3 w-40 bg-slate-50 rounded"></div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="h-5 w-24 bg-slate-100 rounded-full"></div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden py-20 text-center animate-fade-in">
+            <div
+                class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100 shadow-sm">
+                <i class="fas fa-users-slash text-slate-300 text-3xl"></i>
             </div>
-            
-            <div class="overflow-x-auto">
-                <table id="teachersTable" class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teacher</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teachersTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Loading Skeleton -->
-                        <tr id="loadingSkeleton1" class="loading-skeleton">
-                            <td class="px-6 py-4">
-                                <div class="animate-pulse flex items-center">
-                                    <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                                    <div class="h-4 bg-gray-200 rounded w-32"></div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-40"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-24"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-5 bg-gray-200 rounded-full w-20"></div></td>
-                            <td class="px-6 py-4 text-right"><div class="animate-pulse h-4 bg-gray-200 rounded w-16 ml-auto"></div></td>
-                        </tr>
-                        <tr id="loadingSkeleton2" class="loading-skeleton">
-                            <td class="px-6 py-4">
-                                <div class="animate-pulse flex items-center">
-                                    <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                                    <div class="h-4 bg-gray-200 rounded w-28"></div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-36"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-20"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-5 bg-gray-200 rounded-full w-24"></div></td>
-                            <td class="px-6 py-4 text-right"><div class="animate-pulse h-4 bg-gray-200 rounded w-16 ml-auto"></div></td>
-                        </tr>
-                        <tr id="loadingSkeleton3" class="loading-skeleton">
-                            <td class="px-6 py-4">
-                                <div class="animate-pulse flex items-center">
-                                    <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                                    <div class="h-4 bg-gray-200 rounded w-36"></div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-44"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-4 bg-gray-200 rounded w-28"></div></td>
-                            <td class="px-6 py-4"><div class="animate-pulse h-5 bg-gray-200 rounded-full w-16"></div></td>
-                            <td class="px-6 py-4 text-right"><div class="animate-pulse h-4 bg-gray-200 rounded w-16 ml-auto"></div></td>
-                        </tr>
-                        <!-- Empty State -->
-                        <tr id="emptyState" class="hidden">
-                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.196-2.121M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.196-2.121M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
-                                    <p class="text-lg font-medium text-gray-900 mb-1">No teachers assigned</p>
-                                    <p class="text-sm text-gray-500">Click "Add Teacher" to assign teachers to this department</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h3 class="text-sm font-black text-slate-900">No Faculty Assigned</h3>
+            <p class="text-xs font-bold text-slate-400 mt-1">Start by assigning teachers to this department</p>
+            <button onclick="openAddTeacherModal()"
+                class="mt-6 text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-2 rounded-lg hover:bg-indigo-100 transition-colors">
+                Assign First Teacher
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Add Teacher Modal -->
-<div id="addTeacherModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[80vh] flex flex-col">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Add Teacher to Department</h3>
-            <button onclick="closeAddTeacherModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-        <div class="p-6 pb-4">
-            <div class="relative">
-                <input type="text" id="teacherSearchInput" placeholder="Search teachers by name or email..."
-                       class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+<div id="addTeacherModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddTeacherModal()">
+    </div>
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div
+            class="relative w-full max-w-lg transform overflow-hidden rounded-3xl bg-white shadow-2xl transition-all animate-scale-up flex flex-col max-h-[80vh]">
+            <!-- Modal Header -->
+            <div class="premium-gradient px-8 py-6 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-black text-white tracking-tight">Assign Faculty</h3>
+                    <p class="text-indigo-100 text-[10px] font-bold uppercase tracking-wider mt-1">Select teachers to
+                        add to this department</p>
+                </div>
+                <button onclick="closeAddTeacherModal()"
+                    class="w-8 h-8 flex items-center justify-center rounded-xl bg-white/20 text-white hover:bg-white/30 transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </div>
-        <div class="flex-1 overflow-y-auto px-6">
-            <div id="availableTeachers" class="space-y-2">
-                <!-- Teachers will be loaded here -->
+
+            <!-- Search Area -->
+            <div class="p-6 bg-slate-50 border-b border-slate-100">
+                <div class="relative group">
+                    <i
+                        class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors"></i>
+                    <input type="text" id="teacherSearchInput"
+                        class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                        placeholder="Search by name or email...">
+                </div>
             </div>
-        </div>
-        <div class="flex justify-end gap-3 p-6 border-t border-gray-200">
-            <button type="button" onclick="closeAddTeacherModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                Cancel
-            </button>
+
+            <!-- List Area -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-2" id="availableTeachers">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 border-t border-slate-100 bg-slate-50 flex justify-between gap-3">
+                <button onclick="closeAddTeacherModal()"
+                    class="flex-1 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:bg-slate-100 rounded-xl transition-all">
+                    Close
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -140,212 +220,129 @@
     async function loadDepartmentTeachers() {
         const urlParams = new URLSearchParams(window.location.search);
         currentDepartmentId = urlParams.get('id');
-        currentDepartmentName = urlParams.get('name');
 
         if (!currentDepartmentId) {
             window.location.href = '/departments';
             return;
         }
 
-        if (currentDepartmentName) {
-            document.getElementById('pageTitle').textContent = `${currentDepartmentName} Teachers`;
-            document.getElementById('departmentName').textContent = currentDepartmentName;
-        }
-
         const tbody = document.getElementById('teachersTableBody');
-        const emptyState = document.getElementById('emptyState');
-        const skeletons = document.querySelectorAll('.loading-skeleton');
+        const emptyState = document.getElementById('empty-state');
 
         try {
             const response = await fetch(`/api/departments/${currentDepartmentId}/teachers`);
             const data = await response.json();
 
-            // Hide skeletons
-            skeletons.forEach(skeleton => skeleton.style.display = 'none');
+            // Update Header & Stats
+            document.getElementById('headerDeptName').textContent = data.department_name;
+            document.getElementById('headerDeptCode').textContent = data.department_code;
+            document.getElementById('totalFacultyCount').textContent = data.count || 0;
+            document.getElementById('totalSubjectsCount').textContent = data.subject_count || 0;
+
+            const hod = data.head_of_department;
+            document.getElementById('hodName').textContent = hod.first_name ? `${hod.first_name} ${hod.last_name}` : 'Not Assigned';
+
+            const assist = data.assistant_head;
+            document.getElementById('assistantName').textContent = assist.first_name ? `${assist.first_name} ${assist.last_name}` : 'Not Assigned';
+
             tbody.innerHTML = '';
 
-            if (data.teachers && data.teachers.length > 0) {
-                data.teachers.forEach(teacher => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-gray-50';
-                    const roleColor = teacher.role === 'Head of Department' ? 'bg-blue-100 text-blue-800' : 
-                                     teacher.role === 'Assistant Head' ? 'bg-green-100 text-green-800' : 
-                                     'bg-gray-100 text-gray-800';
-                    
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-sm font-medium text-primary-600">${teacher.first_name.charAt(0)}${teacher.last_name.charAt(0)}</span>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">${teacher.first_name} ${teacher.last_name}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${teacher.phone || 'N/A'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span id="roleBadge-${teacher.id}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${roleColor}">
-                                ${teacher.role}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex justify-end items-center space-x-2">
-                                <div class="relative">
-                                    <button onclick="toggleRoleMenu('${teacher.id}')" class="text-blue-600 hover:text-blue-900 flex items-center">
-                                        Set Role
-                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </button>
-                                    <div id="roleMenu-${teacher.id}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border">
-                                        <button onclick="setRole('${teacher.id}', 'head')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Set as Head
-                                        </button>
-                                        <button onclick="setRole('${teacher.id}', 'assistant')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Set as Assistant
-                                        </button>
-                                        <button onclick="setRole('${teacher.id}', 'member')" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Set as Member
-                                        </button>
-                                    </div>
-                                </div>
-                                <button onclick="removeTeacher('${teacher.id}')" class="text-red-600 hover:text-red-900">
-                                    Remove
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } else {
-                tbody.appendChild(emptyState);
-                emptyState.style.display = '';
+            if (!data.teachers || data.teachers.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
             }
+
+            emptyState.classList.add('hidden');
+            data.teachers.forEach(teacher => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50/50 transition-colors group';
+
+                const initials = teacher.first_name[0] + teacher.last_name[0];
+                const roleColors = getRoleConfig(teacher.role);
+
+                row.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-indigo-50 group-hover:border-indigo-100 group-hover:text-indigo-600 transition-all font-black text-xs">
+                                ${initials}
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-900">${teacher.first_name} ${teacher.last_name}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mt-0.5 tracking-tighter">${teacher.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-bold text-slate-600 flex items-center gap-2">
+                                <i class="fas fa-envelope text-[10px] text-slate-300"></i> ${teacher.email}
+                            </span>
+                            <span class="text-xs font-bold text-slate-600 flex items-center gap-2">
+                                <i class="fas fa-phone text-[10px] text-slate-300"></i> ${teacher.phone || 'No phone'}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${roleColors.bg} ${roleColors.text} border ${roleColors.border}">
+                            <span class="w-1.5 h-1.5 rounded-full ${roleColors.dot} ${teacher.role !== 'Member' ? 'animate-pulse' : ''}"></span>
+                            ${teacher.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center justify-end gap-1">
+                            <div class="relative group/menu">
+                                <button class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all">
+                                    <i class="fas fa-user-shield text-xs"></i>
+                                </button>
+                                <div class="hidden group-hover/menu:block absolute right-0 top-full mt-1 w-48 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 animate-scale-up">
+                                    <button onclick="setRole('${teacher.id}', 'head')" class="flex items-center gap-3 w-full px-4 py-2 text-xs font-bold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
+                                        <i class="fas fa-user-tie w-4"></i> Set as Head
+                                    </button>
+                                    <button onclick="setRole('${teacher.id}', 'assistant')" class="flex items-center gap-3 w-full px-4 py-2 text-xs font-bold text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 transition-all">
+                                        <i class="fas fa-user-shield w-4"></i> Set as Assistant
+                                    </button>
+                                    <button onclick="setRole('${teacher.id}', 'member')" class="flex items-center gap-3 w-full px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all border-t border-slate-50 mt-1 pt-3">
+                                        <i class="fas fa-user w-4"></i> Set as Member
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="removeTeacher('${teacher.id}')" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all">
+                                <i class="fas fa-user-minus text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
         } catch (error) {
             console.error('Error loading teachers:', error);
-            skeletons.forEach(skeleton => skeleton.style.display = 'none');
-            tbody.innerHTML = '';
-            tbody.appendChild(emptyState);
-            emptyState.style.display = '';
+            showNotification('Failed to load faculty', 'error');
         }
     }
 
-    function openAddTeacherModal() {
-        document.getElementById('addTeacherModal').classList.remove('hidden');
-        loadAvailableTeachers();
+    function getRoleConfig(role) {
+        if (role === 'Head of Department') return { bg: 'bg-indigo-50', text: 'text-indigo-600', border: 'border-indigo-100', dot: 'bg-indigo-500' };
+        if (role === 'Assistant Head') return { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-100', dot: 'bg-emerald-500' };
+        return { bg: 'bg-slate-50', text: 'text-slate-500', border: 'border-slate-100', dot: 'bg-slate-400' };
     }
 
-    function closeAddTeacherModal() {
-        document.getElementById('addTeacherModal').classList.add('hidden');
-    }
-
-    async function loadAvailableTeachers(query = '') {
-        const container = document.getElementById('availableTeachers');
-        
-        // Show skeleton
-        container.innerHTML = `
-            <div class="space-y-2">
-                <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="animate-pulse p-3 border border-gray-200 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-1/3"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
+    async function setRole(teacherId, role) {
         try {
-            const url = `/api/teachers/search${query ? `?q=${query}` : ''}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            container.innerHTML = '';
-
-            if (data.teachers && data.teachers.length > 0) {
-                container.innerHTML = data.teachers.map(teacher => `
-                    <div class="p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 cursor-pointer transition-colors" onclick="addTeacher('${teacher.id}', this)">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-sm font-medium text-primary-600">${teacher.first_name.charAt(0)}${teacher.last_name.charAt(0)}</span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">${teacher.first_name} ${teacher.last_name}</p>
-                                <p class="text-xs text-gray-500">${teacher.email}</p>
-                            </div>
-                            <div class="teacher-loading hidden">
-                                <svg class="animate-spin h-4 w-4 text-primary-600" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = '<div class="text-center text-gray-500 py-4">No teachers found</div>';
-            }
-        } catch (error) {
-            container.innerHTML = '<div class="text-center text-red-500 py-4">Failed to load teachers</div>';
-        }
-    }
-
-    async function addTeacher(teacherId, element) {
-        const loadingSpinner = element.querySelector('.teacher-loading');
-        const teacherItem = element;
-        
-        // Show loading state
-        teacherItem.style.pointerEvents = 'none';
-        teacherItem.style.opacity = '0.6';
-        loadingSpinner.classList.remove('hidden');
-        
-        try {
-            const response = await fetch(`/api/departments/${currentDepartmentId}/teachers`, {
-                method: 'POST',
+            const response = await fetch(`/api/departments/${currentDepartmentId}/leadership`, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ teacher_id: teacherId })
+                body: JSON.stringify({ teacher_id: teacherId, role: role })
             });
 
             if (response.ok) {
-                // Show success state and mark as added
-                loadingSpinner.innerHTML = `
-                    <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                `;
-                teacherItem.classList.remove('hover:border-primary-300', 'hover:bg-primary-50', 'cursor-pointer');
-                teacherItem.classList.add('bg-green-50', 'border-green-200');
-                teacherItem.style.opacity = '0.8';
-                
-                // Update table in background
+                showNotification('Role updated successfully');
                 loadDepartmentTeachers();
             } else {
-                const error = await response.json();
-                alert('Error: ' + (error.error || 'Failed to add teacher'));
-                // Reset state
-                teacherItem.style.pointerEvents = 'auto';
-                teacherItem.style.opacity = '1';
-                loadingSpinner.classList.add('hidden');
+                const err = await response.json();
+                showNotification(err.error || 'Failed to update role', 'error');
             }
         } catch (error) {
-            alert('Error: Failed to add teacher');
-            // Reset state
-            teacherItem.style.pointerEvents = 'auto';
-            teacherItem.style.opacity = '1';
-            loadingSpinner.classList.add('hidden');
+            showNotification('System error occurred', 'error');
         }
     }
 
@@ -358,76 +355,166 @@
             });
 
             if (response.ok) {
+                showNotification('Teacher removed from department');
                 loadDepartmentTeachers();
             } else {
-                const error = await response.json();
-                alert('Error: ' + (error.error || 'Failed to remove teacher'));
+                showNotification('Failed to remove teacher', 'error');
             }
         } catch (error) {
-            alert('Error: Failed to remove teacher');
+            showNotification('System error', 'error');
         }
     }
 
-    document.getElementById('teacherSearchInput').addEventListener('input', (e) => {
-        loadAvailableTeachers(e.target.value);
-    });
-
-    function toggleRoleMenu(teacherId) {
-        const menu = document.getElementById(`roleMenu-${teacherId}`);
-        // Close all other menus
-        document.querySelectorAll('[id^="roleMenu-"]').forEach(m => {
-            if (m.id !== `roleMenu-${teacherId}`) m.classList.add('hidden');
-        });
-        menu.classList.toggle('hidden');
+    // Modal Operations
+    function openAddTeacherModal() {
+        document.getElementById('addTeacherModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        loadAvailableTeachers();
     }
 
-    async function setRole(teacherId, role) {
-        const menu = document.getElementById(`roleMenu-${teacherId}`);
-        const roleBadge = document.getElementById(`roleBadge-${teacherId}`);
-        const originalBadgeContent = roleBadge.innerHTML;
-        
-        // Show loading in role badge
-        roleBadge.innerHTML = `
-            <svg class="animate-spin h-3 w-3 text-gray-600" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-        `;
-        roleBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600';
-        
-        // Close menu
-        menu.classList.add('hidden');
-        
+    function closeAddTeacherModal() {
+        document.getElementById('addTeacherModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function loadAvailableTeachers() {
+        const query = document.getElementById('teacherSearchInput').value;
+        const container = document.getElementById('availableTeachers');
+
         try {
-            const response = await fetch(`/api/departments/${currentDepartmentId}/leadership`, {
-                method: 'PUT',
+            const response = await fetch(`/api/teachers/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            container.innerHTML = '';
+            if (!data.teachers || data.teachers.length === 0) {
+                container.innerHTML = '<div class="p-8 text-center text-xs font-bold text-slate-400">No teachers found</div>';
+                return;
+            }
+
+            data.teachers.forEach(teacher => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all group';
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-[10px] font-black text-slate-500 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-all">
+                            ${teacher.first_name[0]}${teacher.last_name[0]}
+                        </div>
+                        <div>
+                            <p class="text-xs font-black text-slate-900 leading-none">${teacher.first_name} ${teacher.last_name}</p>
+                            <p class="text-[10px] font-bold text-slate-400 mt-1">${teacher.email}</p>
+                        </div>
+                    </div>
+                    <button onclick="assignTeacher('${teacher.id}', this)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-[10px] font-black transition-all shadow-sm">
+                        Assign
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        } catch (error) {
+            console.error('Error fetching teachers:', error);
+        }
+    }
+
+    async function assignTeacher(teacherId, btn) {
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const response = await fetch(`/api/departments/${currentDepartmentId}/teachers`, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ teacher_id: teacherId, role: role })
+                body: JSON.stringify({ teacher_id: teacherId })
             });
 
             if (response.ok) {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.className = 'bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black';
+                showNotification('Teacher assigned successfully');
                 loadDepartmentTeachers();
             } else {
-                const error = await response.json();
-                alert('Error: ' + (error.error || 'Failed to set role'));
-                roleBadge.innerHTML = originalBadgeContent;
+                const err = await response.json();
+                showNotification(err.error || 'Failed to assign', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         } catch (error) {
-            alert('Error: Failed to set role');
-            roleBadge.innerHTML = originalBadgeContent;
+            showNotification('System error', 'error');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
         }
     }
 
-    // Close menus when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('[id^="roleMenu-"]') && !e.target.closest('button[onclick*="toggleRoleMenu"]')) {
-            document.querySelectorAll('[id^="roleMenu-"]').forEach(menu => menu.classList.add('hidden'));
-        }
+    // Event Listeners
+    document.getElementById('teacherSearchInput').addEventListener('input', debounce(loadAvailableTeachers, 300));
+
+    document.getElementById('teacherSearch').addEventListener('input', function (e) {
+        const term = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('#teachersTableBody tr:not(.skeleton-row)');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(term) ? '' : 'none';
+        });
     });
 
-    document.getElementById('addTeacherModal').addEventListener('click', function(e) {
-        if (e.target === this) closeAddTeacherModal();
-    });
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function showNotification(msg, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'
+            } text-white`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <p class="text-xs font-black uppercase tracking-widest">${msg}</p>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
 
     document.addEventListener('DOMContentLoaded', loadDepartmentTeachers);
 </script>
+
+<style>
+    @keyframes scaleUp {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .animate-scale-up {
+        animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

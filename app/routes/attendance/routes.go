@@ -1,6 +1,8 @@
 package attendance
 
 import (
+	"encoding/json"
+	"fmt"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
@@ -28,7 +30,7 @@ func SetupAttendanceRoutes(app *fiber.App) {
 	api.Post("/", BatchUpdateAttendanceAPI)
 	api.Post("/single", CreateOrUpdateAttendanceAPI)
 	api.Get("/stats/:classId", GetAttendanceStatsAPI)
-	
+
 	// Timetable-based attendance routes
 	api.Get("/timetable/:timetableEntryId/students", GetStudentsByTimetableEntryAPI)
 	api.Get("/timetable/:timetableEntryId/date/:date", GetAttendanceByTimetableEntryAPI)
@@ -38,30 +40,31 @@ func SetupAttendanceRoutes(app *fiber.App) {
 }
 
 func AttendancePage(c *fiber.Ctx) error {
-	classes, err := database.GetAllClasses(config.GetDB())
-	if err != nil {
-		return c.Status(500).Render("error", fiber.Map{
-			"Title":        "Error - Swadiq Schools",
-			"CurrentPage":  "attendance",
-			"ErrorCode":    "500",
-			"ErrorTitle":   "Database Error",
-			"ErrorMessage": "Failed to load classes. Please try again later.",
-			"ShowRetry":    true,
-			"user":         c.Locals("user"),
-		})
+	user := c.Locals("user").(*models.User)
+
+	// Get overall stats (dummy for now)
+	stats := map[string]interface{}{
+		"total_students": 450,
+		"today_present":  412,
+		"today_absent":   38,
+		"avg_attendance": 92,
 	}
 
-	// Get today's date
-	today := time.Now().Format("2006-01-02")
-	todayFormatted := time.Now().Format("Monday, January 2, 2006")
+	// Get all classes
+	classes, err := database.GetAllClasses(config.GetDB())
+	if err != nil {
+		return c.Status(500).SendString("Failed to fetch classes")
+	}
 
 	return c.Render("attendance/index", fiber.Map{
 		"Title":       "Attendance Management - Swadiq Schools",
 		"CurrentPage": "attendance",
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
+		"stats":       stats,
 		"classes":     classes,
-		"Today":       today,
-		"TodayFormatted": todayFormatted,
-		"user":        c.Locals("user"),
 	})
 }
 
@@ -119,13 +122,17 @@ func AttendanceByClassPage(c *fiber.Ctx) error {
 	// Get today's date
 	today := time.Now().Format("2006-01-02")
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("attendance/class", fiber.Map{
 		"Title":       "Attendance for " + selectedClass.Name + " - Swadiq Schools",
 		"CurrentPage": "attendance",
 		"class":       selectedClass,
 		"students":    students,
 		"today":       today,
-		"user":        c.Locals("user"),
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
 	})
 }
 
@@ -214,6 +221,7 @@ func AttendanceByClassAndDatePage(c *fiber.Ctx) error {
 		attendanceMap[record.StudentID] = record.Status
 	}
 
+	user := c.Locals("user").(*models.User)
 	return c.Render("attendance/take", fiber.Map{
 		"Title":         "Take Attendance - " + selectedClass.Name + " - Swadiq Schools",
 		"CurrentPage":   "attendance",
@@ -221,7 +229,10 @@ func AttendanceByClassAndDatePage(c *fiber.Ctx) error {
 		"students":      students,
 		"date":          dateStr,
 		"attendanceMap": attendanceMap,
-		"user":          c.Locals("user"),
+		"user":          user,
+		"FirstName":     user.FirstName,
+		"LastName":      user.LastName,
+		"Email":         user.Email,
 	})
 }
 
@@ -279,6 +290,31 @@ func LessonAttendancePage(c *fiber.Ctx) error {
 		attendanceMap[record.StudentID] = record.Status
 	}
 
+	// If lessonInfo is missing from query, try fetching from DB
+	if lessonInfo == "" {
+		fmt.Printf("DEBUG: lesson_info missing for timetableEntry %s, fetching from DB\n", timetableEntryID)
+		entry, err := database.GetTimetableEntryByID(config.GetDB(), timetableEntryID)
+		if err == nil {
+			jsonData, _ := json.Marshal(entry)
+			lessonInfo = string(jsonData)
+		} else {
+			fmt.Printf("DEBUG: Failed to fetch timetable entry: %v\n", err)
+		}
+	} else {
+		// Verify if it's valid JSON, if not we might have an issue
+		var js map[string]interface{}
+		if err := json.Unmarshal([]byte(lessonInfo), &js); err != nil {
+			fmt.Printf("DEBUG: lesson_info in query is NOT valid JSON: %s\n", lessonInfo)
+			// Try to recover by fetching from DB
+			entry, err := database.GetTimetableEntryByID(config.GetDB(), timetableEntryID)
+			if err == nil {
+				jsonData, _ := json.Marshal(entry)
+				lessonInfo = string(jsonData)
+			}
+		}
+	}
+
+	user := c.Locals("user").(*models.User)
 	return c.Render("attendance/lesson", fiber.Map{
 		"Title":            "Take Lesson Attendance - Swadiq Schools",
 		"CurrentPage":      "attendance",
@@ -287,6 +323,9 @@ func LessonAttendancePage(c *fiber.Ctx) error {
 		"timetableEntryID": timetableEntryID,
 		"lessonInfo":       lessonInfo,
 		"attendanceMap":    attendanceMap,
-		"user":             c.Locals("user"),
+		"user":             user,
+		"FirstName":        user.FirstName,
+		"LastName":         user.LastName,
+		"Email":            user.Email,
 	})
 }

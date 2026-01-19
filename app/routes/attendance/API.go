@@ -75,6 +75,15 @@ func CreateOrUpdateAttendanceAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Either class_id or timetable_entry_id must be provided"})
 	}
 
+	// If ClassID is missing but TimetableEntryID is present, fetch the ClassID
+	// as it is likely required by the database schema (NOT NULL constraint)
+	if req.ClassID == nil && req.TimetableEntryID != nil {
+		entry, err := database.GetTimetableEntryByID(config.GetDB(), *req.TimetableEntryID)
+		if err == nil && entry != nil {
+			req.ClassID = &entry.ClassID
+		}
+	}
+
 	// Parse date
 	date, err := time.Parse("2006-01-02", req.Date)
 	if err != nil {
@@ -165,9 +174,9 @@ func GetAttendanceByTimetableEntryAPI(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"attendance":        attendanceRecords,
-		"count":             len(attendanceRecords),
-		"date":              dateStr,
+		"attendance":         attendanceRecords,
+		"count":              len(attendanceRecords),
+		"date":               dateStr,
 		"timetable_entry_id": timetableEntryID,
 	})
 }
@@ -226,9 +235,9 @@ func GetTimetableEntriesByTeacherAndDateAPI(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"timetable_entries": timetableEntries,
-		"count":            len(timetableEntries),
-		"date":             dateStr,
-		"teacher_id":       teacherID,
+		"count":             len(timetableEntries),
+		"date":              dateStr,
+		"teacher_id":        teacherID,
 	})
 }
 
