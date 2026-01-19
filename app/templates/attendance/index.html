@@ -415,6 +415,10 @@
     }
 
     function displayClassesInModal(lessons, date) {
+        // Update lesson cache for lookup
+        if (!window.lessonCache) window.lessonCache = {};
+        lessons.forEach(l => window.lessonCache[l.id] = l);
+
         const classesList = document.getElementById('modalClassesList');
         classesList.innerHTML = '';
 
@@ -460,7 +464,7 @@
                         </p>
                     </div>
                 </div>
-                <button onclick="takeAttendanceForLesson('${lesson.id}', '${date}', ${JSON.stringify(lesson).replace(new RegExp('&quot;', 'g'), '&quot;')})" 
+                <button onclick="takeAttendanceForLesson('${lesson.id}', '${date}')" 
                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm">
                     Take Roll
                 </button>
@@ -509,7 +513,8 @@
         }, 300);
     }
 
-    function takeAttendanceForLesson(timetableEntryId, date, lesson) {
+    function takeAttendanceForLesson(timetableEntryId, date) {
+        const lesson = window.lessonCache[timetableEntryId];
         const params = new URLSearchParams({
             timetable_entry_id: timetableEntryId,
             date: date,
