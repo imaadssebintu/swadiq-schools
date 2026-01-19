@@ -1072,30 +1072,63 @@
             async function handleSubjectChange(selectEl, isInit = false) {
                 const uid = selectEl.dataset.uid;
                 const subjectId = selectEl.value;
+                const day = selectEl.dataset.day;
+                const timeRange = selectEl.dataset.time; // "HH:MM - HH:MM"
+                const [startTime, endTime] = timeRange.split(' - ');
+
                 const paperSelect = document.getElementById(`paper_${uid}`);
                 const teacherSelect = document.getElementById(`teacher_${uid}`);
 
                 // clear dropdowns
                 paperSelect.innerHTML = '<option value="">Paper...</option>';
-                teacherSelect.innerHTML = '<option value="">Teacher...</option>';
+                teacherSelect.innerHTML = '<option value="">Loading...</option>';
 
                 if (!subjectId) {
                     paperSelect.disabled = true;
                     teacherSelect.disabled = true;
+                    teacherSelect.innerHTML = '<option value="">Teacher...</option>';
                     return;
                 }
 
                 paperSelect.disabled = false;
-                teacherSelect.disabled = false;
+                teacherSelect.disabled = true; // Disable until we get available teachers
 
-                // Populate Teachers (Global list for now, ideally filtered by subject association if data exists)
-                teachersCache.forEach(t => {
-                    const opt = document.createElement('option');
-                    opt.value = t.id;
-                    opt.textContent = `${t.first_name} ${t.last_name}`;
-                    if (isInit && teacherSelect.dataset.current === t.id) opt.selected = true;
-                    teacherSelect.appendChild(opt);
-                });
+                // Fetch available teachers for this specific slot and subject
+                try {
+                    const response = await fetch(`/api/teachers/for-timetable?subject_id=${subjectId}&day_of_week=${day}&start_time=${startTime}&end_time=${endTime}&class_id=${classID}`);
+                    const data = await response.json();
+                    const availableTeachers = data.teachers || [];
+
+                    teacherSelect.innerHTML = '<option value="">Choose Teacher...</option>';
+                    availableTeachers.forEach(t => {
+                        const opt = document.createElement('option');
+                        opt.value = t.id;
+                        opt.textContent = t.full_name || `${t.first_name} ${t.last_name}`;
+                        if (isInit && teacherSelect.dataset.current === t.id) opt.selected = true;
+                        teacherSelect.appendChild(opt);
+                    });
+
+                    // If it's initial load and the current teacher isn't in the available list (rare but possible due to conflict)
+                    if (isInit && teacherSelect.dataset.current && !availableTeachers.find(t => t.id === teacherSelect.dataset.current)) {
+                        // We should probably still show them but maybe mark them? 
+                        // For now, let's just make sure they are in the list so it doesn't break the UI
+                        const currentTeacherId = teacherSelect.dataset.current;
+                        // Fetch the specific teacher if not in list (we can fallback to teachersCache if they are there)
+                        const cachedTeacher = teachersCache.find(t => t.id === currentTeacherId);
+                        if (cachedTeacher) {
+                            const opt = document.createElement('option');
+                            opt.value = cachedTeacher.id;
+                            opt.textContent = `${cachedTeacher.first_name} ${cachedTeacher.last_name} (Conflict/Assigned)`;
+                            opt.selected = true;
+                            teacherSelect.appendChild(opt);
+                        }
+                    }
+
+                    teacherSelect.disabled = false;
+                } catch (e) {
+                    console.error("Failed to fetch available teachers", e);
+                    teacherSelect.innerHTML = '<option value="">Error loading</option>';
+                }
 
                 // Populate Papers
                 const papers = await getPapersForSubject(subjectId);

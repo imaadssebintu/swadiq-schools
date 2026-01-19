@@ -3,6 +3,7 @@ package teachers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
@@ -27,26 +28,26 @@ func GetTeachersAPI(c *fiber.Ctx) error {
 
 func GetTeachersForSelectionAPI(c *fiber.Ctx) error {
 	search := c.Query("search", "")
-	
+
 	// Simple query for teacher selection - only essential fields
 	db := config.GetDB()
 	query := `SELECT id, first_name, last_name, email FROM users 
 			  WHERE deleted_at IS NULL AND is_active = true`
 	args := []interface{}{}
-	
+
 	if search != "" {
 		query += ` AND (first_name ILIKE $1 OR last_name ILIKE $1 OR email ILIKE $1)`
 		args = append(args, "%"+search+"%")
 	}
-	
+
 	query += ` ORDER BY first_name LIMIT 20`
-	
+
 	rows, err := db.Query(query, args...)
 	if err != nil {
 		return c.JSON(fiber.Map{"teachers": []interface{}{}, "count": 0})
 	}
 	defer rows.Close()
-	
+
 	var teachers []fiber.Map
 	for rows.Next() {
 		var id, firstName, lastName, email string
@@ -60,7 +61,7 @@ func GetTeachersForSelectionAPI(c *fiber.Ctx) error {
 			"email":      email,
 		})
 	}
-	
+
 	return c.JSON(fiber.Map{
 		"teachers": teachers,
 		"count":    len(teachers),
@@ -70,6 +71,7 @@ func GetTeachersForSelectionAPI(c *fiber.Ctx) error {
 func GetTeachersForTimetableAPI(c *fiber.Ctx) error {
 	subjectID := c.Query("subject_id")
 	paperID := c.Query("paper_id")
+	classID := c.Query("class_id")
 	dayOfWeek := c.Query("day_of_week")
 	startTime := c.Query("start_time")
 	endTime := c.Query("end_time")
@@ -77,7 +79,7 @@ func GetTeachersForTimetableAPI(c *fiber.Ctx) error {
 	// If availability parameters are provided, use the availability-aware query
 	if dayOfWeek != "" && startTime != "" && endTime != "" {
 		db := config.GetDB()
-		
+
 		// Convert day name to number
 		dayMap := map[string]int{
 			"sunday": 0, "monday": 1, "tuesday": 2, "wednesday": 3,
@@ -94,16 +96,15 @@ func GetTeachersForTimetableAPI(c *fiber.Ctx) error {
 			INNER JOIN user_roles ur ON u.id = ur.user_id
 			INNER JOIN roles r ON ur.role_id = r.id
 			INNER JOIN teacher_subjects ts ON u.id = ts.teacher_id
-			INNER JOIN teacher_availability ta ON u.id = ta.teacher_id AND ta.day_of_week = $1
+			LEFT JOIN teacher_availability ta ON u.id = ta.teacher_id AND ta.day_of_week = $1
 			WHERE u.is_active = true 
 			  AND r.name IN ('class_teacher', 'subject_teacher', 'head_teacher', 'admin')
-			  AND ta.is_available = true 
-			  AND ta.start_time <= $2::time 
-			  AND ta.end_time >= $3::time
+			  AND (ta.id IS NULL OR (ta.is_available = true AND ta.start_time <= $2::time AND ta.end_time >= $3::time))
 			  AND u.id NOT IN (
 				  SELECT te.teacher_id FROM timetable_entries te
 				  WHERE te.day_of_week = $4 
 					AND te.is_active = true
+					AND te.class_id != $5
 					AND (
 						(te.start_time <= $2::time AND te.end_time > $2::time) OR
 						(te.start_time < $3::time AND te.end_time >= $3::time) OR
@@ -111,14 +112,14 @@ func GetTeachersForTimetableAPI(c *fiber.Ctx) error {
 					)
 			  )`
 
-		args := []interface{}{dayNum, startTime, endTime, dayOfWeek}
+		args := []interface{}{dayNum, startTime, endTime, dayOfWeek, classID}
 
 		// Add subject/paper filtering
 		if subjectID != "" {
-			query += ` AND ts.subject_id = $5`
+			query += ` AND ts.subject_id = $6`
 			args = append(args, subjectID)
 		}
-		
+
 		if paperID != "" {
 			query += ` AND ts.paper_id = $` + fmt.Sprintf("%d", len(args)+1)
 			args = append(args, paperID)
@@ -128,6 +129,7 @@ func GetTeachersForTimetableAPI(c *fiber.Ctx) error {
 
 		rows, err := db.Query(query, args...)
 		if err != nil {
+			log.Printf("Available teachers fetch error: %v", err)
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch available teachers"})
 		}
 		defer rows.Close()
@@ -218,7 +220,7 @@ func GetTeacherCountsAPI(c *fiber.Ctx) error {
 
 func GetTeacherStatsAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
-	
+
 	// Get teacher counts by role
 	roleCounts, err := database.GetTeacherCountsByRole(db)
 	if err != nil {
@@ -231,7 +233,7 @@ func GetTeacherStatsAPI(c *fiber.Ctx) error {
 		INNER JOIN roles r ON ur.role_id = r.id
 		WHERE r.name IN ('class_teacher', 'subject_teacher', 'head_teacher', 'admin') 
 		AND u.is_active = true`
-	
+
 	var totalTeachers int
 	err = db.QueryRow(totalQuery).Scan(&totalTeachers)
 	if err != nil {
@@ -239,9 +241,9 @@ func GetTeacherStatsAPI(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"total_teachers": totalTeachers,
-		"active_teachers": totalTeachers,
-		"class_teachers": roleCounts["class_teacher"],
+		"total_teachers":   totalTeachers,
+		"active_teachers":  totalTeachers,
+		"class_teachers":   roleCounts["class_teacher"],
 		"subject_teachers": roleCounts["subject_teacher"],
 	})
 }
@@ -320,7 +322,6 @@ func CreateTeacherAPI(c *fiber.Ctx) error {
 		"teacher": user,
 	})
 }
-
 
 func SearchTeachersAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")
@@ -407,7 +408,7 @@ func UpdateTeacherAPI(c *fiber.Ctx) error {
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to update role"})
 		}
-		
+
 		// Assign new role
 		if err := database.AssignTeacherRole(config.GetDB(), teacherID, req.Role); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to assign new role"})
@@ -456,16 +457,16 @@ func GetRolesAPI(c *fiber.Ctx) error {
 		var id, name string
 		var isActive bool
 		var createdAt, updatedAt string
-		
+
 		err := rows.Scan(&id, &name, &isActive, &createdAt, &updatedAt)
 		if err != nil {
 			continue
 		}
-		
+
 		roles = append(roles, map[string]interface{}{
-			"id": id,
-			"name": name,
-			"is_active": isActive,
+			"id":         id,
+			"name":       name,
+			"is_active":  isActive,
 			"created_at": createdAt,
 			"updated_at": updatedAt,
 		})
@@ -504,7 +505,7 @@ func CreateRoleAPI(c *fiber.Ctx) error {
 
 func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
-	
+
 	query := `SELECT d.id, d.name, d.code,
 		h.first_name as head_first_name, h.last_name as head_last_name,
 		a.first_name as assistant_first_name, a.last_name as assistant_last_name,
@@ -517,7 +518,7 @@ func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
 		WHERE d.is_active = true
 		GROUP BY d.id, d.name, d.code, h.first_name, h.last_name, a.first_name, a.last_name
 		ORDER BY d.name`
-	
+
 	rows, err := db.Query(query)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch department overview"})
@@ -529,24 +530,24 @@ func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
 		var deptID, deptName, deptCode string
 		var headFirstName, headLastName, assistantFirstName, assistantLastName *string
 		var teacherCount int
-		
+
 		if err := rows.Scan(&deptID, &deptName, &deptCode, &headFirstName, &headLastName, &assistantFirstName, &assistantLastName, &teacherCount); err == nil {
 			headName := "Not assigned"
 			if headFirstName != nil && headLastName != nil {
 				headName = *headFirstName + " " + *headLastName
 			}
-			
+
 			assistantName := "Not assigned"
 			if assistantFirstName != nil && assistantLastName != nil {
 				assistantName = *assistantFirstName + " " + *assistantLastName
 			}
-			
+
 			departments = append(departments, map[string]interface{}{
-				"id": deptID,
-				"name": deptName,
-				"code": deptCode,
-				"teacher_count": teacherCount,
-				"head_name": headName,
+				"id":             deptID,
+				"name":           deptName,
+				"code":           deptCode,
+				"teacher_count":  teacherCount,
+				"head_name":      headName,
 				"assistant_name": assistantName,
 			})
 		}
@@ -554,7 +555,7 @@ func GetDepartmentOverviewAPI(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"departments": departments,
-		"count": len(departments),
+		"count":       len(departments),
 	})
 }
 
@@ -636,30 +637,30 @@ func GetTeacherSubjectsAPI(c *fiber.Ctx) error {
 func AssignTeacherSubjectsAPI(c *fiber.Ctx) error {
 	teacherID := c.Params("id")
 	db := config.GetDB()
-	
+
 	type AssignSubjectsRequest struct {
 		SubjectIDs []string            `json:"subject_ids"`
 		Papers     map[string][]string `json:"papers"` // subject_id -> paper_ids
 	}
-	
+
 	var req AssignSubjectsRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
-	
+
 	// Start transaction
 	tx, err := db.Begin()
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to start transaction"})
 	}
 	defer tx.Rollback()
-	
+
 	// Delete existing assignments
 	_, err = tx.Exec("DELETE FROM teacher_subjects WHERE teacher_id = $1", teacherID)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing subjects"})
 	}
-	
+
 	// Insert assignments
 	for _, subjectID := range req.SubjectIDs {
 		if paperIDs, exists := req.Papers[subjectID]; exists && len(paperIDs) > 0 {
@@ -678,12 +679,12 @@ func AssignTeacherSubjectsAPI(c *fiber.Ctx) error {
 			}
 		}
 	}
-	
+
 	// Commit transaction
 	if err = tx.Commit(); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to commit changes"})
 	}
-	
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Subjects and papers assigned successfully",
