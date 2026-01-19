@@ -1,4 +1,5 @@
-<div class="p-6 max-w-7xl mx-auto space-y-8">
+<div class="p-6 max-w-7xl mx-auto space-y-8" id="mainAttendanceContainer"
+    data-user-access="{{.user.CanAccessAllClasses}}">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -391,7 +392,8 @@
             const date = new Date(selectedDate);
             const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
-            const canAccessAllClasses = "{{.user.CanAccessAllClasses}}" === "true";
+            const container = document.getElementById('mainAttendanceContainer');
+            const canAccessAllClasses = container ? container.dataset.userAccess === "true" : false;
 
             // Get lessons for the selected day (all or current user's)
             const endpoint = canAccessAllClasses ?

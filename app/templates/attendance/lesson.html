@@ -93,6 +93,23 @@
 
     <!-- Student Registry Table -->
     <div class="glass-card rounded-2xl overflow-hidden border border-slate-200 bg-white">
+        <!-- Search Toolbar -->
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
+            <div class="relative flex-1 max-w-md">
+                <input type="text" id="studentSearch" placeholder="Search by name or ID (e.g. STU-2025-014)..."
+                    onkeyup="filterStudents()"
+                    class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-slate-400 text-xs"></i>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-lg border border-slate-200"
+                    id="recordCount">{{len .students}} Records</span>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -280,6 +297,34 @@
     }
 
 
+
+    function filterStudents() {
+        const input = document.getElementById('studentSearch');
+        const filter = input.value.toUpperCase();
+        const table = document.querySelector('table');
+        const tr = table.getElementsByTagName('tr');
+        let visibleCount = 0;
+
+        // Start from 1 to skip header
+        for (let i = 1; i < tr.length; i++) {
+            const nameTd = tr[i].getElementsByTagName('td')[0];
+            const idTd = tr[i].getElementsByTagName('td')[1];
+
+            if (nameTd && idTd) {
+                const nameValue = nameTd.textContent || nameTd.innerText;
+                const idValue = idTd.textContent || idTd.innerText;
+
+                if (nameValue.toUpperCase().indexOf(filter) > -1 || idValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    visibleCount++;
+                } else {
+                    tr[i].style.display = "none";
+                }}
+        }
+
+        // Update record count
+        document.getElementById('recordCount').textContent = visibleCount + " Records";
+    }
 
     function showNotification(msg, type = 'success') {
         const toast = document.createElement('div');
