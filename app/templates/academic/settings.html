@@ -1,128 +1,270 @@
-<!-- Loading Spinner -->
-<div id="loadingSpinner" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
-        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
-        <span class="text-gray-700">Loading...</span>
-    </div>
-</div>
-
 <!-- Academic Settings Page -->
-<div class="p-4 lg:p-6">
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 mb-1">
-                    Academic Settings 📚
-                </h1>
-                <p class="text-gray-600 text-sm">Manage academic years and terms</p>
-            </div>
-            <div class="hidden lg:flex items-center space-x-3">
-                <button id="addAcademicYearBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Add Academic Year
-                </button>
-            </div>
+<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Academic Settings</h1>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage Academic Years & Terms</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="addAcademicYearBtn"
+                class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Year</span>
+            </button>
+            <button id="addTermBtn"
+                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Term</span>
+            </button>
         </div>
     </div>
 
-    <!-- Academic Years Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-gray-900">Academic Years</h2>
-            <div class="relative">
-                <input type="text" id="searchAcademicYears" placeholder="Search academic years..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-            </div>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terms</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200" id="academicYearsTableBody">
-                    <!-- Academic years will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Terms Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-gray-900">Terms</h2>
-            <div class="flex space-x-2">
-                <div class="relative">
-                    <select id="academicYearFilter" class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="">All Academic Years</option>
-                        <!-- Academic years will be loaded here -->
-                    </select>
-                    <i class="fas fa-filter absolute left-3 top-3 text-gray-400"></i>
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Academic Years Section -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Academic
+                            Years</span>
+                        <div class="h-px bg-slate-100 w-12"></div>
+                    </div>
                 </div>
-                <button id="addTermBtn" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                    <i class="fas fa-plus mr-2"></i>Add Term
-                </button>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Year Name</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Duration</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Status</th>
+                                <th
+                                    class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="academicYearsList">
+                            <!-- Skeleton Rows -->
+                            <tr class="animate-pulse">
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-24 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-32 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                            <tr class="animate-pulse">
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-20 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-28 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terms Section -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">School
+                            Terms</span>
+                        <div class="h-px bg-slate-100 w-12"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Term Info</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Academic Year</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Dates</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Status</th>
+                                <th
+                                    class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="termsList">
+                            <!-- Skeleton Rows -->
+                            <tr class="animate-pulse">
+                                <td class="px-5 py-4">
+                                    <div class="space-y-2">
+                                        <div class="h-3 w-20 bg-slate-100 rounded"></div>
+                                        <div class="h-2 w-16 bg-slate-50 rounded"></div>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-20 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-32 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                            <tr class="animate-pulse">
+                                <td class="px-5 py-4">
+                                    <div class="space-y-2">
+                                        <div class="h-3 w-24 bg-slate-100 rounded"></div>
+                                        <div class="h-2 w-16 bg-slate-50 rounded"></div>
+                                    </div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-16 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-28 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Academic Year</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200" id="termsTableBody">
-                    <!-- Terms will be loaded here -->
-                </tbody>
-            </table>
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Filter Widget -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+                <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-filter text-slate-400"></i>
+                    Display Options
+                </h3>
+
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Search
+                            Years</label>
+                        <div class="relative">
+                            <i
+                                class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                            <input type="text" id="searchAcademicYears" placeholder="Year name..."
+                                class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Filter
+                            Terms</label>
+                        <div class="relative">
+                            <i
+                                class="fas fa-calendar absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                            <select id="academicYearFilter"
+                                class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 appearance-none">
+                                <option value="">All Academic Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div
+                class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl shadow-slate-200 relative overflow-hidden group">
+                <div
+                    class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors">
+                </div>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 relative z-10">Quick
+                    Status</h3>
+                <div class="space-y-4 relative z-10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">Active Year</span>
+                        <span id="activeYearBadge"
+                            class="text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase">None</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">Current Term</span>
+                        <span id="activeTermBadge"
+                            class="text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase">None</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Academic Year Modal -->
-<div id="academicYearModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900" id="academicYearModalTitle">Add Academic Year</h3>
+<div id="academicYearModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+    onclick="if(event.target === this) hideAcademicYearModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="academicYearModalTitle">Add
+                Academic Year</h3>
+            <button onclick="hideAcademicYearModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <form id="academicYearForm" class="px-6 py-4">
+        <form id="academicYearForm" class="p-6 space-y-4">
             <input type="hidden" id="academicYearId">
-            <div class="mb-4">
-                <label for="academicYearName" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="academicYearName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Year Name</label>
+                <input type="text" id="academicYearName" required placeholder="e.g. 2023/2024"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
             </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="academicYearStartDate" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <input type="date" id="academicYearStartDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Start Date</label>
+                    <input type="date" id="academicYearStartDate" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
                 </div>
-                <div>
-                    <label for="academicYearEndDate" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <input type="date" id="academicYearEndDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">End Date</label>
+                    <input type="date" id="academicYearEndDate" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
                 </div>
             </div>
-            <div class="flex items-center mb-4">
-                <input type="checkbox" id="academicYearIsActive" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                <label for="academicYearIsActive" class="ml-2 block text-sm text-gray-700">Active</label>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <input type="checkbox" id="academicYearIsActive"
+                    class="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/5">
+                <div class="flex flex-col">
+                    <label for="academicYearIsActive" class="text-xs font-bold text-slate-700">Set as Active
+                        Year</label>
+                    <p class="text-[9px] text-slate-400 font-medium">This will be the default year for new entries</p>
+                </div>
             </div>
-            <div class="flex justify-end space-x-3">
-                <button type="button" id="cancelAcademicYearBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    Save
+            <div class="pt-2">
+                <button type="submit" id="saveAcademicYearBtn"
+                    class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
+                    <span>Save Academic Year</span>
                 </button>
             </div>
         </form>
@@ -130,44 +272,55 @@
 </div>
 
 <!-- Term Modal -->
-<div id="termModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900" id="termModalTitle">Add Term</h3>
+<div id="termModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+    onclick="if(event.target === this) hideTermModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="termModalTitle">Add Term</h3>
+            <button onclick="hideTermModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <form id="termForm" class="px-6 py-4">
+        <form id="termForm" class="p-6 space-y-4">
             <input type="hidden" id="termId">
-            <div class="mb-4">
-                <label for="termName" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" id="termName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Term Name</label>
+                <input type="text" id="termName" required placeholder="e.g. Term 1, First Semester"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
             </div>
-            <div class="mb-4">
-                <label for="termAcademicYear" class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
-                <select id="termAcademicYear" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Academic Year</label>
+                <select id="termAcademicYear" required
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 bg-white">
                     <option value="">Select Academic Year</option>
-                    <!-- Academic years will be loaded here -->
                 </select>
             </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="termStartDate" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <input type="date" id="termStartDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Start Date</label>
+                    <input type="date" id="termStartDate" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
                 </div>
-                <div>
-                    <label for="termEndDate" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <input type="date" id="termEndDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">End Date</label>
+                    <input type="date" id="termEndDate" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
                 </div>
             </div>
-            <div class="flex items-center mb-4">
-                <input type="checkbox" id="termIsActive" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                <label for="termIsActive" class="ml-2 block text-sm text-gray-700">Active</label>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <input type="checkbox" id="termIsActive"
+                    class="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/5">
+                <div class="flex flex-col">
+                    <label for="termIsActive" class="text-xs font-bold text-slate-700">Set as Current Term</label>
+                    <p class="text-[9px] text-slate-400 font-medium">Mark this as the ongoing term for the school</p>
+                </div>
             </div>
-            <div class="flex justify-end space-x-3">
-                <button type="button" id="cancelTermBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    Save
+            <div class="pt-2">
+                <button type="submit" id="saveTermBtn"
+                    class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
+                    <span>Save Term</span>
                 </button>
             </div>
         </form>
@@ -175,22 +328,29 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">Confirm Delete</h3>
-        </div>
-        <div class="px-6 py-4">
-            <p class="text-gray-600">Are you sure you want to delete this item? This action cannot be undone.</p>
+<div id="deleteModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+    onclick="if(event.target === this) hideDeleteModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
+        <div class="p-8 text-center">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-red-500 text-xl"></i>
+            </div>
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide mb-2">Confirm Delete</h3>
+            <p class="text-xs text-slate-500 font-medium leading-relaxed">Are you sure you want to delete this item?
+                This action is permanent and cannot be undone.</p>
             <input type="hidden" id="deleteItemId">
-            <input type="hidden" id="deleteItemType"> <!-- academic_year or term -->
+            <input type="hidden" id="deleteItemType">
         </div>
-        <div class="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end space-x-3">
-            <button type="button" id="cancelDeleteBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div class="p-4 bg-slate-50 flex gap-3">
+            <button type="button" onclick="hideDeleteModal()"
+                class="flex-1 bg-white border border-slate-200 text-slate-600 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-colors">
                 Cancel
             </button>
-            <button type="button" id="confirmDeleteBtn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                Delete
+            <button type="button" id="confirmDeleteBtn"
+                class="flex-1 bg-red-600 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 transition-colors shadow-lg shadow-red-200 flex items-center justify-center gap-2">
+                <span>Delete</span>
             </button>
         </div>
     </div>
@@ -200,211 +360,40 @@
     // Global variables
     let academicYears = [];
     let terms = [];
-    const loadingSpinner = document.getElementById('loadingSpinner');
 
     // Loading functions
-    function showLoading() {
-        loadingSpinner.classList.remove('hidden');
-    }
+    function setBtnLoading(btnId, isLoading, originalText) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
 
-    function hideLoading() {
-        loadingSpinner.classList.add('hidden');
-    }
-
-    // DOM Elements
-    const academicYearsTableBody = document.getElementById('academicYearsTableBody');
-    const termsTableBody = document.getElementById('termsTableBody');
-    const academicYearFilter = document.getElementById('academicYearFilter');
-    const termAcademicYear = document.getElementById('termAcademicYear');
-
-    // Modal Elements
-    const academicYearModal = document.getElementById('academicYearModal');
-    const termModal = document.getElementById('termModal');
-    const deleteModal = document.getElementById('deleteModal');
-
-    // Form Elements
-    const academicYearForm = document.getElementById('academicYearForm');
-    const termForm = document.getElementById('termForm');
-
-    // Button Elements
-    const addAcademicYearBtn = document.getElementById('addAcademicYearBtn');
-    const addTermBtn = document.getElementById('addTermBtn');
-    const cancelAcademicYearBtn = document.getElementById('cancelAcademicYearBtn');
-    const cancelTermBtn = document.getElementById('cancelTermBtn');
-    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
-        loadAcademicYears();
-        loadTerms();
-
-        // Event Listeners
-        addAcademicYearBtn.addEventListener('click', showAddAcademicYearModal);
-        addTermBtn.addEventListener('click', showAddTermModal);
-        cancelAcademicYearBtn.addEventListener('click', hideAcademicYearModal);
-        cancelTermBtn.addEventListener('click', hideTermModal);
-        cancelDeleteBtn.addEventListener('click', hideDeleteModal);
-        confirmDeleteBtn.addEventListener('click', confirmDelete);
-        academicYearForm.addEventListener('submit', saveAcademicYear);
-        termForm.addEventListener('submit', saveTerm);
-
-        // Filter event
-        academicYearFilter.addEventListener('change', filterTerms);
-    });
-
-    // Load academic years
-    async function loadAcademicYears() {
-        showLoading();
-        try {
-            const response = await fetch('/api/academic-years');
-            academicYears = await response.json();
-            renderAcademicYears();
-            populateAcademicYearDropdowns();
-        } catch (error) {
-            console.error('Error loading academic years:', error);
-            showError('Failed to load academic years');
-        } finally {
-            hideLoading();
+        if (isLoading) {
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>Processing...</span>`;
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            btn.innerHTML = `<span>${originalText}</span>`;
         }
     }
 
-    // Load terms
-    async function loadTerms() {
-        showLoading();
-        try {
-            const response = await fetch('/api/terms');
-            terms = await response.json();
-            console.log('Loaded terms:', terms); // Debug log
-            renderTerms();
-        } catch (error) {
-            console.error('Error loading terms:', error);
-            showError('Failed to load terms');
-        } finally {
-            hideLoading();
+
+    // Modal Helpers
+    function animateModal(id, show) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        if (show) {
+            modal.classList.remove('hidden');
+            void modal.offsetWidth; // Force reflow
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+        } else {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
         }
     }
 
-    // Render academic years table
-    function renderAcademicYears() {
-        academicYearsTableBody.innerHTML = '';
-        
-        if (academicYears.length === 0) {
-            academicYearsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        No academic years found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        academicYears.forEach(year => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-50';
-            row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${year.name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(year.start_date)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(year.end_date)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${year.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                        ${year.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${year.terms ? year.terms.length : 0} terms
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onclick="editAcademicYear('${year.id}')" class="text-primary-600 hover:text-primary-900 mr-3">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="showDeleteModal('${year.id}', 'academic_year')" class="text-red-600 hover:text-red-900">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            academicYearsTableBody.appendChild(row);
-        });
-    }
-
-    // Render terms table
-    function renderTerms() {
-        termsTableBody.innerHTML = '';
-        
-        if (terms.length === 0) {
-            termsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                        No terms found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        // Apply filter if selected
-        const filteredTerms = filterTermsByAcademicYear(terms);
-
-        filteredTerms.forEach(term => {
-            const row = document.createElement('tr');
-            row.className = 'hover:bg-gray-50';
-            row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${term.name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${term.academic_year ? term.academic_year.name : 'N/A'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(term.start_date)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(term.end_date)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${term.is_current ? 'bg-blue-100 text-blue-800' : (term.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')}">
-                        ${term.is_current ? 'Current' : (term.is_active ? 'Active' : 'Inactive')}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button onclick="editTerm('${term.id}')" class="text-primary-600 hover:text-primary-900 mr-3">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="showDeleteModal('${term.id}', 'term')" class="text-red-600 hover:text-red-900">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            termsTableBody.appendChild(row);
-        });
-    }
-
-    // Populate academic year dropdowns
-    function populateAcademicYearDropdowns() {
-        // Clear existing options
-        academicYearFilter.innerHTML = '<option value="">All Academic Years</option>';
-        termAcademicYear.innerHTML = '<option value="">Select Academic Year</option>';
-
-        // Add academic years
-        academicYears.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year.id;
-            option.textContent = year.name;
-            academicYearFilter.appendChild(option.cloneNode(true));
-            termAcademicYear.appendChild(option);
-        });
-    }
-
-    // Filter terms by academic year
-    function filterTermsByAcademicYear(termsList) {
-        const selectedAcademicYear = academicYearFilter.value;
-        if (!selectedAcademicYear) {
-            return termsList;
-        }
-        return termsList.filter(term => term.academic_year_id === selectedAcademicYear);
-    }
-
-    // Filter terms when academic year filter changes
-    function filterTerms() {
-        renderTerms();
-    }
-
-    // Show add academic year modal
     function showAddAcademicYearModal() {
         document.getElementById('academicYearModalTitle').textContent = 'Add Academic Year';
         document.getElementById('academicYearId').value = '';
@@ -412,29 +401,13 @@
         document.getElementById('academicYearStartDate').value = '';
         document.getElementById('academicYearEndDate').value = '';
         document.getElementById('academicYearIsActive').checked = true;
-        academicYearModal.classList.remove('hidden');
+        animateModal('academicYearModal', true);
     }
 
-    // Show edit academic year modal
-    function editAcademicYear(id) {
-        const academicYear = academicYears.find(y => y.id === id);
-        if (!academicYear) return;
-
-        document.getElementById('academicYearModalTitle').textContent = 'Edit Academic Year';
-        document.getElementById('academicYearId').value = academicYear.id;
-        document.getElementById('academicYearName').value = academicYear.name;
-        document.getElementById('academicYearStartDate').value = formatDateForInput(academicYear.start_date);
-        document.getElementById('academicYearEndDate').value = formatDateForInput(academicYear.end_date);
-        document.getElementById('academicYearIsActive').checked = academicYear.is_active;
-        academicYearModal.classList.remove('hidden');
-    }
-
-    // Hide academic year modal
     function hideAcademicYearModal() {
-        academicYearModal.classList.add('hidden');
+        animateModal('academicYearModal', false);
     }
 
-    // Show add term modal
     function showAddTermModal() {
         document.getElementById('termModalTitle').textContent = 'Add Term';
         document.getElementById('termId').value = '';
@@ -443,10 +416,238 @@
         document.getElementById('termStartDate').value = '';
         document.getElementById('termEndDate').value = '';
         document.getElementById('termIsActive').checked = true;
-        termModal.classList.remove('hidden');
+        animateModal('termModal', true);
     }
 
-    // Show edit term modal
+    function hideTermModal() {
+        animateModal('termModal', false);
+    }
+
+    function showDeleteModal(id, type) {
+        document.getElementById('deleteItemId').value = id;
+        document.getElementById('deleteItemType').value = type;
+        animateModal('deleteModal', true);
+    }
+
+    function hideDeleteModal() {
+        animateModal('deleteModal', false);
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAcademicYears();
+        loadTerms();
+
+        // Event Listeners
+        document.getElementById('addAcademicYearBtn').addEventListener('click', showAddAcademicYearModal);
+        document.getElementById('addTermBtn').addEventListener('click', showAddTermModal);
+        document.getElementById('academicYearForm').addEventListener('submit', saveAcademicYear);
+        document.getElementById('termForm').addEventListener('submit', saveTerm);
+        document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+
+        // Filter events
+        document.getElementById('academicYearFilter').addEventListener('change', renderTerms);
+        document.getElementById('searchAcademicYears').addEventListener('input', renderAcademicYears);
+    });
+
+    // Load academic years
+    async function loadAcademicYears() {
+        try {
+            const response = await fetch('/api/academic-years');
+            academicYears = await response.json();
+            renderAcademicYears();
+            populateAcademicYearDropdowns();
+            updateStats();
+        } catch (error) {
+            console.error('Error loading academic years:', error);
+        }
+    }
+
+    // Load terms
+    async function loadTerms() {
+        try {
+            const response = await fetch('/api/terms');
+            terms = await response.json();
+            renderTerms();
+            updateStats();
+        } catch (error) {
+            console.error('Error loading terms:', error);
+        }
+    }
+
+    function updateStats() {
+        const activeYear = academicYears.find(y => y.is_active);
+        const activeYearBadge = document.getElementById('activeYearBadge');
+        if (activeYearBadge) {
+            if (activeYear) {
+                activeYearBadge.textContent = activeYear.name;
+                activeYearBadge.className = 'text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase';
+            } else {
+                activeYearBadge.textContent = 'None';
+                activeYearBadge.className = 'text-[10px] font-black bg-slate-800 text-slate-500 px-2 py-0.5 rounded uppercase';
+            }
+        }
+
+        // Current term must be active AND belong to the active year
+        const activeTerm = terms.find(t => t.is_active && (!activeYear || t.academic_year_id === activeYear.id));
+        const activeTermBadge = document.getElementById('activeTermBadge');
+        if (activeTermBadge) {
+            if (activeTerm) {
+                activeTermBadge.textContent = activeTerm.name;
+                activeTermBadge.className = 'text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase';
+            } else {
+                activeTermBadge.textContent = 'None';
+                activeTermBadge.className = 'text-[10px] font-black bg-slate-800 text-slate-500 px-2 py-0.5 rounded uppercase';
+            }
+        }
+    }
+
+    // Render academic years as table rows
+    function renderAcademicYears() {
+        const container = document.getElementById('academicYearsList');
+        const searchTerm = document.getElementById('searchAcademicYears').value.toLowerCase();
+
+        container.innerHTML = '';
+        const filtered = academicYears.filter(y => y.name.toLowerCase().includes(searchTerm));
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <tr>
+                    <td colspan="4" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        No matching years found
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        filtered.forEach(year => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+            tr.innerHTML = `
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                            <i class="fas fa-calendar-alt text-[10px]"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${year.name}</span>
+                    </div>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">
+                        ${formatDate(year.start_date)} - ${formatDate(year.end_date)}
+                    </span>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase ${year.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                        ${year.is_active ? 'Active' : 'Previous'}
+                    </span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="editAcademicYear('${year.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                            <i class="fas fa-pen text-[10px]"></i>
+                        </button>
+                        <button onclick="showDeleteModal('${year.id}', 'academic_year')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash text-[10px]"></i>
+                        </button>
+                    </div>
+                </td>`;
+            container.appendChild(tr);
+        });
+    }
+
+    // Render terms as table rows
+    function renderTerms() {
+        const container = document.getElementById('termsList');
+        const yearFilter = document.getElementById('academicYearFilter').value;
+
+        container.innerHTML = '';
+        const filtered = terms.filter(t => !yearFilter || t.academic_year_id === yearFilter);
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <tr>
+                    <td colspan="5" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        No terms found for this year
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        filtered.forEach(term => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+            tr.innerHTML = `
+                <td class="px-5 py-4">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${term.name}</span>
+                        <span class="text-[8px] font-bold text-slate-300 uppercase tracking-widest mt-0.5">Academic Term</span>
+                    </div>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-tight">
+                        ${term.academic_year ? term.academic_year.name : 'Unknown'}
+                    </span>
+                </td>
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+                        <span>${formatDate(term.start_date)}</span>
+                        <span class="text-slate-200">—</span>
+                        <span>${formatDate(term.end_date)}</span>
+                    </div>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase 
+                        ${term.is_active && term.academic_year && term.academic_year.is_active ? 'bg-blue-50 text-blue-600 border border-blue-100' :
+                    (term.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200')}">
+                        ${term.is_active && term.academic_year && term.academic_year.is_active ? 'Current' : (term.is_active ? 'Active' : 'Closed')}
+                    </span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="editTerm('${term.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                            <i class="fas fa-pen text-[10px]"></i>
+                        </button>
+                        <button onclick="showDeleteModal('${term.id}', 'term')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash text-[10px]"></i>
+                        </button>
+                    </div>
+                </td>`;
+            container.appendChild(tr);
+        });
+    }
+
+    // Populate academic year dropdowns
+    function populateAcademicYearDropdowns() {
+        const filter = document.getElementById('academicYearFilter');
+        const select = document.getElementById('termAcademicYear');
+
+        filter.innerHTML = '<option value="">All Academic Years</option>';
+        select.innerHTML = '<option value="">Select Academic Year</option>';
+
+        academicYears.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year.id;
+            option.textContent = year.name;
+            filter.appendChild(option.cloneNode(true));
+            select.appendChild(option);
+        });
+    }
+
+    // Edit functions
+    function editAcademicYear(id) {
+        const year = academicYears.find(y => y.id === id);
+        if (!year) return;
+
+        document.getElementById('academicYearModalTitle').textContent = 'Edit Academic Year';
+        document.getElementById('academicYearId').value = year.id;
+        document.getElementById('academicYearName').value = year.name;
+        document.getElementById('academicYearStartDate').value = formatDateForInput(year.start_date);
+        document.getElementById('academicYearEndDate').value = formatDateForInput(year.end_date);
+        document.getElementById('academicYearIsActive').checked = year.is_active;
+        animateModal('academicYearModal', true);
+    }
+
     function editTerm(id) {
         const term = terms.find(t => t.id === id);
         if (!term) return;
@@ -458,145 +659,77 @@
         document.getElementById('termStartDate').value = formatDateForInput(term.start_date);
         document.getElementById('termEndDate').value = formatDateForInput(term.end_date);
         document.getElementById('termIsActive').checked = term.is_active;
-        termModal.classList.remove('hidden');
-    }
-
-    // Hide term modal
-    function hideTermModal() {
-        termModal.classList.add('hidden');
+        animateModal('termModal', true);
     }
 
     // Save academic year
     async function saveAcademicYear(e) {
         e.preventDefault();
-        
         const id = document.getElementById('academicYearId').value;
-        const name = document.getElementById('academicYearName').value;
-        const startDate = document.getElementById('academicYearStartDate').value;
-        const endDate = document.getElementById('academicYearEndDate').value;
-        const isActive = document.getElementById('academicYearIsActive').checked;
-
-        // Validate that dates are provided
-        if (!startDate || !endDate) {
-            showError('Please provide both start and end dates');
-            return;
-        }
-
-        const academicYearData = {
-            name: name,
-            start_date: startDate,
-            end_date: endDate,
-            is_active: isActive,
-            is_current: false  // Add this field to match the model
+        const data = {
+            name: document.getElementById('academicYearName').value,
+            start_date: document.getElementById('academicYearStartDate').value,
+            end_date: document.getElementById('academicYearEndDate').value,
+            is_active: document.getElementById('academicYearIsActive').checked,
+            is_current: false
         };
 
-        showLoading();
+        if (!data.start_date || !data.end_date) return alert('Please provide dates');
+
+        setBtnLoading('saveAcademicYearBtn', true, 'Save Academic Year');
         try {
-            let response;
-            if (id) {
-                // Update existing academic year
-                response = await fetch(`/api/academic-years/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(academicYearData)
-                });
-            } else {
-                // Create new academic year
-                response = await fetch('/api/academic-years', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(academicYearData)
-                });
-            }
+            const response = await fetch(id ? `/api/academic-years/${id}` : '/api/academic-years', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
             if (response.ok) {
                 hideAcademicYearModal();
                 loadAcademicYears();
-                showSuccess('Academic year saved successfully');
             } else {
                 const error = await response.json();
-                showError(error.error || 'Failed to save academic year');
+                alert(error.error || 'Failed to save academic year');
             }
         } catch (error) {
             console.error('Error saving academic year:', error);
-            showError('Failed to save academic year');
         } finally {
-            hideLoading();
+            setBtnLoading('saveAcademicYearBtn', false, 'Save Academic Year');
         }
     }
 
     // Save term
     async function saveTerm(e) {
         e.preventDefault();
-        
         const id = document.getElementById('termId').value;
-        const name = document.getElementById('termName').value;
-        const academicYearId = document.getElementById('termAcademicYear').value;
-        const startDate = document.getElementById('termStartDate').value;
-        const endDate = document.getElementById('termEndDate').value;
-        const isActive = document.getElementById('termIsActive').checked;
-
-        const termData = {
-            name: name,
-            academic_year_id: academicYearId,
-            start_date: startDate,
-            end_date: endDate,
-            is_active: isActive
+        const data = {
+            name: document.getElementById('termName').value,
+            academic_year_id: document.getElementById('termAcademicYear').value,
+            start_date: document.getElementById('termStartDate').value,
+            end_date: document.getElementById('termEndDate').value,
+            is_active: document.getElementById('termIsActive').checked
         };
 
-        showLoading();
+        setBtnLoading('saveTermBtn', true, 'Save Term');
         try {
-            let response;
-            if (id) {
-                // Update existing term
-                response = await fetch(`/api/terms/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(termData)
-                });
-            } else {
-                // Create new term
-                response = await fetch('/api/terms', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(termData)
-                });
-            }
+            const response = await fetch(id ? `/api/terms/${id}` : '/api/terms', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
             if (response.ok) {
                 hideTermModal();
                 loadTerms();
-                showSuccess('Term saved successfully');
             } else {
                 const error = await response.json();
-                showError(error.error || 'Failed to save term');
+                alert(error.error || 'Failed to save term');
             }
         } catch (error) {
             console.error('Error saving term:', error);
-            showError('Failed to save term');
         } finally {
-            hideLoading();
+            setBtnLoading('saveTermBtn', false, 'Save Term');
         }
-    }
-
-    // Show delete confirmation modal
-    function showDeleteModal(id, type) {
-        document.getElementById('deleteItemId').value = id;
-        document.getElementById('deleteItemType').value = type;
-        deleteModal.classList.remove('hidden');
-    }
-
-    // Hide delete confirmation modal
-    function hideDeleteModal() {
-        deleteModal.classList.add('hidden');
     }
 
     // Confirm delete
@@ -604,36 +737,22 @@
         const id = document.getElementById('deleteItemId').value;
         const type = document.getElementById('deleteItemType').value;
 
-        showLoading();
+        setBtnLoading('confirmDeleteBtn', true, 'Delete');
         try {
-            let response;
-            if (type === 'academic_year') {
-                response = await fetch(`/api/academic-years/${id}`, {
-                    method: 'DELETE'
-                });
-            } else if (type === 'term') {
-                response = await fetch(`/api/terms/${id}`, {
-                    method: 'DELETE'
-                });
-            }
+            const endpoint = type === 'academic_year' ? `/api/academic-years/${id}` : `/api/terms/${id}`;
+            const response = await fetch(endpoint, { method: 'DELETE' });
 
             if (response.ok) {
                 hideDeleteModal();
-                if (type === 'academic_year') {
-                    loadAcademicYears();
-                } else {
-                    loadTerms();
-                }
-                showSuccess('Item deleted successfully');
+                type === 'academic_year' ? loadAcademicYears() : loadTerms();
             } else {
                 const error = await response.json();
-                showError(error.error || 'Failed to delete item');
+                alert(error.error || 'Failed to delete item');
             }
         } catch (error) {
             console.error('Error deleting item:', error);
-            showError('Failed to delete item');
         } finally {
-            hideLoading();
+            setBtnLoading('confirmDeleteBtn', false, 'Delete');
         }
     }
 
@@ -641,11 +760,7 @@
     function formatDate(dateString) {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
     function formatDateForInput(dateString) {
@@ -654,18 +769,11 @@
         return date.toISOString().split('T')[0];
     }
 
-    function showSuccess(message) {
-        // In a real implementation, you would show a toast or notification
-        alert('Success: ' + message);
-    }
-
-    function showError(message) {
-        // In a real implementation, you would show a toast or notification
-        alert('Error: ' + message);
-    }
-
-    // Make functions available globally for inline event handlers
+    // Globals for button clicks
     window.editAcademicYear = editAcademicYear;
     window.editTerm = editTerm;
     window.showDeleteModal = showDeleteModal;
+    window.hideAcademicYearModal = hideAcademicYearModal;
+    window.hideTermModal = hideTermModal;
+    window.hideDeleteModal = hideDeleteModal;
 </script>

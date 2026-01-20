@@ -1,91 +1,273 @@
-<div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Profile Header with Avatar -->
-    <div class="bg-white shadow rounded-lg mb-6">
-        <div class="px-6 py-5 border-b border-gray-200">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="h-16 w-16 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span class="text-xl font-bold text-white">{{.FirstName | printf "%.1s"}}{{.LastName | printf "%.1s"}}</span>
+<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">User Profile</h1>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage your account information</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Profile Header with Avatar -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-6">
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <div class="flex-shrink-0">
+                        <div
+                            class="h-24 w-24 rounded-2xl bg-slate-900 flex items-center justify-center shadow-xl shadow-slate-200 relative overflow-hidden group">
+                            <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900"></div>
+                            <span
+                                class="text-3xl font-black text-white relative z-10 uppercase tracking-tighter">{{.FirstName
+                                | printf "%.1s"}}{{.LastName | printf "%.1s"}}</span>
+                        </div>
+                    </div>
+                    <div class="text-center sm:text-left space-y-2">
+                        <h1 class="text-2xl font-black text-slate-900 uppercase tracking-tight">{{.FirstName}}
+                            {{.LastName}}</h1>
+                        <div class="flex flex-wrap justify-center sm:justify-start gap-2">
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-600 border border-slate-200">
+                                <i class="fas fa-user-shield mr-2 text-slate-400"></i>
+                                {{if .Role}}{{.Role}}{{else}}Member{{end}}
+                            </span>
+                            <span
+                                class="inline-flex items-center px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                <i class="fas fa-check-circle mr-2 text-emerald-400"></i>
+                                Active
+                            </span>
+                        </div>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <h1 class="text-2xl font-bold text-gray-900">{{.FirstName}} {{.LastName}}</h1>
-                    <p class="text-sm text-gray-500">{{.Email}}</p>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mt-1">
-                        {{if .Role}}{{.Role}}{{else}}No Role Assigned{{end}}
-                    </span>
+            </div>
+
+            <!-- Profile Information Section -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                    <h2 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-id-card text-slate-400"></i>
+                        Profile Details
+                    </h2>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">First
+                                Name</label>
+                            <p class="text-sm font-bold text-slate-700">{{.FirstName}}</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Last
+                                Name</label>
+                            <p class="text-sm font-bold text-slate-700">{{.LastName}}</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Email
+                                Address</label>
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-bold text-slate-700">{{.Email}}</p>
+                                <i class="fas fa-envelope text-slate-300 text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Phone
+                                Number</label>
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-bold text-slate-700">{{if .user.Phone}}{{.user.Phone}}{{else}}Not
+                                    Provided{{end}}</p>
+                                <i class="fas fa-phone text-slate-300 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Profile Information Section -->
-    <div class="bg-white shadow rounded-lg mb-6">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
-        </div>
-        
-        <div class="px-6 py-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-gray-500">First Name</label>
-                    <p class="mt-1 text-lg font-medium text-gray-900">{{.FirstName}}</p>
+            <!-- Roles & Departments -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Departments Section -->
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2
+                            class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-building text-slate-400"></i>
+                            Assigned Departments
+                        </h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <div class="flex flex-wrap gap-2">
+                            {{range .Departments}}
+                            <span
+                                class="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-50 text-slate-600 border border-slate-200">
+                                {{.Name}}
+                            </span>
+                            {{else}}
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider italic">No
+                                departments assigned</p>
+                            {{end}}
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-gray-500">Last Name</label>
-                    <p class="mt-1 text-lg font-medium text-gray-900">{{.LastName}}</p>
-                </div>
-                
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-gray-500">Email Address</label>
-                    <p class="mt-1 text-lg font-medium text-gray-900">{{.Email}}</p>
-                </div>
-                
-                <div class="border border-gray-200 rounded-lg p-4">
-                    <label class="block text-sm font-medium text-gray-500">Role</label>
-                    <p class="mt-1 text-lg font-medium text-gray-900">
-                        {{if .Role}}{{.Role}}{{else}}<span class="text-gray-400">No Role Assigned</span>{{end}}
-                    </p>
+
+                <!-- Roles Section -->
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2
+                            class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-user-tag text-slate-400"></i>
+                            User Roles
+                        </h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <div class="flex flex-wrap gap-2">
+                            {{range .Roles}}
+                            <span
+                                class="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                {{.Name}}
+                            </span>
+                            {{else}}
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider italic">No roles
+                                assigned</p>
+                            {{end}}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Change Password Section -->
-    <div class="bg-white shadow rounded-lg">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-medium text-gray-900">Change Password</h2>
+            <!-- Teaching Assignments Section -->
+            {{if or .Subjects .Classes}}
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mt-6">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                    <h2 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-chalkboard-teacher text-slate-400"></i>
+                        Teaching Assignments
+                    </h2>
+                </div>
+                <div class="p-6 space-y-6">
+                    {{if .Subjects}}
+                    <div class="space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Assigned
+                            Subjects</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            {{range .Subjects}}
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <p class="text-[11px] font-black text-slate-700 uppercase tracking-tight">{{.Name}}</p>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{.Code}}</p>
+                            </div>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+
+                    {{if .Classes}}
+                    <div class="space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">Class
+                            Teacher For</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            {{range .Classes}}
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <p class="text-[11px] font-black text-slate-700 uppercase tracking-tight">{{.Name}}</p>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{.Code}}</p>
+                            </div>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
         </div>
-        
-        <div class="px-6 py-6">
-            <form id="changePasswordForm" class="space-y-6 max-w-md">
-                <div>
-                    <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                    <input type="password" id="currentPassword" name="currentPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+
+        <!-- Sidebar / Security -->
+        <div class="space-y-6">
+            <!-- Change Password Section -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                    <h2 class="text-[11px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-lock text-slate-400"></i>
+                        Security Settings
+                    </h2>
                 </div>
-                
-                <div>
-                    <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                    <p class="mt-2 text-sm text-gray-500">Password must be at least 8 characters long</p>
+
+                <div class="p-6">
+                    <form id="changePasswordForm" class="space-y-4">
+                        <div class="space-y-1">
+                            <label for="currentPassword"
+                                class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Current
+                                Password</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                                <input type="password" id="currentPassword" name="currentPassword" required
+                                    placeholder="••••••••"
+                                    class="w-full bg-slate-50 border border-slate-200 text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-200 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="newPassword"
+                                class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">New
+                                Password</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-shield-alt absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                                <input type="password" id="newPassword" name="newPassword" required
+                                    placeholder="Min 8 characters"
+                                    class="w-full bg-slate-50 border border-slate-200 text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-200 transition-all">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="confirmPassword"
+                                class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Confirm New
+                                Password</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-check-shield absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required
+                                    placeholder="Confirm match"
+                                    class="w-full bg-slate-50 border border-slate-200 text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-200 transition-all">
+                            </div>
+                        </div>
+
+                        <div id="passwordMessage"
+                            class="hidden p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide"></div>
+
+                        <button type="submit" id="changePasswordBtn"
+                            class="w-full mt-2 bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900/5 disabled:opacity-50 transition-all shadow-lg shadow-slate-100 flex items-center justify-center gap-2">
+                            <i class="fas fa-sync-alt text-[9px]"></i>
+                            <span>Update Password</span>
+                        </button>
+                    </form>
                 </div>
-                
-                <div>
-                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+
+            <!-- Activity Info -->
+            <div
+                class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl shadow-slate-200 relative overflow-hidden group">
+                <div
+                    class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors">
                 </div>
-                
-                <div id="passwordMessage" class="hidden p-4 rounded-lg"></div>
-                
-                <button type="submit" id="changePasswordBtn"
-                    class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors">
-                    Change Password
-                </button>
-            </form>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 relative z-10">Account
+                    Status</h3>
+                <div class="space-y-4 relative z-10">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">Identity Verified</span>
+                        <span
+                            class="text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-lg uppercase">Yes</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">Joined Date</span>
+                        <span
+                            class="text-[10px] font-black bg-slate-800 text-slate-400 px-2 py-0.5 rounded-lg uppercase">
+                            {{.user.CreatedAt.Format "Jan 02, 2006"}}
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -93,33 +275,33 @@
 <script>
     document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const btn = document.getElementById('changePasswordBtn');
         const message = document.getElementById('passwordMessage');
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
-        
+
         // Reset previous messages
         message.classList.add('hidden');
-        
+
         // Check if passwords match
         if (newPassword !== confirmPassword) {
-            message.className = 'bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg';
-            message.textContent = 'New passwords do not match';
+            message.className = 'bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide';
+            message.textContent = 'Passwords do not match';
             message.classList.remove('hidden');
             return;
         }
-        
+
         // Check password length
         if (newPassword.length < 8) {
-            message.className = 'bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg';
-            message.textContent = 'Password must be at least 8 characters long';
+            message.className = 'bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide';
+            message.textContent = 'Min. 8 characters required';
             message.classList.remove('hidden');
             return;
         }
-        
+
         btn.disabled = true;
-        btn.textContent = 'Changing...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Updating...</span>';
 
         const formData = {
             current_password: document.getElementById('currentPassword').value,
@@ -136,21 +318,21 @@
             const data = await response.json();
 
             if (response.ok) {
-                message.className = 'bg-green-100 border border-green-400 text-green-700 p-4 rounded-lg';
-                message.textContent = 'Password changed successfully';
+                message.className = 'bg-emerald-50 border border-emerald-100 text-emerald-600 p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide';
+                message.textContent = 'Password updated successfully';
                 document.getElementById('changePasswordForm').reset();
             } else {
-                message.className = 'bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg';
-                message.textContent = data.error || 'Failed to change password';
+                message.className = 'bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide';
+                message.textContent = data.error || 'Update failed';
             }
             message.classList.remove('hidden');
         } catch (error) {
-            message.className = 'bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg';
-            message.textContent = 'Network error. Please try again.';
+            message.className = 'bg-red-50 border border-red-100 text-red-600 p-3 rounded-xl text-[10px] font-bold uppercase tracking-wide';
+            message.textContent = 'Network error';
             message.classList.remove('hidden');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Change Password';
+            btn.innerHTML = '<i class="fas fa-sync-alt text-[9px] mr-2"></i><span>Update Password</span>';
         }
     });
 </script>

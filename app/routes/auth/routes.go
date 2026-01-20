@@ -2,6 +2,8 @@ package auth
 
 import (
 	"strings"
+	"swadiq-schools/app/config"
+	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -48,7 +50,7 @@ func ShowResetPasswordPage(c *fiber.Ctx) error {
 	token := c.Query("token")
 	if token == "" {
 		return c.Status(400).Render("error", fiber.Map{
-			"Title": "Invalid Reset Link - Swadiq Schools",
+			"Title":        "Invalid Reset Link - Swadiq Schools",
 			"ErrorMessage": "Invalid reset link. Please request a new password reset.",
 		})
 	}
@@ -60,23 +62,79 @@ func ShowResetPasswordPage(c *fiber.Ctx) error {
 }
 
 func ShowProfilePage(c *fiber.Ctx) error {
-	user := c.Locals("user").(*models.User)
-	userRoles := c.Locals("user_roles").([]*models.Role)
-	
-	// Handle case where user has no roles
-	roleName := ""
-	if len(userRoles) > 0 {
-		roleName = userRoles[0].Name
+	// First check if user_id exists in locals
+	userIDLocal := c.Locals("user_id")
+	if userIDLocal == nil {
+		return c.Redirect("/auth/login")
 	}
-	
+	userID := userIDLocal.(string)
+	db := config.GetDB()
+
+	// Fetch full user data from database to get phone, created_at etc.
+	user, err := database.GetUserByID(db, userID)
+	if err != nil || user == nil {
+		return c.Status(500).Render("error", fiber.Map{
+			"Title":        "Error - Swadiq Schools",
+			"ErrorCode":    "500",
+			"ErrorTitle":   "Database Error",
+			"ErrorMessage": "Could not fetch user profile details. Please try logging in again.",
+		})
+	}
+
+	// Fetch all roles
+	roles, err := database.GetUserRoles(db, userID)
+	if err != nil {
+		roles = []*models.Role{}
+	}
+
+	// Fetch departments
+	departments, err := database.GetUserDepartments(db, userID)
+	if err != nil {
+		departments = []*models.Department{}
+	}
+
+	// Fetch teacher specific data if applicable
+	var subjects []*models.Subject
+	var classes []*models.Class
+	isTeacher := false
+
+	for _, role := range roles {
+		if role != nil && (role.Name == "class_teacher" || role.Name == "subject_teacher") {
+			isTeacher = true
+			break
+		}
+	}
+
+	if isTeacher {
+		subjects, _ = database.GetTeacherSubjects(db, userID)
+		classes, _ = database.GetTeacherClasses(db, userID)
+	}
+
+	if subjects == nil {
+		subjects = []*models.Subject{}
+	}
+	if classes == nil {
+		classes = []*models.Class{}
+	}
+
+	// Handle case where user has no roles (for Role label)
+	roleName := "Member"
+	if len(roles) > 0 && roles[0] != nil {
+		roleName = roles[0].Name
+	}
+
 	return c.Render("auth/profile", fiber.Map{
 		"Title":       "Profile - Swadiq Schools",
 		"CurrentPage": "profile",
 		"user":        user,
+		"Roles":       roles,
+		"Departments": departments,
+		"Subjects":    subjects,
+		"Classes":     classes,
+		"Role":        roleName,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,
 		"Email":       user.Email,
-		"Role":        roleName,
 	})
 }
 
@@ -84,10 +142,10 @@ func ShowProfilePage(c *fiber.Ctx) error {
 func AuthMiddleware(c *fiber.Ctx) error {
 	// Get JWT token from cookie or Authorization header
 	var tokenString string
-	
+
 	// First try cookie
 	tokenString = c.Cookies("jwt_token")
-	
+
 	// If no cookie, try Authorization header
 	if tokenString == "" {
 		auth := c.Get("Authorization")

@@ -2,7 +2,7 @@ package academic
 
 import (
 	"database/sql"
-	"swadiq-schools/app/database"
+	"strings"
 	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,9 +10,14 @@ import (
 
 // GetAllAcademicYears returns all academic years
 func GetAllAcademicYears(c *fiber.Ctx, db *sql.DB) error {
-	academicYears, err := database.GetAllAcademicYears(db)
+	academicYears, err := getAllAcademicYears(db)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve academic years"})
+	}
+
+	// Ensure we always return an array, never null
+	if academicYears == nil {
+		academicYears = []*models.AcademicYear{}
 	}
 
 	return c.JSON(academicYears)
@@ -22,7 +27,7 @@ func GetAllAcademicYears(c *fiber.Ctx, db *sql.DB) error {
 func GetAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 	academicYearID := c.Params("id")
 
-	academicYear, err := database.GetAcademicYearByID(db, academicYearID)
+	academicYear, err := getAcademicYearByID(db, academicYearID)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Academic year not found"})
 	}
@@ -45,7 +50,10 @@ func CreateAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 	}
 
-	if err := database.CreateAcademicYear(db, &academicYear); err != nil {
+	if err := createAcademicYear(db, &academicYear); err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "23505") {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "An academic year with this name already exists"})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create academic year: " + err.Error()})
 	}
 
@@ -72,7 +80,10 @@ func UpdateAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "End date must be after start date"})
 	}
 
-	if err := database.UpdateAcademicYear(db, &academicYear); err != nil {
+	if err := updateAcademicYear(db, &academicYear); err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "23505") {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "An academic year with this name already exists"})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update academic year: " + err.Error()})
 	}
 
@@ -83,7 +94,7 @@ func UpdateAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 func DeleteAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 	academicYearID := c.Params("id")
 
-	if err := database.DeleteAcademicYear(db, academicYearID); err != nil {
+	if err := deleteAcademicYear(db, academicYearID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete academic year"})
 	}
 
@@ -92,9 +103,14 @@ func DeleteAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 
 // GetAllTerms returns all terms
 func GetAllTerms(c *fiber.Ctx, db *sql.DB) error {
-	terms, err := database.GetAllTerms(db)
+	terms, err := getAllTerms(db)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve terms"})
+	}
+
+	// Ensure we always return an array, never null
+	if terms == nil {
+		terms = []*models.Term{}
 	}
 
 	return c.JSON(terms)
@@ -104,7 +120,7 @@ func GetAllTerms(c *fiber.Ctx, db *sql.DB) error {
 func GetTerm(c *fiber.Ctx, db *sql.DB) error {
 	termID := c.Params("id")
 
-	term, err := database.GetTermByID(db, termID)
+	term, err := getTermByID(db, termID)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Term not found"})
 	}
@@ -128,7 +144,7 @@ func CreateTerm(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Check if the term dates are within the academic year dates
-	academicYear, err := database.GetAcademicYearByID(db, term.AcademicYearID)
+	academicYear, err := getAcademicYearByID(db, term.AcademicYearID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 	}
@@ -137,7 +153,10 @@ func CreateTerm(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 	}
 
-	if err := database.CreateTerm(db, &term); err != nil {
+	if err := createTerm(db, &term); err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "23505") {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "A term with this name already exists in this academic year"})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create term: " + err.Error()})
 	}
 
@@ -165,7 +184,7 @@ func UpdateTerm(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Check if the term dates are within the academic year dates
-	academicYear, err := database.GetAcademicYearByID(db, term.AcademicYearID)
+	academicYear, err := getAcademicYearByID(db, term.AcademicYearID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Academic year not found"})
 	}
@@ -174,7 +193,10 @@ func UpdateTerm(c *fiber.Ctx, db *sql.DB) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Term dates must be within the academic year dates"})
 	}
 
-	if err := database.UpdateTerm(db, &term); err != nil {
+	if err := updateTerm(db, &term); err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "23505") {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "A term with this name already exists in this academic year"})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update term: " + err.Error()})
 	}
 
@@ -185,7 +207,7 @@ func UpdateTerm(c *fiber.Ctx, db *sql.DB) error {
 func DeleteTerm(c *fiber.Ctx, db *sql.DB) error {
 	termID := c.Params("id")
 
-	if err := database.DeleteTerm(db, termID); err != nil {
+	if err := deleteTerm(db, termID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete term"})
 	}
 
@@ -196,7 +218,7 @@ func DeleteTerm(c *fiber.Ctx, db *sql.DB) error {
 func GetTermsByAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 	academicYearID := c.Params("academicYearId")
 
-	terms, err := database.GetTermsByAcademicYearID(db, academicYearID)
+	terms, err := getTermsByAcademicYearID(db, academicYearID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve terms"})
 	}
@@ -208,7 +230,7 @@ func GetTermsByAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 func SetCurrentAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 	academicYearID := c.Params("id")
 
-	if err := database.SetCurrentAcademicYear(db, academicYearID); err != nil {
+	if err := setCurrentAcademicYear(db, academicYearID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to set current academic year"})
 	}
 
@@ -219,7 +241,7 @@ func SetCurrentAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 func SetCurrentTerm(c *fiber.Ctx, db *sql.DB) error {
 	termID := c.Params("id")
 
-	if err := database.SetCurrentTerm(db, termID); err != nil {
+	if err := setCurrentTerm(db, termID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to set current term"})
 	}
 
@@ -228,11 +250,11 @@ func SetCurrentTerm(c *fiber.Ctx, db *sql.DB) error {
 
 // AutoSetCurrentByDate automatically sets current academic year and term based on current date
 func AutoSetCurrentByDate(c *fiber.Ctx, db *sql.DB) error {
-	if err := database.AutoSetCurrentAcademicYear(db); err != nil {
+	if err := autoSetCurrentAcademicYear(db); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to auto-set current academic year"})
 	}
 
-	if err := database.AutoSetCurrentTerm(db); err != nil {
+	if err := autoSetCurrentTerm(db); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to auto-set current term"})
 	}
 
