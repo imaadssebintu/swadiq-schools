@@ -9,6 +9,7 @@ import (
 	"swadiq-schools/app/routes/classes"
 	"swadiq-schools/app/routes/dashboard"
 	"swadiq-schools/app/routes/departments"
+	"swadiq-schools/app/routes/events"
 	"swadiq-schools/app/routes/exams"
 	"swadiq-schools/app/routes/fees"
 	"swadiq-schools/app/routes/papers"
@@ -157,6 +158,9 @@ func main() {
 
 	// Setup exams routes
 	exams.SetupExamRoutes(app, config.GetDB())
+
+	// Setup events routes
+	events.SetupEventsRoutes(app)
 
 	// Setup parents API routes
 	api := app.Group("/api/parents")

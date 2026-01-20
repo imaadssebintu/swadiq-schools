@@ -13,6 +13,28 @@ func GetDashboard(c *fiber.Ctx) error {
 	// Get user from context (set by auth middleware)
 	user := c.Locals("user").(*models.User)
 
+	// Fetch upcoming events
+	db := config.GetDB()
+	var upcomingEvents []models.Event
+
+	// TODO: Create specialized GetUpcomingEvents query for efficiency
+	if allEvents, err := database.GetEvents(db); err == nil {
+		count := 0
+		// now := .Now().AddDate(0, 0, -1) // Temporary removed filter for debugging
+		for _, e := range allEvents {
+			// if e.StartDate.After(now) {
+			upcomingEvents = append(upcomingEvents, e)
+			count++
+			if count >= 2 {
+				break
+			}
+			// }
+		}
+	} else {
+		// Log error if any (can't see stdout, but good practice)
+		// fmt.Println("Dashboard Event Fetch Error:", err)
+	}
+
 	return c.Render("dashboard/index", fiber.Map{
 		"Title":       "Dashboard - Swadiq Schools",
 		"CurrentPage": "dashboard",
@@ -20,6 +42,7 @@ func GetDashboard(c *fiber.Ctx) error {
 		"LastName":    user.LastName,
 		"Email":       user.Email,
 		"user":        user,
+		"Events":      upcomingEvents,
 	})
 }
 

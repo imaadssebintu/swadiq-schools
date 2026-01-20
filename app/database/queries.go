@@ -1100,10 +1100,6 @@ func GetAllPapers(db *sql.DB) ([]*models.Paper, error) {
 	return papers, nil
 }
 
-func GetDashboardStats(db *sql.DB) (map[string]interface{}, error) {
-	return make(map[string]interface{}), nil
-}
-
 // GetPapersStats returns optimized stats for papers page
 func GetPapersStats(db *sql.DB) (map[string]interface{}, error) {
 	query := `
