@@ -35,14 +35,16 @@ type Activity struct {
 
 // Event represents a calendar event
 type Event struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
-	Type        string    `json:"type"` // e.g., "academic", "holiday", "sports"
-	Location    string    `json:"location"`
-	Color       string    `json:"color"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID           string    `json:"id"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	StartDate    time.Time `json:"start_date"`
+	EndDate      time.Time `json:"end_date"`
+	Type         string    `json:"type"` // Keep for backward compatibility or display
+	CategoryID   string    `json:"category_id"`
+	CategoryName string    `json:"category_name"`
+	Location     string    `json:"location"`
+	Color        string    `json:"color"` // Populated from category
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }

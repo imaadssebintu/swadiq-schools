@@ -12,6 +12,11 @@ import (
 
 // SetupEventsRoutes sets up events routes
 func SetupEventsRoutes(app *fiber.App) {
+	db := config.GetDB()
+	if err := database.InitEventDatabase(db); err != nil {
+		fmt.Printf("Warning: Failed to initialize event database: %v\n", err)
+	}
+
 	// Page routes
 	app.Get("/events", auth.AuthMiddleware, renderEventsPage)
 
@@ -19,6 +24,10 @@ func SetupEventsRoutes(app *fiber.App) {
 	api := app.Group("/api/events")
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", GetEventsAPI)
+	api.Get("/categories", GetEventCategoriesAPI)
+	api.Post("/categories", CreateEventCategoryAPI)
+	api.Put("/categories/:id", UpdateEventCategoryAPI)
+	api.Delete("/categories/:id", DeleteEventCategoryAPI)
 	api.Post("/", CreateEventAPI)
 	api.Put("/:id", UpdateEventAPI)
 	api.Delete("/:id", DeleteEventAPI)
@@ -67,6 +76,9 @@ func renderEventsPage(c *fiber.Ctx) error {
 		}
 	}
 
+	// Get categories for the sidebar labels/filter
+	categories, _ := database.GetEventCategories(db)
+
 	// Get category counts
 	categoryCounts, _ := database.GetEventCategoryCounts(db)
 
@@ -79,6 +91,7 @@ func renderEventsPage(c *fiber.Ctx) error {
 		"User":           user,
 		"EventGroups":    eventGroups,
 		"Events":         events,
+		"Categories":     categories,
 		"HasEvents":      len(events) > 0,
 		"ErrorMessage":   errorMsg,
 		"CategoryCounts": categoryCounts,
