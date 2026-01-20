@@ -5,7 +5,7 @@
             <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Events</h1>
             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">School Calendar & Activities</p>
         </div>
-        <button onclick="document.getElementById('addEventModal').classList.remove('hidden')"
+        <button onclick="toggleModal(true)"
             class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
             <i class="fas fa-plus"></i>
             <span>Add Event</span>
@@ -410,7 +410,7 @@
     // Calendar logic
     let currentCalendarDate = new Date();
     const calendarEvents = [];
-    `{{range .Events}}`
+    {{range .Events}}
     calendarEvents.push({
         date: "{{.StartDate.Format "2006-01-02"}}",
         title: "{{.Title}}",
@@ -419,7 +419,7 @@
         time: "{{.StartDate.Format "3:04 PM"}}",
         location: "{{.Location}}"
     });
-    `{{end}}`
+    {{end}}
 
     function changeMonth(direction) {
         currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
