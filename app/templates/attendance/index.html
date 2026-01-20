@@ -1,5 +1,5 @@
 <div class="p-6 max-w-7xl mx-auto space-y-8" id="mainAttendanceContainer"
-    data-user-access="{{.user.CanAccessAllClasses}}">
+    data-user-access="{{if .user.CanAccessAllClasses}}true{{else}}false{{end}}">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -349,7 +349,7 @@
 
     async function loadStudentCount(classId, element) {
         try {
-            const response = await fetch(`/api/attendance/class/${classId}`);
+            const response = await fetch('/api/attendance/class/' + classId);
             const data = await response.json();
 
             if (response.ok) {
@@ -397,9 +397,9 @@
 
             // Get lessons for the selected day (all or current user's)
             // Get lessons for the selected day (all or current user's)
-            let endpoint = `/api/attendance/teacher-lessons/${dayOfWeek}`;
+            let endpoint = '/api/attendance/teacher-lessons/' + dayOfWeek;
             if (canAccessAllClasses) {
-                endpoint = `/api/attendance/all-lessons/${dayOfWeek}`;
+                endpoint = '/api/attendance/all-lessons/' + dayOfWeek;
             }
             const response = await fetch(endpoint);
             const data = await response.json();
@@ -511,7 +511,7 @@
         closeClassModal();
         // Small delay for animation
         setTimeout(() => {
-            window.location.href = `/attendance/class/${classId}/date/${date}`;
+            window.location.href = '/attendance/class/' + classId + '/date/' + date;
         }, 300);
     }
 
@@ -522,7 +522,7 @@
             date: date,
             lesson_info: JSON.stringify(lesson)
         });
-        window.location.href = `/attendance/lesson?${params.toString()}`;
+        window.location.href = '/attendance/lesson?' + params.toString();
     }
 
     function loadTodayLessons() {
@@ -556,7 +556,7 @@
         try {
             let url = '/api/classes/table';
             if (search) {
-                url = `/api/classes/table?search=${encodeURIComponent(search)}`;
+                url = '/api/classes/table?search=' + encodeURIComponent(search);
             }
             const response = await fetch(url, { credentials: 'include' });
 
@@ -675,3 +675,4 @@
         `;
     }
 </script>
+</div>
