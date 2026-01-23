@@ -11,37 +11,53 @@ import (
 
 func GetPapersBySubjectAPI(c *fiber.Ctx) error {
 	subjectID := c.Params("subjectId")
-	
+
 	if subjectID == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Subject ID is required"})
 	}
-	
+
 	papers, err := database.GetPapersBySubject(config.GetDB(), subjectID)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": "Failed to fetch papers",
-			"details": err.Error(),
+			"error":      "Failed to fetch papers",
+			"details":    err.Error(),
 			"subject_id": subjectID,
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"papers": papers,
-		"count":  len(papers),
+		"papers":  papers,
+		"count":   len(papers),
 	})
 }
 
 func GetPapersAPI(c *fiber.Ctx) error {
-	papers, err := database.GetAllPapers(config.GetDB())
+	classID := c.Query("class_id")
+	subjectID := c.Query("subject_id")
+
+	var papers []*models.Paper
+	var err error
+
+	if classID != "" && subjectID != "" {
+		// Get papers for a specific class and subject
+		papers, err = database.GetPapersByClassAndSubject(config.GetDB(), classID, subjectID)
+	} else if subjectID != "" {
+		// Get papers for a specific subject
+		papers, err = database.GetPapersBySubject(config.GetDB(), subjectID)
+	} else if classID != "" {
+		// Get papers for a specific class
+		papers, err = database.GetPapersByClass(config.GetDB(), classID)
+	} else {
+		// Get all papers
+		papers, err = database.GetAllPapers(config.GetDB())
+	}
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch papers"})
 	}
 
-	return c.JSON(fiber.Map{
-		"papers": papers,
-		"count":  len(papers),
-	})
+	return c.JSON(papers)
 }
 
 func GetPaperAPI(c *fiber.Ctx) error {
@@ -210,7 +226,7 @@ func AssignTeacherToClassPaperAPI(c *fiber.Ctx) error {
 		// Create new class paper
 		query := `INSERT INTO class_papers (class_id, paper_id, teacher_id, created_at, updated_at)
 				  VALUES ($1, $2, $3, NOW(), NOW()) RETURNING id`
-		
+
 		var classPaperID string
 		err = db.QueryRow(query, req.ClassID, req.PaperID, req.TeacherID).Scan(&classPaperID)
 		if err != nil {

@@ -10,16 +10,16 @@ import (
 
 func SearchSubjectsAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")
-	
+
 	var subjects []*models.Subject
 	var err error
-	
+
 	if query == "" {
 		subjects, err = database.GetAllSubjects(config.GetDB())
 	} else {
 		subjects, err = database.SearchSubjects(config.GetDB(), query)
 	}
-	
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to search subjects"})
 	}
@@ -32,29 +32,30 @@ func SearchSubjectsAPI(c *fiber.Ctx) error {
 
 func GetSubjectsAPI(c *fiber.Ctx) error {
 	departmentID := c.Query("department_id")
-	
+	classID := c.Query("class_id")
+
 	var subjects []*models.Subject
 	var err error
-	
-	if departmentID != "" {
+
+	if classID != "" {
+		// Get subjects for a specific class
+		subjects, err = database.GetSubjectsByClass(config.GetDB(), classID)
+	} else if departmentID != "" {
 		subjects, err = database.GetSubjectsByDepartment(config.GetDB(), departmentID)
 	} else {
 		subjects, err = database.GetAllSubjects(config.GetDB())
 	}
-	
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch subjects"})
 	}
 
-	return c.JSON(fiber.Map{
-		"subjects": subjects,
-		"count":    len(subjects),
-	})
+	return c.JSON(subjects)
 }
 
 func GetSubjectAPI(c *fiber.Ctx) error {
 	subjectID := c.Params("id")
-	
+
 	subject, err := database.GetSubjectByID(config.GetDB(), subjectID)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "Subject not found"})
@@ -88,7 +89,7 @@ func CreateSubjectAPI(c *fiber.Ctx) error {
 
 func UpdateSubjectAPI(c *fiber.Ctx) error {
 	subjectID := c.Params("id")
-	
+
 	var subject models.Subject
 	if err := c.BodyParser(&subject); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})

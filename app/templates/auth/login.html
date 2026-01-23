@@ -1,154 +1,208 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>{{.Title}}</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#135bec",
-            "background-light": "#f6f6f8",
-            "background-dark": "#101622",
-            "text-primary-light": "#1A202C",
-            "text-primary-dark": "#F7F8FA",
-            "text-secondary-light": "#6B7280",
-            "text-secondary-dark": "#9CA3AF",
-          },
-          fontFamily: {
-            "display": ["Inter", "sans-serif"]
-          },
-          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
-        },
-      },
-    }
-</script>
-<style>
-    .material-symbols-outlined {
-      font-variation-settings:
-      'FILL' 0,
-      'wght' 400,
-      'GRAD' 0,
-      'opsz' 24
-    }
-</style>
-
-</head>
-<body class="font-display">
-<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4">
-<div class="w-full max-w-md">
-<!-- Logo Placeholder -->
-<div class="flex justify-center mb-8">
-<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 text-primary">
-<span class="material-symbols-outlined text-3xl">
-            hexagon
-</span>
-</div>
-</div>
-<div class="w-full rounded-xl bg-white p-6 shadow-sm dark:bg-background-dark/50 sm:p-8">
-<!-- Headline -->
-<h1 class="text-center text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-3xl">Welcome Back</h1>
-<p class="mt-2 text-center text-sm font-normal leading-normal text-slate-500 dark:text-slate-400">Log in to your account to continue.</p>
-<!-- Form -->
-<form id="loginForm" class="mt-8 space-y-5">
-<!-- Email Field -->
-<div>
-<label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300" for="email">Email Address</label>
-<div class="relative flex w-full items-center">
-<span class="material-symbols-outlined absolute left-4 text-slate-400">mail</span>
-<input class="form-input h-12 w-full min-w-0 flex-1 rounded-lg border border-slate-300 bg-background-light py-3 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-background-dark dark:text-white dark:focus:border-primary" id="email" name="email" placeholder="you@example.com" type="email" required/>
-</div>
-</div>
-<!-- Password Field -->
-<div>
-<label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300" for="password">Password</label>
-<div class="relative flex w-full items-center">
-<span class="material-symbols-outlined absolute left-4 text-slate-400">lock</span>
-<input class="form-input h-12 w-full min-w-0 flex-1 rounded-lg border border-slate-300 bg-background-light py-3 pl-12 pr-12 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-background-dark dark:text-white dark:focus:border-primary" id="password" name="password" placeholder="Enter your password" type="password" required/>
-<button class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" type="button" id="togglePassword">
-<span class="material-symbols-outlined text-xl">visibility_off</span>
-</button>
-</div>
-</div>
-<!-- Helper/Error Text -->
-<div id="errorMessage" class="hidden">
-<p class="text-xs text-red-500"></p>
-</div>
-<!-- Forgot Password Link -->
-<div class="flex justify-end">
-<a class="text-sm font-medium text-text-secondary-light hover:text-primary dark:text-text-secondary-dark dark:hover:text-primary" href="/auth/forgot-password">Forgot password?</a>
-</div>
-<!-- Login Button -->
-<button type="submit" id="loginBtn" class="flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark">Login</button>
-</form>
-</div>
-</div>
-
-<script>
-    // Password visibility toggle
-    document.getElementById('togglePassword').addEventListener('click', function() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = this.querySelector('.material-symbols-outlined');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.textContent = 'visibility';
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.textContent = 'visibility_off';
-        }
-    });
-
-    // Login form submission
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = errorMessage.querySelector('p');
-
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = 'Signing in...';
-        loginBtn.classList.add('opacity-75');
-        errorMessage.classList.add('hidden');
-
-        const formData = {
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value
-        };
-
-        try {
-            const response = await fetch('/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{{.Title}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
                 },
-                body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                window.location.href = '/';
-            } else {
-                errorText.textContent = data.error || 'Login failed';
-                errorMessage.classList.remove('hidden');
-            }
-        } catch (error) {
-            errorText.textContent = 'Network error. Please try again.';
-            errorMessage.classList.remove('hidden');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = 'Login';
-            loginBtn.classList.remove('opacity-75');
+            },
         }
-    });
-</script>
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+
+<body class="text-slate-600 antialiased selection:bg-indigo-500 selection:text-white">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div
+            class="w-full max-w-sm bg-white rounded-2xl shadow-2xl shadow-slate-200 border border-slate-200/60 overflow-hidden animate-fade-in-up">
+            <!-- Top Highlight -->
+            <div class="h-1 bg-gradient-to-r from-slate-900 to-indigo-900"></div>
+
+            <div class="p-8">
+                <!-- Logo -->
+                <div class="flex justify-center mb-8">
+                    <div
+                        class="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-slate-200 relative group">
+                        <div
+                            class="absolute inset-0 bg-indigo-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity">
+                        </div>
+                        <i class="fas fa-hexagon-nodes relative z-10"></i>
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase mb-2">Welcome Back</h1>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sign in to your account</p>
+                </div>
+
+                <!-- Form -->
+                <form id="loginForm" class="space-y-5">
+                    <!-- Email -->
+                    <div>
+                        <label for="email"
+                            class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Email
+                            Address</label>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
+                                <i
+                                    class="fas fa-envelope text-slate-300 group-focus-within:text-indigo-500 text-xs"></i>
+                            </div>
+                            <input type="email" id="email" name="email" required placeholder="you@example.com"
+                                class="w-full text-xs font-semibold pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:bg-white transition-all placeholder:text-slate-300 text-slate-900">
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password"
+                                class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
+                            <a href="/auth/forgot-password"
+                                class="text-[10px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider transition-colors">Forgot
+                                Password?</a>
+                        </div>
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors">
+                                <i class="fas fa-lock text-slate-300 group-focus-within:text-indigo-500 text-xs"></i>
+                            </div>
+                            <input type="password" id="password" name="password" required placeholder="Enter password"
+                                class="w-full text-xs font-semibold pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:bg-white transition-all placeholder:text-slate-300 text-slate-900">
+                            <button type="button" id="togglePassword"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                                <i class="fas fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="errorMessage"
+                        class="hidden p-3 bg-red-50 border border-red-100 rounded-xl flex items-start gap-2">
+                        <i class="fas fa-circle-exclamation text-red-500 text-xs mt-0.5"></i>
+                        <p class="text-xs font-semibold text-red-600 flex-1"></p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="loginBtn"
+                        class="w-full bg-slate-900 text-white py-3 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 hover:shadow-xl hover:shadow-slate-300/50 flex items-center justify-center gap-2 group transform active:scale-[0.98]">
+                        <span>Sign In</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-0.5 transition-transform"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-8 py-4 bg-slate-50 border-t border-slate-100/50 text-center">
+                <p class="text-[10px] font-semibold text-slate-400">
+                    Don't have an account? <span
+                        class="text-slate-900 font-bold cursor-pointer hover:text-indigo-600 transition-colors">Contact
+                        Admin</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Login Logic
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = errorDiv.querySelector('p');
+            const originalBtnContent = btn.innerHTML;
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>Signing In...</span>';
+            btn.classList.add('opacity-80');
+            errorDiv.classList.add('hidden');
+
+            const formData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (error) {
+                errorText.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = originalBtnContent;
+                btn.classList.remove('opacity-80');
+            }
+        });
+    </script>
 </body>
+
 </html>

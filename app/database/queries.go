@@ -2694,3 +2694,90 @@ func DeleteExam(db *sql.DB, id string) error {
 	_, err := db.Exec(query, id)
 	return err
 }
+
+// GetSubjectsByClass retrieves all subjects associated with a specific class
+func GetSubjectsByClass(db *sql.DB, classID string) ([]*models.Subject, error) {
+	query := `SELECT s.id, s.name, s.code, s.department_id, s.is_active, s.created_at, s.updated_at
+			  FROM subjects s
+			  JOIN class_subjects cs ON s.id = cs.subject_id
+			  WHERE cs.class_id = $1 AND s.deleted_at IS NULL AND cs.deleted_at IS NULL
+			  ORDER BY s.name`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subjects []*models.Subject
+	for rows.Next() {
+		subject := &models.Subject{}
+		err := rows.Scan(
+			&subject.ID, &subject.Name, &subject.Code, &subject.DepartmentID,
+			&subject.IsActive, &subject.CreatedAt, &subject.UpdatedAt,
+		)
+		if err != nil {
+			continue
+		}
+		subjects = append(subjects, subject)
+	}
+	return subjects, nil
+}
+
+// GetPapersByClass retrieves all papers for subjects associated with a specific class
+func GetPapersByClass(db *sql.DB, classID string) ([]*models.Paper, error) {
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at
+			  FROM papers p
+			  JOIN class_subjects cs ON p.subject_id = cs.subject_id
+			  WHERE cs.class_id = $1 AND p.deleted_at IS NULL AND cs.deleted_at IS NULL
+			  ORDER BY p.name`
+
+	rows, err := db.Query(query, classID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var papers []*models.Paper
+	for rows.Next() {
+		paper := &models.Paper{}
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory,
+			&paper.IsActive, &paper.CreatedAt, &paper.UpdatedAt,
+		)
+		if err != nil {
+			continue
+		}
+		papers = append(papers, paper)
+	}
+	return papers, nil
+}
+
+// GetPapersByClassAndSubject retrieves papers for a specific subject restricted by class
+func GetPapersByClassAndSubject(db *sql.DB, classID, subjectID string) ([]*models.Paper, error) {
+	query := `SELECT p.id, p.subject_id, p.name, p.code, p.is_compulsory, p.is_active, p.created_at, p.updated_at
+			  FROM papers p
+			  JOIN class_subjects cs ON p.subject_id = cs.subject_id
+			  WHERE cs.class_id = $1 AND p.subject_id = $2 AND p.deleted_at IS NULL AND cs.deleted_at IS NULL
+			  ORDER BY p.name`
+
+	rows, err := db.Query(query, classID, subjectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var papers []*models.Paper
+	for rows.Next() {
+		paper := &models.Paper{}
+		err := rows.Scan(
+			&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code, &paper.IsCompulsory,
+			&paper.IsActive, &paper.CreatedAt, &paper.UpdatedAt,
+		)
+		if err != nil {
+			continue
+		}
+		papers = append(papers, paper)
+	}
+	return papers, nil
+}
