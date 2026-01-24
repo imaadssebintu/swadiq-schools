@@ -815,7 +815,7 @@
 
     function generateBadgesHtml(items, type, teacherId) {
         if (!items || items.length === 0) {
-            return `<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">None</span>`;
+            return '<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">None</span>';
         }
 
         const maxVisible = 1;
@@ -825,7 +825,7 @@
 
         html = visibleItems.map(item => {
             const badgeClass = type === 'role' ? 'bg-indigo-50 text-indigo-600 border-indigo-100/50' : 'bg-slate-50 text-slate-600 border-slate-100/50';
-            return `<span class="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-widest ${badgeClass} border rounded-lg shadow-sm">${item.name}</span>`;
+            return '<span class="inline-flex px-2 py-1 text-[10px] font-black uppercase tracking-widest ' + badgeClass + ' border rounded-lg shadow-sm">' + item.name + '</span>';
         }).join(' ');
 
         if (hiddenItemsCount > 0) {
@@ -840,18 +840,18 @@
 
     function generateDeploymentsHtml(classes, teacherName, teacherId) {
         if (!classes || classes.length === 0) {
-            return `<span class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">No Active Deployments</span>`;
+            return '<span class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic opacity-50">No Active Deployments</span>';
         }
 
         const maxVisible = 1;
         const visibleClasses = classes.slice(0, maxVisible);
         const hiddenCount = classes.length - maxVisible;
 
-        let html = visibleClasses.map(cls => `
-            <span class="inline-flex items-center px-2 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100/50 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm">
-                <i class="fas fa-school mr-1.5 opacity-50 scale-75"></i>${cls.name}
-            </span>
-        `).join('');
+        let html = visibleClasses.map(cls =>
+            '<span class="inline-flex items-center px-2 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100/50 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm">' +
+            '<i class="fas fa-school mr-1.5 opacity-50 scale-75"></i>' + cls.name +
+            '</span>'
+        ).join('');
 
         if (hiddenCount > 0) {
             html += '<button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all shadow-md active:scale-95" ' +
@@ -875,22 +875,23 @@
         const viewTeacherModal = document.getElementById('viewTeacherModal');
         if (!viewTeacherModal) return;
 
-        document.getElementById('viewTeacherName').textContent = `${teacher.first_name} ${teacher.last_name}`;
+        document.getElementById('viewTeacherName').textContent = teacher.first_name + ' ' + teacher.last_name;
         document.getElementById('viewTeacherEmail').textContent = teacher.email;
-        document.getElementById('viewTeacherID').textContent = `FAC-REF-${teacher.id.toString().padStart(4, '0')}`;
+        document.getElementById('viewTeacherID').textContent = 'FAC-REF-' + teacher.id.toString().padStart(4, '0');
         document.getElementById('viewTeacherPhone').textContent = teacher.phone || 'SECURE LINE UNSET';
 
         const deptDisplay = teacher.department ? teacher.department.name : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].name : 'UNASSIGNED');
         document.getElementById('viewTeacherDepartment').textContent = deptDisplay;
 
         // Initials
-        document.getElementById('viewTeacherInitials').textContent = `${teacher.first_name[0]}${teacher.last_name[0]}`;
+        document.getElementById('viewTeacherInitials').textContent = teacher.first_name[0] + teacher.last_name[0];
 
         // Status
         const statusSpan = document.getElementById('viewTeacherStatus');
         statusSpan.textContent = teacher.is_active ? 'Active Pursuit' : 'Stationary / Inactive';
-        statusSpan.className = `inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm ${teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' : 'bg-rose-50 text-rose-600 border border-rose-100/50'}`;
-        statusSpan.innerHTML = `<span class="w-1.5 h-1.5 rounded-full mr-2 ${teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>${statusSpan.textContent}`;
+        statusSpan.className = 'inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm ' + (teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' : 'bg-rose-50 text-rose-600 border border-rose-100/50');
+        const indicatorColor = teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500';
+        statusSpan.innerHTML = '<span class="w-1.5 h-1.5 rounded-full mr-2 ' + indicatorColor + '"></span>' + statusSpan.textContent;
 
         // Roles
         const rolesContainer = document.getElementById('viewTeacherRoles');
@@ -913,10 +914,8 @@
             teacher.classes.forEach(cls => {
                 const classDiv = document.createElement('div');
                 classDiv.className = 'flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl shadow-sm';
-                classDiv.innerHTML = `
-                    <span class="text-[12px] font-bold text-slate-700 uppercase tracking-tight">${cls.name}</span>
-                    <span class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Active Deployment</span>
-                `;
+                classDiv.innerHTML = '<span class="text-[12px] font-bold text-slate-700 uppercase tracking-tight">' + cls.name + '</span>' +
+                    '<span class="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Active Deployment</span>';
                 classesContainer.appendChild(classDiv);
             });
         } else {
@@ -924,7 +923,7 @@
         }
 
         // Link to full profile
-        document.getElementById('fullProfileBtn').href = `/teachers/${teacher.id}`;
+        document.getElementById('fullProfileBtn').href = '/teachers/' + teacher.id;
 
         viewTeacherModal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -1007,23 +1006,23 @@
 
         if (!modal || !list) return;
 
-        title.innerHTML = `<span class="text-indigo-600">${teacherName.split(' ')[0]}'s</span> Active Deployments`;
-        list.innerHTML = classes.map(cls => `
-            <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg border border-slate-100/50 text-indigo-600 shadow-sm">
-                        <i class="fas fa-school text-[10px]"></i>
-                    </div>
-                    <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${cls.name}</span>
-                </div>
-                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest rounded-md border border-emerald-100/50">Live Status</span>
-            </div>
-        `).join('');
+        title.innerHTML = '<span class="text-indigo-600">' + teacherName.split(' ')[0] + '\'s</span> Active Deployments';
+        list.innerHTML = classes.map(cls =>
+            '<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all shadow-sm">' +
+            '<div class="flex items-center gap-3">' +
+            '<div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg border border-slate-100/50 text-indigo-600 shadow-sm">' +
+            '<i class="fas fa-school text-[10px]"></i>' +
+            '</div>' +
+            '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">' + cls.name + '</span>' +
+            '</div>' +
+            '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest rounded-md border border-emerald-100/50">Live Status</span>' +
+            '</div>'
+        ).join('');
 
         // Position modal near button
         const rect = btn.getBoundingClientRect();
-        modal.style.top = `${rect.bottom + window.scrollY + 5}px`;
-        modal.style.left = `${rect.left + window.scrollX - 100}px`;
+        modal.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+        modal.style.left = (rect.left + window.scrollX - 100) + 'px';
         modal.classList.remove('hidden');
 
         const closeHandler = () => {
@@ -1043,22 +1042,17 @@
         const list = document.getElementById('moreInfoModalBody');
         const title = document.getElementById('moreInfoModalTitle');
 
-        if (!modal || !list) return;
-
-        title.textContent = type === 'role' ? 'Clearance Access' : 'Unit Assignments';
-        const badgeClass = type === 'role' ? 'bg-indigo-50 text-indigo-600 border-indigo-100/50' : 'bg-slate-50 text-slate-600 border-slate-100/50';
-
-        list.innerHTML = `<div class="flex flex-wrap gap-2">
-            ${items.map(item => `
-                <span class="inline-flex px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest ${badgeClass} border rounded-lg shadow-sm">
-                    ${item.name}
-                </span>
-            `).join('')}
-        </div>`;
+        list.innerHTML = '<div class="flex flex-wrap gap-2">' +
+            items.map(item => {
+                return '<span class="inline-flex px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest ' + badgeClass + ' border rounded-lg shadow-sm">' +
+                    item.name +
+                    '</span>';
+            }).join('') +
+            '</div>';
 
         const rect = event.currentTarget.getBoundingClientRect();
-        modal.style.top = `${rect.bottom + window.scrollY + 5}px`;
-        modal.style.left = `${rect.left + window.scrollX - 50}px`;
+        modal.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+        modal.style.left = (rect.left + window.scrollX - 50) + 'px';
         modal.classList.remove('hidden');
 
         const closeHandler = () => {
@@ -1171,7 +1165,7 @@
                         '</div>';
                 }).join('');
             } else {
-                container.innerHTML = `<p class="col-span-full text-center py-8 text-slate-400 uppercase font-black tracking-widest text-[10px]">No divisions mapped</p>`;
+                container.innerHTML = '<p class="col-span-full text-center py-8 text-slate-400 uppercase font-black tracking-widest text-[10px]">No divisions mapped</p>';
             }
         } catch (error) {
             console.error('Error loading department overview:', error);
@@ -1182,17 +1176,16 @@
         const tbody = document.getElementById('teachers-table-body');
         if (!tbody) return;
 
-        // Loading skeletons
-        tbody.innerHTML = Array(5).fill().map(() => `
-            <tr class="animate-pulse">
-                <td class="px-5 py-4"><div class="flex items-center"><div class="w-10 h-10 bg-slate-100 rounded-xl mr-3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded w-24"></div><div class="h-2 bg-slate-50 rounded w-32"></div></div></div></td>
-                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-20"></div></td>
-                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-24"></div></td>
-                <td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-16"></div></td>
-                <td class="px-5 py-4 text-center"><div class="h-4 bg-slate-50 rounded-lg w-12 mx-auto"></div></td>
-                <td class="px-5 py-4 text-right"><div class="flex justify-end gap-2"><div class="w-8 h-8 bg-slate-50 rounded-lg"></div><div class="w-8 h-8 bg-slate-50 rounded-lg"></div></div></td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = Array(5).fill().map(() =>
+            '<tr class="animate-pulse">' +
+            '<td class="px-5 py-4"><div class="flex items-center"><div class="w-10 h-10 bg-slate-100 rounded-xl mr-3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded w-24"></div><div class="h-2 bg-slate-50 rounded w-32"></div></div></div></td>' +
+            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-20"></div></td>' +
+            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-24"></div></td>' +
+            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-16"></div></td>' +
+            '<td class="px-5 py-4 text-center"><div class="h-4 bg-slate-50 rounded-lg w-12 mx-auto"></div></td>' +
+            '<td class="px-5 py-4 text-right"><div class="flex justify-end gap-2"><div class="w-8 h-8 bg-slate-50 rounded-lg"></div><div class="w-8 h-8 bg-slate-50 rounded-lg"></div></div></td>' +
+            '</tr>'
+        ).join('');
 
         try {
             const response = await fetch('/api/teachers');
@@ -1228,11 +1221,11 @@
 
                 attachTeacherActionListeners();
             } else {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center"><i class="fas fa-chalkboard-teacher text-3xl mb-4 text-slate-200"></i><p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">No faculty records found</p></td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center"><i class="fas fa-chalkboard-teacher text-3xl mb-4 text-slate-200"></i><p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">No faculty records found</p></td></tr>';
             }
         } catch (error) {
             console.error('Error loading teachers:', error);
-            tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-rose-500"><i class="fas fa-exclamation-triangle text-3xl mb-4"></i><p class="text-[11px] font-black uppercase tracking-widest">System Liaison Failed</p></td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center text-rose-500"><i class="fas fa-exclamation-triangle text-3xl mb-4"></i><p class="text-[11px] font-black uppercase tracking-widest">System Liaison Failed</p></td></tr>';
         }
     }
 
@@ -1446,16 +1439,15 @@
                 data.departments.forEach(dept => {
                     const isSelected = deptTarget.id && deptTarget.id.value === dept.id.toString();
                     const div = document.createElement('div');
-                    div.className = `flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isSelected ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300'}`;
-                    div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-6 flex items-center justify-center bg-slate-100 rounded text-[8px] font-black text-slate-400 uppercase">${dept.code || 'DIV'}</div>
-                            <span class="text-xs font-bold uppercase tracking-wide ${isSelected ? 'text-indigo-600' : 'text-slate-600'}">${dept.name}</span>
-                        </div>
-                        ${isSelected
+                    div.className = 'flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isSelected ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300');
+                    div.innerHTML =
+                        '<div class="flex items-center gap-3">' +
+                        '<div class="w-8 h-6 flex items-center justify-center bg-slate-100 rounded text-[8px] font-black text-slate-400 uppercase">' + (dept.code || 'DIV') + '</div>' +
+                        '<span class="text-xs font-bold uppercase tracking-wide ' + (isSelected ? 'text-indigo-600' : 'text-slate-600') + '">' + dept.name + '</span>' +
+                        '</div>' +
+                        (isSelected
                             ? '<i class="fas fa-check-circle text-indigo-500"></i>'
-                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>'}
-                    `;
+                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>');
                     div.addEventListener('click', () => {
                         if (deptTarget.name) deptTarget.name.value = dept.name;
                         if (deptTarget.id) deptTarget.id.value = dept.id;
@@ -1480,13 +1472,12 @@
                     if (!role.is_active) return;
                     const isChecked = selectedRolesArray.includes(role.name);
                     const div = document.createElement('div');
-                    div.className = `flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isChecked ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300'}`;
-                    div.innerHTML = `
-                        <span class="text-xs font-bold uppercase tracking-wide ${isChecked ? 'text-indigo-600' : 'text-slate-600'}">${role.name}</span>
-                        ${isChecked
+                    div.className = 'flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isChecked ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300');
+                    div.innerHTML =
+                        '<span class="text-xs font-bold uppercase tracking-wide ' + (isChecked ? 'text-indigo-600' : 'text-slate-600') + '">' + role.name + '</span>' +
+                        (isChecked
                             ? '<i class="fas fa-check-circle text-indigo-500"></i>'
-                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>'}
-                    `;
+                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>');
                     div.addEventListener('click', () => {
                         const rname = role.name;
                         if (selectedRolesArray.includes(rname)) {
@@ -1504,7 +1495,7 @@
 
         async function loadSubjectsForSelection(departmentId = '') {
             try {
-                const url = departmentId ? `/api/subjects?department_id=${departmentId}` : '/api/subjects';
+                const url = departmentId ? '/api/subjects?department_id=' + departmentId : '/api/subjects';
                 const response = await fetch(url);
                 const data = await response.json();
                 subjectSelectionList.innerHTML = '';
@@ -1516,13 +1507,12 @@
                     cachedSubjects[subject.id] = subject.name;
                     const isChecked = selectedSubjectIdsArray.includes(subject.id.toString());
                     const div = document.createElement('div');
-                    div.className = `flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${isChecked ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300'}`;
-                    div.innerHTML = `
-                        <span class="text-xs font-bold uppercase tracking-wide ${isChecked ? 'text-indigo-600' : 'text-slate-600'}">${subject.name}</span>
-                        ${isChecked
+                    div.className = 'flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isChecked ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300');
+                    div.innerHTML =
+                        '<span class="text-xs font-bold uppercase tracking-wide ' + (isChecked ? 'text-indigo-600' : 'text-slate-600') + '">' + subject.name + '</span>' +
+                        (isChecked
                             ? '<i class="fas fa-check-circle text-indigo-500"></i>'
-                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>'}
-                    `;
+                            : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>');
                     div.addEventListener('click', () => {
                         const sid = subject.id.toString();
                         if (selectedSubjectIdsArray.includes(sid)) {
@@ -1559,15 +1549,14 @@
                 data.departments.forEach(dept => {
                     const div = document.createElement('div');
                     div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
-                    div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-6 flex items-center justify-center bg-slate-200/50 rounded text-[8px] font-black text-slate-500 uppercase">${dept.code || 'DIV'}</div>
-                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${dept.name}</span>
-                        </div>
-                        <button onclick="window.deleteDept('${dept.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">
-                            <i class="fas fa-trash-alt text-[10px]"></i>
-                        </button>
-                    `;
+                    div.innerHTML =
+                        '<div class="flex items-center gap-3">' +
+                        '<div class="w-8 h-6 flex items-center justify-center bg-slate-200/50 rounded text-[8px] font-black text-slate-500 uppercase">' + (dept.code || 'DIV') + '</div>' +
+                        '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">' + dept.name + '</span>' +
+                        '</div>' +
+                        '<button onclick="window.deleteDept(\'' + dept.id + '\')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">' +
+                        '<i class="fas fa-trash-alt text-[10px]"></i>' +
+                        '</button>';
                     deptsList.appendChild(div);
                     if (subjectDeptSelect) {
                         const opt = document.createElement('option');
@@ -1582,7 +1571,7 @@
         window.deleteDept = async (id) => {
             if (!confirm('Warning: Deleting a division may impact associated faculty records. Proceed?')) return;
             try {
-                const res = await fetch(`/api/departments/${id}`, { method: 'DELETE' });
+                const res = await fetch('/api/departments/' + id, { method: 'DELETE' });
                 if (res.ok) loadDeptsManagement();
                 else alert('Error deauthorizing division');
             } catch (err) { console.error(err); }
@@ -1621,15 +1610,14 @@
                 data.subjects.forEach(subject => {
                     const div = document.createElement('div');
                     div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
-                    div.innerHTML = `
-                        <div class="flex flex-col">
-                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${subject.name}</span>
-                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${subject.department_name || 'Instructional Module'}</span>
-                        </div>
-                        <button onclick="window.deleteSubject('${subject.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">
-                            <i class="fas fa-trash-alt text-[10px]"></i>
-                        </button>
-                    `;
+                    div.innerHTML =
+                        '<div class="flex flex-col">' +
+                        '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">' + subject.name + '</span>' +
+                        '<span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">' + (subject.department_name || 'Instructional Module') + '</span>' +
+                        '</div>' +
+                        '<button onclick="window.deleteSubject(\'' + subject.id + '\')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">' +
+                        '<i class="fas fa-trash-alt text-[10px]"></i>' +
+                        '</button>';
                     subjectsManagementList.appendChild(div);
                 });
             } catch (err) { console.error(err); }
@@ -1638,7 +1626,7 @@
         window.deleteSubject = async (id) => {
             if (!confirm('Are you certain you want to decommission this module?')) return;
             try {
-                const res = await fetch(`/api/subjects/${id}`, { method: 'DELETE' });
+                const res = await fetch('/api/subjects/' + id, { method: 'DELETE' });
                 if (res.ok) loadSubjectsManagement();
                 else alert('Error decommissioning module');
             } catch (err) { console.error(err); }
@@ -1676,24 +1664,23 @@
                 data.roles.forEach(role => {
                     const div = document.createElement('div');
                     div.className = 'flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all mb-2';
-                    div.innerHTML = `
-                        <div class="flex flex-col">
-                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${role.name}</span>
-                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${role.is_active ? 'Active protocol' : 'Disabled'}</span>
-                        </div>
-                        <button onclick="window.deleteRole('${role.name}')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">
-                            <i class="fas fa-trash-alt text-[10px]"></i>
-                        </button>
-                    `;
+                    div.innerHTML =
+                        '<div class="flex flex-col">' +
+                        '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">' + role.name + '</span>' +
+                        '<span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">' + (role.is_active ? 'Active protocol' : 'Disabled') + '</span>' +
+                        '</div>' +
+                        '<button onclick="window.deleteRole(\'' + role.name + '\')" class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition-all">' +
+                        '<i class="fas fa-trash-alt text-[10px]"></i>' +
+                        '</button>';
                     rolesList.appendChild(div);
                 });
             } catch (err) { console.error(err); }
         }
 
         window.deleteRole = async (name) => {
-            if (!confirm(`Are you certain you want to decommissioning the '${name}' protocol?`)) return;
+            if (!confirm('Are you certain you want to decommissioning the \'' + name + '\' protocol?')) return;
             try {
-                const res = await fetch(`/api/roles/${name}`, { method: 'DELETE' });
+                const res = await fetch('/api/roles/' + name, { method: 'DELETE' });
                 if (res.ok) loadRolesManagement();
                 else alert('Error decommissioning protocol');
             } catch (err) { console.error(err); }
@@ -1803,7 +1790,7 @@
             };
 
             try {
-                const res = await fetch(`/api/teachers/${teacherId}`, {
+                const res = await fetch('/api/teachers/' + teacherId, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -1826,7 +1813,7 @@
             setButtonLoading(confirmDeleteBtn, true, '<i class="fas fa-trash mr-2"></i>Confirm Deletion');
 
             try {
-                const res = await fetch(`/api/teachers/${teacherId}`, { method: 'DELETE' });
+                const res = await fetch('/api/teachers/' + teacherId, { method: 'DELETE' });
                 if (res.ok) {
                     alert('Personnel Record Purged');
                     window.closeDeleteModal();
@@ -1848,15 +1835,15 @@
         if (!container) return;
 
         if (selectedRolesArray.length === 0) {
-            container.innerHTML = `<span class="text-[${roleSelectionTarget === 'add' ? '12px' : '13px'}] font-bold text-slate-400">No clearances selected</span>`;
+            container.innerHTML = '<span class="text-[' + (roleSelectionTarget === 'add' ? '12px' : '13px') + '] font-bold text-slate-400">No clearances selected</span>';
             return;
         }
 
-        container.innerHTML = selectedRolesArray.map(role => `
-            <span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest rounded shadow-sm">
-                ${role.replace('_', ' ')}
-            </span>
-        `).join('');
+        container.innerHTML = selectedRolesArray.map(role =>
+            '<span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[10px] font-black uppercase tracking-widest rounded shadow-sm">' +
+            role.replace('_', ' ') +
+            '</span>'
+        ).join('');
     }
 
     function updateSelectedSubjectsUI() {
@@ -1869,9 +1856,9 @@
             selectedSubjectsContainer.innerHTML = '<span class="text-[12px] font-bold text-slate-400">No modules selected</span>';
             return;
         }
-        selectedSubjectsContainer.innerHTML = selectedSubjectIdsArray.map(id => `
-            <span class="px-2 py-1 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">${cachedSubjects[id] || `MOD-${id}`}</span>
-        `).join('');
+        selectedSubjectsContainer.innerHTML = selectedSubjectIdsArray.map(id =>
+            '<span class="px-2 py-1 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">' + (cachedSubjects[id] || ('MOD-' + id)) + '</span>'
+        ).join('');
     }
 
     // Phone Uniqueness Validation (Fast Check)
@@ -1897,7 +1884,7 @@
         input.classList.add('opacity-70');
 
         try {
-            const res = await fetch(`/api/teachers/check-phone?phone=${encodeURIComponent(phone)}&exclude_id=${excludeId}`);
+            const res = await fetch('/api/teachers/check-phone?phone=' + encodeURIComponent(phone) + '&exclude_id=' + excludeId);
             const data = await res.json();
 
             feedback.classList.remove('hidden');
