@@ -2,13 +2,16 @@ package academic
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"swadiq-schools/app/models"
 )
 
 // Data Access Functions
 
 func GetAcademicYearsForTemplate(db *sql.DB) ([]*models.AcademicYear, error) {
-	query := `SELECT ay.id, ay.name, ay.start_date, ay.end_date, ay.is_current, ay.is_active, ay.created_at, ay.updated_at,
+	query := `SELECT ay.id, ay.name, ay.start_date, ay.end_date, ay.is_current, ay.is_current as is_active,
+			  ay.created_at, ay.updated_at,
 			  COALESCE(t.term_count, 0) as term_count
 			  FROM academic_years ay
 			  LEFT JOIN (
@@ -52,7 +55,7 @@ func GetAcademicYearsForTemplate(db *sql.DB) ([]*models.AcademicYear, error) {
 }
 
 func getAcademicYearByID(db *sql.DB, id string) (*models.AcademicYear, error) {
-	query := `SELECT id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+	query := `SELECT id, name, start_date, end_date, is_current, is_current as is_active, created_at, updated_at
 			  FROM academic_years WHERE id = $1 AND deleted_at IS NULL`
 
 	year := &models.AcademicYear{}
@@ -71,8 +74,8 @@ func createAcademicYear(db *sql.DB, year *models.AcademicYear) error {
 	}
 	defer tx.Rollback()
 
-	if year.IsActive {
-		deactivateQuery := `UPDATE academic_years SET is_active = false`
+	if year.IsCurrent {
+		deactivateQuery := `UPDATE academic_years SET is_current = false`
 		_, err = tx.Exec(deactivateQuery)
 		if err != nil {
 			return err
@@ -99,8 +102,8 @@ func updateAcademicYear(db *sql.DB, year *models.AcademicYear) error {
 	}
 	defer tx.Rollback()
 
-	if year.IsActive {
-		deactivateQuery := `UPDATE academic_years SET is_active = false WHERE id != $1`
+	if year.IsCurrent {
+		deactivateQuery := `UPDATE academic_years SET is_current = false WHERE id != $1`
 		_, err = tx.Exec(deactivateQuery, year.ID)
 		if err != nil {
 			return err
@@ -127,11 +130,13 @@ func deleteAcademicYear(db *sql.DB, id string) error {
 }
 
 func GetTermsForTemplate(db *sql.DB) ([]*models.Term, error) {
-	query := `SELECT t.id, t.academic_year_id, t.name, t.start_date, t.end_date, t.is_current, t.is_active, t.created_at, t.updated_at,
-			  ay.name as academic_year_name
+	query := `SELECT t.id, t.academic_year_id, t.name, t.start_date, t.end_date, t.is_current, 
+			  (t.is_current OR (t.start_date <= CURRENT_DATE AND t.end_date >= CURRENT_DATE)) as is_active,
+			  t.created_at, t.updated_at, ay.name as academic_year_name
 			  FROM terms t
-			  LEFT JOIN academic_years ay ON t.academic_year_id = ay.id
-			  WHERE t.deleted_at IS NULL ORDER BY t.start_date DESC`
+			  INNER JOIN academic_years ay ON t.academic_year_id = ay.id
+			  WHERE t.deleted_at IS NULL AND ay.is_current = true
+			  ORDER BY t.start_date DESC`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -180,23 +185,85 @@ func getTermByID(db *sql.DB, id string) (*models.Term, error) {
 }
 
 func createTerm(db *sql.DB, term *models.Term) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Verify academic year is active
+	var isYearActive bool
+	err = tx.QueryRow(`SELECT is_active FROM academic_years WHERE id = $1 AND deleted_at IS NULL`, term.AcademicYearID).Scan(&isYearActive)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("the specified academic year does not exist")
+		}
+		return fmt.Errorf("failed to verify academic year status: %v", err)
+	}
+	if !isYearActive {
+		return errors.New("terms can only be registered for the currently active academic year")
+	}
+
+	if term.IsCurrent {
+		deactivateQuery := `UPDATE terms SET is_current = false`
+		_, err = tx.Exec(deactivateQuery)
+		if err != nil {
+			return err
+		}
+	}
+
 	query := `INSERT INTO terms (academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at)
 			  VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, term.AcademicYearID, term.Name, term.StartDate.Time, term.EndDate.Time,
+	err = tx.QueryRow(query, term.AcademicYearID, term.Name, term.StartDate.Time, term.EndDate.Time,
 		term.IsCurrent, term.IsActive).Scan(&term.ID, &term.CreatedAt, &term.UpdatedAt)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func updateTerm(db *sql.DB, term *models.Term) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Verify academic year is active
+	var isYearActive bool
+	err = tx.QueryRow(`SELECT is_active FROM academic_years WHERE id = $1 AND deleted_at IS NULL`, term.AcademicYearID).Scan(&isYearActive)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return errors.New("the specified academic year does not exist")
+		}
+		return fmt.Errorf("failed to verify academic year status: %v", err)
+	}
+	if !isYearActive {
+		return errors.New("terms can only be assigned to the currently active academic year")
+	}
+
+	if term.IsCurrent {
+		deactivateQuery := `UPDATE terms SET is_current = false WHERE id != $1`
+		_, err = tx.Exec(deactivateQuery, term.ID)
+		if err != nil {
+			return err
+		}
+	}
+
 	query := `UPDATE terms
 			  SET academic_year_id = $1, name = $2, start_date = $3, end_date = $4, is_current = $5, is_active = $6, updated_at = NOW()
 			  WHERE id = $7 AND deleted_at IS NULL`
 
-	_, err := db.Exec(query, term.AcademicYearID, term.Name, term.StartDate.Time, term.EndDate.Time,
+	_, err = tx.Exec(query, term.AcademicYearID, term.Name, term.StartDate.Time, term.EndDate.Time,
 		term.IsCurrent, term.IsActive, term.ID)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func deleteTerm(db *sql.DB, id string) error {
@@ -206,7 +273,9 @@ func deleteTerm(db *sql.DB, id string) error {
 }
 
 func getTermsByAcademicYearID(db *sql.DB, yearID string) ([]*models.Term, error) {
-	query := `SELECT id, academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+	query := `SELECT id, academic_year_id, name, start_date, end_date, is_current, 
+			  (is_current OR (start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE)) as is_active,
+			  created_at, updated_at
 			  FROM terms WHERE academic_year_id = $1 AND deleted_at IS NULL ORDER BY start_date`
 
 	rows, err := db.Query(query, yearID)

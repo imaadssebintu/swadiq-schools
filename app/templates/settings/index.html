@@ -35,7 +35,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span
-                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Academic
+                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Current
                             Years</span>
                         <div class="h-px bg-slate-100 w-12"></div>
                     </div>
@@ -81,7 +81,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span
-                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">School
+                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Current
                             Terms</span>
                         <div class="h-px bg-slate-100 w-12"></div>
                     </div>
@@ -213,22 +213,30 @@
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 relative z-10">Quick
                     Status</h3>
                 <div class="space-y-4 relative z-10">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-300">Active Year</span>
-                        <span id="activeYearBadge"
-                            class="text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase">None</span>
+                    <div class="flex flex-col gap-0.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300">Current Year</span>
+                            <span id="activeYearBadge"
+                                class="text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase">None</span>
+                        </div>
+                        <div id="activeYearDates" class="text-[9px] font-bold text-slate-500 text-right opacity-80">
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-300">Current Term</span>
-                        <span id="activeTermBadge"
-                            class="text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase">None</span>
+                    <div class="flex flex-col gap-0.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-300">Current Term</span>
+                            <span id="activeTermBadge"
+                                class="text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase">None</span>
+                        </div>
+                        <div id="activeTermDates" class="text-[9px] font-bold text-slate-500 text-right opacity-80">
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Other Settings Nav -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Other Domains</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Other Areas</h3>
                 <div class="grid grid-cols-1 gap-2">
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl opacity-60">
                         <div class="flex items-center gap-3">
@@ -259,7 +267,7 @@
         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="academicYearModalTitle">Add
-                Academic Year</h3>
+                Current Year</h3>
             <button onclick="hideAcademicYearModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
@@ -287,7 +295,7 @@
                 <input type="checkbox" id="academicYearIsActive"
                     class="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/5">
                 <div class="flex flex-col">
-                    <label for="academicYearIsActive" class="text-xs font-bold text-slate-700">Set as Active
+                    <label for="academicYearIsActive" class="text-xs font-bold text-slate-700">Set as Current
                         Year</label>
                     <p class="text-[9px] text-slate-400 font-medium">This will be the default year for new entries</p>
                 </div>
@@ -483,7 +491,7 @@
     }
 
     function showAddAcademicYearModal() {
-        document.getElementById('academicYearModalTitle').textContent = 'Add Academic Year';
+        document.getElementById('academicYearModalTitle').textContent = 'Add Current Year';
         document.getElementById('academicYearId').value = '';
         document.getElementById('academicYearName').value = '';
         document.getElementById('academicYearStartDate').value = '';
@@ -500,7 +508,18 @@
         document.getElementById('termModalTitle').textContent = 'Add Term';
         document.getElementById('termId').value = '';
         document.getElementById('termName').value = '';
-        document.getElementById('termAcademicYear').value = '';
+
+        // Auto-select and lock to active year
+        const select = document.getElementById('termAcademicYear');
+        const activeYear = academicYears.find(y => y.is_active);
+        if (activeYear) {
+            select.value = activeYear.id;
+            select.disabled = true;
+        } else {
+            select.value = '';
+            select.disabled = false;
+        }
+
         document.getElementById('termStartDate').value = '';
         document.getElementById('termEndDate').value = '';
         document.getElementById('termIsActive').checked = true;
@@ -538,7 +557,6 @@
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function () {
         loadAcademicYears();
-        loadTerms();
         loadAssessmentTypes();
 
         // Event Listeners
@@ -551,7 +569,10 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
 
         // Filter events
-        document.getElementById('academicYearFilter').addEventListener('change', renderTerms);
+        document.getElementById('academicYearFilter').addEventListener('change', function () {
+            this.dataset.manuallySelected = "true";
+            renderTerms();
+        });
         document.getElementById('searchAcademicYears').addEventListener('input', renderAcademicYears);
     });
 
@@ -560,8 +581,16 @@
         try {
             const response = await fetch('/api/settings/academic-years');
             academicYears = await response.json();
+
+            // Flatten terms from academic years for global filter/search use
+            terms = academicYears.flatMap(y => (y.terms || []).map(t => ({
+                ...t,
+                academic_year: { id: y.id, name: y.name }
+            })));
+
             renderAcademicYears();
             populateAcademicYearDropdowns();
+            renderTerms();
             updateStats();
         } catch (error) {
             console.error('Error loading academic years:', error);
@@ -594,26 +623,38 @@
     function updateStats() {
         const activeYear = academicYears.find(y => y.is_active);
         const activeYearBadge = document.getElementById('activeYearBadge');
+        const activeYearDates = document.getElementById('activeYearDates');
+
         if (activeYearBadge) {
             if (activeYear) {
                 activeYearBadge.textContent = activeYear.name;
                 activeYearBadge.className = 'text-[10px] font-black bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded uppercase';
+                if (activeYearDates) {
+                    activeYearDates.textContent = `${new Date(activeYear.start_date).toLocaleDateString()} - ${new Date(activeYear.end_date).toLocaleDateString()}`;
+                }
             } else {
                 activeYearBadge.textContent = 'None';
                 activeYearBadge.className = 'text-[10px] font-black bg-slate-800 text-slate-500 px-2 py-0.5 rounded uppercase';
+                if (activeYearDates) activeYearDates.textContent = '';
             }
         }
 
-        // Current term must be active AND belong to the active year
-        const activeTerm = terms.find(t => t.is_active && (!activeYear || t.academic_year_id === activeYear.id));
+        // Current term must be strictly active in the database
+        const activeTerm = terms.find(t => t.is_active);
         const activeTermBadge = document.getElementById('activeTermBadge');
+        const activeTermDates = document.getElementById('activeTermDates');
+
         if (activeTermBadge) {
             if (activeTerm) {
                 activeTermBadge.textContent = activeTerm.name;
                 activeTermBadge.className = 'text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase';
+                if (activeTermDates) {
+                    activeTermDates.textContent = `${new Date(activeTerm.start_date).toLocaleDateString()} - ${new Date(activeTerm.end_date).toLocaleDateString()}`;
+                }
             } else {
                 activeTermBadge.textContent = 'None';
                 activeTermBadge.className = 'text-[10px] font-black bg-slate-800 text-slate-500 px-2 py-0.5 rounded uppercase';
+                if (activeTermDates) activeTermDates.textContent = '';
             }
         }
     }
@@ -638,7 +679,22 @@
 
         filtered.forEach(year => {
             const tr = document.createElement('tr');
-            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group cursor-pointer';
+
+            // Set year filter and render terms on row click
+            tr.onclick = (e) => {
+                // Don't trigger if clicking buttons
+                if (e.target.closest('button')) return;
+
+                const filterEl = document.getElementById('academicYearFilter');
+                filterEl.value = year.id;
+                filterEl.dataset.manuallySelected = "true";
+                renderTerms();
+
+                // Optional: scroll to terms section for better UX
+                document.getElementById('termsList').closest('div').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+
             tr.innerHTML = `
                 <td class="px-5 py-4">
                     <div class="flex items-center gap-3">
@@ -655,11 +711,16 @@
                 </td>
                 <td class="px-5 py-4">
                     <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase ${year.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
-                        ${year.is_active ? 'Active' : 'Previous'}
+                        ${year.is_active ? 'Current' : 'Previous'}
                     </span>
                 </td>
                 <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
+                        <button onclick="setCurrentYear('${year.id}')" 
+                            class="w-8 h-8 flex items-center justify-center rounded-xl transition-all ${year.is_active ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 cursor-default' : 'bg-slate-50 text-slate-400 hover:bg-emerald-500 hover:text-white'}"
+                            title="Set as Current Year">
+                            <i class="fas fa-check text-[10px]"></i>
+                        </button>
                         <button onclick="editAcademicYear('${year.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                             <i class="fas fa-pen text-[10px]"></i>
                         </button>
@@ -724,7 +785,11 @@
     // Render terms as table rows
     function renderTerms() {
         const container = document.getElementById('termsList');
-        const yearFilter = document.getElementById('academicYearFilter').value;
+        const filterEl = document.getElementById('academicYearFilter');
+        let yearFilter = filterEl.value;
+
+        // No more defaulting to active year in JS. 
+        // Backend strictly returns active terms by default.
 
         container.innerHTML = '';
         const filtered = terms.filter(t => !yearFilter || t.academic_year_id === yearFilter);
@@ -733,7 +798,7 @@
             container.innerHTML = `
                 <tr>
                     <td colspan="5" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        No terms found for this year
+                        No active terms found
                     </td>
                 </tr>`;
             return;
@@ -763,13 +828,17 @@
                 </td>
                 <td class="px-5 py-4">
                     <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase 
-                        ${term.is_active && term.academic_year && term.academic_year.is_active ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-                    (term.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200')}">
-                        ${term.is_active && term.academic_year && term.academic_year.is_active ? 'Current' : (term.is_active ? 'Active' : 'Closed')}
+                        ${term.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                        ${term.is_active ? 'Current' : 'Previous'}
                     </span>
                 </td>
                 <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
+                        <button onclick="setCurrentTerm('${term.id}')" 
+                            class="w-8 h-8 flex items-center justify-center rounded-xl transition-all ${term.is_active ? 'bg-blue-500 text-white shadow-lg shadow-blue-200 cursor-default' : 'bg-slate-50 text-slate-400 hover:bg-blue-500 hover:text-white'}"
+                            title="Set as Current Term">
+                            <i class="fas fa-check text-[10px]"></i>
+                        </button>
                         <button onclick="editTerm('${term.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                             <i class="fas fa-pen text-[10px]"></i>
                         </button>
@@ -790,13 +859,59 @@
         filter.innerHTML = '<option value="">All Academic Years</option>';
         select.innerHTML = '<option value="">Select Academic Year</option>';
 
+        let activeYearId = '';
         academicYears.forEach(year => {
             const option = document.createElement('option');
             option.value = year.id;
             option.textContent = year.name;
             filter.appendChild(option.cloneNode(true));
             select.appendChild(option);
+            if (year.is_active) activeYearId = year.id;
         });
+
+        // Default to active year if not manually changed
+        if (activeYearId && !filter.value && !filter.dataset.manuallySelected) {
+            filter.value = activeYearId;
+        }
+    }
+
+    async function setCurrentYear(id) {
+        const year = academicYears.find(y => y.id === id);
+        if (year && year.is_active) return;
+
+        try {
+            const response = await fetch(`/api/settings/academic-years/${id}/set-current`, {
+                method: 'PUT'
+            });
+            if (response.ok) {
+                await loadAcademicYears();
+                await loadTerms();
+            } else {
+                const error = await response.json();
+                alert(error.error || 'Failed to update current year');
+            }
+        } catch (error) {
+            console.error('Error setting current year:', error);
+        }
+    }
+
+    async function setCurrentTerm(id) {
+        const term = terms.find(t => t.id === id);
+        if (term && term.is_active) return;
+
+        try {
+            const response = await fetch(`/api/settings/terms/${id}/set-current`, {
+                method: 'PUT'
+            });
+            if (response.ok) {
+                await loadTerms();
+            } else {
+                const error = await response.json();
+                alert(error.error || 'Failed to update current term');
+            }
+        } catch (error) {
+            console.error('Error setting current term:', error);
+        }
     }
 
     // Edit functions
@@ -820,10 +935,14 @@
         document.getElementById('termModalTitle').textContent = 'Edit Term';
         document.getElementById('termId').value = term.id;
         document.getElementById('termName').value = term.name;
-        document.getElementById('termAcademicYear').value = term.academic_year_id;
+
+        const select = document.getElementById('termAcademicYear');
+        select.value = term.academic_year_id;
+        select.disabled = true; // Lock academic year during edit as well
+
         document.getElementById('termStartDate').value = formatDateForInput(term.start_date);
         document.getElementById('termEndDate').value = formatDateForInput(term.end_date);
-        document.getElementById('termIsActive').checked = term.is_active;
+        document.getElementById('termIsActive').checked = term.is_current;
         animateModal('termModal', true);
     }
 
@@ -885,7 +1004,7 @@
             academic_year_id: document.getElementById('termAcademicYear').value,
             start_date: document.getElementById('termStartDate').value,
             end_date: document.getElementById('termEndDate').value,
-            is_active: document.getElementById('termIsActive').checked
+            is_current: document.getElementById('termIsActive').checked
         };
 
         setBtnLoading('saveTermBtn', true, 'Save Term');
@@ -988,6 +1107,8 @@
     // Globals for button clicks
     window.editAcademicYear = editAcademicYear;
     window.editTerm = editTerm;
+    window.setCurrentYear = setCurrentYear;
+    window.setCurrentTerm = setCurrentTerm;
     window.editAssessmentType = editAssessmentType;
     window.showDeleteModal = showDeleteModal;
     window.hideAcademicYearModal = hideAcademicYearModal;
