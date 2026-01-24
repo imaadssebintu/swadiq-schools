@@ -1081,60 +1081,59 @@
             const statsCards = document.getElementById('statsCards');
             if (!statsCards) return;
 
-            statsCards.innerHTML = `
-                <!-- Total Force -->
-                <div class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wide mb-1">Total Force</p>
-                            <p class="text-2xl font-black text-white leading-none">${data.total_teachers || 0}</p>
-                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-chalkboard-teacher text-white text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Active Duty -->
-                <div class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wide mb-1">Active Duty</p>
-                            <p class="text-2xl font-black text-white leading-none">${data.active_teachers || 0}</p>
-                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-check-circle text-white text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Commanders -->
-                <div class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-semibold text-purple-100 uppercase tracking-wide mb-1">Commanders</p>
-                            <p class="text-2xl font-black text-white leading-none">${data.class_teachers || 0}</p>
-                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-school text-white text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-                <!-- Specialists -->
-                <div class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wide mb-1">Specialists</p>
-                            <p class="text-2xl font-black text-white leading-none">${data.subject_teachers || 0}</p>
-                            <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>
-                        </div>
-                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-book text-white text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            `;
+            statsCards.innerHTML =
+                '<!-- Total Force -->' +
+                '<div class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
+                '<div class="flex items-center justify-between">' +
+                '<div class="flex-1">' +
+                '<p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wide mb-1">Total Force</p>' +
+                '<p class="text-2xl font-black text-white leading-none">' + (data.total_teachers || 0) + '</p>' +
+                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
+                '</div>' +
+                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
+                '<i class="fas fa-chalkboard-teacher text-white text-lg"></i>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<!-- Active Duty -->' +
+                '<div class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
+                '<div class="flex items-center justify-between">' +
+                '<div class="flex-1">' +
+                '<p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wide mb-1">Active Duty</p>' +
+                '<p class="text-2xl font-black text-white leading-none">' + (data.active_teachers || 0) + '</p>' +
+                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
+                '</div>' +
+                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
+                '<i class="fas fa-check-circle text-white text-lg"></i>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<!-- Commanders -->' +
+                '<div class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
+                '<div class="flex items-center justify-between">' +
+                '<div class="flex-1">' +
+                '<p class="text-[10px] font-semibold text-purple-100 uppercase tracking-wide mb-1">Commanders</p>' +
+                '<p class="text-2xl font-black text-white leading-none">' + (data.class_teachers || 0) + '</p>' +
+                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
+                '</div>' +
+                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
+                '<i class="fas fa-school text-white text-lg"></i>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<!-- Specialists -->' +
+                '<div class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
+                '<div class="flex items-center justify-between">' +
+                '<div class="flex-1">' +
+                '<p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wide mb-1">Specialists</p>' +
+                '<p class="text-2xl font-black text-white leading-none">' + (data.subject_teachers || 0) + '</p>' +
+                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
+                '</div>' +
+                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
+                '<i class="fas fa-book text-white text-lg"></i>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
         } catch (error) {
             console.error('Error loading teacher stats:', error);
         }
@@ -1148,29 +1147,29 @@
             if (!container) return;
 
             if (data.departments && data.departments.length > 0) {
-                container.innerHTML = data.departments.map(dept => `
-                    <div class="bg-slate-50/50 rounded-xl p-4 border border-slate-100 shadow-sm hover:bg-white hover:border-indigo-100 transition-all duration-300">
-                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100/50">
-                            <h3 class="text-[11px] font-black text-slate-800 tracking-tight uppercase">${dept.name}</h3>
-                            <span class="px-2 py-0.5 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">${dept.code}</span>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex flex-col">
-                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Unit Command</span>
-                                    <span class="text-[11px] font-bold text-slate-700">${dept.head_name}</span>
-                                </div>
-                                <div class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">
-                                    ${dept.teacher_count || 0} PERS
-                                </div>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Executive Liaison</span>
-                                <span class="text-[11px] font-bold text-slate-700">${dept.assistant_name}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                container.innerHTML = data.departments.map(dept => {
+                    return '<div class="bg-slate-50/50 rounded-xl p-4 border border-slate-100 shadow-sm hover:bg-white hover:border-indigo-100 transition-all duration-300">' +
+                        '<div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100/50">' +
+                        '<h3 class="text-[11px] font-black text-slate-800 tracking-tight uppercase">' + dept.name + '</h3>' +
+                        '<span class="px-2 py-0.5 bg-white text-indigo-600 border border-indigo-50 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">' + dept.code + '</span>' +
+                        '</div>' +
+                        '<div class="space-y-3">' +
+                        '<div class="flex items-center justify-between">' +
+                        '<div class="flex flex-col">' +
+                        '<span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Unit Command</span>' +
+                        '<span class="text-[11px] font-bold text-slate-700">' + dept.head_name + '</span>' +
+                        '</div>' +
+                        '<div class="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-md shadow-sm">' +
+                        (dept.teacher_count || 0) + ' PERS' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="flex flex-col">' +
+                        '<span class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Executive Liaison</span>' +
+                        '<span class="text-[11px] font-bold text-slate-700">' + dept.assistant_name + '</span>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                }).join('');
             } else {
                 container.innerHTML = `<p class="col-span-full text-center py-8 text-slate-400 uppercase font-black tracking-widest text-[10px]">No divisions mapped</p>`;
             }
