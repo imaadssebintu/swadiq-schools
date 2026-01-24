@@ -597,17 +597,6 @@
         }
     }
 
-    // Load terms
-    async function loadTerms() {
-        try {
-            const response = await fetch('/api/settings/terms');
-            terms = await response.json();
-            renderTerms();
-            updateStats();
-        } catch (error) {
-            console.error('Error loading terms:', error);
-        }
-    }
 
     async function loadAssessmentTypes() {
         try {
@@ -885,7 +874,7 @@
             });
             if (response.ok) {
                 await loadAcademicYears();
-                await loadTerms();
+
             } else {
                 const error = await response.json();
                 alert(error.error || 'Failed to update current year');
@@ -904,7 +893,8 @@
                 method: 'PUT'
             });
             if (response.ok) {
-                await loadTerms();
+                await loadAcademicYears();
+
             } else {
                 const error = await response.json();
                 alert(error.error || 'Failed to update current term');
@@ -1017,7 +1007,8 @@
 
             if (response.ok) {
                 hideTermModal();
-                loadTerms();
+                loadAcademicYears();
+
             } else {
                 const error = await response.json();
                 alert(error.error || 'Failed to save term');
@@ -1078,7 +1069,8 @@
             if (response.ok) {
                 hideDeleteModal();
                 if (type === 'academic_year') loadAcademicYears();
-                else if (type === 'term') loadTerms();
+                else if (type === 'term') loadAcademicYears();
+
                 else if (type === 'assessment_type') loadAssessmentTypes();
             } else {
                 const error = await response.json();

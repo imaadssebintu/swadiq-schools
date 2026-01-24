@@ -1,0 +1,588 @@
+<!-- Expenses Management Interface -->
+<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Expenses Hub</h1>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Track and manage school
+                expenditures efficiently</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="showExpenseModal()"
+                class="bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wide hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Add Expense</span>
+            </button>
+            <button onclick="showCategoryModal()"
+                class="bg-slate-900 text-white px-4 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>New Category</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Overview (Gradient Style matching Classes) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5" id="statsCards">
+        <!-- Total Expenses -->
+        <div
+            class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest mb-1">Total Expenses</p>
+                    <p id="totalExpenses" class="text-2xl font-black text-white leading-none">0 UGX</p>
+                    <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-wallet text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Monthly Spend -->
+        <div
+            class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1">Monthly Spend</p>
+                    <p id="monthlyExpenses" class="text-2xl font-black text-white leading-none">0 UGX</p>
+                    <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Top Category -->
+        <div
+            class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p id="topCategoryNameLabel"
+                        class="text-[10px] font-bold text-purple-100 uppercase tracking-widest mb-1 truncate">Top
+                        Category</p>
+                    <p id="topCategoryAmount" class="text-2xl font-black text-white leading-none">0 UGX</p>
+                    <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-tags text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Average Expense -->
+        <div
+            class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <p class="text-[10px] font-bold text-orange-100 uppercase tracking-widest mb-1">Avg Expense</p>
+                    <p id="avgExpense" class="text-2xl font-black text-white leading-none">0 UGX</p>
+                    <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
+                    </div>
+                </div>
+                <div
+                    class="bg-white/20 backdrop-blur-sm p-3 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-chart-line text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Expenses Table -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Expenses
+                        Ledger</span>
+                    <div class="h-px bg-slate-100 w-12"></div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="categoryFilter"
+                        class="text-[10px] font-bold text-slate-500 bg-white border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50 border-b border-slate-100">
+                            <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Expense
+                                Title</th>
+                            <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                Category</th>
+                            <th
+                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">
+                                Date</th>
+                            <th
+                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                Amount</th>
+                            <th
+                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <!-- Skeletons -->
+                        <tr class="animate-pulse">
+                            <td class="px-5 py-4">
+                                <div class="h-3 w-32 bg-slate-100 rounded"></div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="h-3 w-20 bg-slate-100 rounded"></div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="h-3 w-24 bg-slate-100 rounded mx-auto"></div>
+                            </td>
+                            <td class="px-5 py-4 text-right">
+                                <div class="h-3 w-16 bg-slate-100 rounded ml-auto"></div>
+                            </td>
+                            <td class="px-5 py-4 text-right">
+                                <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Categories Sidebar -->
+        <div class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Categories</span>
+                <div class="h-px bg-slate-100 w-12"></div>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+                <div id="categoriesList" class="space-y-2">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Expense Modal -->
+<div id="expenseModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="hideExpenseModal()">
+    </div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+            <div class="p-6 border-b border-slate-100">
+                <h3 id="expenseModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-tight">Record New
+                    Expense</h3>
+            </div>
+            <form id="expenseForm" class="p-6 space-y-4">
+                <input type="hidden" id="expenseId">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Title</label>
+                    <input type="text" id="expenseTitle" required placeholder="e.g., Office Supplies"
+                        class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-300">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Amount
+                            (UGX)</label>
+                        <input type="number" id="expenseAmount" step="1" required placeholder="0"
+                            class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-300">
+                    </div>
+                    <div class="space-y-1">
+                        <label
+                            class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Currency</label>
+                        <select id="expenseCurrency"
+                            class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 appearance-none bg-slate-100 cursor-not-allowed"
+                            disabled>
+                            <option value="UGX" selected>UGX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Category</label>
+                    <select id="expenseCategory" required
+                        class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 appearance-none">
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Date</label>
+                    <input type="date" id="expenseDate" required
+                        class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20">
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="hideExpenseModal()"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-slate-500 hover:bg-slate-50 transition-colors border border-slate-200">Cancel</button>
+                    <button type="submit" id="saveExpenseBtn"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100">Save
+                        Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="hideCategoryModal()">
+    </div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+            <div class="p-6 border-b border-slate-100">
+                <h3 id="categoryModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-tight">Create
+                    Category</h3>
+            </div>
+            <form id="categoryForm" class="p-6 space-y-4">
+                <input type="hidden" id="categoryId">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Category
+                        Name</label>
+                    <input type="text" id="categoryName" required placeholder="e.g., Salaries"
+                        class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 placeholder:text-slate-300">
+                </div>
+                <div class="flex items-center gap-2 px-1">
+                    <input type="checkbox" id="categoryIsActive" checked
+                        class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20">
+                    <label for="categoryIsActive" class="text-[10px] font-bold text-slate-500 uppercase">Active for
+                        use</label>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="hideCategoryModal()"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide text-slate-500 hover:bg-slate-50 transition-colors border border-slate-200">Cancel</button>
+                    <button type="submit" id="saveCategoryBtn"
+                        class="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    let expenses = [];
+    let categories = [];
+
+    // Formatter for whole numbers in UGX
+    const currencyFormatter = new Intl.NumberFormat('en-UG', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+
+    function formatAmount(amt) {
+        return currencyFormatter.format(Math.round(amt)) + ' UGX';
+    }
+
+    async function init() {
+        await Promise.all([loadCategories(), loadExpenses()]);
+        setupEventListeners();
+    }
+
+    async function loadExpenses() {
+        try {
+            const res = await fetch('/api/expenses');
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                expenses = data;
+                renderExpenses();
+                calculateStats();
+            } else {
+                console.error('Expenses data is not an array:', data);
+                expenses = [];
+                renderExpenses();
+            }
+        } catch (err) {
+            console.error('Failed to load expenses:', err);
+            expenses = [];
+            renderExpenses();
+        }
+    }
+
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/expense-categories');
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                categories = data;
+                populateCategoryDropdowns();
+                renderCategories();
+            } else {
+                console.error('Categories data is not an array:', data);
+                categories = [];
+            }
+        } catch (err) {
+            console.error('Failed to load categories:', err);
+            categories = [];
+        }
+    }
+
+    function renderExpenses() {
+        const body = document.getElementById('expensesTableBody');
+        const catFilter = document.getElementById('categoryFilter').value;
+        const filtered = expenses.filter(e => !catFilter || e.category_id === catFilter);
+
+        body.innerHTML = '';
+        if (filtered.length === 0) {
+            body.innerHTML = `<tr><td colspan="5" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">No expenses recorded</td></tr>`;
+            return;
+        }
+
+        filtered.forEach(e => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+            tr.innerHTML = `
+                <td class="px-5 py-4">
+                    <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${e.title}</span>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 uppercase tracking-widest">
+                        ${e.category ? e.category.name : 'Uncategorized'}
+                    </span>
+                </td>
+                <td class="px-5 py-4 text-center">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase">${new Date(e.date).toLocaleDateString()}</span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <span class="text-xs font-black text-slate-900">${formatAmount(e.amount)}</span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2 text-right">
+                        <button onclick="editExpense('${e.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center">
+                            <i class="fas fa-pen text-[9px]"></i>
+                        </button>
+                        <button onclick="deleteExpense('${e.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center">
+                            <i class="fas fa-trash text-[9px]"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            body.appendChild(tr);
+        });
+    }
+
+    function renderCategories() {
+        const list = document.getElementById('categoriesList');
+        list.innerHTML = '';
+        categories.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition-all group';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full ${c.is_active ? 'bg-emerald-500' : 'bg-slate-300'}"></div>
+                    <span class="text-[10px] font-black text-slate-700 uppercase tracking-tight">${c.name}</span>
+                </div>
+                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="editCategory('${c.id}')" class="w-6 h-6 rounded-lg bg-white shadow-sm border border-slate-100 text-slate-400 hover:text-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-pen text-[8px]"></i>
+                    </button>
+                    <button onclick="deleteCategory('${c.id}')" class="w-6 h-6 rounded-lg bg-white shadow-sm border border-slate-100 text-slate-400 hover:text-rose-500 flex items-center justify-center">
+                        <i class="fas fa-trash text-[8px]"></i>
+                    </button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function calculateStats() {
+        const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const monthly = expenses.filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        }).reduce((sum, e) => sum + e.amount, 0);
+
+        document.getElementById('totalExpenses').textContent = formatAmount(total);
+        document.getElementById('monthlyExpenses').textContent = formatAmount(monthly);
+        document.getElementById('avgExpense').textContent = expenses.length ? formatAmount(total / expenses.length) : '0 UGX';
+
+        const catTotals = {};
+        expenses.forEach(e => {
+            catTotals[e.category_id] = (catTotals[e.category_id] || 0) + e.amount;
+        });
+
+        let topCatId = null, maxAmt = 0;
+        for (const [id, amt] of Object.entries(catTotals)) {
+            if (amt > maxAmt) { maxAmt = amt; topCatId = id; }
+        }
+
+        const topCat = categories.find(c => c.id === topCatId);
+        document.getElementById('topCategoryNameLabel').textContent = topCat ? topCat.name : 'Top Category';
+        document.getElementById('topCategoryAmount').textContent = formatAmount(maxAmt);
+    }
+
+    function populateCategoryDropdowns() {
+        const filter = document.getElementById('categoryFilter');
+        const select = document.getElementById('expenseCategory');
+        if (!filter || !select || !Array.isArray(categories)) return;
+
+        const activeCats = categories.filter(c => c.is_active);
+
+        filter.innerHTML = '<option value="">All Categories</option>';
+        select.innerHTML = '<option value="" disabled selected>Select Category</option>';
+
+        activeCats.forEach(c => {
+            const opt = `<option value="${c.id}">${c.name}</option>`;
+            filter.insertAdjacentHTML('beforeend', opt);
+            select.insertAdjacentHTML('beforeend', opt);
+        });
+    }
+
+    function setupEventListeners() {
+        document.getElementById('expenseForm').addEventListener('submit', handleExpenseSubmit);
+        document.getElementById('categoryForm').addEventListener('submit', handleCategorySubmit);
+        document.getElementById('categoryFilter').addEventListener('change', renderExpenses);
+    }
+
+    async function handleExpenseSubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById('expenseId').value;
+        const data = {
+            title: document.getElementById('expenseTitle').value,
+            amount: parseFloat(document.getElementById('expenseAmount').value),
+            currency: 'UGX',
+            category_id: document.getElementById('expenseCategory').value,
+            date: new Date(document.getElementById('expenseDate').value).toISOString()
+        };
+
+        const btn = document.getElementById('saveExpenseBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        try {
+            const res = await fetch(id ? `/api/expenses/${id}` : '/api/expenses', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                hideExpenseModal();
+                await loadExpenses();
+            }
+        } catch (err) {
+            console.error('Save failed:', err);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = id ? 'Update Expense' : 'Save Expense';
+        }
+    }
+
+    async function handleCategorySubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById('categoryId').value;
+        const data = {
+            name: document.getElementById('categoryName').value,
+            is_active: document.getElementById('categoryIsActive').checked
+        };
+
+        const btn = document.getElementById('saveCategoryBtn');
+        btn.disabled = true;
+        btn.textContent = id ? 'Updating...' : 'Creating...';
+
+        try {
+            const res = await fetch(id ? `/api/expense-categories/${id}` : '/api/expense-categories', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                hideCategoryModal();
+                await loadCategories();
+            }
+        } catch (err) {
+            console.error('Category operation failed:', err);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = id ? 'Update' : 'Create';
+        }
+    }
+
+    function showExpenseModal(id = null) {
+        const modal = document.getElementById('expenseModal');
+        const form = document.getElementById('expenseForm');
+        form.reset();
+        document.getElementById('expenseId').value = id || '';
+        document.getElementById('expenseModalTitle').textContent = id ? 'Edit Expense' : 'Record New Expense';
+        document.getElementById('saveExpenseBtn').textContent = id ? 'Update Expense' : 'Save Expense';
+
+        if (id) {
+            const e = expenses.find(exp => exp.id === id);
+            if (e) {
+                document.getElementById('expenseTitle').value = e.title;
+                document.getElementById('expenseAmount').value = Math.round(e.amount);
+                // Currency is always UGX
+                document.getElementById('expenseCategory').value = e.category_id;
+                document.getElementById('expenseDate').value = new Date(e.date).toISOString().split('T')[0];
+            }
+        } else {
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function hideExpenseModal() {
+        document.getElementById('expenseModal').classList.add('hidden');
+    }
+
+    function showCategoryModal(id = null) {
+        const modal = document.getElementById('categoryModal');
+        const form = document.getElementById('categoryForm');
+        form.reset();
+        document.getElementById('categoryId').value = id || '';
+        document.getElementById('categoryModalTitle').textContent = id ? 'Edit Category' : 'Create Category';
+        document.getElementById('saveCategoryBtn').textContent = id ? 'Update' : 'Create';
+
+        if (id) {
+            const c = categories.find(cat => cat.id === id);
+            if (c) {
+                document.getElementById('categoryName').value = c.name;
+                document.getElementById('categoryIsActive').checked = c.is_active;
+            }
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function hideCategoryModal() {
+        document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    async function deleteExpense(id) {
+        if (!confirm('Are you sure you want to delete this expense?')) return;
+        try {
+            const res = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+            if (res.ok) await loadExpenses();
+        } catch (err) {
+            console.error('Deletion failed:', err);
+        }
+    }
+
+    async function deleteCategory(id) {
+        if (!confirm('Are you sure you want to delete this category? All related expenses will be hidden.')) return;
+        try {
+            const res = await fetch(`/api/expense-categories/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                await loadCategories();
+                await loadExpenses();
+            }
+        } catch (err) {
+            console.error('Category deletion failed:', err);
+        }
+    }
+
+    function editExpense(id) {
+        showExpenseModal(id);
+    }
+
+    function editCategory(id) {
+        showCategoryModal(id);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>

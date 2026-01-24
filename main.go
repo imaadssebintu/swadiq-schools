@@ -11,6 +11,7 @@ import (
 	"swadiq-schools/app/routes/departments"
 	"swadiq-schools/app/routes/events"
 	"swadiq-schools/app/routes/exams"
+	"swadiq-schools/app/routes/expenses"
 	"swadiq-schools/app/routes/fees"
 	"swadiq-schools/app/routes/papers"
 	"swadiq-schools/app/routes/parents"
@@ -159,6 +160,9 @@ func main() {
 
 	// Setup settings routes
 	settings.SetupSettingsRoutes(app)
+
+	// Setup expenses routes
+	expenses.SetupExpensesRoutes(app, config.GetDB())
 
 	// Setup exams routes
 	exams.SetupExamRoutes(app, config.GetDB())
