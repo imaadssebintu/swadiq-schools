@@ -500,15 +500,16 @@
         const list = document.getElementById('rolesSelectionList');
         if (!list) return;
 
-        list.innerHTML = allRoles.map(role => `
-            <div onclick="toggleRoleSelection('${role.name}')" 
-                class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedRoleNames.includes(role.name) ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300'}">
-                <span class="text-xs font-bold uppercase tracking-wide ${selectedRoleNames.includes(role.name) ? 'text-indigo-600' : 'text-slate-600'}">${role.name}</span>
-                ${selectedRoleNames.includes(role.name)
-                ? '<i class="fas fa-check-circle text-indigo-500"></i>'
-                : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>'}
-            </div>
-        `).join('');
+        list.innerHTML = allRoles.map(role => {
+            const isSelected = selectedRoleNames.includes(role.name);
+            return '<div onclick="toggleRoleSelection(\'' + role.name + '\')" ' +
+                'class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isSelected ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300') + '">' +
+                '<span class="text-xs font-bold uppercase tracking-wide ' + (isSelected ? 'text-indigo-600' : 'text-slate-600') + '">' + role.name + '</span>' +
+                (isSelected
+                    ? '<i class="fas fa-check-circle text-indigo-500"></i>'
+                    : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>') +
+                '</div>';
+        }).join('');
     }
 
     function updateSelectedRolesPreview() {
@@ -520,11 +521,11 @@
             return;
         }
 
-        container.innerHTML = selectedRoleNames.map(name => `
-            <span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">
-                ${name}
-            </span>
-        `).join('');
+        container.innerHTML = selectedRoleNames.map(name => {
+            return '<span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">' +
+                name +
+                '</span>';
+        }).join('');
     }
 
     function openEditModal() {
@@ -563,7 +564,7 @@
         };
 
         try {
-            const res = await fetch(`/api/teachers/${teacherID}`, {
+            const res = await fetch('/api/teachers/' + teacherID, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -580,7 +581,7 @@
                 currentTeacher.roles = [...data.roles];
 
                 // Update UI elements directly
-                document.getElementById('teacherName').textContent = `${data.first_name} ${data.last_name}`;
+                document.getElementById('teacherName').textContent = data.first_name + ' ' + data.last_name;
                 // Refresh data to be sure
                 setTimeout(() => window.location.reload(), 1000);
             } else {
@@ -598,8 +599,8 @@
     async function loadProfileData() {
         try {
             const [teacherRes, subjectsRes] = await Promise.all([
-                fetch(`/api/teachers/${teacherID}`),
-                fetch(`/api/teachers/${teacherID}/subjects`)
+                fetch('/api/teachers/' + teacherID),
+                fetch('/api/teachers/' + teacherID + '/subjects')
             ]);
 
             const teacherData = await teacherRes.json();
@@ -620,15 +621,14 @@
                         totalStudentsCount += (cls.student_count || 0);
                         const card = document.createElement('div');
                         card.className = 'group bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-100 rounded-2xl p-6 transition-all duration-300 shadow-sm flex items-center justify-between';
-                        card.innerHTML = `
-                            <div>
-                                <h3 class="text-sm font-black text-slate-800 tracking-tight uppercase">${cls.name}</h3>
-                                <p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-1">${cls.student_count || 0} Personnel Linked</p>
-                            </div>
-                            <div class="w-10 h-10 bg-white border border-slate-100 group-hover:border-emerald-100 rounded-xl flex items-center justify-center text-slate-300 group-hover:text-emerald-500 transition-all shadow-sm">
-                                <i class="fas fa-chevron-right text-[10px]"></i>
-                            </div>
-                        `;
+                        card.innerHTML =
+                            '<div>' +
+                            '<h3 class="text-sm font-black text-slate-800 tracking-tight uppercase">' + cls.name + '</h3>' +
+                            '<p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest mt-1">' + (cls.student_count || 0) + ' Personnel Linked</p>' +
+                            '</div>' +
+                            '<div class="w-10 h-10 bg-white border border-slate-100 group-hover:border-emerald-100 rounded-xl flex items-center justify-center text-slate-300 group-hover:text-emerald-500 transition-all shadow-sm">' +
+                            '<i class="fas fa-chevron-right text-[10px]"></i>' +
+                            '</div>';
                         classContainer.appendChild(card);
                     });
                 } else {
@@ -650,26 +650,25 @@
                         const papers = subject.papers || [];
                         const card = document.createElement('div');
                         card.className = 'bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-purple-100 rounded-xl p-3 transition-all duration-300 group shadow-sm';
-                        card.innerHTML = `
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 group-hover:border-purple-50 group-hover:text-purple-600 transition-all shadow-sm font-black text-[9px] text-slate-400">
-                                        ${subject.code}
-                                    </div>
-                                    <h3 class="text-[12px] font-black text-slate-800 tracking-tight uppercase">${subject.name}</h3>
-                                </div>
-                                <button onclick="removeDomain('${subject.id}')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all">
-                                    <i class="fas fa-trash-alt text-[9px]"></i>
-                                </button>
-                            </div>
-                            <div class="space-y-1">
-                                ${papers.length > 0 ? papers.map(p => `
-                                    <div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-slate-50 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-tight">
-                                        <span>${p.name} <span class="text-slate-300 text-[8px] ml-1">(${p.code})</span></span>
-                                    </div>
-                                `).join('') : '<p class="text-[9px] text-slate-300 font-bold italic pl-1">No specific papers assigned</p>'}
-                            </div>
-                        `;
+                        card.innerHTML =
+                            '<div class="flex items-center justify-between mb-2">' +
+                            '<div class="flex items-center gap-2">' +
+                            '<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 group-hover:border-purple-50 group-hover:text-purple-600 transition-all shadow-sm font-black text-[9px] text-slate-400">' +
+                            subject.code +
+                            '</div>' +
+                            '<h3 class="text-[12px] font-black text-slate-800 tracking-tight uppercase">' + subject.name + '</h3>' +
+                            '</div>' +
+                            '<button onclick="removeDomain(\'' + subject.id + '\')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all">' +
+                            '<i class="fas fa-trash-alt text-[9px]"></i>' +
+                            '</button>' +
+                            '</div>' +
+                            '<div class="space-y-1">' +
+                            (papers.length > 0 ? papers.map(p =>
+                                '<div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-slate-50 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-tight">' +
+                                '<span>' + p.name + ' <span class="text-slate-300 text-[8px] ml-1">(' + p.code + ')</span></span>' +
+                                '</div>'
+                            ).join('') : '<p class="text-[9px] text-slate-300 font-bold italic pl-1">No specific papers assigned</p>') +
+                            '</div>';
                         container.appendChild(card);
                     });
                 } else {
@@ -683,7 +682,7 @@
 
     async function loadTeacherAvailability() {
         try {
-            const response = await fetch(`/api/teachers/${teacherID}/availability`);
+            const response = await fetch('/api/teachers/' + teacherID + '/availability');
             const data = await response.json();
             const grid = document.getElementById('availabilityGrid');
             grid.innerHTML = '';
@@ -704,21 +703,20 @@
 
                 const card = document.createElement('div');
                 const available = entry.is_available;
-                card.className = `p-4 rounded-xl border transition-all duration-300 flex flex-col ${available ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' : 'bg-slate-50/30 border-slate-100'}`;
+                card.className = 'p-4 rounded-xl border transition-all duration-300 flex flex-col ' + (available ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' : 'bg-slate-50/30 border-slate-100');
 
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-800">${displayDayNames[i]}</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer avail-check" data-day="${dbDay}" ${available ? 'checked' : ''}>
-                            <div class="w-8 h-4 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
-                        </label>
-                    </div>
-                    <div class="space-y-2 ${available ? '' : 'hidden pointer-events-none opacity-40 filter grayscale'} inputs-area">
-                        <input type="time" class="start-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="${entry.start_time?.String || ''}">
-                        <input type="time" class="end-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="${entry.end_time?.String || ''}">
-                    </div>
-                `;
+                card.innerHTML =
+                    '<div class="flex items-center justify-between mb-4">' +
+                    '<span class="text-[10px] font-black uppercase tracking-widest text-slate-800">' + displayDayNames[i] + '</span>' +
+                    '<label class="relative inline-flex items-center cursor-pointer">' +
+                    '<input type="checkbox" class="sr-only peer avail-check" data-day="' + dbDay + '" ' + (available ? 'checked' : '') + '>' +
+                    '<div class="w-8 h-4 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>' +
+                    '</label>' +
+                    '</div>' +
+                    '<div class="space-y-2 ' + (available ? '' : 'hidden pointer-events-none opacity-40 filter grayscale') + ' inputs-area">' +
+                    '<input type="time" class="start-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.start_time?.String || '') + '">' +
+                    '<input type="time" class="end-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.end_time?.String || '') + '">' +
+                    '</div>';
                 grid.appendChild(card);
 
                 const check = card.querySelector('.avail-check');
@@ -729,7 +727,7 @@
                 });
             }
 
-            document.getElementById('statHoursCount').textContent = `${Math.floor(activeHours)}hrs`;
+            document.getElementById('statHoursCount').textContent = Math.floor(activeHours) + 'hrs';
         } catch (e) {
             console.error('Availability load error:', e);
         }
@@ -753,7 +751,7 @@
         });
 
         try {
-            const res = await fetch(`/api/teachers/${teacherID}/availability`, {
+            const res = await fetch('/api/teachers/' + teacherID + '/availability', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ availability: data })
@@ -778,7 +776,7 @@
         try {
             const [allRes, currentRes] = await Promise.all([
                 fetch('/api/subjects/with-papers'),
-                fetch(`/api/teachers/${teacherID}/subjects`)
+                fetch('/api/teachers/' + teacherID + '/subjects')
             ]);
 
             const all = (await allRes.json()).subjects || [];
@@ -789,27 +787,31 @@
 
             list.innerHTML = all.map(s => {
                 const checked = currentIds.includes(s.id);
-                return `
-                    <div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-100 group hover:bg-white hover:border-indigo-100 transition-all shadow-sm">
-                        <label class="flex items-center justify-between cursor-pointer mb-4">
-                            <div class="flex items-center gap-3">
-                                <span class="text-[10px] font-black text-indigo-600 bg-white px-2 py-1 rounded-lg border border-slate-100">${s.code}</span>
-                                <h3 class="text-xs font-black text-slate-800 tracking-tight uppercase">${s.name}</h3>
-                            </div>
-                            <input type="checkbox" name="subjects" value="${s.id}" ${checked ? 'checked' : ''} class="w-5 h-5 text-indigo-600 border-slate-200 rounded-lg focus:ring-indigo-500 shadow-inner">
-                        </label>
-                        ${s.papers && s.papers.length > 0 ? `
-                            <div class="grid grid-cols-1 gap-2 pl-4 border-l-2 border-slate-100">
-                                ${s.papers.map(p => `
-                                    <label class="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-50 cursor-pointer hover:border-indigo-50 transition-all">
-                                        <input type="checkbox" name="papers_${s.id}" value="${p.id}" ${checked && currentPapers[s.id]?.includes(p.id) ? 'checked' : ''} class="w-3.5 h-3.5 text-indigo-600 border-slate-200 rounded focus:ring-indigo-500">
-                                        <span class="text-[10px] font-bold text-slate-500 uppercase">${p.name} <span class="text-[8px] opacity-50 ml-1">(${p.code})</span></span>
-                                    </label>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
+                const hasPapers = s.papers && s.papers.length > 0;
+
+                let html = '<div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-100 group hover:bg-white hover:border-indigo-100 transition-all shadow-sm">' +
+                    '<label class="flex items-center justify-between cursor-pointer mb-4">' +
+                    '<div class="flex items-center gap-3">' +
+                    '<span class="text-[10px] font-black text-indigo-600 bg-white px-2 py-1 rounded-lg border border-slate-100">' + s.code + '</span>' +
+                    '<h3 class="text-xs font-black text-slate-800 tracking-tight uppercase">' + s.name + '</h3>' +
+                    '</div>' +
+                    '<input type="checkbox" name="subjects" value="' + s.id + '" ' + (checked ? 'checked' : '') + ' class="w-5 h-5 text-indigo-600 border-slate-200 rounded-lg focus:ring-indigo-500 shadow-inner">' +
+                    '</label>';
+
+                if (hasPapers) {
+                    html += '<div class="grid grid-cols-1 gap-2 pl-4 border-l-2 border-slate-100">' +
+                        s.papers.map(p => {
+                            const pChecked = checked && currentPapers[s.id] && currentPapers[s.id].includes(p.id);
+                            return '<label class="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-50 cursor-pointer hover:border-indigo-50 transition-all">' +
+                                '<input type="checkbox" name="papers_' + s.id + '" value="' + p.id + '" ' + (pChecked ? 'checked' : '') + ' class="w-3.5 h-3.5 text-indigo-600 border-slate-200 rounded focus:ring-indigo-500">' +
+                                '<span class="text-[10px] font-bold text-slate-500 uppercase">' + p.name + ' <span class="text-[8px] opacity-50 ml-1">(' + p.code + ')</span></span>' +
+                                '</label>';
+                        }).join('') +
+                        '</div>';
+                }
+
+                html += '</div>';
+                return html;
             }).join('');
         } catch (e) {
             list.innerHTML = 'Domain discovery failed.';
@@ -826,10 +828,10 @@
         const form = new FormData(e.target);
         const subjects = form.getAll('subjects');
         const papers = {};
-        subjects.forEach(sid => papers[sid] = form.getAll(`papers_${sid}`));
+        subjects.forEach(sid => papers[sid] = form.getAll('papers_' + sid));
 
         try {
-            const res = await fetch(`/api/teachers/${teacherID}/subjects`, {
+            const res = await fetch('/api/teachers/' + teacherID + '/subjects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ subject_ids: subjects, papers })
@@ -865,7 +867,7 @@
         if (!confirm('Are you sure you want to decommission this personnel record? This action will set the teacher to standby status.')) return;
 
         try {
-            const res = await fetch(`/api/teachers/${teacherID}`, { method: 'DELETE' });
+            const res = await fetch('/api/teachers/' + teacherID, { method: 'DELETE' });
             if (res.ok) {
                 showNotification('Personnel DECOMMISSIONED');
                 setTimeout(() => window.location.href = '/teachers', 1500);
@@ -881,7 +883,7 @@
         if (!confirm('Remove this operational domain from the teacher?')) return;
 
         try {
-            const res = await fetch(`/api/teachers/${teacherID}/subjects/${subjectId}`, { method: 'DELETE' });
+            const res = await fetch('/api/teachers/' + teacherID + '/subjects/' + subjectId, { method: 'DELETE' });
             if (res.ok) {
                 showNotification('Domain removed');
                 loadProfileData();
@@ -895,9 +897,8 @@
 
     function showNotification(msg, type = 'success') {
         const toast = document.createElement('div');
-        toast.className = `fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ${type === 'success' ? 'bg-indigo-600' : 'bg-rose-600'
-            } text-white`;
-        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation-triangle'}"></i><p class="text-[10px] font-black uppercase tracking-widest">${msg}</p>`;
+        toast.className = 'fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ' + (type === 'success' ? 'bg-indigo-600' : 'bg-rose-600') + ' text-white';
+        toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check' : 'fa-exclamation-triangle') + '"></i><p class="text-[10px] font-black uppercase tracking-widest">' + msg + '</p>';
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 4000);
     }
@@ -924,7 +925,7 @@
         input.classList.add('opacity-70');
 
         try {
-            const res = await fetch(`/api/teachers/check-phone?phone=${encodeURIComponent(phone)}&exclude_id=${teacherID}`);
+            const res = await fetch('/api/teachers/check-phone?phone=' + encodeURIComponent(phone) + '&exclude_id=' + teacherID);
             const data = await res.json();
 
             feedback.classList.remove('hidden');
