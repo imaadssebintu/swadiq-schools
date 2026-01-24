@@ -829,15 +829,13 @@
         }).join(' ');
 
         if (hiddenItemsCount > 0) {
-            html += `
-                <button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-200 transition-all active:scale-95" 
-                    onclick="showMoreModal('${type}', '${teacherId}', event)">
-                    +${hiddenItemsCount} MORE
-                </button>
-            `;
+            html += '<button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-200 transition-all active:scale-95" ' +
+                'onclick="showMoreModal(\'' + type + '\', \'' + teacherId + '\', event)">' +
+                '+' + hiddenItemsCount + ' MORE' +
+                '</button>';
         }
 
-        return `<div class="flex flex-wrap items-center gap-1.5">${html}</div>`;
+        return '<div class="flex flex-wrap items-center gap-1.5">' + html + '</div>';
     }
 
     function generateDeploymentsHtml(classes, teacherName, teacherId) {
@@ -856,22 +854,18 @@
         `).join('');
 
         if (hiddenCount > 0) {
-            html += `
-                <button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all shadow-md active:scale-95" 
-                    onclick="showClassesModal(this, '${teacherName}', event)" data-classes='${JSON.stringify(classes)}'>
-                    <i class="fas fa-plus mr-1 scale-75"></i>${hiddenCount} MORE
-                </button>
-            `;
+            html += '<button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all shadow-md active:scale-95" ' +
+                'onclick="showClassesModal(this, \'' + teacherName + '\', event)" data-classes=\'' + JSON.stringify(classes) + '\'>' +
+                '<i class="fas fa-plus mr-1 scale-75"></i>' + hiddenCount + ' MORE' +
+                '</button>';
         } else {
             // For single item, let's still make it clickable for details
-            html = `
-                <div class="cursor-pointer group" onclick="showClassesModal(this, '${teacherName}', event)" data-classes='${JSON.stringify(classes)}'>
-                    ${html}
-                </div>
-            `;
+            html = '<div class="cursor-pointer group" onclick="showClassesModal(this, \'' + teacherName + '\', event)" data-classes=\'' + JSON.stringify(classes) + '\'>' +
+                html +
+                '</div>';
         }
 
-        return `<div class="flex items-center">${html}</div>`;
+        return '<div class="flex items-center">' + html + '</div>';
     }
 
     /**
@@ -1207,62 +1201,31 @@
             allTeachers = data.teachers || [];
 
             if (allTeachers.length > 0) {
-                tbody.innerHTML = allTeachers.map(teacher => `
-                    <tr class="group hover:bg-slate-50 transition-all duration-300">
-                        <td class="px-5 py-4">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
-                                    <span class="text-indigo-600 font-black text-[11px] uppercase">${teacher.first_name[0]}${teacher.last_name[0]}</span>
-                                </div>
-                                <div class="flex flex-col">
-                                    <a href="/teachers/${teacher.id}" class="text-[13px] font-black text-slate-800 hover:text-indigo-600 transition-colors tracking-tight uppercase">${teacher.first_name} ${teacher.last_name}</a>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-70">${teacher.email}${teacher.phone ? ` • ${teacher.phone}` : ''}</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-5 py-4">
-                            ${generateBadgesHtml(teacher.departments, 'department', teacher.id)}
-                        </td>
-                        <td class="px-5 py-4">
-                            ${generateBadgesHtml(teacher.roles, 'role', teacher.id)}
-                        </td>
-                        <td class="px-5 py-4">
-                            ${generateDeploymentsHtml(teacher.classes, `${teacher.first_name} ${teacher.last_name}`, teacher.id)}
-                        </td>
-                        <td class="px-5 py-4 text-center">
-                            <span class="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-lg shadow-sm ${teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}">
-                                <span class="w-1 h-1 rounded-full mr-1.5 ${teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
-                                ${teacher.is_active ? 'Live' : 'Standby'}
-                            </span>
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="flex items-center justify-end space-x-2">
-                                <button class="view-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-lg shadow-sm transition-all" title="Review Profile" data-teacher='${JSON.stringify(teacher)}'>
-                                    <i class="fas fa-eye text-[11px]"></i>
-                                </button>
-                                <button class="edit-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-100 rounded-lg shadow-sm transition-all"
-                                        title="Modify Record"
-                                        data-teacher-id="${teacher.id}"
-                                        data-teacher-name="${teacher.first_name} ${teacher.last_name}"
-                                        data-teacher-email="${teacher.email}"
-                                        data-teacher-phone="${teacher.phone || ''}"
-                                        data-teacher-first-name="${teacher.first_name}"
-                                        data-teacher-last-name="${teacher.last_name}"
-                                        data-teacher-roles='${JSON.stringify(teacher.roles)}'
-                                        data-teacher-department-id="${teacher.department ? teacher.department.id : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].id : '')}"
-                                        data-teacher-department-name="${teacher.department ? teacher.department.name : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].name : '')}">
-                                    <i class="fas fa-edit text-[11px]"></i>
-                                </button>
-                                <button class="delete-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-100 rounded-lg shadow-sm transition-all"
-                                        title="Purge Record"
-                                        data-teacher-id="${teacher.id}"
-                                        data-teacher-name="${teacher.first_name} ${teacher.last_name}">
-                                    <i class="fas fa-trash text-[11px]"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = allTeachers.map(teacher => {
+                    const initials = teacher.first_name[0] + teacher.last_name[0];
+                    const fullName = teacher.first_name + ' ' + teacher.last_name;
+                    const statusClass = teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100';
+                    const indicatorClass = teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500';
+                    const statusText = teacher.is_active ? 'Live' : 'Standby';
+
+                    let html = '<tr class="group hover:bg-slate-50 transition-all duration-300">';
+                    html += '<td class="px-5 py-4"><div class="flex items-center">';
+                    html += '<div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">';
+                    html += '<span class="text-indigo-600 font-black text-[11px] uppercase">' + initials + '</span></div>';
+                    html += '<div class="flex flex-col"><a href="/teachers/' + teacher.id + '" class="text-[13px] font-black text-slate-800 hover:text-indigo-600 transition-colors tracking-tight uppercase">' + fullName + '</a>';
+                    html += '<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-70">' + teacher.email + (teacher.phone ? ' • ' + teacher.phone : '') + '</span></div></div></td>';
+                    html += '<td class="px-5 py-4">' + generateBadgesHtml(teacher.departments, 'department', teacher.id) + '</td>';
+                    html += '<td class="px-5 py-4">' + generateBadgesHtml(teacher.roles, 'role', teacher.id) + '</td>';
+                    html += '<td class="px-5 py-4">' + generateDeploymentsHtml(teacher.classes, fullName, teacher.id) + '</td>';
+                    html += '<td class="px-5 py-4 text-center"><span class="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-lg shadow-sm ' + statusClass + '">';
+                    html += '<span class="w-1 h-1 rounded-full mr-1.5 ' + indicatorClass + '"></span>' + statusText + '</span></td>';
+                    html += '<td class="px-5 py-4 text-right"><div class="flex items-center justify-end space-x-2">';
+                    html += '<button class="view-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-lg shadow-sm transition-all" title="Review Profile" data-teacher-idx="' + allTeachers.indexOf(teacher) + '"><i class="fas fa-eye text-[11px]"></i></button>';
+                    html += '<button class="edit-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-100 rounded-lg shadow-sm transition-all" title="Modify Record" data-teacher-idx="' + allTeachers.indexOf(teacher) + '"><i class="fas fa-edit text-[11px]"></i></button>';
+                    html += '<button class="delete-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-100 rounded-lg shadow-sm transition-all" title="Purge Record" data-teacher-id="' + teacher.id + '" data-teacher-name="' + fullName + '"><i class="fas fa-trash text-[11px]"></i></button>';
+                    html += '</div></td></tr>';
+                    return html;
+                }).join('');
 
                 attachTeacherActionListeners();
             } else {
@@ -1277,15 +1240,19 @@
     function attachTeacherActionListeners() {
         document.querySelectorAll('.view-teacher-btn').forEach(btn => {
             btn.addEventListener('click', function () {
-                const teacher = JSON.parse(this.dataset.teacher);
+                const teacher = allTeachers[parseInt(this.dataset.teacherIdx)];
                 window.openViewModal(teacher);
             });
         });
 
         document.querySelectorAll('.edit-teacher-btn').forEach(btn => {
             btn.addEventListener('click', function () {
-                const d = this.dataset;
-                window.openEditModal(d.teacherId, d.teacherFirstName, d.teacherLastName, d.teacherEmail, d.teacherPhone, d.teacherRoles, d.teacherDepartmentId, d.teacherDepartmentName);
+                const teacher = allTeachers[parseInt(this.dataset.teacherIdx)];
+                const rolesJson = JSON.stringify(teacher.roles);
+                const deptId = teacher.department ? teacher.department.id : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].id : '');
+                const deptName = teacher.department ? teacher.department.name : (teacher.departments && teacher.departments.length > 0 ? teacher.departments[0].name : '');
+
+                window.openEditModal(teacher.id, teacher.first_name, teacher.last_name, teacher.email, teacher.phone, rolesJson, deptId, deptName);
             });
         });
 
