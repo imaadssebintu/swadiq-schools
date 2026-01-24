@@ -254,6 +254,7 @@ func CreateTeacherAPI(c *fiber.Ctx) error {
 		LastName      string   `json:"last_name"`
 		Email         string   `json:"email"`
 		Password      string   `json:"password"`
+		Phone         string   `json:"phone"`
 		Role          string   `json:"role"`
 		DepartmentIDs []string `json:"department_ids"`
 		SubjectIDs    []string `json:"subject_ids"`
@@ -273,10 +274,22 @@ func CreateTeacherAPI(c *fiber.Ctx) error {
 		req.Role = "class_teacher"
 	}
 
+	// Check phone uniqueness
+	if req.Phone != "" {
+		taken, err := database.IsPhoneTaken(config.GetDB(), req.Phone, "")
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Validation engine failure"})
+		}
+		if taken {
+			return c.Status(400).JSON(fiber.Map{"error": "Phone number is already associated with another account"})
+		}
+	}
+
 	user := &models.User{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Email:     req.Email,
+		Phone:     req.Phone,
 		Password:  req.Password,
 	}
 
@@ -360,9 +373,15 @@ func GetTeacherAPI(c *fiber.Ctx) error {
 
 	// Fetch classes assigned to this teacher with student counts
 	db := config.GetDB()
-	query := `SELECT c.id, c.name, 
-			  (SELECT COUNT(*) FROM students s WHERE s.class_id = c.id AND s.is_active = true) as student_count
-			  FROM classes c WHERE c.teacher_id = $1 AND c.is_active = true`
+	query := `SELECT id, name, 
+			  (SELECT COUNT(*) FROM students s WHERE s.class_id = t.id AND s.is_active = true) as student_count
+			  FROM (
+				  SELECT id, name FROM classes WHERE teacher_id = $1 AND is_active = true
+				  UNION
+				  SELECT DISTINCT c.id, c.name FROM classes c
+				  INNER JOIN timetable_entries te ON c.id = te.class_id
+				  WHERE te.teacher_id = $1 AND te.is_active = true AND c.is_active = true
+			  ) t`
 
 	rows, err := db.Query(query, teacherID)
 	if err == nil {
@@ -389,15 +408,28 @@ func UpdateTeacherAPI(c *fiber.Ctx) error {
 	}
 
 	type UpdateTeacherRequest struct {
-		FirstName string `json:"first_name"`
-		LastName  string `json:"last_name"`
-		Email     string `json:"email"`
-		Role      string `json:"role"`
+		FirstName string   `json:"first_name"`
+		LastName  string   `json:"last_name"`
+		Email     string   `json:"email"`
+		Phone     string   `json:"phone"`
+		Role      string   `json:"role"`  // Maintain for backward compatibility
+		Roles     []string `json:"roles"` // Support multi-role
 	}
 
 	var req UpdateTeacherRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	}
+
+	// Check phone uniqueness (excluding self)
+	if req.Phone != "" {
+		taken, err := database.IsPhoneTaken(config.GetDB(), req.Phone, teacherID)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Validation engine failure"})
+		}
+		if taken {
+			return c.Status(400).JSON(fiber.Map{"error": "Phone number is already associated with another account"})
+		}
 	}
 
 	if req.FirstName == "" || req.LastName == "" || req.Email == "" {
@@ -414,29 +446,56 @@ func UpdateTeacherAPI(c *fiber.Ctx) error {
 	existingTeacher.FirstName = req.FirstName
 	existingTeacher.LastName = req.LastName
 	existingTeacher.Email = req.Email
+	existingTeacher.Phone = req.Phone
 
 	if err := database.UpdateTeacher(config.GetDB(), existingTeacher); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update teacher"})
 	}
 
-	// Update role if provided
-	if req.Role != "" {
+	// Update roles if provided
+	rolesToAssign := req.Roles
+	if len(rolesToAssign) == 0 && req.Role != "" {
+		rolesToAssign = []string{req.Role}
+	}
+
+	if len(rolesToAssign) > 0 {
 		// Remove existing teacher roles first
 		db := config.GetDB()
 		_, err := db.Exec("DELETE FROM user_roles WHERE user_id = $1 AND role_id IN (SELECT id FROM roles WHERE name IN ('class_teacher', 'subject_teacher', 'head_teacher', 'admin'))", teacherID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to update role"})
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to reset clearances"})
 		}
 
-		// Assign new role
-		if err := database.AssignTeacherRole(config.GetDB(), teacherID, req.Role); err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to assign new role"})
+		// Assign new roles
+		for _, roleName := range rolesToAssign {
+			if err := database.AssignTeacherRole(config.GetDB(), teacherID, roleName); err != nil {
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to assign clearance: " + roleName})
+			}
 		}
 	}
 
 	return c.JSON(fiber.Map{
 		"message": "Teacher updated successfully",
 		"teacher": existingTeacher,
+	})
+}
+
+func CheckPhoneUniquenessAPI(c *fiber.Ctx) error {
+	phone := c.Query("phone")
+	excludeID := c.Query("exclude_id")
+
+	if phone == "" {
+		return c.JSON(fiber.Map{"taken": false})
+	}
+
+	taken, err := database.IsPhoneTaken(config.GetDB(), phone, excludeID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Internal validation error"})
+	}
+
+	return c.JSON(fiber.Map{
+		"taken": taken,
+		"phone": phone,
 	})
 }
 

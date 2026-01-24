@@ -21,8 +21,9 @@ func SetupExamRoutes(app *fiber.App, db *sql.DB) {
 	// Page routes
 	app.Get("/exams", auth.AuthMiddleware, func(c *fiber.Ctx) error {
 		user := c.Locals("user").(*models.User)
+		c.Locals("Title", "Assessments")
 		return c.Render("exams/index", fiber.Map{
-			"title":       "Exams Management",
+			"Title":       "Assessments",
 			"CurrentPage": "exams",
 			"FirstName":   user.FirstName,
 			"LastName":    user.LastName,

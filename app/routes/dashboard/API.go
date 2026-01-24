@@ -35,8 +35,9 @@ func GetDashboard(c *fiber.Ctx) error {
 		// fmt.Println("Dashboard Event Fetch Error:", err)
 	}
 
+	c.Locals("Title", "Dashboard")
 	return c.Render("dashboard/index", fiber.Map{
-		"Title":       "Dashboard - Swadiq Schools",
+		"Title":       "Dashboard",
 		"CurrentPage": "dashboard",
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,

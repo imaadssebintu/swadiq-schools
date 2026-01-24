@@ -10,6 +10,7 @@ type Exam struct {
 	AcademicYearID *string       `json:"academic_year_id,omitempty" gorm:"index;type:uuid" validate:"omitempty,uuid"`
 	TermID         *string       `json:"term_id,omitempty" gorm:"index;type:uuid" validate:"omitempty,uuid"`
 	PaperID        string        `json:"paper_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
+	Type           string        `json:"type" gorm:"not null;default:'exam'" validate:"required"`
 	StartTime      time.Time     `json:"start_time" gorm:"not null" validate:"required"`
 	EndTime        time.Time     `json:"end_time" gorm:"not null" validate:"required"`
 	IsActive       bool          `json:"is_active" gorm:"default:true"`

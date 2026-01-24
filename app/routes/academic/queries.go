@@ -7,7 +7,7 @@ import (
 
 // Data Access Functions
 
-func getAllAcademicYears(db *sql.DB) ([]*models.AcademicYear, error) {
+func GetAcademicYearsForTemplate(db *sql.DB) ([]*models.AcademicYear, error) {
 	query := `SELECT ay.id, ay.name, ay.start_date, ay.end_date, ay.is_current, ay.is_active, ay.created_at, ay.updated_at,
 			  COALESCE(t.term_count, 0) as term_count
 			  FROM academic_years ay
@@ -126,7 +126,7 @@ func deleteAcademicYear(db *sql.DB, id string) error {
 	return err
 }
 
-func getAllTerms(db *sql.DB) ([]*models.Term, error) {
+func GetTermsForTemplate(db *sql.DB) ([]*models.Term, error) {
 	query := `SELECT t.id, t.academic_year_id, t.name, t.start_date, t.end_date, t.is_current, t.is_active, t.created_at, t.updated_at,
 			  ay.name as academic_year_name
 			  FROM terms t
@@ -281,5 +281,50 @@ func autoSetCurrentAcademicYear(db *sql.DB) error {
 func autoSetCurrentTerm(db *sql.DB) error {
 	query := `UPDATE terms SET is_current = (start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE)`
 	_, err := db.Exec(query)
+	return err
+}
+
+func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
+	query := `SELECT id, name, code, color, is_active, created_at, updated_at 
+			  FROM assessment_types WHERE deleted_at IS NULL ORDER BY name`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []*models.AssessmentType{}, nil
+	}
+	defer rows.Close()
+
+	var types []*models.AssessmentType
+	for rows.Next() {
+		t := &models.AssessmentType{}
+		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.Color, &t.IsActive, &t.CreatedAt, &t.UpdatedAt)
+		if err != nil {
+			continue
+		}
+		types = append(types, t)
+	}
+	return types, nil
+}
+
+func CreateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
+	query := `INSERT INTO assessment_types (name, code, color, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, t.Name, t.Code, t.Color, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
+	return err
+}
+
+func UpdateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
+	query := `UPDATE assessment_types SET name = $1, code = $2, color = $3, is_active = $4, updated_at = NOW()
+			  WHERE id = $5 AND deleted_at IS NULL`
+
+	_, err := db.Exec(query, t.Name, t.Code, t.Color, t.IsActive, t.ID)
+	return err
+}
+
+func DeleteAssessmentType(db *sql.DB, id string) error {
+	query := `UPDATE assessment_types SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
 	return err
 }

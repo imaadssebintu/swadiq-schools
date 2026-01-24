@@ -10,7 +10,7 @@ import (
 
 // GetAllAcademicYears returns all academic years
 func GetAllAcademicYears(c *fiber.Ctx, db *sql.DB) error {
-	academicYears, err := getAllAcademicYears(db)
+	academicYears, err := GetAcademicYearsForTemplate(db)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve academic years"})
 	}
@@ -103,7 +103,7 @@ func DeleteAcademicYear(c *fiber.Ctx, db *sql.DB) error {
 
 // GetAllTerms returns all terms
 func GetAllTerms(c *fiber.Ctx, db *sql.DB) error {
-	terms, err := getAllTerms(db)
+	terms, err := GetTermsForTemplate(db)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve terms"})
 	}

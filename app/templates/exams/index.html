@@ -3,9 +3,9 @@
     <!-- Page Header -->
     <div class="flex items-center justify-between">
         <div class="flex flex-col gap-1">
-            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Exams Management</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" id="pageDescription">Select a class
-                to manage exams</p>
+            <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase">Assessments Hub</h1>
+            <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select a class
+                to manage assessments</p>
         </div>
         <div class="flex items-center gap-3" id="actionButtons">
             <button id="backToClassesBtn"
@@ -16,7 +16,7 @@
             <button id="addExamBtn"
                 class="hidden bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-plus"></i>
-                <span>Exam</span>
+                <span>Assessment</span>
             </button>
         </div>
     </div>
@@ -83,7 +83,7 @@
             <div class="flex items-center gap-2">
                 <span
                     class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest"
-                    id="examsTitle">Scheduled Exams</span>
+                    id="examsTitle">Scheduled Assessments</span>
                 <div class="h-px bg-slate-100 w-12"></div>
             </div>
             <div class="relative">
@@ -95,8 +95,9 @@
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden relative min-h-[400px]">
             <!-- Header -->
             <div
-                class="grid grid-cols-[1.5fr_1.2fr_1.2fr_100px_100px] gap-4 bg-slate-50 border-b border-slate-200 px-6 py-3 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10">
-                <div>Exam Name</div>
+                class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 bg-slate-50 border-b border-slate-200 px-6 py-3 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10">
+                <div>Assessment Name</div>
+                <div>Type</div>
                 <div>Paper</div>
                 <div>Date & Time</div>
                 <div class="text-center">Status</div>
@@ -108,24 +109,27 @@
                 <!-- Skeleton Loading -->
                 <div id="examsLoadingSkeleton" class="divide-y divide-slate-100">
                     <!-- Row 1 -->
-                    <div class="grid grid-cols-[1.5fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
                         <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
                         <div class="h-8 bg-slate-100 rounded w-8 ml-auto"></div>
                     </div>
                     <!-- Row 2 -->
-                    <div class="grid grid-cols-[1.5fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
                         <div class="h-4 bg-slate-100 rounded w-2/3"></div>
+                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
                         <div class="h-8 bg-slate-100 rounded w-8 ml-auto"></div>
                     </div>
                     <!-- Row 3 -->
-                    <div class="grid grid-cols-[1.5fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
                         <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-4 bg-slate-100 rounded w-1/2"></div>
                         <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
@@ -157,10 +161,32 @@
 <div id="examModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
         <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="examModalTitle">Add Exam</h3>
+            <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight" id="examModalTitle">Add Assessment
+            </h3>
         </div>
         <form id="examForm" class="px-6 py-5 space-y-4">
             <input type="hidden" id="examId">
+
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label for="examTypeDisplay"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Assessment
+                        Type</label>
+                    <a href="/settings"
+                        class="text-[9px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider flex items-center gap-1 transition-colors">
+                        <i class="fas fa-cog text-[8px]"></i>
+                        Manage
+                    </a>
+                </div>
+                <div class="relative">
+                    <input type="hidden" id="examType" required>
+                    <input type="text" id="examTypeDisplay" placeholder="Select Type" readonly
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
 
             <div>
                 <label for="examClass"
@@ -255,22 +281,51 @@
     </div>
 </div>
 
+<!-- Assessment Type Selection Modal -->
+<div id="assessmentTypeSelectionModal"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-[60]">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh]">
+        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Assessment Type</h3>
+            <button type="button" id="closeAssessmentTypeModalBtn"
+                class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-2 overflow-y-auto flex-1" id="assessmentTypeListContainer">
+            <!-- Assessment Types will be loaded here -->
+            <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
+        </div>
+    </div>
+</div>
+
 <script>
     let exams = [];
     let classes = [];
     let subjects = [];
     let papers = [];
+    let assessmentTypes = [];
     let selectedClass = null;
 
     document.addEventListener('DOMContentLoaded', function () {
         loadClasses();
         loadSubjects();
         loadPapers();
+        loadAssessmentTypes();
 
         document.getElementById('addExamBtn').addEventListener('click', showAddExamModal);
         document.getElementById('cancelExamBtn').addEventListener('click', hideExamModal);
         document.getElementById('examForm').addEventListener('submit', saveExam);
         document.getElementById('backToClassesBtn').addEventListener('click', showClassesView);
+
+        // Assessment Type Modal Listeners
+        document.getElementById('examTypeDisplay').addEventListener('click', () => {
+            document.getElementById('assessmentTypeSelectionModal').classList.remove('hidden');
+            renderAssessmentTypeList(assessmentTypes);
+        });
+        document.getElementById('closeAssessmentTypeModalBtn').addEventListener('click', () => {
+            document.getElementById('assessmentTypeSelectionModal').classList.add('hidden');
+        });
 
         // Class change listener
         document.getElementById('examClass').addEventListener('change', function () {
@@ -290,6 +345,8 @@
                 alert('Please select a class first');
                 return;
             }
+            // Load subjects for the selected class
+            loadSubjectsByClass(classId);
             document.getElementById('subjectSelectionModal').classList.remove('hidden');
         });
         document.getElementById('closeSubjectModalBtn').addEventListener('click', () => {
@@ -365,8 +422,10 @@
         document.getElementById('examsView').classList.remove('hidden');
         document.getElementById('addExamBtn').classList.remove('hidden');
         document.getElementById('backToClassesBtn').classList.remove('hidden');
-        document.getElementById('pageDescription').textContent = `Manage exams for ${cls.name}`;
-        document.getElementById('examsTitle').textContent = `${cls.name} - Scheduled Exams`;
+        document.getElementById('pageTitle').textContent = cls.name;
+        document.getElementById('pageDescription').textContent = `Manage and schedule assessments for ${cls.name}`;
+        document.getElementById('examsTitle').textContent = `Class Assessments`;
+        document.title = `${cls.name} - Assessments | Swadiq Schools`;
         loadExams(cls.id);
     }
 
@@ -376,7 +435,9 @@
         document.getElementById('examsView').classList.add('hidden');
         document.getElementById('addExamBtn').classList.add('hidden');
         document.getElementById('backToClassesBtn').classList.add('hidden');
-        document.getElementById('pageDescription').textContent = 'Select a class to manage exams';
+        document.getElementById('pageTitle').textContent = 'Assessments Hub';
+        document.getElementById('pageDescription').textContent = 'Select a class to manage assessments';
+        document.title = `Assessments Hub - Swadiq Schools`;
     }
 
     async function loadClasses() {
@@ -431,6 +492,52 @@
         }
     }
 
+    async function loadAssessmentTypes() {
+        try {
+            const response = await fetch('/api/settings/assessment-types');
+            const data = await response.json();
+            assessmentTypes = Array.isArray(data) ? data : (data.data || []);
+        } catch (error) {
+            console.error('Error loading assessment types:', error);
+            assessmentTypes = [];
+        }
+    }
+
+    function renderAssessmentTypeList(typesToShow = []) {
+        const container = document.getElementById('assessmentTypeListContainer');
+        container.innerHTML = '';
+
+        if (typesToShow.length === 0) {
+            container.innerHTML = '<div class="text-center py-8 text-slate-400 text-sm">No assessment types found</div>';
+            return;
+        }
+
+        typesToShow.forEach(type => {
+            if (!type.is_active) return;
+
+            const item = document.createElement('div');
+            item.className = 'p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors flex items-center justify-between group';
+
+            const badgeStyle = getBadgeStyle(type.code);
+
+            item.innerHTML = `
+                <div>
+                    <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${type.name}</div>
+                    <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border ${badgeStyle} mt-1">
+                        ${type.code}
+                    </span>
+                </div>
+                <i class="fas fa-check text-emerald-500 transition-all text-xs"></i>
+            `;
+            item.onclick = () => {
+                document.getElementById('examType').value = type.code.toLowerCase();
+                document.getElementById('examTypeDisplay').value = type.name;
+                document.getElementById('assessmentTypeSelectionModal').classList.add('hidden');
+            };
+            container.appendChild(item);
+        });
+    }
+
     async function loadPapersByClassAndSubject(classId, subjectId) {
         try {
             const response = await fetch(`/api/papers?class_id=${classId}&subject_id=${subjectId}`);
@@ -441,6 +548,32 @@
         } catch (error) {
             console.error('Error loading papers by class and subject:', error);
             renderPaperList([]);
+        }
+    }
+
+    async function loadSubjectsByClass(classId) {
+        try {
+            console.log('Loading subjects for class:', classId);
+            const response = await fetch(`/api/subjects?class_id=${classId}`);
+            console.log('Subjects API response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Subjects data received:', data);
+
+            // Handle null/undefined data safely
+            const filteredSubjects = (data && Array.isArray(data)) ? data : (data?.data || []);
+            console.log('Filtered subjects:', filteredSubjects);
+
+            renderSubjectList(filteredSubjects);
+        } catch (error) {
+            console.error('Error loading subjects by class:', error);
+            // Fallback: use all subjects if class-specific fetch fails
+            console.log('Falling back to all subjects');
+            renderSubjectList(subjects);
         }
     }
 
@@ -466,23 +599,26 @@
 
         exams.forEach(exam => {
             const row = document.createElement('div');
-            row.className = 'grid grid-cols-[1.5fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 items-center hover:bg-slate-50 transition-colors group relative';
+            row.className = 'grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 items-center hover:bg-slate-50 transition-colors group relative';
 
             const isActive = exam.is_active;
             const statusClass = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
             const statusText = isActive ? 'Active' : 'Inactive';
 
             row.innerHTML = `
-            <!-- Name -->
             <div>
                 <div class="text-sm font-bold text-slate-800">${exam.name}</div>
-                <div class="text-[10px] bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded inline-block mt-1 font-bold tracking-wide">
-                    ${exam.class_id} 
+                <div class="text-[10px] bg-indigo-50/50 text-indigo-600 px-1.5 py-0.5 rounded inline-block mt-1 font-black tracking-wider uppercase">
+                    ${selectedClass ? selectedClass.name : 'Class'} 
                 </div> 
-                <!-- Note: class_id is just ID here, ideally we want class name but might not have it in exam obj if not joined. 
-                     For now, let's omit if it looks ugly or replace with something else. 
-                     Actually, since we view exams FOR a class, we know the class. Maybe we don't need to show it?
-                     Let's show Paper Code instead if available. -->
+            </div>
+
+            <!-- Type -->
+            <div>
+                <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border 
+                    ${getBadgeStyle(exam.type)}">
+                    ${exam.type || 'Exam'}
+                </span>
             </div>
 
             <!-- Paper -->
@@ -508,7 +644,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="text-right opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
+            <div class="text-right transition-opacity flex justify-end gap-2">
                 <button onclick="editExam('${exam.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Edit">
                     <i class="fas fa-pen-to-square text-xs"></i>
                 </button>
@@ -555,7 +691,7 @@
                     <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${subject.name}</div>
                     <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${subject.code}</div>
                 </div>
-                <i class="fas fa-arrow-right text-slate-300 group-hover:text-primary-500 opacity-0 group-hover:opacity-100 transition-all text-xs"></i>
+                <i class="fas fa-arrow-right text-slate-300 group-hover:text-primary-500 transition-all text-xs"></i>
             `;
             item.onclick = () => {
                 document.getElementById('examSubject').value = subject.id;
@@ -593,7 +729,7 @@
                     <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${paper.name}</div>
                     <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${paper.code}</div>
                 </div>
-                <i class="fas fa-check text-emerald-500 opacity-0 group-hover:opacity-100 transition-all text-xs"></i>
+                <i class="fas fa-check text-emerald-500 transition-all text-xs"></i>
             `;
             item.onclick = () => {
                 document.getElementById('examPaper').value = paper.id;
@@ -604,11 +740,13 @@
         });
     }
     function showAddExamModal() {
-        document.getElementById('examModalTitle').textContent = 'Add Exam';
+        document.getElementById('examModalTitle').textContent = 'Create Assessment';
         document.getElementById('examForm').reset();
         document.getElementById('examId').value = '';
 
         // Reset display inputs
+        document.getElementById('examType').value = '';
+        document.getElementById('examTypeDisplay').value = '';
         document.getElementById('examSubject').value = '';
         document.getElementById('examPaper').value = '';
         document.getElementById('examSubjectDisplay').value = '';
@@ -639,8 +777,10 @@
         e.preventDefault();
 
         const id = document.getElementById('examId').value;
+        const examType = document.getElementById('examType').value;
         const examData = {
             name: document.getElementById('examPaperDisplay').value,
+            type: examType,
             class_id: document.getElementById('examClass').value,
             paper_id: document.getElementById('examPaper').value,
             start_time: new Date(document.getElementById('examStartTime').value).toISOString(),
@@ -680,13 +820,44 @@
         const exam = exams.find(e => e.id === id);
         if (!exam) return;
 
-        document.getElementById('examModalTitle').textContent = 'Edit Exam';
+        document.getElementById('examModalTitle').textContent = 'Edit Assessment';
         document.getElementById('examId').value = exam.id;
+        document.getElementById('examType').value = exam.type || 'exam';
+
+        // Populate assessment type display
+        const typeObj = assessmentTypes.find(t => t.code.toLowerCase() === (exam.type || 'exam').toLowerCase());
+        document.getElementById('examTypeDisplay').value = typeObj ? typeObj.name : (exam.type || 'Exam');
+
         document.getElementById('examClass').value = exam.class_id;
         document.getElementById('examPaper').value = exam.paper_id;
+
+        // Find the paper from the papers array using paper_id
+        const paper = papers.find(p => p.id === exam.paper_id);
+
+        // Populate subject field from paper data
+        if (paper && paper.subject) {
+            document.getElementById('examSubject').value = paper.subject.id || paper.subject_id;
+            document.getElementById('examSubjectDisplay').value = paper.subject.name;
+        } else if (paper && paper.subject_id) {
+            // Fallback: if paper has subject_id but no subject object, find subject from subjects array
+            const subject = subjects.find(s => s.id === paper.subject_id);
+            if (subject) {
+                document.getElementById('examSubject').value = subject.id;
+                document.getElementById('examSubjectDisplay').value = subject.name;
+            }
+        } else if (exam.paper && exam.paper.subject) {
+            // Fallback: use exam.paper.subject if available
+            document.getElementById('examSubject').value = exam.paper.subject.id;
+            document.getElementById('examSubjectDisplay').value = exam.paper.subject.name;
+        }
+
+        // Populate paper field
         if (exam.paper) {
             document.getElementById('examPaperDisplay').value = exam.paper.name;
+        } else if (paper) {
+            document.getElementById('examPaperDisplay').value = paper.name;
         }
+
         document.getElementById('examStartTime').value = formatDateTimeForInput(exam.start_time);
         document.getElementById('examEndTime').value = formatDateTimeForInput(exam.end_time);
         document.getElementById('examModal').classList.remove('hidden');
@@ -719,6 +890,23 @@
     function formatDateTimeForInput(dateString) {
         const date = new Date(dateString);
         return date.toISOString().slice(0, 16);
+    }
+
+    function getBadgeStyle(typeCode) {
+        if (!typeCode) return 'bg-slate-50 text-slate-400 border-slate-100';
+        const type = assessmentTypes.find(t => t.code.toLowerCase() === typeCode.toLowerCase());
+        const color = type ? type.color : 'indigo';
+
+        const styles = {
+            indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+            sky: 'bg-sky-50 text-sky-600 border-sky-100',
+            amber: 'bg-amber-50 text-amber-600 border-amber-100',
+            rose: 'bg-rose-50 text-rose-600 border-rose-100',
+            emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+            slate: 'bg-slate-50 text-slate-600 border-slate-100'
+        };
+
+        return styles[color] || styles.indigo;
     }
 
     window.editExam = editExam;

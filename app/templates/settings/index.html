@@ -1,10 +1,11 @@
-<!-- Academic Settings Page -->
+<!-- Unified Settings Hub -->
 <div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
     <!-- Page Header -->
     <div class="flex items-center justify-between">
         <div class="flex flex-col gap-1">
-            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Academic Settings</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage Academic Years & Terms</p>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Settings Hub</h1>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Configure Academic Years, Terms &
+                System Protocols</p>
         </div>
         <div class="flex items-center gap-3">
             <button id="addAcademicYearBtn"
@@ -13,9 +14,14 @@
                 <span>Year</span>
             </button>
             <button id="addTermBtn"
-                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-plus"></i>
                 <span>Term</span>
+            </button>
+            <button id="addAssessmentTypeBtn"
+                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Category</span>
             </button>
         </div>
     </div>
@@ -57,20 +63,6 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="h-3 w-32 bg-slate-100 rounded"></div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
-                                </td>
-                                <td class="px-5 py-4 text-right">
-                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
-                                </td>
-                            </tr>
-                            <tr class="animate-pulse">
-                                <td class="px-5 py-4">
-                                    <div class="h-3 w-20 bg-slate-100 rounded"></div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="h-3 w-28 bg-slate-100 rounded"></div>
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
@@ -133,25 +125,42 @@
                                     <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
                                 </td>
                             </tr>
-                            <tr class="animate-pulse">
-                                <td class="px-5 py-4">
-                                    <div class="space-y-2">
-                                        <div class="h-3 w-24 bg-slate-100 rounded"></div>
-                                        <div class="h-2 w-16 bg-slate-50 rounded"></div>
-                                    </div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="h-3 w-16 bg-slate-100 rounded"></div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="h-3 w-28 bg-slate-100 rounded"></div>
-                                </td>
-                                <td class="px-5 py-4">
-                                    <div class="h-5 w-16 bg-slate-100 rounded-lg"></div>
-                                </td>
-                                <td class="px-5 py-4 text-right">
-                                    <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
-                                </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Assessment Types Section -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Assessment
+                            Categories</span>
+                        <div class="h-px bg-slate-100 w-12"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-100">
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Category Name</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Code</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Status</th>
+                                <th
+                                    class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assessmentTypesList">
+                            <!-- Populated via JS -->
+                            <tr>
+                                <td colspan="4"
+                                    class="px-5 py-12 text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest animate-pulse">
+                                    Initializing Categories...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -213,6 +222,28 @@
                         <span class="text-xs font-bold text-slate-300">Current Term</span>
                         <span id="activeTermBadge"
                             class="text-[10px] font-black bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded uppercase">None</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Settings Nav -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Other Domains</h3>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl opacity-60">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-shield-halved text-slate-400 text-xs text-center w-4"></i>
+                            <span class="text-[10px] font-black text-slate-600 uppercase tracking-tight">Security</span>
+                        </div>
+                        <span class="text-[8px] font-black text-slate-400">Locked</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl opacity-60">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-puzzle-piece text-slate-400 text-xs text-center w-4"></i>
+                            <span
+                                class="text-[10px] font-black text-slate-600 uppercase tracking-tight">Integrations</span>
+                        </div>
+                        <span class="text-[8px] font-black text-slate-400">Soon</span>
                     </div>
                 </div>
             </div>
@@ -327,6 +358,62 @@
     </div>
 </div>
 
+<!-- Assessment Type Modal -->
+<div id="assessmentTypeModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+    onclick="if(event.target === this) hideAssessmentTypeModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="assessmentTypeModalTitle">Add
+                Category</h3>
+            <button onclick="hideAssessmentTypeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="assessmentTypeForm" class="p-6 space-y-4">
+            <input type="hidden" id="assessmentTypeId">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Category Name</label>
+                <input type="text" id="assessmentTypeName" required placeholder="e.g. Formal Exam, Pop Quiz"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Short Code</label>
+                <input type="text" id="assessmentTypeCode" required placeholder="e.g. EXM, TST"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 uppercase">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Color Theme</label>
+                <select id="assessmentTypeColor"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 bg-white">
+                    <option value="indigo">Indigo (Standard)</option>
+                    <option value="sky">Sky (Casual)</option>
+                    <option value="amber">Amber (Project)</option>
+                    <option value="rose">Rose (Critical)</option>
+                    <option value="emerald">Emerald (Success)</option>
+                    <option value="slate">Slate (Passive)</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <input type="checkbox" id="assessmentTypeIsActive" checked
+                    class="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/5">
+                <div class="flex flex-col">
+                    <label for="assessmentTypeIsActive" class="text-xs font-bold text-slate-700">Available for
+                        Use</label>
+                    <p class="text-[9px] text-slate-400 font-medium">Show this category in the assessment creator</p>
+                </div>
+            </div>
+            <div class="pt-2">
+                <button type="submit" id="saveAssessmentTypeBtn"
+                    class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
+                    <span>Save Category</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal"
     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
@@ -360,6 +447,7 @@
     // Global variables
     let academicYears = [];
     let terms = [];
+    let assessmentTypes = [];
 
     // Loading functions
     function setBtnLoading(btnId, isLoading, originalText) {
@@ -423,6 +511,20 @@
         animateModal('termModal', false);
     }
 
+    function showAddAssessmentTypeModal() {
+        document.getElementById('assessmentTypeModalTitle').textContent = 'Add Category';
+        document.getElementById('assessmentTypeId').value = '';
+        document.getElementById('assessmentTypeName').value = '';
+        document.getElementById('assessmentTypeCode').value = '';
+        document.getElementById('assessmentTypeColor').value = 'indigo';
+        document.getElementById('assessmentTypeIsActive').checked = true;
+        animateModal('assessmentTypeModal', true);
+    }
+
+    function hideAssessmentTypeModal() {
+        animateModal('assessmentTypeModal', false);
+    }
+
     function showDeleteModal(id, type) {
         document.getElementById('deleteItemId').value = id;
         document.getElementById('deleteItemType').value = type;
@@ -437,12 +539,15 @@
     document.addEventListener('DOMContentLoaded', function () {
         loadAcademicYears();
         loadTerms();
+        loadAssessmentTypes();
 
         // Event Listeners
         document.getElementById('addAcademicYearBtn').addEventListener('click', showAddAcademicYearModal);
         document.getElementById('addTermBtn').addEventListener('click', showAddTermModal);
+        document.getElementById('addAssessmentTypeBtn').addEventListener('click', showAddAssessmentTypeModal);
         document.getElementById('academicYearForm').addEventListener('submit', saveAcademicYear);
         document.getElementById('termForm').addEventListener('submit', saveTerm);
+        document.getElementById('assessmentTypeForm').addEventListener('submit', saveAssessmentType);
         document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
 
         // Filter events
@@ -453,7 +558,7 @@
     // Load academic years
     async function loadAcademicYears() {
         try {
-            const response = await fetch('/api/academic-years');
+            const response = await fetch('/api/settings/academic-years');
             academicYears = await response.json();
             renderAcademicYears();
             populateAcademicYearDropdowns();
@@ -466,12 +571,23 @@
     // Load terms
     async function loadTerms() {
         try {
-            const response = await fetch('/api/terms');
+            const response = await fetch('/api/settings/terms');
             terms = await response.json();
             renderTerms();
             updateStats();
         } catch (error) {
             console.error('Error loading terms:', error);
+        }
+    }
+
+    async function loadAssessmentTypes() {
+        try {
+            const response = await fetch('/api/settings/assessment-types');
+            const data = await response.json();
+            assessmentTypes = Array.isArray(data) ? data : [];
+            renderAssessmentTypes();
+        } catch (error) {
+            console.error('Error loading assessment types:', error);
         }
     }
 
@@ -548,6 +664,55 @@
                             <i class="fas fa-pen text-[10px]"></i>
                         </button>
                         <button onclick="showDeleteModal('${year.id}', 'academic_year')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash text-[10px]"></i>
+                        </button>
+                    </div>
+                </td>`;
+            container.appendChild(tr);
+        });
+    }
+
+    // Render assessment types as table rows
+    function renderAssessmentTypes() {
+        const container = document.getElementById('assessmentTypesList');
+        container.innerHTML = '';
+
+        if (assessmentTypes.length === 0) {
+            container.innerHTML = `
+                <tr>
+                    <td colspan="4" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        No assessment categories defined
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        assessmentTypes.forEach(t => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+            tr.innerHTML = `
+                <td class="px-5 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white bg-${t.color}-500 shadow-sm shadow-${t.color}-200">
+                            <i class="fas fa-tag text-[10px]"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${t.name}</span>
+                    </div>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${t.code}</span>
+                </td>
+                <td class="px-5 py-4">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase ${t.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                        ${t.is_active ? 'Active' : 'Disabled'}
+                    </span>
+                </td>
+                <td class="px-5 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="editAssessmentType('${t.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                            <i class="fas fa-pen text-[10px]"></i>
+                        </button>
+                        <button onclick="showDeleteModal('${t.id}', 'assessment_type')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
                             <i class="fas fa-trash text-[10px]"></i>
                         </button>
                     </div>
@@ -662,6 +827,19 @@
         animateModal('termModal', true);
     }
 
+    function editAssessmentType(id) {
+        const t = assessmentTypes.find(type => type.id === id);
+        if (!t) return;
+
+        document.getElementById('assessmentTypeModalTitle').textContent = 'Edit Category';
+        document.getElementById('assessmentTypeId').value = t.id;
+        document.getElementById('assessmentTypeName').value = t.name;
+        document.getElementById('assessmentTypeCode').value = t.code;
+        document.getElementById('assessmentTypeColor').value = t.color || 'indigo';
+        document.getElementById('assessmentTypeIsActive').checked = t.is_active;
+        animateModal('assessmentTypeModal', true);
+    }
+
     // Save academic year
     async function saveAcademicYear(e) {
         e.preventDefault();
@@ -678,7 +856,7 @@
 
         setBtnLoading('saveAcademicYearBtn', true, 'Save Academic Year');
         try {
-            const response = await fetch(id ? `/api/academic-years/${id}` : '/api/academic-years', {
+            const response = await fetch(id ? `/api/settings/academic-years/${id}` : '/api/settings/academic-years', {
                 method: id ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -712,7 +890,7 @@
 
         setBtnLoading('saveTermBtn', true, 'Save Term');
         try {
-            const response = await fetch(id ? `/api/terms/${id}` : '/api/terms', {
+            const response = await fetch(id ? `/api/settings/terms/${id}` : '/api/settings/terms', {
                 method: id ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -732,6 +910,38 @@
         }
     }
 
+    async function saveAssessmentType(e) {
+        e.preventDefault();
+        const id = document.getElementById('assessmentTypeId').value;
+        const data = {
+            name: document.getElementById('assessmentTypeName').value,
+            code: document.getElementById('assessmentTypeCode').value,
+            color: document.getElementById('assessmentTypeColor').value,
+            is_active: document.getElementById('assessmentTypeIsActive').checked
+        };
+
+        setBtnLoading('saveAssessmentTypeBtn', true, 'Save Category');
+        try {
+            const response = await fetch(id ? `/api/settings/assessment-types/${id}` : '/api/settings/assessment-types', {
+                method: id ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                hideAssessmentTypeModal();
+                loadAssessmentTypes();
+            } else {
+                const error = await response.json();
+                alert(error.error || 'Failed to save category');
+            }
+        } catch (error) {
+            console.error('Error saving assessment type:', error);
+        } finally {
+            setBtnLoading('saveAssessmentTypeBtn', false, 'Save Category');
+        }
+    }
+
     // Confirm delete
     async function confirmDelete() {
         const id = document.getElementById('deleteItemId').value;
@@ -739,12 +949,18 @@
 
         setBtnLoading('confirmDeleteBtn', true, 'Delete');
         try {
-            const endpoint = type === 'academic_year' ? `/api/academic-years/${id}` : `/api/terms/${id}`;
+            let endpoint = '';
+            if (type === 'academic_year') endpoint = `/api/settings/academic-years/${id}`;
+            else if (type === 'term') endpoint = `/api/settings/terms/${id}`;
+            else if (type === 'assessment_type') endpoint = `/api/settings/assessment-types/${id}`;
+
             const response = await fetch(endpoint, { method: 'DELETE' });
 
             if (response.ok) {
                 hideDeleteModal();
-                type === 'academic_year' ? loadAcademicYears() : loadTerms();
+                if (type === 'academic_year') loadAcademicYears();
+                else if (type === 'term') loadTerms();
+                else if (type === 'assessment_type') loadAssessmentTypes();
             } else {
                 const error = await response.json();
                 alert(error.error || 'Failed to delete item');
@@ -772,8 +988,10 @@
     // Globals for button clicks
     window.editAcademicYear = editAcademicYear;
     window.editTerm = editTerm;
+    window.editAssessmentType = editAssessmentType;
     window.showDeleteModal = showDeleteModal;
     window.hideAcademicYearModal = hideAcademicYearModal;
     window.hideTermModal = hideTermModal;
+    window.hideAssessmentTypeModal = hideAssessmentTypeModal;
     window.hideDeleteModal = hideDeleteModal;
 </script>

@@ -33,7 +33,7 @@ func SetupTimetableRoutes(app *fiber.App) {
 func TimetableIndexPage(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	return c.Render("timetable/index", fiber.Map{
-		"Title":       "Timetable Management - Swadiq Schools",
+		"Title":       "Timetable Management",
 		"CurrentPage": "timetable",
 		"user":        user,
 		"FirstName":   user.FirstName,

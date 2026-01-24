@@ -27,6 +27,7 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api.Get("/counts", GetTeacherCountsAPI)
 	api.Get("/stats", GetTeacherStatsAPI)
 	api.Get("/search", SearchTeachersAPI)
+	api.Get("/check-phone", CheckPhoneUniquenessAPI)
 	api.Get("/department-overview", GetDepartmentOverviewAPI)
 	api.Post("/", CreateTeacherAPI)
 	api.Get("/:id", GetTeacherAPI)

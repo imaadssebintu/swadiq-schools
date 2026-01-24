@@ -153,11 +153,11 @@ func CreateTeacher(db *sql.DB, user *models.User, departmentID *string) error {
 	}
 
 	// Create user account
-	query := `INSERT INTO users (email, password, first_name, last_name, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, true, NOW(), NOW())
+	query := `INSERT INTO users (email, password, first_name, last_name, phone, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, true, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err = db.QueryRow(query, user.Email, hashedPassword, user.FirstName, user.LastName).Scan(
+	err = db.QueryRow(query, user.Email, hashedPassword, user.FirstName, user.LastName, user.Phone).Scan(
 		&user.ID, &user.CreatedAt, &user.UpdatedAt,
 	)
 
@@ -183,7 +183,7 @@ func CreateTeacher(db *sql.DB, user *models.User, departmentID *string) error {
 
 // GetAllTeachers gets all teachers with their department information
 func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
-	query := `SELECT DISTINCT u.id, u.email, u.first_name, u.last_name, u.is_active, u.created_at, u.updated_at,
+	query := `SELECT DISTINCT u.id, u.email, u.first_name, u.last_name, COALESCE(u.phone, ''), u.is_active, u.created_at, u.updated_at,
 			  STRING_AGG(DISTINCT r.name, ', ') as roles,
 			  STRING_AGG(DISTINCT d.name, ', ') as department_names,
 			  STRING_AGG(DISTINCT c.name, ', ') as class_names
@@ -192,10 +192,17 @@ func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
 			  INNER JOIN roles r ON ur.role_id = r.id
 			  LEFT JOIN user_departments ud ON u.id = ud.user_id
 			  LEFT JOIN departments d ON ud.department_id = d.id
-			  LEFT JOIN classes c ON c.teacher_id = u.id AND c.is_active = true
+			  LEFT JOIN (
+				  SELECT teacher_id, id, name FROM classes WHERE is_active = true
+				  UNION
+				  SELECT te.teacher_id, c.id, c.name 
+				  FROM timetable_entries te
+				  JOIN classes c ON te.class_id = c.id
+				  WHERE te.is_active = true AND c.is_active = true
+			  ) c ON c.teacher_id = u.id
 			  WHERE r.name IN ('admin', 'head_teacher', 'class_teacher', 'subject_teacher')
 			  AND u.is_active = true
-			  GROUP BY u.id, u.email, u.first_name, u.last_name, u.is_active, u.created_at, u.updated_at
+			  GROUP BY u.id, u.email, u.first_name, u.last_name, u.phone, u.is_active, u.created_at, u.updated_at
 			  ORDER BY u.first_name, u.last_name`
 
 	rows, err := db.Query(query)
@@ -211,7 +218,7 @@ func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
 		var departmentNames *string
 		var classNames *string
 		err := rows.Scan(
-			&teacher.ID, &teacher.Email, &teacher.FirstName, &teacher.LastName,
+			&teacher.ID, &teacher.Email, &teacher.FirstName, &teacher.LastName, &teacher.Phone,
 			&teacher.IsActive, &teacher.CreatedAt, &teacher.UpdatedAt, &roles, &departmentNames, &classNames,
 		)
 		if err != nil {
@@ -344,11 +351,16 @@ func GetTeacherSubjects(db *sql.DB, teacherID string) ([]*models.Subject, error)
 	return subjects, nil
 }
 
-// GetTeacherClasses fetches all classes assigned to a teacher (where they are the lead teacher)
+// GetTeacherClasses fetches all classes assigned to a teacher (direct and via timetable)
 func GetTeacherClasses(db *sql.DB, teacherID string) ([]*models.Class, error) {
 	query := `SELECT id, name, code
-			  FROM classes
-			  WHERE teacher_id = $1 AND is_active = true
+			  FROM (
+				  SELECT id, name, code FROM classes WHERE teacher_id = $1 AND is_active = true
+				  UNION
+				  SELECT DISTINCT c.id, c.name, c.code FROM classes c
+				  INNER JOIN timetable_entries te ON c.id = te.class_id
+				  WHERE te.teacher_id = $1 AND te.is_active = true AND c.is_active = true
+			  ) t
 			  ORDER BY name`
 
 	rows, err := db.Query(query, teacherID)
@@ -429,7 +441,7 @@ func SearchTeachersWithPagination(db *sql.DB, searchTerm string, limit, offset i
 // GetTeacherByID gets a teacher by ID
 func GetTeacherByID(db *sql.DB, teacherID string) (*models.User, error) {
 	user := &models.User{}
-	query := `SELECT id, email, first_name, last_name, COALESCE(phone, '+256 770 000000'), is_active, created_at, updated_at
+	query := `SELECT id, email, first_name, last_name, COALESCE(phone, ''), is_active, created_at, updated_at
 			  FROM users WHERE id = $1 AND is_active = true`
 
 	err := db.QueryRow(query, teacherID).Scan(
@@ -446,10 +458,10 @@ func GetTeacherByID(db *sql.DB, teacherID string) (*models.User, error) {
 // UpdateTeacher updates an existing teacher's information
 func UpdateTeacher(db *sql.DB, user *models.User) error {
 	query := `UPDATE users
-			  SET first_name = $1, last_name = $2, email = $3, updated_at = NOW()
-			  WHERE id = $4 AND is_active = true`
+			  SET first_name = $1, last_name = $2, email = $3, phone = $4, updated_at = NOW()
+			  WHERE id = $5 AND is_active = true`
 
-	_, err := db.Exec(query, user.FirstName, user.LastName, user.Email, user.ID)
+	_, err := db.Exec(query, user.FirstName, user.LastName, user.Email, user.Phone, user.ID)
 	if err != nil {
 		return fmt.Errorf("failed to update teacher: %v", err)
 	}
@@ -490,6 +502,18 @@ func AssignTeacherRole(db *sql.DB, teacherID string, roleName string) error {
 
 	_, err := db.Exec(query, teacherID, roleName)
 	return err
+}
+
+// IsPhoneTaken checks if a phone number is already in use by another active user
+func IsPhoneTaken(db *sql.DB, phone string, excludeUserID string) (bool, error) {
+	if phone == "" {
+		return false, nil
+	}
+
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE phone = $1 AND id != $2 AND is_active = true)`
+	err := db.QueryRow(query, phone, excludeUserID).Scan(&exists)
+	return exists, err
 }
 
 // GetAllDepartments gets all departments
@@ -2602,13 +2626,14 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 
 // Exam functions
 func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
-	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
-			  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name
+	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.type, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
+			  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name, p.subject_id, s.name as subject_name
 			  FROM exams e
 			  LEFT JOIN classes c ON e.class_id = c.id
 			  LEFT JOIN academic_years ay ON e.academic_year_id = ay.id
 			  LEFT JOIN terms t ON e.term_id = t.id
 			  LEFT JOIN papers p ON e.paper_id = p.id
+			  LEFT JOIN subjects s ON p.subject_id = s.id
 			  WHERE e.deleted_at IS NULL`
 
 	var args []interface{}
@@ -2627,11 +2652,12 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 	var exams []*models.Exam
 	for rows.Next() {
 		exam := &models.Exam{}
-		var className, academicYearName, termName, paperName *string
+		var className, academicYearName, termName, paperName, subjectName *string
+		var subjectID *string
 		err := rows.Scan(
-			&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID,
+			&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.Type,
 			&exam.StartTime, &exam.EndTime, &exam.IsActive, &exam.CreatedAt, &exam.UpdatedAt,
-			&className, &academicYearName, &termName, &paperName,
+			&className, &academicYearName, &termName, &paperName, &subjectID, &subjectName,
 		)
 		if err != nil {
 			continue
@@ -2648,6 +2674,10 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 		}
 		if paperName != nil {
 			exam.Paper = &models.Paper{ID: exam.PaperID, Name: *paperName}
+			if subjectID != nil && subjectName != nil {
+				exam.Paper.SubjectID = *subjectID
+				exam.Paper.Subject = &models.Subject{ID: *subjectID, Name: *subjectName}
+			}
 		}
 
 		exams = append(exams, exam)
@@ -2657,35 +2687,38 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 }
 
 func GetExamByID(db *sql.DB, id string) (*models.Exam, error) {
-	query := `SELECT id, name, class_id, academic_year_id, term_id, paper_id, start_time, end_time, is_active, created_at, updated_at
+	query := `SELECT id, name, class_id, academic_year_id, term_id, paper_id, type, start_time, end_time, is_active, created_at, updated_at
 			  FROM exams WHERE id = $1 AND deleted_at IS NULL`
 
 	exam := &models.Exam{}
 	err := db.QueryRow(query, id).Scan(
-		&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID,
+		&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.Type,
 		&exam.StartTime, &exam.EndTime, &exam.IsActive, &exam.CreatedAt, &exam.UpdatedAt,
 	)
 	return exam, err
 }
 
 func CreateExam(db *sql.DB, exam *models.Exam) error {
-	query := `INSERT INTO exams (name, class_id, academic_year_id, term_id, paper_id, start_time, end_time, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+	query := `INSERT INTO exams (name, class_id, academic_year_id, term_id, paper_id, type, start_time, end_time, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
 	exam.IsActive = true
-	err := db.QueryRow(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID,
+	if exam.Type == "" {
+		exam.Type = "exam"
+	}
+	err := db.QueryRow(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID, exam.Type,
 		exam.StartTime, exam.EndTime, exam.IsActive).Scan(&exam.ID, &exam.CreatedAt, &exam.UpdatedAt)
 	return err
 }
 
 func UpdateExam(db *sql.DB, exam *models.Exam) error {
 	query := `UPDATE exams SET name = $1, class_id = $2, academic_year_id = $3, term_id = $4, paper_id = $5,
-			  start_time = $6, end_time = $7, is_active = $8, updated_at = NOW()
-			  WHERE id = $9 AND deleted_at IS NULL`
+			  type = $6, start_time = $7, end_time = $8, is_active = $9, updated_at = NOW()
+			  WHERE id = $10 AND deleted_at IS NULL`
 
 	_, err := db.Exec(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID,
-		exam.StartTime, exam.EndTime, exam.IsActive, exam.ID)
+		exam.Type, exam.StartTime, exam.EndTime, exam.IsActive, exam.ID)
 	return err
 }
 

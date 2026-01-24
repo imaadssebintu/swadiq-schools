@@ -1,285 +1,310 @@
-<div class="p-6 lg:p-10 space-y-10 animate-fade-in bg-slate-50/50 min-h-screen">
-    <!-- Premium Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="flex items-center gap-6">
-            <a href="/teachers"
-                class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-2xl shadow-sm transition-all group">
-                <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
-            </a>
-            <div>
-                <h1 id="teacherName" class="text-3xl font-black text-slate-900 tracking-tight uppercase">
-                    {{.teacher.FirstName}} {{.teacher.LastName}}</h1>
-                <div class="flex items-center gap-2 mt-1">
-                    <span
-                        class="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/50">Faculty
-                        Profile</span>
-                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: FAC-{{slice
-                        .teacher.ID 0 8}}</span>
-                </div>
-            </div>
-        </div>
-        <div class="flex items-center gap-3">
-            <button onclick="openAssignSubjectsModal()"
-                class="flex items-center px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
-                <i class="fas fa-book-open mr-2 text-indigo-500 opacity-70"></i>Assign Modules
-            </button>
-            <button
-                class="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95">
-                <i class="fas fa-edit mr-2"></i>Modify Stats
-            </button>
-            <button onclick="deleteTeacher()"
-                class="flex items-center w-12 h-12 justify-center bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl hover:bg-rose-100 transition-all shadow-sm">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Layout Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Left Column: Primary Content -->
-        <div class="lg:col-span-8 space-y-8">
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Classes count -->
-                <div
-                    class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                            <i class="fas fa-school text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active
-                            Classes</span>
-                    </div>
-                    <h3 id="statClassesCount" class="text-2xl font-black text-slate-900 mb-1 break-words">0</h3>
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Node
-                        Deployments</p>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12"></div>
-                </div>
-
-                <!-- Subjects count -->
-                <div
-                    class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                            <i class="fas fa-layer-group text-sm"></i>
-                        </div>
+<div class="p-6 lg:p-10 space-y-10 animate-fade-in-up bg-slate-50 min-h-screen relative">
+    <div class="relative z-10 space-y-10">
+        <!-- Premium Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-6">
+                <a href="/teachers"
+                    class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-2xl shadow-sm transition-all group">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                </a>
+                <div>
+                    <h1 id="teacherName" class="text-3xl font-black text-slate-900 tracking-tight uppercase">
+                        {{.teacher.FirstName}} {{.teacher.LastName}}</h1>
+                    <div class="flex items-center gap-2 mt-1">
                         <span
-                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Modules/Papers</span>
+                            class="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/50">Faculty
+                            Profile</span>
+                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: FAC-{{slice
+                            .teacher.ID 0 8}}</span>
                     </div>
-                    <h3 id="statSubjectsCount" class="text-2xl font-black text-slate-900 mb-1 break-words">0</h3>
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Operational
-                        Domains</p>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12"></div>
                 </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openAssignSubjectsModal()"
+                    class="flex items-center px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
+                    <i class="fas fa-book-open mr-2 text-indigo-500 opacity-70"></i>Assign Modules
+                </button>
+                <button onclick="openEditModal()"
+                    class="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95">
+                    <i class="fas fa-user-edit mr-2"></i>Edit Profile
+                </button>
+                <button onclick="deleteTeacher()"
+                    class="flex items-center w-12 h-12 justify-center bg-rose-50 text-rose-600 border border-rose-100 rounded-2xl hover:bg-rose-100 transition-all shadow-sm">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
 
-                <!-- Available Hours -->
-                <div
-                    class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm transition-all hover:shadow-md">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-                            <i class="fas fa-clock text-sm"></i>
+        <!-- Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Primary Content -->
+            <div class="lg:col-span-8 space-y-8">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Classes count -->
+                    <div
+                        class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wide mb-1">Active
+                                    Classes</p>
+                                <p id="statClassesCount" class="text-2xl font-black text-white leading-none">0</p>
+                                <div
+                                    class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-school text-white text-lg"></i>
+                            </div>
                         </div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Duty Window</span>
                     </div>
-                    <h3 id="statHoursCount" class="text-2xl font-black text-slate-900 mb-1 break-words">0 hrs</h3>
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Weekly Capacity
-                    </p>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full -mr-12 -mt-12"></div>
-                </div>
-            </div>
 
-            <!-- Base Configuration -->
-            <div class="glass-card rounded-2xl border border-white p-8 shadow-sm">
-                <div class="flex items-center gap-4 mb-8">
+                    <!-- Subjects count -->
                     <div
-                        class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center border border-indigo-100 shadow-inner">
-                        <i class="fas fa-id-badge text-indigo-600 text-xl"></i>
+                        class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wide mb-1">
+                                    Modules/Papers</p>
+                                <p id="statSubjectsCount" class="text-2xl font-black text-white leading-none">0</p>
+                                <div
+                                    class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-layer-group text-white text-lg"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Base Configuration</h2>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Primary
-                            Personnel Identification</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="teacherInfo">
-                    <div
-                        class="bg-slate-50/80 rounded-2xl p-5 border border-slate-100 group hover:border-indigo-100 transition-all">
-                        <label
-                            class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1.5 opacity-70">Email
-                            Communication</label>
-                        <p class="text-sm font-black text-slate-900 truncate">{{.teacher.Email}}</p>
-                    </div>
-                    <div
-                        class="bg-slate-50/80 rounded-2xl p-5 border border-slate-100 group hover:border-indigo-100 transition-all">
-                        <label
-                            class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1.5 opacity-70">Security
-                            Line</label>
-                        <a href="tel:{{.teacher.Phone}}"
-                            class="text-sm font-black text-slate-900 hover:text-indigo-600 transition-colors flex items-center gap-2">
-                            {{.teacher.Phone}}
-                            <i class="fas fa-external-link-alt text-[10px] text-slate-300"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Operational Domains (Subjects) -->
-            <div
-                class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm relative overflow-hidden group/domains">
-                <div class="flex items-center justify-between mb-8 relative z-10">
-                    <div class="flex items-center gap-4">
+                    <!-- Available Hours -->
+                    <div
+                        class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wide mb-1">Duty
+                                    Window</p>
+                                <p id="statHoursCount" class="text-2xl font-black text-white leading-none">0 hrs</p>
+                                <div
+                                    class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2">
+                                </div>
+                            </div>
+                            <div
+                                class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-clock text-white text-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base Configuration -->
+                <div class="glass-card rounded-2xl border border-white p-8 shadow-sm">
+                    <div class="flex items-center gap-4 mb-8">
                         <div
-                            class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center border border-purple-100 shadow-inner">
-                            <i class="fas fa-brain text-purple-600 text-xl"></i>
+                            class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center border border-indigo-100 shadow-inner">
+                            <i class="fas fa-id-badge text-indigo-600 text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Operational Domains
+                            <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Base Configuration
                             </h2>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Assigned
-                                Academic Competencies</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Primary
+                                Personnel Identification</p>
                         </div>
                     </div>
-                    <button onclick="openAssignSubjectsModal()"
-                        class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200">
-                        <i class="fas fa-plus mr-2"></i>Assign Domain
-                    </button>
-                </div>
-                <div id="teacherSubjects" class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                    <!-- Hydrated via JS -->
-                    <div class="h-32 bg-slate-50 rounded-3xl animate-pulse"></div>
-                    <div class="h-32 bg-slate-50 rounded-3xl animate-pulse"></div>
-                </div>
-            </div>
-
-            <!-- Node Deployments (Classes) -->
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
-                <div class="flex items-center gap-4 mb-8">
-                    <div
-                        class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100 shadow-inner">
-                        <i class="fas fa-dharmachakra text-emerald-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Node Deployments</h2>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Active Class
-                            Assignments</p>
-                    </div>
-                </div>
-                <div id="teacherClasses" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Hydrated via JS -->
-                </div>
-            </div>
-
-            <!-- Operational Window (Availability) -->
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="teacherInfo">
                         <div
-                            class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center border border-rose-100 shadow-inner">
-                            <i class="fas fa-calendar-alt text-rose-600 text-xl"></i>
+                            class="bg-slate-50/80 rounded-2xl p-5 border border-slate-100 group hover:border-indigo-100 transition-all">
+                            <label
+                                class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1.5 opacity-70">Email
+                                Communication</label>
+                            <p class="text-sm font-black text-slate-900 truncate">{{.teacher.Email}}</p>
+                        </div>
+                        <div
+                            class="bg-slate-50/80 rounded-2xl p-5 border border-slate-100 group hover:border-indigo-100 transition-all">
+                            <label
+                                class="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1.5 opacity-70">Security
+                                Line</label>
+                            <a href="tel:{{.teacher.Phone}}"
+                                class="text-sm font-black text-slate-900 hover:text-indigo-600 transition-colors flex items-center gap-2">
+                                {{.teacher.Phone}}
+                                <i class="fas fa-external-link-alt text-[10px] text-slate-300"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operational Domains (Subjects) -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm relative overflow-hidden group/domains">
+                    <div class="flex items-center justify-between mb-8 relative z-10">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center border border-purple-100 shadow-inner">
+                                <i class="fas fa-brain text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Operational
+                                    Domains
+                                </h2>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                    Assigned
+                                    Academic Competencies</p>
+                            </div>
+                        </div>
+                        <button onclick="openAssignSubjectsModal()"
+                            class="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-slate-200">
+                            <i class="fas fa-plus mr-2"></i>Assign Domain
+                        </button>
+                    </div>
+                    <div id="teacherSubjects" class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                        <!-- Hydrated via JS -->
+                        <div class="h-32 bg-slate-50 rounded-3xl animate-pulse"></div>
+                        <div class="h-32 bg-slate-50 rounded-3xl animate-pulse"></div>
+                    </div>
+                </div>
+
+                <!-- Active Deployments (Deployment) -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div
+                            class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100 shadow-inner">
+                            <i class="fas fa-dharmachakra text-emerald-600 text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Operational Window
+                            <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Active Deployments
                             </h2>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Weekly
-                                Availability Configuration</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Active
+                                Class
+                                Assignments</p>
                         </div>
                     </div>
-                    <button id="saveAvailabilityBtn"
-                        class="px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
-                        <i class="fas fa-save mr-2"></i>Sync Timing
-                    </button>
-                </div>
-                <div id="availabilityGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Availability cards will be injected here by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Profile & Metadata -->
-        <div class="lg:col-span-4 space-y-8">
-            <!-- Profile Overview -->
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm relative overflow-hidden group">
-                <div class="absolute top-0 right-0 p-6">
-                    <span
-                        class="w-3 h-3 rounded-full {{if .teacher.IsActive}}bg-emerald-500 animate-pulse{{else}}bg-rose-500{{end}} block border-4 border-emerald-50 shadow-sm"></span>
-                </div>
-                <div class="text-center relative z-10">
-                    <div
-                        class="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl border-4 border-white transform transition-transform group-hover:scale-105 duration-500">
-                        <span class="text-white text-4xl font-black uppercase">{{slice .teacher.FirstName 0 1}}{{slice
-                            .teacher.LastName 0 1}}</span>
-                    </div>
-                    <h3 class="text-xl font-black text-slate-900 tracking-tight uppercase">{{.teacher.FirstName}}
-                        {{.teacher.LastName}}</h3>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Operational ID:
-                        {{slice .teacher.ID 0 8}}</p>
-
-                    <div class="flex flex-wrap justify-center gap-2 mt-6">
-                        {{range .roles}}
-                        <span
-                            class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-indigo-100/50 shadow-sm">
-                            <i class="fas fa-shield-alt mr-1.5 opacity-50"></i>{{.Name}}
-                        </span>
-                        {{else}}
-                        <span
-                            class="px-3 py-1 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-100/50">Instructional
-                            Staff</span>
-                        {{end}}
+                    <div id="teacherClasses" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Hydrated via JS -->
                     </div>
                 </div>
 
-                <div class="mt-10 space-y-4">
-                    <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center gap-4">
-                        <div
-                            class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
-                            <i class="fas fa-clock text-xs"></i>
+                <!-- Operational Window (Availability) -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center border border-rose-100 shadow-inner">
+                                <i class="fas fa-calendar-alt text-rose-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-black text-slate-800 tracking-tight uppercase">Operational
+                                    Window
+                                </h2>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Weekly
+                                    Availability Configuration</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Commissioned</p>
-                            <p class="text-[12px] font-black text-slate-700 uppercase">{{slice .teacher.CreatedAt.String
-                                0 10}}</p>
-                        </div>
+                        <button id="saveAvailabilityBtn"
+                            class="px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                            <i class="fas fa-save mr-2"></i>Sync Timing
+                        </button>
                     </div>
-                    <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center gap-4">
-                        <div
-                            class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
-                            <i class="fas fa-redo text-xs"></i>
-                        </div>
-                        <div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Last Modified</p>
-                            <p class="text-[12px] font-black text-slate-700 uppercase">{{slice .teacher.UpdatedAt.String
-                                0 10}}</p>
-                        </div>
+                    <div id="availabilityGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Availability cards will be injected here by JavaScript -->
                     </div>
                 </div>
             </div>
 
-            <!-- Activity Logging (Future Expansion) -->
-            <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
-                <div class="flex items-center gap-4 mb-8">
-                    <div
-                        class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shadow-inner">
-                        <i class="fas fa-history text-sm"></i>
+            <!-- Right Column: Profile & Metadata -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Profile Overview -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-6">
+                        <span
+                            class="w-3 h-3 rounded-full {{if .teacher.IsActive}}bg-emerald-500 animate-pulse{{else}}bg-rose-500{{end}} block border-4 border-emerald-50 shadow-sm"></span>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-800 tracking-tight uppercase">System Log</h3>
-                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Historical Event Matrix
-                        </p>
+                    <div class="text-center relative z-10">
+                        <div
+                            class="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl border-4 border-white transform transition-transform group-hover:scale-105 duration-500">
+                            <span class="text-white text-4xl font-black uppercase">{{slice .teacher.FirstName 0
+                                1}}{{slice
+                                .teacher.LastName 0 1}}</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight uppercase">{{.teacher.FirstName}}
+                            {{.teacher.LastName}}</h3>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Operational ID:
+                            {{slice .teacher.ID 0 8}}</p>
+
+                        <div class="flex flex-wrap justify-center gap-2 mt-6">
+                            {{range .roles}}
+                            <span
+                                class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-lg border border-indigo-100/50 shadow-sm">
+                                <i class="fas fa-shield-alt mr-1.5 opacity-50"></i>{{.Name}}
+                            </span>
+                            {{else}}
+                            <span
+                                class="px-3 py-1 bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-lg border border-slate-100/50">Instructional
+                                Staff</span>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <div class="mt-10 space-y-4">
+                        <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
+                                <i class="fas fa-clock text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Commissioned
+                                </p>
+                                <p class="text-[12px] font-black text-slate-700 uppercase">{{slice
+                                    .teacher.CreatedAt.String
+                                    0 10}}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-400 shadow-sm">
+                                <i class="fas fa-redo text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Last Modified
+                                </p>
+                                <p class="text-[12px] font-black text-slate-700 uppercase">{{slice
+                                    .teacher.UpdatedAt.String
+                                    0 10}}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="space-y-6">
-                    <div
-                        class="relative pl-6 before:content-[''] before:absolute before:left-0 before:top-1.5 before:bottom-0 before:w-0.5 before:bg-slate-100">
+
+                <!-- Activity Logging (Future Expansion) -->
+                <div class="bg-white rounded-2xl border border-slate-200/60 p-8 shadow-sm">
+                    <div class="flex items-center gap-4 mb-8">
                         <div
-                            class="absolute left-[-3.5px] top-1.5 w-2 h-2 rounded-full bg-emerald-500 shadow-sm ring-4 ring-white">
+                            class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shadow-inner">
+                            <i class="fas fa-history text-sm"></i>
                         </div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Induction
-                            Protocol</p>
-                        <p class="text-[11px] font-bold text-slate-600">Teacher account initialized with active status
-                            components.</p>
-                        <p class="text-[9px] font-bold text-indigo-500 mt-2 uppercase">Verified Event</p>
+                        <div>
+                            <h3 class="text-sm font-black text-slate-800 tracking-tight uppercase">System Log</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Historical Event
+                                Matrix
+                            </p>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div
+                            class="relative pl-6 before:content-[''] before:absolute before:left-0 before:top-1.5 before:bottom-0 before:w-0.5 before:bg-slate-100">
+                            <div
+                                class="absolute left-[-3.5px] top-1.5 w-2 h-2 rounded-full bg-emerald-500 shadow-sm ring-4 ring-white">
+                            </div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Induction
+                                Protocol</p>
+                            <p class="text-[11px] font-bold text-slate-600">Teacher account initialized with active
+                                status
+                                components.</p>
+                            <p class="text-[9px] font-bold text-indigo-500 mt-2 uppercase">Verified Event</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -333,18 +358,242 @@
     </div>
 </div>
 
+<!-- Edit Teacher Modal -->
+<div id="editTeacherModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+    onclick="if(event.target === this) closeEditModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Edit Personnel</h3>
+            <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editTeacherForm" class="p-6 space-y-4">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">First Name</label>
+                <input type="text" name="firstName" id="editFirstName" required
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Last Name</label>
+                <input type="text" name="lastName" id="editLastName" required
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Email Address</label>
+                <input type="email" name="email" id="editEmail" required
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Phone Number</label>
+                <input type="tel" name="phone" id="editPhone"
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Clearance Levels</label>
+                <div class="flex flex-wrap gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl min-h-[42px]"
+                    id="editSelectedRolesContainer">
+                    <!-- Selected Roles will appear here -->
+                </div>
+                <button type="button" onclick="openRoleSelectionModal()"
+                    class="mt-2 w-full py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
+                    <i class="fas fa-plus mr-1.5 opacity-50"></i>Manage Clearances
+                </button>
+            </div>
+            <div class="pt-2">
+                <button type="submit"
+                    class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                    Apply Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Role Selection Modal -->
+<div id="roleSelectionModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+    onclick="if(event.target === this) closeRoleSelectionModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Clearance Levels</h3>
+            <button onclick="closeRoleSelectionModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-5 max-h-[60vh] overflow-y-auto">
+            <div id="rolesSelectionList" class="space-y-2">
+                <!-- Roles will be loaded here -->
+            </div>
+        </div>
+        <div class="p-5 border-t border-slate-50 bg-slate-50/50 flex justify-end">
+            <button onclick="closeRoleSelectionModal()"
+                class="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const teacherID = '{{.teacherID}}';
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const displayDayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
+        document.getElementById('editTeacherForm').addEventListener('submit', handleEditTeacher);
+        document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
+
         loadProfileData();
         loadTeacherAvailability();
-
-        document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
-        document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
+        loadAllSystemRoles();
     });
+
+    // Global teacher state
+    let allRoles = [];
+    let selectedRoleNames = [];
+    let currentTeacher = {
+        firstName: '{{.teacher.FirstName}}',
+        lastName: '{{.teacher.LastName}}',
+        email: '{{.teacher.Email}}',
+        phone: '{{.teacher.Phone}}',
+        roles: [
+            {{ range .roles }}'{{.Name}}', {{ end }}
+        ],
+    id: '{{.teacher.ID}}'
+    };
+
+    async function loadAllSystemRoles() {
+        try {
+            const res = await fetch('/api/roles');
+            const data = await res.json();
+            allRoles = data.roles || [];
+            updateRoleSelectionUI();
+        } catch (e) {
+            console.error('Error loading roles:', e);
+        }
+    }
+
+    function openRoleSelectionModal() {
+        document.getElementById('roleSelectionModal').classList.remove('hidden');
+    }
+
+    function closeRoleSelectionModal() {
+        document.getElementById('roleSelectionModal').classList.add('hidden');
+        updateSelectedRolesPreview();
+    }
+
+    function toggleRoleSelection(roleName) {
+        if (selectedRoleNames.includes(roleName)) {
+            selectedRoleNames = selectedRoleNames.filter(r => r !== roleName);
+        } else {
+            selectedRoleNames.push(roleName);
+        }
+        updateRoleSelectionUI();
+    }
+
+    function updateRoleSelectionUI() {
+        const list = document.getElementById('rolesSelectionList');
+        if (!list) return;
+
+        list.innerHTML = allRoles.map(role => `
+            <div onclick="toggleRoleSelection('${role.name}')" 
+                class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${selectedRoleNames.includes(role.name) ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300'}">
+                <span class="text-xs font-bold uppercase tracking-wide ${selectedRoleNames.includes(role.name) ? 'text-indigo-600' : 'text-slate-600'}">${role.name}</span>
+                ${selectedRoleNames.includes(role.name)
+                ? '<i class="fas fa-check-circle text-indigo-500"></i>'
+                : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>'}
+            </div>
+        `).join('');
+    }
+
+    function updateSelectedRolesPreview() {
+        const container = document.getElementById('editSelectedRolesContainer');
+        if (!container) return;
+
+        if (selectedRoleNames.length === 0) {
+            container.innerHTML = '<span class="text-[10px] font-bold text-slate-400 uppercase italic opacity-50">No Clearances Selected</span>';
+            return;
+        }
+
+        container.innerHTML = selectedRoleNames.map(name => `
+            <span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">
+                ${name}
+            </span>
+        `).join('');
+    }
+
+    function openEditModal() {
+        document.getElementById('editFirstName').value = currentTeacher.firstName;
+        document.getElementById('editLastName').value = currentTeacher.lastName;
+        document.getElementById('editEmail').value = currentTeacher.email;
+        document.getElementById('editPhone').value = currentTeacher.phone;
+
+        selectedRoleNames = [...currentTeacher.roles];
+        updateRoleSelectionUI();
+        updateSelectedRolesPreview();
+
+        document.getElementById('editTeacherModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editTeacherModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function handleEditTeacher(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
+        const formData = new FormData(e.target);
+        const data = {
+            first_name: formData.get('firstName'),
+            last_name: formData.get('lastName'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            roles: selectedRoleNames
+        };
+
+        try {
+            const res = await fetch(`/api/teachers/${teacherID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                showNotification('Personnel profile updated');
+                closeEditModal();
+                // Update local storage and UI
+                currentTeacher.firstName = data.first_name;
+                currentTeacher.lastName = data.last_name;
+                currentTeacher.email = data.email;
+                currentTeacher.phone = data.phone;
+                currentTeacher.roles = [...data.roles];
+
+                // Update UI elements directly
+                document.getElementById('teacherName').textContent = `${data.first_name} ${data.last_name}`;
+                // Refresh data to be sure
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                const err = await res.json();
+                showNotification(err.error || 'Update failed', 'error');
+            }
+        } catch (e) {
+            showNotification('System connection error', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        }
+    }
 
     async function loadProfileData() {
         try {
@@ -383,7 +632,7 @@
                         classContainer.appendChild(card);
                     });
                 } else {
-                    classContainer.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Active Node Deployments</div>';
+                    classContainer.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Active Deployments</div>';
                 }
 
 
@@ -409,7 +658,7 @@
                                     </div>
                                     <h3 class="text-[12px] font-black text-slate-800 tracking-tight uppercase">${subject.name}</h3>
                                 </div>
-                                <button onclick="removeDomain('${subject.id}')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all opacity-0 group-hover:opacity-100">
+                                <button onclick="removeDomain('${subject.id}')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all">
                                     <i class="fas fa-trash-alt text-[9px]"></i>
                                 </button>
                             </div>
@@ -652,6 +901,63 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 4000);
     }
+
+    // Phone Uniqueness Validation (Fast Check)
+    async function validatePhone(input) {
+        const phone = input.value.trim();
+        const feedbackId = input.id + 'Feedback';
+        let feedback = document.getElementById(feedbackId);
+
+        if (!feedback) {
+            feedback = document.createElement('p');
+            feedback.id = feedbackId;
+            feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider hidden';
+            input.parentElement.appendChild(feedback);
+        }
+
+        if (!phone) {
+            feedback.classList.add('hidden');
+            input.classList.remove('border-rose-500', 'border-emerald-500', 'ring-rose-500/10', 'ring-emerald-500/10');
+            return;
+        }
+
+        input.classList.add('opacity-70');
+
+        try {
+            const res = await fetch(`/api/teachers/check-phone?phone=${encodeURIComponent(phone)}&exclude_id=${teacherID}`);
+            const data = await res.json();
+
+            feedback.classList.remove('hidden');
+            input.classList.remove('opacity-70');
+
+            if (data.taken) {
+                feedback.textContent = 'Phone associated with another account';
+                feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-rose-500';
+                input.classList.add('border-rose-500', 'ring-4', 'ring-rose-500/10');
+                input.classList.remove('border-emerald-500', 'ring-emerald-500/10');
+            } else {
+                feedback.textContent = 'Contact number available';
+                feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-emerald-500';
+                input.classList.add('border-emerald-500', 'ring-4', 'ring-emerald-500/10');
+                input.classList.remove('border-rose-500', 'ring-rose-500/10');
+            }
+        } catch (e) {
+            console.error('Fast check failed:', e);
+        }
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    const editPhoneInput = document.getElementById('editPhone');
+    if (editPhoneInput) {
+        editPhoneInput.addEventListener('input', debounce(() => validatePhone(editPhoneInput), 500));
+    }
 </script>
 
 <style>
@@ -717,7 +1023,25 @@
     }
 
     .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Animation Refinements */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 </style>
