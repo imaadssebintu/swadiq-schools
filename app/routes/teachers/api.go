@@ -7,6 +7,7 @@ import (
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -808,49 +809,17 @@ func UpdateTeacherAvailabilityAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
 	}
 
-	type AvailabilityRequestItem struct {
-		DayOfWeek   int     `json:"day_of_week"`
-		IsAvailable bool    `json:"is_available"`
-		StartTime   *string `json:"start_time"`
-		EndTime     *string `json:"end_time"`
+	var availability []*models.TeacherAvailability
+	if err := c.BodyParser(&availability); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
 	}
 
-	type UpdateAvailabilityRequest struct {
-		Availability []*AvailabilityRequestItem `json:"availability"`
-	}
-
-	var req UpdateAvailabilityRequest
-	if err := c.BodyParser(&req); err != nil {
-		fmt.Println("BodyParser error:", err)
-		return c.Status(400).JSON(fiber.Map{"error": "Invalid request payload"})
-	}
-
-	// Convert to []*models.TeacherAvailability
-	availabilityToUpdate := make([]*models.TeacherAvailability, len(req.Availability))
-	for i, item := range req.Availability {
-		availabilityToUpdate[i] = &models.TeacherAvailability{
-			DayOfWeek:   item.DayOfWeek,
-			IsAvailable: item.IsAvailable,
-			StartTime:   sql.NullString{String: "", Valid: false},
-			EndTime:     sql.NullString{String: "", Valid: false},
-		}
-		if item.StartTime != nil {
-			availabilityToUpdate[i].StartTime.String = *item.StartTime
-			availabilityToUpdate[i].StartTime.Valid = true
-		}
-		if item.EndTime != nil {
-			availabilityToUpdate[i].EndTime.String = *item.EndTime
-			availabilityToUpdate[i].EndTime.Valid = true
-		}
-	}
-
-	err := database.UpdateTeacherAvailability(config.GetDB(), teacherID, availabilityToUpdate)
-	if err != nil {
+	if err := database.UpdateTeacherAvailability(config.GetDB(), teacherID, availability); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update teacher availability"})
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "Teacher availability updated successfully",
+		"message": "Availability updated successfully",
 	})
 }
 
@@ -861,37 +830,119 @@ func RemoveTeacherSubjectAPI(c *fiber.Ctx) error {
 
 	db := config.GetDB()
 
+	var query string
+	var args []interface{}
+
 	if paperID != "" {
-		// Remove specific paper
-		_, err := db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2 AND paper_id = $3`, teacherID, subjectID, paperID)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to remove paper"})
-		}
-
-		// Check if this was the last paper for this subject
-		var count int
-		err = db.QueryRow(`SELECT COUNT(*) FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID).Scan(&count)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to check remaining papers"})
-		}
-
-		// If no papers left, remove the subject entirely
-		if count == 0 {
-			_, err = db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID)
-			if err != nil {
-				return c.Status(500).JSON(fiber.Map{"error": "Failed to remove subject"})
-			}
-		}
+		query = "DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2 AND paper_id = $3"
+		args = []interface{}{teacherID, subjectID, paperID}
 	} else {
-		// Remove entire subject (all papers)
-		_, err := db.Exec(`DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2`, teacherID, subjectID)
-		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to remove subject"})
-		}
+		query = "DELETE FROM teacher_subjects WHERE teacher_id = $1 AND subject_id = $2 AND paper_id IS NULL"
+		args = []interface{}{teacherID, subjectID}
+	}
+
+	result, err := db.Exec(query, args...)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to remove subject"})
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return c.Status(404).JSON(fiber.Map{"error": "Assignment not found"})
 	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"message": "Subject/paper removed successfully",
+		"message": "Subject removed successfully",
+	})
+}
+
+// Salary API Handlers
+
+func GetTeacherSalaryAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	salary, err := database.GetTeacherSalary(config.GetDB(), teacherID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Return empty/null if no salary set, not 404
+			return c.JSON(fiber.Map{"salary": nil})
+		}
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch salary"})
+	}
+
+	// Calculate Payroll Status for current month
+	// Default to current month viewing
+	// TODO: Allow query params for custom range?
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	currentLocation := now.Location()
+
+	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+
+	// Use today as end date for "Accrued to Date"
+	// Or use end of month? Accrued usually means "earned so far". So today.
+	endOfPeriod := now
+
+	payrollStatus, err := database.GetTeacherPayrollStatus(config.GetDB(), teacherID, firstOfMonth, endOfPeriod)
+	// Ignore error for now (or log it), return partial data
+	if err != nil {
+		// Just log? fmt.Println(err)
+	}
+
+	return c.JSON(fiber.Map{
+		"salary":  salary,
+		"payroll": payrollStatus,
+	})
+}
+
+func SetTeacherSalaryAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	var req models.TeacherSalary
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	// Enforce user ID from URL
+	req.UserID = teacherID
+
+	// Enforce Allowance Constraints
+	if req.Period == "day" {
+		// Daily Salary: No Allowance Allowed
+		req.HasAllowance = false
+		req.Allowance = 0
+		req.AllowancePeriod = ""
+	} else if req.Period == "week" {
+		// Weekly Salary: Daily Allowance ONLY
+		if req.HasAllowance {
+			req.AllowancePeriod = "day"
+		}
+	} else if req.Period == "month" {
+		// Monthly Salary: Allow Daily or Weekly
+		// Validate/Normalize Allowance Period
+		if req.HasAllowance {
+			if req.AllowancePeriod != "day" && req.AllowancePeriod != "week" {
+				req.AllowancePeriod = "week" // Default
+			}
+		}
+	}
+
+	if err := database.UpsertTeacherSalary(config.GetDB(), &req); err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   "Failed to set salary",
+			"details": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Salary set successfully",
+		"salary":  req,
 	})
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"swadiq-schools/app/config"
+	"swadiq-schools/app/database"
 	"swadiq-schools/app/routes/academic"
 	"swadiq-schools/app/routes/attendance"
 	"swadiq-schools/app/routes/auth"
@@ -93,6 +94,11 @@ func main() {
 	// Initialize database
 	config.InitDB()
 	defer config.GetDB().Close()
+
+	// Run database migrations
+	if err := database.RunMigrations(config.GetDB()); err != nil {
+		log.Fatal("Failed to run migrations:", err)
+	}
 
 	// Initialize template engine
 	engine := html.New("./app/templates", ".html")

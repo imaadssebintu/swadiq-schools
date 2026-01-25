@@ -30,6 +30,16 @@ func InitExpensesDB(db *sql.DB) error {
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 			deleted_at TIMESTAMP WITH TIME ZONE
 		)`,
+		`CREATE TABLE IF NOT EXISTS teacher_salaries (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			amount BIGINT NOT NULL,
+			period VARCHAR(20) NOT NULL,
+			effective_date DATE NOT NULL DEFAULT CURRENT_DATE,
+			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			deleted_at TIMESTAMP WITH TIME ZONE
+		)`,
 	}
 
 	for _, q := range queries {
@@ -46,6 +56,9 @@ func InitExpensesDB(db *sql.DB) error {
 		`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)`,
 		`CREATE INDEX IF NOT EXISTS idx_expenses_deleted_at ON expenses(deleted_at)`,
 		`CREATE INDEX IF NOT EXISTS idx_categories_deleted_at ON categories(deleted_at)`,
+		`CREATE INDEX IF NOT EXISTS idx_teacher_salaries_user_id ON teacher_salaries(user_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_teacher_salaries_deleted_at ON teacher_salaries(deleted_at)`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_name_unique ON categories(name)`,
 	}
 
 	for _, m := range migrations {

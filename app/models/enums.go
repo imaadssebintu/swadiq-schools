@@ -62,3 +62,12 @@ const (
 	PaymentFailed    PaymentStatus = "failed"
 	PaymentRefunded  PaymentStatus = "refunded"
 )
+
+// SalaryPeriod defines the period for a teacher's salary.
+type SalaryPeriod string
+
+const (
+	SalaryDay   SalaryPeriod = "day"
+	SalaryWeek  SalaryPeriod = "week"
+	SalaryMonth SalaryPeriod = "month"
+)
