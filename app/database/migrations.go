@@ -9,20 +9,14 @@ import (
 func RunMigrations(db *sql.DB) error {
 	log.Println("Running database migrations...")
 
-	// 1. Add allowance column to teacher_salaries if not exists
-	err := addAllowanceColumn(db)
+	// 1. Permanently delete the legacy tables you requested
+	err := dropLegacyTables(db)
 	if err != nil {
 		return err
 	}
 
-	// 2. Add has_allowance column to teacher_salaries if not exists
-	err = addHasAllowanceColumn(db)
-	if err != nil {
-		return err
-	}
-
-	// 3. Add allowance_period column to teacher_salaries if not exists
-	err = addAllowancePeriodColumn(db)
+	// 2. Ensure the new simplified tables exist
+	err = createSimplifiedPayrollTables(db)
 	if err != nil {
 		return err
 	}
@@ -31,71 +25,79 @@ func RunMigrations(db *sql.DB) error {
 	return nil
 }
 
-func addAllowanceColumn(db *sql.DB) error {
-	query := `
-		DO $$ 
-		BEGIN 
-			IF NOT EXISTS (
-				SELECT 1 
-				FROM information_schema.columns 
-				WHERE table_name = 'teacher_salaries' 
-				AND column_name = 'allowance'
-			) THEN 
-				ALTER TABLE teacher_salaries ADD COLUMN allowance BIGINT NOT NULL DEFAULT 0;
-				RAISE NOTICE 'Added allowance column to teacher_salaries';
-			END IF; 
-		END $$;
-	`
-	_, err := db.Exec(query)
-	if err != nil {
-		log.Printf("Failed to run migration for allowance column: %v", err)
-		return err
+func WipeAllPayrollData(db *sql.DB) error {
+	log.Println("Wiping all payroll data (Fresh Start)...")
+	queries := []string{
+		"TRUNCATE TABLE teacher_payments CASCADE",
+		"TRUNCATE TABLE teacher_base_salaries CASCADE",
+		"TRUNCATE TABLE teacher_allowances CASCADE",
+	}
+	for _, q := range queries {
+		_, err := db.Exec(q)
+		if err != nil {
+			log.Printf("Warning: Failed to wipe table: %v", err)
+		}
 	}
 	return nil
 }
 
-func addHasAllowanceColumn(db *sql.DB) error {
-	query := `
-		DO $$ 
-		BEGIN 
-			IF NOT EXISTS (
-				SELECT 1 
-				FROM information_schema.columns 
-				WHERE table_name = 'teacher_salaries' 
-				AND column_name = 'has_allowance'
-			) THEN 
-				ALTER TABLE teacher_salaries ADD COLUMN has_allowance BOOLEAN NOT NULL DEFAULT false;
-				RAISE NOTICE 'Added has_allowance column to teacher_salaries';
-			END IF; 
-		END $$;
-	`
-	_, err := db.Exec(query)
-	if err != nil {
-		log.Printf("Failed to run migration for has_allowance column: %v", err)
-		return err
+func dropLegacyTables(db *sql.DB) error {
+	queries := []string{
+		"DROP TABLE IF EXISTS teacher_salaries CASCADE",
+		"DROP TABLE IF EXISTS legacy_teacher_salaries CASCADE",
+		"DROP TABLE IF EXISTS legacy_teacher_salaries_backup CASCADE",
+	}
+
+	for _, q := range queries {
+		_, err := db.Exec(q)
+		if err != nil {
+			log.Printf("Note: Failed to drop legacy table: %v", err)
+		}
 	}
 	return nil
 }
 
-func addAllowancePeriodColumn(db *sql.DB) error {
-	query := `
-		DO $$ 
-		BEGIN 
-			IF NOT EXISTS (
-				SELECT 1 
-				FROM information_schema.columns 
-				WHERE table_name = 'teacher_salaries' 
-				AND column_name = 'allowance_period'
-			) THEN 
-				ALTER TABLE teacher_salaries ADD COLUMN allowance_period VARCHAR(20) NOT NULL DEFAULT 'month';
-				RAISE NOTICE 'Added allowance_period column to teacher_salaries';
-			END IF; 
-		END $$;
-	`
-	_, err := db.Exec(query)
-	if err != nil {
-		log.Printf("Failed to run migration for allowance_period column: %v", err)
-		return err
+func createSimplifiedPayrollTables(db *sql.DB) error {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS teacher_base_salaries (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			user_id UUID NOT NULL REFERENCES users(id),
+			amount BIGINT NOT NULL,
+			period VARCHAR(20) NOT NULL,
+			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			deleted_at TIMESTAMP WITH TIME ZONE
+		)`,
+		`CREATE TABLE IF NOT EXISTS teacher_allowances (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			user_id UUID NOT NULL REFERENCES users(id),
+			amount BIGINT DEFAULT 0,
+			period VARCHAR(20) DEFAULT 'month',
+			is_active BOOLEAN NOT NULL DEFAULT true,
+			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			deleted_at TIMESTAMP WITH TIME ZONE
+		)`,
+		`CREATE TABLE IF NOT EXISTS teacher_payments (
+			id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+			teacher_id UUID NOT NULL REFERENCES users(id),
+			amount BIGINT NOT NULL,
+			type VARCHAR(20) NOT NULL,
+			period_start DATE NOT NULL,
+			period_end DATE NOT NULL,
+			paid_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			reference VARCHAR(100),
+			notes TEXT,
+			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+		)`,
+	}
+
+	for _, q := range queries {
+		_, err := db.Exec(q)
+		if err != nil {
+			log.Printf("Failed to create payroll table: %v", err)
+			return err
+		}
 	}
 	return nil
 }

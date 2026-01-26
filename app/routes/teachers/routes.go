@@ -40,6 +40,11 @@ func SetupTeachersRoutes(app *fiber.App) {
 	api.Post("/:id/availability", UpdateTeacherAvailabilityAPI)
 	api.Get("/:id/salary", GetTeacherSalaryAPI)
 	api.Post("/:id/salary", SetTeacherSalaryAPI)
+	api.Get("/:id/ledger", GetTeacherLedgerAPI)
+	api.Get("/:id/ledger/base-salary", GetTeacherBaseSalaryLedgerAPI)
+	api.Get("/:id/ledger/allowance", GetTeacherAllowanceLedgerAPI)
+	api.Post("/:id/pay", PayTeacherAPI)
+	api.Get("/:id/payments", GetTeacherPaymentsAPI)
 }
 
 func TeachersPage(c *fiber.Ctx) error {

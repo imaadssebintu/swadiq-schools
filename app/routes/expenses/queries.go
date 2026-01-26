@@ -59,6 +59,11 @@ func InitExpensesDB(db *sql.DB) error {
 		`CREATE INDEX IF NOT EXISTS idx_teacher_salaries_user_id ON teacher_salaries(user_id)`,
 		`CREATE INDEX IF NOT EXISTS idx_teacher_salaries_deleted_at ON teacher_salaries(deleted_at)`,
 		`CREATE UNIQUE INDEX IF NOT EXISTS idx_categories_name_unique ON categories(name)`,
+		`ALTER TABLE expenses ALTER COLUMN amount TYPE BIGINT USING amount::BIGINT`,
+		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS period_start DATE`,
+		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS period_end DATE`,
+		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS due_date DATE`,
+		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS notes TEXT`,
 	}
 
 	for _, m := range migrations {
@@ -70,7 +75,7 @@ func InitExpensesDB(db *sql.DB) error {
 
 	// 3. Seed default data
 	seeds := []string{
-		`INSERT INTO categories (name, is_active) VALUES ('Salary', true) ON CONFLICT (name) DO NOTHING`,
+		`INSERT INTO categories (name, is_active) VALUES ('Salaries', true) ON CONFLICT (name) DO NOTHING`,
 	}
 
 	for _, s := range seeds {
@@ -85,6 +90,7 @@ func InitExpensesDB(db *sql.DB) error {
 // Expense Queries
 func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 	query := `SELECT e.id, e.category_id, e.title, e.amount, e.currency, e.date, 
+			  e.period_start, e.period_end, e.due_date, e.notes,
 			  e.created_at, e.updated_at, c.id, c.name
 			  FROM expenses e
 			  LEFT JOIN categories c ON e.category_id = c.id
@@ -101,12 +107,29 @@ func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 	for rows.Next() {
 		e := &models.Expense{}
 		var catID, catName sql.NullString
+		var pStart, pEnd, dDate sql.NullTime
+		var notes sql.NullString
+
 		err := rows.Scan(
 			&e.ID, &e.CategoryID, &e.Title, &e.Amount, &e.Currency, &e.Date,
+			&pStart, &pEnd, &dDate, &notes,
 			&e.CreatedAt, &e.UpdatedAt, &catID, &catName,
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		if pStart.Valid {
+			e.PeriodStart = &pStart.Time
+		}
+		if pEnd.Valid {
+			e.PeriodEnd = &pEnd.Time
+		}
+		if dDate.Valid {
+			e.DueDate = &dDate.Time
+		}
+		if notes.Valid {
+			e.Notes = notes.String
 		}
 
 		if catID.Valid {
@@ -122,6 +145,7 @@ func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 
 func GetExpenseByID(db *sql.DB, id string) (*models.Expense, error) {
 	query := `SELECT e.id, e.category_id, e.title, e.amount, e.currency, e.date, 
+			  e.period_start, e.period_end, e.due_date, e.notes,
 			  e.created_at, e.updated_at, c.id, c.name
 			  FROM expenses e
 			  LEFT JOIN categories c ON e.category_id = c.id
@@ -129,12 +153,29 @@ func GetExpenseByID(db *sql.DB, id string) (*models.Expense, error) {
 
 	e := &models.Expense{}
 	var catID, catName sql.NullString
+	var pStart, pEnd, dDate sql.NullTime
+	var notes sql.NullString
+
 	err := db.QueryRow(query, id).Scan(
 		&e.ID, &e.CategoryID, &e.Title, &e.Amount, &e.Currency, &e.Date,
+		&pStart, &pEnd, &dDate, &notes,
 		&e.CreatedAt, &e.UpdatedAt, &catID, &catName,
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if pStart.Valid {
+		e.PeriodStart = &pStart.Time
+	}
+	if pEnd.Valid {
+		e.PeriodEnd = &pEnd.Time
+	}
+	if dDate.Valid {
+		e.DueDate = &dDate.Time
+	}
+	if notes.Valid {
+		e.Notes = notes.String
 	}
 
 	if catID.Valid {

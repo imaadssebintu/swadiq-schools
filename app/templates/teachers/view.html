@@ -340,22 +340,6 @@
                                                 </label>
                                             </div>
 
-                                            <div class="mt-3 pt-3 border-t border-emerald-50">
-                                                <label
-                                                    class="text-[8px] font-black text-emerald-500/60 uppercase tracking-widest pl-1 mb-1 block">Activation
-                                                    Trigger</label>
-                                                <div class="relative group">
-                                                    <select id="allowanceTrigger"
-                                                        class="w-full bg-slate-50 border-none text-[10px] font-bold text-slate-600 py-2.5 pl-3 pr-8 rounded-xl focus:ring-2 focus:ring-emerald-500/20 appearance-none cursor-pointer hover:bg-white transition-colors">
-                                                        <option value="start_of_duty">Standard (Start of Duty)</option>
-                                                        <option value="end_of_duty">On Duty Completion</option>
-                                                    </select>
-                                                    <div
-                                                        class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-emerald-500">
-                                                        <i class="fas fa-chevron-down text-[10px]"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -427,7 +411,7 @@
                             </div>
                         </div>
 
-                        <button onclick="alert('Payment Processing UI Coming Soon')"
+                        <button onclick="handleProcessPayment()"
                             class="w-full py-3 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-900/50 flex items-center justify-center gap-2">
                             <span>Process Payment</span>
                             <i class="fas fa-arrow-right opacity-70"></i>
@@ -460,6 +444,122 @@
                     </div>
                     <div id="availabilityGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <!-- Availability cards will be injected here by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Enhanced Financial Ledger Section -->
+                <div class="space-y-10">
+                    <!-- Base Salary Ledger -->
+                    <div class="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm overflow-hidden">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 shadow-inner">
+                                <i class="fas fa-hand-holding-usd text-indigo-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xs font-black text-slate-800 tracking-tight uppercase">Base Salary
+                                    Ledger</h2>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                    Historical Earnings & Payouts</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-100">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50 border-b border-slate-100">
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Period / Date</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Type</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap text-center">
+                                            Reference</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Accrued</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Paid</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Balance</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
+                                            Status</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="baseSalaryLedgerBody" class="text-xs">
+                                    <tr class="border-b border-slate-50 last:border-none">
+                                        <td class="px-4 py-6 text-center font-bold text-slate-400 italic" colspan="8">
+                                            <i class="fas fa-spinner fa-spin mr-2"></i>Loading records...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Allowance Ledger -->
+                    <div id="allowanceLedgerSection"
+                        class="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm overflow-hidden hidden">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 shadow-inner">
+                                <i class="fas fa-gift text-emerald-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xs font-black text-slate-800 tracking-tight uppercase">Allowance Ledger
+                                </h2>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Stipend
+                                    & Bonus Matrix</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-100">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-50 border-b border-slate-100">
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Period / Date</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Type</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap text-center">
+                                            Reference</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Accrued</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Paid</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                            Balance</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
+                                            Status</th>
+                                        <th
+                                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allowanceLedgerBody" class="text-xs">
+                                    <tr class="border-b border-slate-50 last:border-none">
+                                        <td class="px-4 py-6 text-center font-bold text-slate-400 italic" colspan="8">
+                                            <i class="fas fa-spinner fa-spin mr-2"></i>Loading records...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -582,1070 +682,1431 @@
         </div>
     </div>
 </div>
-<!-- Assign Subjects Modal (Shared Premium Logic) -->
-<div id="assignSubjectsModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
-    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAssignSubjectsModal()">
+<!-- Disbursement Modal (Partial Payment) -->
+<div id="disburseModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeDisburseModal()">
     </div>
     <div class="flex min-h-full items-center justify-center p-4">
         <div
-            class="relative w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-scale-up flex flex-col max-h-[90vh]">
-            <div class="premium-gradient p-8 flex items-center justify-between text-white">
-                <div>
-                    <h2 class="text-xl font-black uppercase tracking-tight">Domain Allocation</h2>
-                    <p class="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mt-1 opacity-80">Assigning
-                        Instructional Modules and Papers</p>
+            class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-scale-up">
+            <div class="premium-gradient p-6 text-white">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center border border-white/20 shadow-inner">
+                        <i class="fas fa-hand-holding-usd text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black uppercase tracking-tight">Authorize Disbursement</h3>
+                        <p class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest mt-0.5"
+                            id="disburseSubtitle">Specify Payout Amount</p>
+                    </div>
                 </div>
-                <button onclick="closeAssignSubjectsModal()"
-                    class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/20 hover:bg-white/30 transition-all">
-                    <i class="fas fa-times text-lg"></i>
-                </button>
             </div>
 
-            <div class="p-8 overflow-y-auto custom-scrollbar flex-1">
-                <form id="assignSubjectsForm">
-                    <div class="mb-8">
-                        <label
-                            class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-1">Institutional
-                            Module Selection Matrix</label>
-                        <div id="subjectsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Skeleton -->
-                            <div class="h-24 bg-slate-50 rounded-3xl animate-pulse"></div>
-                            <div class="h-24 bg-slate-50 rounded-3xl animate-pulse"></div>
+            <div class="p-8 space-y-6">
+                <!-- Info Section -->
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm border border-slate-100">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Allocation
+                            Target</p>
+                        <p class="text-xs font-black text-slate-700 uppercase" id="disburseTargetLabel">Base Salary -
+                            Jan
+                            2026</p>
+                    </div>
+                </div>
+
+                <!-- Input Section -->
+                <div>
+                    <label
+                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-1">Payment
+                        Amount (UGX)</label>
+                    <div class="relative group">
+                        <div
+                            class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-emerald-500 transition-colors">
+                            <i class="fas fa-coins text-xs"></i>
+                        </div>
+                        <input type="number" id="disburseAmountInput"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-4 pl-10 pr-6 text-lg font-black text-slate-900 outline-none focus:border-emerald-500 focus:bg-white transition-all shadow-inner"
+                            placeholder="0.00">
+                        <div
+                            class="absolute right-4 top-1/2 -translate-y-1/2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border border-emerald-100">
+                            UGX
                         </div>
                     </div>
-                </form>
-            </div>
+                    <div class="mt-3 flex items-center justify-between px-1">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase" id="disburseOwedText">Balance Due: 0
+                        </p>
+                        <button onclick="setMaxDisburseAmount()"
+                            class="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-700">Set
+                            Maximum</button>
+                    </div>
 
-            <div class="p-8 border-t border-slate-100 bg-slate-50 flex justify-end gap-4">
-                <button onclick="closeAssignSubjectsModal()"
-                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-all">Abort
-                    Allocation</button>
-                <button form="assignSubjectsForm" type="submit"
-                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-100 transition-all">Sync
-                    Assigned Domains</button>
-            </div>
-        </div>
-    </div>
-</div>
+                    <!-- Notes Section -->
+                    <div>
+                        <label
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 pl-1">Disbursement
+                            Notes (Optional)</label>
+                        <textarea id="disburseNotesInput"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl py-3 px-4 text-xs font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-inner h-20 resize-none"
+                            placeholder="e.g., Partial payment for travel allowance..."></textarea>
+                    </div>
 
-<!-- Edit Teacher Modal -->
-<div id="editTeacherModal"
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
-    onclick="if(event.target === this) closeEditModal()">
-    <div
-        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Edit Personnel</h3>
-            <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <form id="editTeacherForm" class="p-6 space-y-4">
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">First Name</label>
-                <input type="text" name="firstName" id="editFirstName" required
-                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Last Name</label>
-                <input type="text" name="lastName" id="editLastName" required
-                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Email Address</label>
-                <input type="email" name="email" id="editEmail" required
-                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Phone Number</label>
-                <input type="tel" name="phone" id="editPhone"
-                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
-            </div>
-            <div class="space-y-1">
-                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Clearance Levels</label>
-                <div class="flex flex-wrap gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl min-h-[42px]"
-                    id="editSelectedRolesContainer">
-                    <!-- Selected Roles will appear here -->
+                    <!-- Action Trace -->
+                    <div class="flex items-center gap-2 px-1 text-slate-400">
+                        <i class="fas fa-shield-check text-[10px]"></i>
+                        <p class="text-[8px] font-bold uppercase tracking-wider">This transaction creates a linked
+                            Expense
+                            entry.</p>
+                    </div>
                 </div>
-                <button type="button" onclick="openRoleSelectionModal()"
-                    class="mt-2 w-full py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
-                    <i class="fas fa-plus mr-1.5 opacity-50"></i>Manage Clearances
-                </button>
-            </div>
-            <div class="pt-2">
-                <button type="submit"
-                    class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
-                    Apply Changes
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Role Selection Modal -->
-<div id="roleSelectionModal"
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
-    onclick="if(event.target === this) closeRoleSelectionModal()">
-    <div
-        class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Clearance Levels</h3>
-            <button onclick="closeRoleSelectionModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="p-5 max-h-[60vh] overflow-y-auto">
-            <div id="rolesSelectionList" class="space-y-2">
-                <!-- Roles will be loaded here -->
+                <div class="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
+                    <button onclick="closeDisburseModal()"
+                        class="flex-1 py-3 bg-white border border-slate-200 text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all">
+                        Cancel
+                    </button>
+                    <button onclick="handleConfirmDisbursement()" id="confirmDisburseBtn"
+                        class="flex-[2] py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black hover:scale-[1.02] transition-all shadow-xl shadow-slate-200">
+                        Process Payout
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="p-5 border-t border-slate-50 bg-slate-50/50 flex justify-end">
-            <button onclick="closeRoleSelectionModal()"
-                class="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
-                Confirm Selection
-            </button>
         </div>
     </div>
-</div>
 
-<script>
-    const teacherID = '{{.teacherID}}';
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const displayDayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    <!-- Assign Subjects Modal (Shared Premium Logic) -->
+    <div id="assignSubjectsModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+            onclick="closeAssignSubjectsModal()">
+        </div>
+        <div class="flex min-h-full items-center justify-center p-4">
+            <div
+                class="relative w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all animate-scale-up flex flex-col max-h-[90vh]">
+                <div class="premium-gradient p-8 flex items-center justify-between text-white">
+                    <div>
+                        <h2 class="text-xl font-black uppercase tracking-tight">Domain Allocation</h2>
+                        <p class="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mt-1 opacity-80">
+                            Assigning
+                            Instructional Modules and Papers</p>
+                    </div>
+                    <button onclick="closeAssignSubjectsModal()"
+                        class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/20 hover:bg-white/30 transition-all">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
 
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
-        document.getElementById('editTeacherForm').addEventListener('submit', handleEditTeacher);
-        document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
-        document.getElementById('saveSalaryBtn').addEventListener('click', handleSaveSalary);
+                <div class="p-8 overflow-y-auto custom-scrollbar flex-1">
+                    <form id="assignSubjectsForm">
+                        <div class="mb-8">
+                            <label
+                                class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-1">Institutional
+                                Module Selection Matrix</label>
+                            <div id="subjectsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Skeleton -->
+                                <div class="h-24 bg-slate-50 rounded-3xl animate-pulse"></div>
+                                <div class="h-24 bg-slate-50 rounded-3xl animate-pulse"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
-        loadProfileData();
-        loadTeacherAvailability();
-        loadAllSystemRoles();
-        loadTeacherSalary();
-    });
+                <div class="p-8 border-t border-slate-100 bg-slate-50 flex justify-end gap-4">
+                    <button onclick="closeAssignSubjectsModal()"
+                        class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-all">Abort
+                        Allocation</button>
+                    <button form="assignSubjectsForm" type="submit"
+                        class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-100 transition-all">Sync
+                        Assigned Domains</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // Complex Allowance Constraints
-    function updateAllowanceConstraints() {
-        const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
-        const toggle = document.getElementById('hasAllowanceToggle');
-        const container = document.getElementById('allowanceInputContainer');
-        const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
-        const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
-        const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
+    <!-- Edit Teacher Modal -->
+    <div id="editTeacherModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+        onclick="if(event.target === this) closeEditModal()">
+        <div
+            class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Edit Personnel</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editTeacherForm" class="p-6 space-y-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">First Name</label>
+                    <input type="text" name="firstName" id="editFirstName" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Last Name</label>
+                    <input type="text" name="lastName" id="editLastName" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Email Address</label>
+                    <input type="email" name="email" id="editEmail" required
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Phone Number</label>
+                    <input type="tel" name="phone" id="editPhone"
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Clearance Levels</label>
+                    <div class="flex flex-wrap gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl min-h-[42px]"
+                        id="editSelectedRolesContainer">
+                        <!-- Selected Roles will appear here -->
+                    </div>
+                    <button type="button" onclick="openRoleSelectionModal()"
+                        class="mt-2 w-full py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">
+                        <i class="fas fa-plus mr-1.5 opacity-50"></i>Manage Clearances
+                    </button>
+                </div>
+                <div class="pt-2">
+                    <button type="submit"
+                        class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                        Apply Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        if (!salaryPeriod) return;
+    <!-- Role Selection Modal -->
+    <div id="roleSelectionModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+        onclick="if(event.target === this) closeRoleSelectionModal()">
+        <div
+            class="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
+            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Clearance Levels</h3>
+                <button onclick="closeRoleSelectionModal()"
+                    class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-5 max-h-[60vh] overflow-y-auto">
+                <div id="rolesSelectionList" class="space-y-2">
+                    <!-- Roles will be loaded here -->
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-50 bg-slate-50/50 flex justify-end">
+                <button onclick="closeRoleSelectionModal()"
+                    class="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                    Confirm Selection
+                </button>
+            </div>
+        </div>
+    </div>
 
-        // Reset states first
-        toggle.disabled = false;
-        toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+    <script>
+        const teacherID = '{{.teacherID}}';
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const displayDayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-        // Use a loop to reset all radios properly
-        allowanceRadios.forEach(r => {
-            r.disabled = false;
-            r.parentElement.parentElement.classList.remove('opacity-50', 'pointer-events-none', 'bg-slate-50'); // Target label or container
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('assignSubjectsForm').addEventListener('submit', handleAssignSubjects);
+            document.getElementById('editTeacherForm').addEventListener('submit', handleEditTeacher);
+            document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
+            document.getElementById('saveSalaryBtn').addEventListener('click', handleSaveSalary);
+
+            loadProfileData();
+            loadTeacherAvailability();
+            loadAllSystemRoles();
+            loadTeacherSalary();
+            loadTeacherLedger();
         });
-        // Specifically for our styled structure:
-        // The radio is inside a label. The label has the click handler.
-        // We need to disable the radio AND style the label/container.
-        const weekLabel = weekRadio?.parentElement;
-        if (weekLabel) {
-            weekLabel.classList.remove('opacity-50', 'pointer-events-none');
-            // Reset background if needed (optional based on CSS)
-        }
 
-
-        if (salaryPeriod === 'day') {
-            // Daily Salary: No Allowance Allowed
-            toggle.disabled = true;
-            toggle.checked = false;
-            container.classList.add('hidden');
-            toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
-
-        } else if (salaryPeriod === 'week') {
-            // Weekly Salary: Daily Allowance ONLY
-            if (weekRadio) {
-                weekRadio.disabled = true;
-                if (weekRadio.parentElement) weekRadio.parentElement.classList.add('opacity-50', 'pointer-events-none');
-
-                if (weekRadio.checked) {
-                    if (dayRadio) dayRadio.checked = true; // Force switch to day
-                }
-            }
-        }
-        // Month: All allowed (default)
-    }
-
-    function attachConstraintListeners() {
-        document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
-            r.addEventListener('change', updateAllowanceConstraints);
-        });
-        // Also listen to toggle change just in case to re-verify or preventing invalid states? 
-        // Not strictly needed if we disable it.
-    }
-
-    // Salary Logic
-    async function loadTeacherSalary() {
-        try {
-            const res = await fetch('/api/teachers/' + teacherID + '/salary');
-            const data = await res.json();
-
+        // Complex Allowance Constraints
+        function updateAllowanceConstraints() {
+            const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
             const toggle = document.getElementById('hasAllowanceToggle');
             const container = document.getElementById('allowanceInputContainer');
+            const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
+            const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
+            const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
 
-            // Setup toggle listener (idempotent)
-            toggle.onchange = function () {
-                container.classList.toggle('hidden', !this.checked);
-                if (this.checked) {
-                    setTimeout(() => {
-                        const input = document.getElementById('allowanceAmount');
-                        input.focus();
-                        input.select();
-                    }, 50);
-                }
-            };
+            if (!salaryPeriod) return;
 
-            // Attach complex constraints
-            if (typeof attachConstraintListeners === 'function') attachConstraintListeners();
+            // Reset states first
+            toggle.disabled = false;
+            toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
 
-            if (data.salary) {
-                const amt = new Intl.NumberFormat('en-UG').format(data.salary.amount);
-                document.getElementById('currentSalaryAmount').textContent = `${amt} UGX`;
+            // Use a loop to reset all radios properly
+            allowanceRadios.forEach(r => {
+                r.disabled = false;
+                r.parentElement.parentElement.classList.remove('opacity-50', 'pointer-events-none', 'bg-slate-50'); // Target label or container
+            });
+            // Specifically for our styled structure:
+            // The radio is inside a label. The label has the click handler.
+            // We need to disable the radio AND style the label/container.
+            const weekLabel = weekRadio?.parentElement;
+            if (weekLabel) {
+                weekLabel.classList.remove('opacity-50', 'pointer-events-none');
+                // Reset background if needed (optional based on CSS)
+            }
 
-                // Handle Allowance Display
-                const hasAllowance = data.salary.has_allowance || false;
-                const allowDisplay = document.getElementById('allowanceDisplayBlock');
 
-                if (hasAllowance) {
-                    const allowance = new Intl.NumberFormat('en-UG').format(data.salary.allowance || 0);
-                    const allowPeriod = (data.salary.allowance_period || 'month').toUpperCase();
-                    document.getElementById('currentAllowanceAmount').textContent = `${allowance} / ${allowPeriod}`;
-                    if (allowDisplay) allowDisplay.classList.remove('hidden');
-                } else {
-                    if (allowDisplay) allowDisplay.classList.add('hidden');
-                }
-
-                document.getElementById('currentSalaryPeriod').textContent = data.salary.period.toUpperCase();
-
-                // Pre-fill form
-                document.getElementById('salaryAmount').value = data.salary.amount;
-                document.getElementById('allowanceAmount').value = data.salary.allowance || 0;
-
-                // Toggle state
-                toggle.checked = hasAllowance;
-                container.classList.toggle('hidden', !hasAllowance);
-
-                // Apply constraints
-                if (typeof updateAllowanceConstraints === 'function') updateAllowanceConstraints();
-
-                // Set Radio Buttons
-                const salaryRadio = document.querySelector(`input[name="salaryPeriod"][value="${data.salary.period}"]`);
-                if (salaryRadio) salaryRadio.checked = true;
-
-                let allowPeriodVal = data.salary.allowance_period || 'week';
-                if (allowPeriodVal === 'month') allowPeriodVal = 'week';
-
-                const allowanceRadio = document.querySelector(`input[name="allowancePeriod"][value="${allowPeriodVal}"]`);
-                if (allowanceRadio) allowanceRadio.checked = true;
-
-                // Set Trigger
-                const triggerSelect = document.getElementById('allowanceTrigger');
-                if (triggerSelect) triggerSelect.value = data.salary.allowance_trigger || 'start_of_duty';
-
-                // Handle Payroll Status (Unpaid)
-                if (data.payroll && data.payroll.unpaid) {
-                    const unpaid = data.payroll.unpaid;
-                    const totalUnpaid = unpaid.total || 0;
-
-                    const card = document.getElementById('payrollStatusCard');
-                    if (totalUnpaid > 0) {
-                        card.classList.remove('hidden');
-                        document.getElementById('totalUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(totalUnpaid);
-                        document.getElementById('baseUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(unpaid.base || 0) + ' UGX';
-                        document.getElementById('allowanceUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(unpaid.allowance || 0) + ' UGX';
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                }
-
-            } else {
-                document.getElementById('currentSalaryAmount').textContent = 'Not Set';
-                const allowDisplay = document.getElementById('allowanceDisplayBlock');
-                if (allowDisplay) allowDisplay.classList.add('hidden');
-                document.getElementById('currentSalaryPeriod').textContent = '--';
-
+            if (salaryPeriod === 'day') {
+                // Daily Salary: No Allowance Allowed
+                toggle.disabled = true;
                 toggle.checked = false;
                 container.classList.add('hidden');
+                toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
 
-                // Apply constraints
-                if (typeof updateAllowanceConstraints === 'function') updateAllowanceConstraints();
+            } else if (salaryPeriod === 'week') {
+                // Weekly Salary: Daily Allowance ONLY
+                if (weekRadio) {
+                    weekRadio.disabled = true;
+                    if (weekRadio.parentElement) weekRadio.parentElement.classList.add('opacity-50', 'pointer-events-none');
+
+                    if (weekRadio.checked) {
+                        if (dayRadio) dayRadio.checked = true; // Force switch to day
+                    }
+                }
             }
-        } catch (e) {
-            console.error('Error loading salary:', e);
-        }
-    }
-
-    async function handleSaveSalary() {
-        const btn = document.getElementById('saveSalaryBtn');
-        const original = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
-
-        const amount = document.getElementById('salaryAmount').value;
-        const allowance = document.getElementById('allowanceAmount').value;
-        const hasAllowance = document.getElementById('hasAllowanceToggle').checked;
-        const period = document.querySelector('input[name="salaryPeriod"]:checked').value;
-        const allowancePeriod = document.querySelector('input[name="allowancePeriod"]:checked').value;
-        const allowanceTrigger = document.getElementById('allowanceTrigger').value;
-        const effectiveDate = new Date().toISOString();
-
-        if (!amount || amount <= 0) {
-            showNotification('Please enter a valid amount', 'error');
-            btn.disabled = false;
-            btn.innerHTML = original;
-            return;
+            // Month: All allowed (default)
         }
 
-        try {
-            const res = await fetch('/api/teachers/' + teacherID + '/salary', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    amount: parseInt(amount),
-                    allowance: parseInt(allowance || 0),
-                    has_allowance: hasAllowance,
-                    period: period,
-                    allowance_period: allowancePeriod,
-                    allowance_trigger: allowanceTrigger,
-                    effective_date: effectiveDate
-                })
+        function attachConstraintListeners() {
+            document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
+                r.addEventListener('change', updateAllowanceConstraints);
+            });
+            // Also listen to toggle change just in case to re-verify or preventing invalid states? 
+            // Not strictly needed if we disable it.
+        }
+
+        // Salary Logic
+        async function loadTeacherSalary() {
+            try {
+                const res = await fetch('/api/teachers/' + teacherID + '/salary');
+                const data = await res.json();
+
+                const toggle = document.getElementById('hasAllowanceToggle');
+                const container = document.getElementById('allowanceInputContainer');
+
+                // Setup toggle listener (idempotent)
+                toggle.onchange = function () {
+                    container.classList.toggle('hidden', !this.checked);
+                    if (this.checked) {
+                        setTimeout(() => {
+                            const input = document.getElementById('allowanceAmount');
+                            input.focus();
+                            input.select();
+                        }, 50);
+                    }
+                };
+
+                // Attach complex constraints
+                if (typeof attachConstraintListeners === 'function') attachConstraintListeners();
+
+                if (data.salary) {
+                    const amt = new Intl.NumberFormat('en-UG').format(data.salary.amount);
+                    document.getElementById('currentSalaryAmount').textContent = `${amt} UGX`;
+
+                    // Handle Allowance Display
+                    const hasAllowance = data.salary.has_allowance || false;
+                    const allowDisplay = document.getElementById('allowanceDisplayBlock');
+
+                    if (hasAllowance) {
+                        const allowance = new Intl.NumberFormat('en-UG').format(data.salary.allowance || 0);
+                        const allowPeriod = (data.salary.allowance_period || 'month').toUpperCase();
+                        document.getElementById('currentAllowanceAmount').textContent = `${allowance} / ${allowPeriod}`;
+                        if (allowDisplay) allowDisplay.classList.remove('hidden');
+                    } else {
+                        if (allowDisplay) allowDisplay.classList.add('hidden');
+                    }
+
+                    document.getElementById('currentSalaryPeriod').textContent = data.salary.period.toUpperCase();
+
+                    // Pre-fill form
+                    document.getElementById('salaryAmount').value = data.salary.amount;
+                    document.getElementById('allowanceAmount').value = data.salary.allowance || 0;
+
+                    // Toggle state
+                    toggle.checked = hasAllowance;
+                    container.classList.toggle('hidden', !hasAllowance);
+
+                    // Apply constraints
+                    if (typeof updateAllowanceConstraints === 'function') updateAllowanceConstraints();
+
+                    // Set Radio Buttons
+                    const salaryRadio = document.querySelector(`input[name="salaryPeriod"][value="${data.salary.period}"]`);
+                    if (salaryRadio) salaryRadio.checked = true;
+
+                    let allowPeriodVal = data.salary.allowance_period || 'week';
+                    if (allowPeriodVal === 'month') allowPeriodVal = 'week';
+
+                    const allowanceRadio = document.querySelector(`input[name="allowancePeriod"][value="${allowPeriodVal}"]`);
+                    if (allowanceRadio) allowanceRadio.checked = true;
+
+                    // Handle Payroll Status (Unpaid)
+                    if (data.payroll && data.payroll.unpaid) {
+                        const unpaid = data.payroll.unpaid;
+                        const totalUnpaid = unpaid.total || 0;
+
+                        const card = document.getElementById('payrollStatusCard');
+                        if (totalUnpaid > 0) {
+                            card.classList.remove('hidden');
+                            document.getElementById('totalUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(totalUnpaid);
+                            document.getElementById('baseUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(unpaid.base || 0) + ' UGX';
+                            document.getElementById('allowanceUnpaidDisplay').textContent = new Intl.NumberFormat('en-UG').format(unpaid.allowance || 0) + ' UGX';
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+
+                } else {
+                    document.getElementById('currentSalaryAmount').textContent = 'Not Set';
+                    const allowDisplay = document.getElementById('allowanceDisplayBlock');
+                    if (allowDisplay) allowDisplay.classList.add('hidden');
+                    document.getElementById('currentSalaryPeriod').textContent = '--';
+
+                    toggle.checked = false;
+                    container.classList.add('hidden');
+
+                    // Apply constraints
+                    if (typeof updateAllowanceConstraints === 'function') updateAllowanceConstraints();
+                }
+            } catch (e) {
+                console.error('Error loading salary:', e);
+            }
+        }
+
+        async function handleSaveSalary() {
+            const btn = document.getElementById('saveSalaryBtn');
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
+            const amount = document.getElementById('salaryAmount').value;
+            const allowance = document.getElementById('allowanceAmount').value;
+            const hasAllowance = document.getElementById('hasAllowanceToggle').checked;
+            const period = document.querySelector('input[name="salaryPeriod"]:checked').value;
+            const allowancePeriod = document.querySelector('input[name="allowancePeriod"]:checked').value;
+            const allowanceTrigger = document.getElementById('allowanceTrigger').value;
+            const effectiveDate = new Date().toISOString();
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                btn.disabled = false;
+                btn.innerHTML = original;
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/teachers/' + teacherID + '/salary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: parseInt(amount),
+                        allowance: parseInt(allowance || 0),
+                        has_allowance: hasAllowance,
+                        period: period,
+                        allowance_period: allowancePeriod
+                    })
+                });
+
+                if (res.ok) {
+                    showNotification('Payroll configuration updated');
+                    loadTeacherSalary();
+                } else {
+                    try {
+                        const errData = await res.json();
+                        console.error('Salary Update Error:', errData);
+                        showNotification('Update failed: ' + (errData.details || errData.error || 'Server error'), 'error');
+                    } catch (e) {
+                        console.error('Failed to parse error response', e);
+                        showNotification('Update failed: Server error', 'error');
+                    }
+                }
+            } catch (e) {
+                showNotification('System connection error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        }
+
+        // Complex Allowance Constraints
+        function updateAllowanceConstraints() {
+            const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
+            const toggle = document.getElementById('hasAllowanceToggle');
+            const container = document.getElementById('allowanceInputContainer');
+            const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
+            const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
+            const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
+
+            if (!salaryPeriod) return;
+
+            // Reset states first
+            toggle.disabled = false;
+            toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            allowanceRadios.forEach(r => {
+                r.disabled = false;
+                // Target the radio's container/label which has the styling
+                const label = r.closest('label');
+                if (label) {
+                    label.classList.remove('opacity-50', 'pointer-events-none');
+                    // Ensure the inner div text color is reset if needed, but opacity handles it mostly
+                }
             });
 
-            if (res.ok) {
-                showNotification('Payroll configuration updated');
-                loadTeacherSalary();
-            } else {
-                try {
-                    const errData = await res.json();
-                    console.error('Salary Update Error:', errData);
-                    showNotification('Update failed: ' + (errData.details || errData.error || 'Server error'), 'error');
-                } catch (e) {
-                    console.error('Failed to parse error response', e);
-                    showNotification('Update failed: Server error', 'error');
+            if (salaryPeriod === 'day') {
+                // Daily Salary: No Allowance Allowed
+                toggle.disabled = true;
+                toggle.checked = false;
+                container.classList.add('hidden');
+                toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+
+            } else if (salaryPeriod === 'week') {
+                // Weekly Salary: Daily Allowance ONLY
+                // Disable Weekly Allowance Option
+                if (weekRadio) {
+                    weekRadio.disabled = true;
+                    const weekLabel = weekRadio.closest('label');
+                    if (weekLabel) weekLabel.classList.add('opacity-50', 'pointer-events-none');
+
+                    if (weekRadio.checked) {
+                        if (dayRadio) dayRadio.checked = true; // Force switch to day
+                    }
                 }
             }
-        } catch (e) {
-            showNotification('System connection error', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = original;
+            // Month: All allowed (default)
         }
-    }
 
-    // Complex Allowance Constraints
-    function updateAllowanceConstraints() {
-        const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
-        const toggle = document.getElementById('hasAllowanceToggle');
-        const container = document.getElementById('allowanceInputContainer');
-        const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
-        const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
-        const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
-
-        if (!salaryPeriod) return;
-
-        // Reset states first
-        toggle.disabled = false;
-        toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
-
-        allowanceRadios.forEach(r => {
-            r.disabled = false;
-            // Target the radio's container/label which has the styling
-            const label = r.closest('label');
-            if (label) {
-                label.classList.remove('opacity-50', 'pointer-events-none');
-                // Ensure the inner div text color is reset if needed, but opacity handles it mostly
-            }
-        });
-
-        if (salaryPeriod === 'day') {
-            // Daily Salary: No Allowance Allowed
-            toggle.disabled = true;
-            toggle.checked = false;
-            container.classList.add('hidden');
-            toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
-
-        } else if (salaryPeriod === 'week') {
-            // Weekly Salary: Daily Allowance ONLY
-            // Disable Weekly Allowance Option
-            if (weekRadio) {
-                weekRadio.disabled = true;
-                const weekLabel = weekRadio.closest('label');
-                if (weekLabel) weekLabel.classList.add('opacity-50', 'pointer-events-none');
-
-                if (weekRadio.checked) {
-                    if (dayRadio) dayRadio.checked = true; // Force switch to day
-                }
-            }
+        function attachConstraintListeners() {
+            document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
+                r.addEventListener('change', updateAllowanceConstraints);
+            });
         }
-        // Month: All allowed (default)
-    }
 
-    function attachConstraintListeners() {
-        document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
-            r.addEventListener('change', updateAllowanceConstraints);
-        });
-    }
-
-    // Global teacher state
-    let allRoles = [];
-    let selectedRoleNames = [];
-    let currentTeacher = {
-        firstName: '{{.teacher.FirstName}}',
-        lastName: '{{.teacher.LastName}}',
-        email: '{{.teacher.Email}}',
-        phone: '{{.teacher.Phone}}',
-        roles: [
-            {{ range .roles }}'{{.Name}}', {{ end }}
+        // Global teacher state
+        let allRoles = [];
+        let selectedRoleNames = [];
+        let currentTeacher = {
+            firstName: '{{.teacher.FirstName}}',
+            lastName: '{{.teacher.LastName}}',
+            email: '{{.teacher.Email}}',
+            phone: '{{.teacher.Phone}}',
+            roles: [
+                {{ range .roles }}'{{.Name}}', {{ end }}
         ],
-    id: '{{.teacher.ID}}'
+        id: '{{.teacher.ID}}'
     };
 
-    async function loadAllSystemRoles() {
-        try {
-            const res = await fetch('/api/roles');
-            const data = await res.json();
-            allRoles = data.roles || [];
+        async function loadAllSystemRoles() {
+            try {
+                const res = await fetch('/api/roles');
+                const data = await res.json();
+                allRoles = data.roles || [];
+                updateRoleSelectionUI();
+            } catch (e) {
+                console.error('Error loading roles:', e);
+            }
+        }
+
+        function openRoleSelectionModal() {
+            document.getElementById('roleSelectionModal').classList.remove('hidden');
+        }
+
+        function closeRoleSelectionModal() {
+            document.getElementById('roleSelectionModal').classList.add('hidden');
+            updateSelectedRolesPreview();
+        }
+
+        function toggleRoleSelection(roleName) {
+            if (selectedRoleNames.includes(roleName)) {
+                selectedRoleNames = selectedRoleNames.filter(r => r !== roleName);
+            } else {
+                selectedRoleNames.push(roleName);
+            }
             updateRoleSelectionUI();
-        } catch (e) {
-            console.error('Error loading roles:', e);
-        }
-    }
-
-    function openRoleSelectionModal() {
-        document.getElementById('roleSelectionModal').classList.remove('hidden');
-    }
-
-    function closeRoleSelectionModal() {
-        document.getElementById('roleSelectionModal').classList.add('hidden');
-        updateSelectedRolesPreview();
-    }
-
-    function toggleRoleSelection(roleName) {
-        if (selectedRoleNames.includes(roleName)) {
-            selectedRoleNames = selectedRoleNames.filter(r => r !== roleName);
-        } else {
-            selectedRoleNames.push(roleName);
-        }
-        updateRoleSelectionUI();
-    }
-
-    function updateRoleSelectionUI() {
-        const list = document.getElementById('rolesSelectionList');
-        if (!list) return;
-
-        list.innerHTML = allRoles.map(role => {
-            const isSelected = selectedRoleNames.includes(role.name);
-            return '<div onclick="toggleRoleSelection(\'' + role.name + '\')" ' +
-                'class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isSelected ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300') + '">' +
-                '<span class="text-xs font-bold uppercase tracking-wide ' + (isSelected ? 'text-indigo-600' : 'text-slate-600') + '">' + role.name + '</span>' +
-                (isSelected
-                    ? '<i class="fas fa-check-circle text-indigo-500"></i>'
-                    : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>') +
-                '</div>';
-        }).join('');
-    }
-
-    function updateSelectedRolesPreview() {
-        const container = document.getElementById('editSelectedRolesContainer');
-        if (!container) return;
-
-        if (selectedRoleNames.length === 0) {
-            container.innerHTML = '<span class="text-[10px] font-bold text-slate-400 uppercase italic opacity-50">No Clearances Selected</span>';
-            return;
         }
 
-        container.innerHTML = selectedRoleNames.map(name => {
-            return '<span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">' +
-                name +
-                '</span>';
-        }).join('');
-    }
+        function updateRoleSelectionUI() {
+            const list = document.getElementById('rolesSelectionList');
+            if (!list) return;
 
-    function openEditModal() {
-        document.getElementById('editFirstName').value = currentTeacher.firstName;
-        document.getElementById('editLastName').value = currentTeacher.lastName;
-        document.getElementById('editEmail').value = currentTeacher.email;
-        document.getElementById('editPhone').value = currentTeacher.phone;
-
-        selectedRoleNames = [...currentTeacher.roles];
-        updateRoleSelectionUI();
-        updateSelectedRolesPreview();
-
-        document.getElementById('editTeacherModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeEditModal() {
-        document.getElementById('editTeacherModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-
-    async function handleEditTeacher(e) {
-        e.preventDefault();
-        const btn = e.target.querySelector('button[type="submit"]');
-        const orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
-
-        const formData = new FormData(e.target);
-        const data = {
-            first_name: formData.get('firstName'),
-            last_name: formData.get('lastName'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            roles: selectedRoleNames
-        };
-
-        try {
-            const res = await fetch('/api/teachers/' + teacherID, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (res.ok) {
-                showNotification('Personnel profile updated');
-                closeEditModal();
-                // Update local storage and UI
-                currentTeacher.firstName = data.first_name;
-                currentTeacher.lastName = data.last_name;
-                currentTeacher.email = data.email;
-                currentTeacher.phone = data.phone;
-                currentTeacher.roles = [...data.roles];
-
-                // Update UI elements directly
-                document.getElementById('teacherName').textContent = data.first_name + ' ' + data.last_name;
-                // Refresh data to be sure
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                const err = await res.json();
-                showNotification(err.error || 'Update failed', 'error');
-            }
-        } catch (e) {
-            showNotification('System connection error', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = orig;
-        }
-    }
-
-    async function loadProfileData() {
-        try {
-            const [teacherRes, subjectsRes] = await Promise.all([
-                fetch('/api/teachers/' + teacherID),
-                fetch('/api/teachers/' + teacherID + '/subjects')
-            ]);
-
-            const teacherData = await teacherRes.json();
-            const subjectsData = await subjectsRes.json();
-
-            if (teacherRes.ok && teacherData.teacher) {
-                const teacher = teacherData.teacher;
-
-                // Hydrate Classes List
-                const classContainer = document.getElementById('teacherClasses');
-                classContainer.innerHTML = '';
-
-                let totalStudentsCount = 0;
-                if (teacher.classes && teacher.classes.length > 0) {
-                    document.getElementById('statClassesCount').textContent = teacher.classes.length;
-
-                    teacher.classes.forEach(cls => {
-                        totalStudentsCount += (cls.student_count || 0);
-                        const card = document.createElement('div');
-                        card.className = 'group bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-100 rounded-xl p-3 transition-all duration-300 shadow-sm flex items-center justify-between';
-                        card.innerHTML =
-                            '<div class="flex items-center gap-3">' +
-                            '<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-100 to-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">' +
-                            '<span class="text-[10px] font-black text-slate-400 group-hover:text-indigo-500 transition-colors uppercase">' + (cls.name.charAt(0)) + '</span>' +
-                            '</div>' +
-                            '<div>' +
-                            '<h3 class="text-[10px] font-black text-slate-800 tracking-tight uppercase group-hover:text-indigo-600 transition-colors leading-tight">' + cls.name + '</h3>' +
-                            '<div class="flex items-center gap-1 mt-0.5">' +
-                            '<span class="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>' +
-                            '<p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-500">' + (cls.student_count || 0) + ' Students</p>' +
-                            '</div>' +
-                            '</div>' +
-                            '</div>' +
-                            '<div class="w-6 h-6 rounded-md bg-white border border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-indigo-100 group-hover:text-indigo-500 transition-all shadow-sm">' +
-                            '<i class="fas fa-arrow-right text-[8px]"></i>' +
-                            '</div>';
-                        classContainer.appendChild(card);
-                    });
-                } else {
-                    classContainer.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Active Deployments</div>';
-                }
-
-
-            }
-
-            if (subjectsRes.ok) {
-                const subjects = subjectsData.subjects || [];
-                document.getElementById('statSubjectsCount').textContent = subjects.length;
-
-                const container = document.getElementById('teacherSubjects');
-                container.innerHTML = '';
-
-                if (subjects.length > 0) {
-                    subjects.forEach(subject => {
-                        const papers = subject.papers || [];
-                        const card = document.createElement('div');
-                        card.className = 'bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-purple-100 rounded-xl p-3 transition-all duration-300 group shadow-sm';
-                        card.innerHTML =
-                            '<div class="flex items-center justify-between mb-2">' +
-                            '<div class="flex items-center gap-2">' +
-                            '<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 group-hover:border-purple-50 group-hover:text-purple-600 transition-all shadow-sm font-black text-[9px] text-slate-400">' +
-                            subject.code +
-                            '</div>' +
-                            '<h3 class="text-[12px] font-black text-slate-800 tracking-tight uppercase">' + subject.name + '</h3>' +
-                            '</div>' +
-                            '<button onclick="removeDomain(\'' + subject.id + '\')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all">' +
-                            '<i class="fas fa-trash-alt text-[9px]"></i>' +
-                            '</button>' +
-                            '</div>' +
-                            '<div class="space-y-1">' +
-                            (papers.length > 0 ? papers.map(p =>
-                                '<div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-slate-50 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-tight">' +
-                                '<span>' + p.name + ' <span class="text-slate-300 text-[8px] ml-1">(' + p.code + ')</span></span>' +
-                                '</div>'
-                            ).join('') : '<p class="text-[9px] text-slate-300 font-bold italic pl-1">No specific papers assigned</p>') +
-                            '</div>';
-                        container.appendChild(card);
-                    });
-                } else {
-                    container.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Assigned Operational Domains</div>';
-                }
-            }
-        } catch (error) {
-            console.error('Core loading error:', error);
-        }
-    }
-
-    async function loadTeacherAvailability() {
-        try {
-            const response = await fetch('/api/teachers/' + teacherID + '/availability');
-            const data = await response.json();
-            const grid = document.getElementById('availabilityGrid');
-            grid.innerHTML = '';
-
-            const availabilityMap = new Map();
-            (data.availability || []).forEach(item => availabilityMap.set(item.day_of_week, item));
-
-            let activeHours = 0;
-
-            for (let i = 0; i < 7; i++) {
-                const dbDay = (i + 1) % 7;
-                const entry = availabilityMap.get(dbDay) || { is_available: false };
-                if (entry.is_available && entry.start_time.Valid && entry.end_time.Valid) {
-                    const start = entry.start_time.String.split(':');
-                    const end = entry.end_time.String.split(':');
-                    activeHours += (parseInt(end[0]) + parseInt(end[1]) / 60) - (parseInt(start[0]) + parseInt(start[1]) / 60);
-                }
-
-                const card = document.createElement('div');
-                const available = entry.is_available;
-                card.className = 'p-4 rounded-xl border transition-all duration-300 flex flex-col ' + (available ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' : 'bg-slate-50/30 border-slate-100');
-
-                card.innerHTML =
-                    '<div class="flex items-center justify-between mb-4">' +
-                    '<span class="text-[10px] font-black uppercase tracking-widest text-slate-800">' + displayDayNames[i] + '</span>' +
-                    '<label class="relative inline-flex items-center cursor-pointer">' +
-                    '<input type="checkbox" class="sr-only peer avail-check" data-day="' + dbDay + '" ' + (available ? 'checked' : '') + '>' +
-                    '<div class="w-8 h-4 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>' +
-                    '</label>' +
-                    '</div>' +
-                    '<div class="space-y-2 ' + (available ? '' : 'hidden pointer-events-none opacity-40 filter grayscale') + ' inputs-area">' +
-                    '<input type="time" class="start-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.start_time?.String || '') + '">' +
-                    '<input type="time" class="end-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.end_time?.String || '') + '">' +
+            list.innerHTML = allRoles.map(role => {
+                const isSelected = selectedRoleNames.includes(role.name);
+                return '<div onclick="toggleRoleSelection(\'' + role.name + '\')" ' +
+                    'class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ' + (isSelected ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-100 hover:border-slate-300') + '">' +
+                    '<span class="text-xs font-bold uppercase tracking-wide ' + (isSelected ? 'text-indigo-600' : 'text-slate-600') + '">' + role.name + '</span>' +
+                    (isSelected
+                        ? '<i class="fas fa-check-circle text-indigo-500"></i>'
+                        : '<div class="w-5 h-5 rounded-full border border-slate-200 bg-slate-50"></div>') +
                     '</div>';
-                grid.appendChild(card);
-
-                const check = card.querySelector('.avail-check');
-                check.addEventListener('change', function () {
-                    card.querySelector('.inputs-area').classList.toggle('hidden', !this.checked);
-                    card.classList.toggle('bg-emerald-50/30', this.checked);
-                    card.classList.toggle('border-emerald-100', this.checked);
-                });
-            }
-
-            document.getElementById('statHoursCount').textContent = Math.floor(activeHours) + 'hrs';
-        } catch (e) {
-            console.error('Availability load error:', e);
-        }
-    }
-
-    async function handleSaveAvailability() {
-        const btn = document.getElementById('saveAvailabilityBtn');
-        const original = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Syncing...';
-
-        const data = [];
-        document.querySelectorAll('#availabilityGrid .avail-check').forEach(check => {
-            const card = check.closest('div.p-4');
-            data.push({
-                day_of_week: parseInt(check.dataset.day),
-                is_available: check.checked,
-                start_time: card.querySelector('.start-time').value || null,
-                end_time: card.querySelector('.end-time').value || null
-            });
-        });
-
-        try {
-            const res = await fetch('/api/teachers/' + teacherID + '/availability', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ availability: data })
-            });
-
-            if (res.ok) {
-                showNotification('Timing matrix synchronized');
-                loadTeacherAvailability();
-            } else {
-                showNotification('Synchronization failed', 'error');
-            }
-        } catch (e) {
-            showNotification('System Error', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = original;
-        }
-    }
-
-    async function loadSubjectsForAssignment() {
-        const list = document.getElementById('subjectsList');
-        try {
-            const [allRes, currentRes] = await Promise.all([
-                fetch('/api/subjects/with-papers'),
-                fetch('/api/teachers/' + teacherID + '/subjects')
-            ]);
-
-            const all = (await allRes.json()).subjects || [];
-            const current = (await currentRes.json()).subjects || [];
-            const currentIds = current.map(s => s.id);
-            const currentPapers = {};
-            current.forEach(s => currentPapers[s.id] = (s.papers || []).map(p => p.id));
-
-            list.innerHTML = all.map(s => {
-                const checked = currentIds.includes(s.id);
-                const hasPapers = s.papers && s.papers.length > 0;
-
-                let html = '<div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-100 group hover:bg-white hover:border-indigo-100 transition-all shadow-sm">' +
-                    '<label class="flex items-center justify-between cursor-pointer mb-4">' +
-                    '<div class="flex items-center gap-3">' +
-                    '<span class="text-[10px] font-black text-indigo-600 bg-white px-2 py-1 rounded-lg border border-slate-100">' + s.code + '</span>' +
-                    '<h3 class="text-xs font-black text-slate-800 tracking-tight uppercase">' + s.name + '</h3>' +
-                    '</div>' +
-                    '<input type="checkbox" name="subjects" value="' + s.id + '" ' + (checked ? 'checked' : '') + ' class="w-5 h-5 text-indigo-600 border-slate-200 rounded-lg focus:ring-indigo-500 shadow-inner">' +
-                    '</label>';
-
-                if (hasPapers) {
-                    html += '<div class="grid grid-cols-1 gap-2 pl-4 border-l-2 border-slate-100">' +
-                        s.papers.map(p => {
-                            const pChecked = checked && currentPapers[s.id] && currentPapers[s.id].includes(p.id);
-                            return '<label class="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-50 cursor-pointer hover:border-indigo-50 transition-all">' +
-                                '<input type="checkbox" name="papers_' + s.id + '" value="' + p.id + '" ' + (pChecked ? 'checked' : '') + ' class="w-3.5 h-3.5 text-indigo-600 border-slate-200 rounded focus:ring-indigo-500">' +
-                                '<span class="text-[10px] font-bold text-slate-500 uppercase">' + p.name + ' <span class="text-[8px] opacity-50 ml-1">(' + p.code + ')</span></span>' +
-                                '</label>';
-                        }).join('') +
-                        '</div>';
-                }
-
-                html += '</div>';
-                return html;
             }).join('');
-        } catch (e) {
-            list.innerHTML = 'Domain discovery failed.';
         }
-    }
 
-    async function handleAssignSubjects(e) {
-        e.preventDefault();
-        const btn = e.target.querySelector('button[type="submit"]');
-        const orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Allocating...';
+        function updateSelectedRolesPreview() {
+            const container = document.getElementById('editSelectedRolesContainer');
+            if (!container) return;
 
-        const form = new FormData(e.target);
-        const subjects = form.getAll('subjects');
-        const papers = {};
-        subjects.forEach(sid => papers[sid] = form.getAll('papers_' + sid));
+            if (selectedRoleNames.length === 0) {
+                container.innerHTML = '<span class="text-[10px] font-bold text-slate-400 uppercase italic opacity-50">No Clearances Selected</span>';
+                return;
+            }
 
-        try {
-            const res = await fetch('/api/teachers/' + teacherID + '/subjects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ subject_ids: subjects, papers })
+            container.innerHTML = selectedRoleNames.map(name => {
+                return '<span class="inline-flex items-center px-2 py-1 bg-white text-indigo-600 border border-indigo-100 text-[9px] font-black uppercase tracking-widest rounded shadow-sm">' +
+                    name +
+                    '</span>';
+            }).join('');
+        }
+
+        function openEditModal() {
+            document.getElementById('editFirstName').value = currentTeacher.firstName;
+            document.getElementById('editLastName').value = currentTeacher.lastName;
+            document.getElementById('editEmail').value = currentTeacher.email;
+            document.getElementById('editPhone').value = currentTeacher.phone;
+
+            selectedRoleNames = [...currentTeacher.roles];
+            updateRoleSelectionUI();
+            updateSelectedRolesPreview();
+
+            document.getElementById('editTeacherModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editTeacherModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function handleEditTeacher(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+
+            const formData = new FormData(e.target);
+            const data = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                roles: selectedRoleNames
+            };
+
+            try {
+                const res = await fetch('/api/teachers/' + teacherID, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showNotification('Personnel profile updated');
+                    closeEditModal();
+                    // Update local storage and UI
+                    currentTeacher.firstName = data.first_name;
+                    currentTeacher.lastName = data.last_name;
+                    currentTeacher.email = data.email;
+                    currentTeacher.phone = data.phone;
+                    currentTeacher.roles = [...data.roles];
+
+                    // Update UI elements directly
+                    document.getElementById('teacherName').textContent = data.first_name + ' ' + data.last_name;
+                    // Refresh data to be sure
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    const err = await res.json();
+                    showNotification(err.error || 'Update failed', 'error');
+                }
+            } catch (e) {
+                showNotification('System connection error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
+            }
+        }
+
+        async function loadProfileData() {
+            try {
+                const [teacherRes, subjectsRes] = await Promise.all([
+                    fetch('/api/teachers/' + teacherID),
+                    fetch('/api/teachers/' + teacherID + '/subjects')
+                ]);
+
+                const teacherData = await teacherRes.json();
+                const subjectsData = await subjectsRes.json();
+
+                if (teacherRes.ok && teacherData.teacher) {
+                    const teacher = teacherData.teacher;
+
+                    // Hydrate Classes List
+                    const classContainer = document.getElementById('teacherClasses');
+                    classContainer.innerHTML = '';
+
+                    let totalStudentsCount = 0;
+                    if (teacher.classes && teacher.classes.length > 0) {
+                        document.getElementById('statClassesCount').textContent = teacher.classes.length;
+
+                        teacher.classes.forEach(cls => {
+                            totalStudentsCount += (cls.student_count || 0);
+                            const card = document.createElement('div');
+                            card.className = 'group bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-emerald-100 rounded-xl p-3 transition-all duration-300 shadow-sm flex items-center justify-between';
+                            card.innerHTML =
+                                '<div class="flex items-center gap-3">' +
+                                '<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-100 to-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">' +
+                                '<span class="text-[10px] font-black text-slate-400 group-hover:text-indigo-500 transition-colors uppercase">' + (cls.name.charAt(0)) + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                '<h3 class="text-[10px] font-black text-slate-800 tracking-tight uppercase group-hover:text-indigo-600 transition-colors leading-tight">' + cls.name + '</h3>' +
+                                '<div class="flex items-center gap-1 mt-0.5">' +
+                                '<span class="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>' +
+                                '<p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider group-hover:text-slate-500">' + (cls.student_count || 0) + ' Students</p>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>' +
+                                '<div class="w-6 h-6 rounded-md bg-white border border-slate-100 flex items-center justify-center text-slate-300 group-hover:border-indigo-100 group-hover:text-indigo-500 transition-all shadow-sm">' +
+                                '<i class="fas fa-arrow-right text-[8px]"></i>' +
+                                '</div>';
+                            classContainer.appendChild(card);
+                        });
+                    } else {
+                        classContainer.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Active Deployments</div>';
+                    }
+
+
+                }
+
+                if (subjectsRes.ok) {
+                    const subjects = subjectsData.subjects || [];
+                    document.getElementById('statSubjectsCount').textContent = subjects.length;
+
+                    const container = document.getElementById('teacherSubjects');
+                    container.innerHTML = '';
+
+                    if (subjects.length > 0) {
+                        subjects.forEach(subject => {
+                            const papers = subject.papers || [];
+                            const card = document.createElement('div');
+                            card.className = 'bg-slate-50/50 hover:bg-white border border-slate-100 hover:border-purple-100 rounded-xl p-3 transition-all duration-300 group shadow-sm';
+                            card.innerHTML =
+                                '<div class="flex items-center justify-between mb-2">' +
+                                '<div class="flex items-center gap-2">' +
+                                '<div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center border border-slate-100 group-hover:border-purple-50 group-hover:text-purple-600 transition-all shadow-sm font-black text-[9px] text-slate-400">' +
+                                subject.code +
+                                '</div>' +
+                                '<h3 class="text-[12px] font-black text-slate-800 tracking-tight uppercase">' + subject.name + '</h3>' +
+                                '</div>' +
+                                '<button onclick="removeDomain(\'' + subject.id + '\')" class="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-all">' +
+                                '<i class="fas fa-trash-alt text-[9px]"></i>' +
+                                '</button>' +
+                                '</div>' +
+                                '<div class="space-y-1">' +
+                                (papers.length > 0 ? papers.map(p =>
+                                    '<div class="flex items-center justify-between bg-white px-2.5 py-1.5 rounded-lg border border-slate-50 shadow-sm text-[10px] font-bold text-slate-600 uppercase tracking-tight">' +
+                                    '<span>' + p.name + ' <span class="text-slate-300 text-[8px] ml-1">(' + p.code + ')</span></span>' +
+                                    '</div>'
+                                ).join('') : '<p class="text-[9px] text-slate-300 font-bold italic pl-1">No specific papers assigned</p>') +
+                                '</div>';
+                            container.appendChild(card);
+                        });
+                    } else {
+                        container.innerHTML = '<div class="col-span-2 py-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-dashed border-slate-200 rounded-2xl">No Assigned Operational Domains</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Core loading error:', error);
+            }
+        }
+
+        async function loadTeacherAvailability() {
+            try {
+                const response = await fetch('/api/teachers/' + teacherID + '/availability');
+                const data = await response.json();
+                const grid = document.getElementById('availabilityGrid');
+                grid.innerHTML = '';
+
+                const availabilityMap = new Map();
+                (data.availability || []).forEach(item => availabilityMap.set(item.day_of_week, item));
+
+                let activeHours = 0;
+
+                for (let i = 0; i < 7; i++) {
+                    const dbDay = (i + 1) % 7;
+                    const entry = availabilityMap.get(dbDay) || { is_available: false };
+                    if (entry.is_available && entry.start_time.Valid && entry.end_time.Valid) {
+                        const start = entry.start_time.String.split(':');
+                        const end = entry.end_time.String.split(':');
+                        activeHours += (parseInt(end[0]) + parseInt(end[1]) / 60) - (parseInt(start[0]) + parseInt(start[1]) / 60);
+                    }
+
+                    const card = document.createElement('div');
+                    const available = entry.is_available;
+                    card.className = 'p-4 rounded-xl border transition-all duration-300 flex flex-col ' + (available ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' : 'bg-slate-50/30 border-slate-100');
+
+                    card.innerHTML =
+                        '<div class="flex items-center justify-between mb-4">' +
+                        '<span class="text-[10px] font-black uppercase tracking-widest text-slate-800">' + displayDayNames[i] + '</span>' +
+                        '<label class="relative inline-flex items-center cursor-pointer">' +
+                        '<input type="checkbox" class="sr-only peer avail-check" data-day="' + dbDay + '" ' + (available ? 'checked' : '') + '>' +
+                        '<div class="w-8 h-4 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 after:content-[\'\'] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>' +
+                        '</label>' +
+                        '</div>' +
+                        '<div class="space-y-2 ' + (available ? '' : 'hidden pointer-events-none opacity-40 filter grayscale') + ' inputs-area">' +
+                        '<input type="time" class="start-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.start_time?.String || '') + '">' +
+                        '<input type="time" class="end-time w-full bg-white px-2 py-1.5 rounded-lg border border-slate-100 text-[10px] font-black outline-none focus:border-indigo-500 transition-all shadow-inner" value="' + (entry.end_time?.String || '') + '">' +
+                        '</div>';
+                    grid.appendChild(card);
+
+                    const check = card.querySelector('.avail-check');
+                    check.addEventListener('change', function () {
+                        card.querySelector('.inputs-area').classList.toggle('hidden', !this.checked);
+                        card.classList.toggle('bg-emerald-50/30', this.checked);
+                        card.classList.toggle('border-emerald-100', this.checked);
+                    });
+                }
+
+                document.getElementById('statHoursCount').textContent = Math.floor(activeHours) + 'hrs';
+            } catch (e) {
+                console.error('Availability load error:', e);
+            }
+        }
+
+        async function handleSaveAvailability() {
+            const btn = document.getElementById('saveAvailabilityBtn');
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Syncing...';
+
+            const data = [];
+            document.querySelectorAll('#availabilityGrid .avail-check').forEach(check => {
+                const card = check.closest('div.p-4');
+                data.push({
+                    day_of_week: parseInt(check.dataset.day),
+                    is_available: check.checked,
+                    start_time: card.querySelector('.start-time').value || null,
+                    end_time: card.querySelector('.end-time').value || null
+                });
             });
 
-            if (res.ok) {
-                showNotification('Academic domains updated');
-                closeAssignSubjectsModal();
-                loadProfileData();
-            } else {
-                showNotification('Allocation failed', 'error');
+            try {
+                const res = await fetch('/api/teachers/' + teacherID + '/availability', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ availability: data })
+                });
+
+                if (res.ok) {
+                    showNotification('Timing matrix synchronized');
+                    loadTeacherAvailability();
+                } else {
+                    showNotification('Synchronization failed', 'error');
+                }
+            } catch (e) {
+                showNotification('System Error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = original;
             }
-        } catch (e) {
-            showNotification('System connectivity error', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = orig;
         }
-    }
 
-    function openAssignSubjectsModal() {
-        document.getElementById('assignSubjectsModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        loadSubjectsForAssignment();
-    }
+        async function loadSubjectsForAssignment() {
+            const list = document.getElementById('subjectsList');
+            try {
+                const [allRes, currentRes] = await Promise.all([
+                    fetch('/api/subjects/with-papers'),
+                    fetch('/api/teachers/' + teacherID + '/subjects')
+                ]);
 
-    function closeAssignSubjectsModal() {
-        document.getElementById('assignSubjectsModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
+                const all = (await allRes.json()).subjects || [];
+                const current = (await currentRes.json()).subjects || [];
+                const currentIds = current.map(s => s.id);
+                const currentPapers = {};
+                current.forEach(s => currentPapers[s.id] = (s.papers || []).map(p => p.id));
 
-    async function deleteTeacher() {
-        if (!confirm('Are you sure you want to decommission this personnel record? This action will set the teacher to standby status.')) return;
+                list.innerHTML = all.map(s => {
+                    const checked = currentIds.includes(s.id);
+                    const hasPapers = s.papers && s.papers.length > 0;
 
-        try {
-            const res = await fetch('/api/teachers/' + teacherID, { method: 'DELETE' });
-            if (res.ok) {
-                showNotification('Personnel DECOMMISSIONED');
-                setTimeout(() => window.location.href = '/teachers', 1500);
-            } else {
-                showNotification('Decommission failed', 'error');
+                    let html = '<div class="p-6 rounded-2xl bg-slate-50/80 border border-slate-100 group hover:bg-white hover:border-indigo-100 transition-all shadow-sm">' +
+                        '<label class="flex items-center justify-between cursor-pointer mb-4">' +
+                        '<div class="flex items-center gap-3">' +
+                        '<span class="text-[10px] font-black text-indigo-600 bg-white px-2 py-1 rounded-lg border border-slate-100">' + s.code + '</span>' +
+                        '<h3 class="text-xs font-black text-slate-800 tracking-tight uppercase">' + s.name + '</h3>' +
+                        '</div>' +
+                        '<input type="checkbox" name="subjects" value="' + s.id + '" ' + (checked ? 'checked' : '') + ' class="w-5 h-5 text-indigo-600 border-slate-200 rounded-lg focus:ring-indigo-500 shadow-inner">' +
+                        '</label>';
+
+                    if (hasPapers) {
+                        html += '<div class="grid grid-cols-1 gap-2 pl-4 border-l-2 border-slate-100">' +
+                            s.papers.map(p => {
+                                const pChecked = checked && currentPapers[s.id] && currentPapers[s.id].includes(p.id);
+                                return '<label class="flex items-center gap-3 p-2 bg-white rounded-xl border border-slate-50 cursor-pointer hover:border-indigo-50 transition-all">' +
+                                    '<input type="checkbox" name="papers_' + s.id + '" value="' + p.id + '" ' + (pChecked ? 'checked' : '') + ' class="w-3.5 h-3.5 text-indigo-600 border-slate-200 rounded focus:ring-indigo-500">' +
+                                    '<span class="text-[10px] font-bold text-slate-500 uppercase">' + p.name + ' <span class="text-[8px] opacity-50 ml-1">(' + p.code + ')</span></span>' +
+                                    '</label>';
+                            }).join('') +
+                            '</div>';
+                    }
+
+                    html += '</div>';
+                    return html;
+                }).join('');
+            } catch (e) {
+                list.innerHTML = 'Domain discovery failed.';
             }
-        } catch (e) {
-            showNotification('System error', 'error');
         }
-    }
 
-    async function removeDomain(subjectId) {
-        if (!confirm('Remove this operational domain from the teacher?')) return;
+        async function handleAssignSubjects(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Allocating...';
 
-        try {
-            const res = await fetch('/api/teachers/' + teacherID + '/subjects/' + subjectId, { method: 'DELETE' });
-            if (res.ok) {
-                showNotification('Domain removed');
-                loadProfileData();
-            } else {
-                showNotification('Removal failed', 'error');
+            const form = new FormData(e.target);
+            const subjects = form.getAll('subjects');
+            const papers = {};
+            subjects.forEach(sid => papers[sid] = form.getAll('papers_' + sid));
+
+            try {
+                const res = await fetch('/api/teachers/' + teacherID + '/subjects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject_ids: subjects, papers })
+                });
+
+                if (res.ok) {
+                    showNotification('Academic domains updated');
+                    closeAssignSubjectsModal();
+                    loadProfileData();
+                } else {
+                    showNotification('Allocation failed', 'error');
+                }
+            } catch (e) {
+                showNotification('System connectivity error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = orig;
             }
-        } catch (e) {
-            showNotification('System error', 'error');
-        }
-    }
-
-    function showNotification(msg, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ' + (type === 'success' ? 'bg-indigo-600' : 'bg-rose-600') + ' text-white';
-        toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check' : 'fa-exclamation-triangle') + '"></i><p class="text-[10px] font-black uppercase tracking-widest">' + msg + '</p>';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
-
-    // Phone Uniqueness Validation (Fast Check)
-    async function validatePhone(input) {
-        const phone = input.value.trim();
-        const feedbackId = input.id + 'Feedback';
-        let feedback = document.getElementById(feedbackId);
-
-        if (!feedback) {
-            feedback = document.createElement('p');
-            feedback.id = feedbackId;
-            feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider hidden';
-            input.parentElement.appendChild(feedback);
         }
 
-        if (!phone) {
-            feedback.classList.add('hidden');
-            input.classList.remove('border-rose-500', 'border-emerald-500', 'ring-rose-500/10', 'ring-emerald-500/10');
-            return;
+        function openAssignSubjectsModal() {
+            document.getElementById('assignSubjectsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            loadSubjectsForAssignment();
         }
 
-        input.classList.add('opacity-70');
+        function closeAssignSubjectsModal() {
+            document.getElementById('assignSubjectsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
 
-        try {
-            const res = await fetch('/api/teachers/check-phone?phone=' + encodeURIComponent(phone) + '&exclude_id=' + teacherID);
-            const data = await res.json();
+        async function deleteTeacher() {
+            if (!confirm('Are you sure you want to decommission this personnel record? This action will set the teacher to standby status.')) return;
 
-            feedback.classList.remove('hidden');
-            input.classList.remove('opacity-70');
-
-            if (data.taken) {
-                feedback.textContent = 'Phone associated with another account';
-                feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-rose-500';
-                input.classList.add('border-rose-500', 'ring-4', 'ring-rose-500/10');
-                input.classList.remove('border-emerald-500', 'ring-emerald-500/10');
-            } else {
-                feedback.textContent = 'Contact number available';
-                feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-emerald-500';
-                input.classList.add('border-emerald-500', 'ring-4', 'ring-emerald-500/10');
-                input.classList.remove('border-rose-500', 'ring-rose-500/10');
+            try {
+                const res = await fetch('/api/teachers/' + teacherID, { method: 'DELETE' });
+                if (res.ok) {
+                    showNotification('Personnel DECOMMISSIONED');
+                    setTimeout(() => window.location.href = '/teachers', 1500);
+                } else {
+                    showNotification('Decommission failed', 'error');
+                }
+            } catch (e) {
+                showNotification('System error', 'error');
             }
-        } catch (e) {
-            console.error('Fast check failed:', e);
         }
-    }
 
-    function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
+        async function removeDomain(subjectId) {
+            if (!confirm('Remove this operational domain from the teacher?')) return;
 
-    const editPhoneInput = document.getElementById('editPhone');
-    if (editPhoneInput) {
-        editPhoneInput.addEventListener('input', debounce(() => validatePhone(editPhoneInput), 500));
-    }
-    // Complex Allowance Constraints
-    function updateAllowanceConstraints() {
-        const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
-        const toggle = document.getElementById('hasAllowanceToggle');
-        const container = document.getElementById('allowanceInputContainer');
-        const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
-        const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
-        const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
-
-        if (!salaryPeriod) return;
-
-        // Reset states first
-        toggle.disabled = false;
-        toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
-
-        allowanceRadios.forEach(r => {
-            r.disabled = false;
-            // Target the radio's container/label which has the styling
-            const label = r.closest('label');
-            if (label) {
-                label.classList.remove('opacity-50', 'pointer-events-none');
+            try {
+                const res = await fetch('/api/teachers/' + teacherID + '/subjects/' + subjectId, { method: 'DELETE' });
+                if (res.ok) {
+                    showNotification('Domain removed');
+                    loadProfileData();
+                } else {
+                    showNotification('Removal failed', 'error');
+                }
+            } catch (e) {
+                showNotification('System error', 'error');
             }
-        });
+        }
 
-        if (salaryPeriod === 'day') {
-            // Daily Salary: No Allowance Allowed
-            toggle.disabled = true;
-            toggle.checked = false;
-            container.classList.add('hidden');
-            toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+        function showNotification(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ' + (type === 'success' ? 'bg-indigo-600' : 'bg-rose-600') + ' text-white';
+            toast.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check' : 'fa-exclamation-triangle') + '"></i><p class="text-[10px] font-black uppercase tracking-widest">' + msg + '</p>';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
 
-        } else if (salaryPeriod === 'week') {
-            // Weekly Salary: Daily Allowance ONLY
-            // Disable Weekly Allowance Option
-            if (weekRadio) {
-                weekRadio.disabled = true;
-                const weekLabel = weekRadio.closest('label');
-                if (weekLabel) weekLabel.classList.add('opacity-50', 'pointer-events-none');
+        // Phone Uniqueness Validation (Fast Check)
+        async function validatePhone(input) {
+            const phone = input.value.trim();
+            const feedbackId = input.id + 'Feedback';
+            let feedback = document.getElementById(feedbackId);
 
-                if (weekRadio.checked) {
-                    if (dayRadio) dayRadio.checked = true; // Force switch to day
+            if (!feedback) {
+                feedback = document.createElement('p');
+                feedback.id = feedbackId;
+                feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider hidden';
+                input.parentElement.appendChild(feedback);
+            }
+
+            if (!phone) {
+                feedback.classList.add('hidden');
+                input.classList.remove('border-rose-500', 'border-emerald-500', 'ring-rose-500/10', 'ring-emerald-500/10');
+                return;
+            }
+
+            input.classList.add('opacity-70');
+
+            try {
+                const res = await fetch('/api/teachers/check-phone?phone=' + encodeURIComponent(phone) + '&exclude_id=' + teacherID);
+                const data = await res.json();
+
+                feedback.classList.remove('hidden');
+                input.classList.remove('opacity-70');
+
+                if (data.taken) {
+                    feedback.textContent = 'Phone associated with another account';
+                    feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-rose-500';
+                    input.classList.add('border-rose-500', 'ring-4', 'ring-rose-500/10');
+                    input.classList.remove('border-emerald-500', 'ring-emerald-500/10');
+                } else {
+                    feedback.textContent = 'Contact number available';
+                    feedback.className = 'text-[9px] font-bold mt-1 uppercase tracking-wider text-emerald-500';
+                    input.classList.add('border-emerald-500', 'ring-4', 'ring-emerald-500/10');
+                    input.classList.remove('border-rose-500', 'ring-rose-500/10');
+                }
+            } catch (e) {
+                console.error('Fast check failed:', e);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const editPhoneInput = document.getElementById('editPhone');
+        if (editPhoneInput) {
+            editPhoneInput.addEventListener('input', debounce(() => validatePhone(editPhoneInput), 500));
+        }
+        // Complex Allowance Constraints
+        function updateAllowanceConstraints() {
+            const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
+            const toggle = document.getElementById('hasAllowanceToggle');
+            const container = document.getElementById('allowanceInputContainer');
+            const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
+            const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
+            const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
+
+            if (!salaryPeriod) return;
+
+            // Reset states first
+            toggle.disabled = false;
+            toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            allowanceRadios.forEach(r => {
+                r.disabled = false;
+                // Target the radio's container/label which has the styling
+                const label = r.closest('label');
+                if (label) {
+                    label.classList.remove('opacity-50', 'pointer-events-none');
+                }
+            });
+
+            if (salaryPeriod === 'day') {
+                // Daily Salary: No Allowance Allowed
+                toggle.disabled = true;
+                toggle.checked = false;
+                container.classList.add('hidden');
+                toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+
+            } else if (salaryPeriod === 'week') {
+                // Weekly Salary: Daily Allowance ONLY
+                // Disable Weekly Allowance Option
+                if (weekRadio) {
+                    weekRadio.disabled = true;
+                    const weekLabel = weekRadio.closest('label');
+                    if (weekLabel) weekLabel.classList.add('opacity-50', 'pointer-events-none');
+
+                    if (weekRadio.checked) {
+                        if (dayRadio) dayRadio.checked = true; // Force switch to day
+                    }
+                }
+            }
+            // Month: All allowed (default)
+        }
+
+        function attachConstraintListeners() {
+            document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
+                r.addEventListener('change', updateAllowanceConstraints);
+            });
+        }
+        async function loadTeacherLedger() {
+            const baseBody = document.getElementById('baseSalaryLedgerBody');
+            const allowanceBody = document.getElementById('allowanceLedgerBody');
+            const allowanceSection = document.getElementById('allowanceLedgerSection');
+
+            try {
+                // 1. Fetch separate ledgers and individual payments
+                const [baseRes, allowRes, paymentsRes] = await Promise.all([
+                    fetch('/api/teachers/' + teacherID + '/ledger/base-salary'),
+                    fetch('/api/teachers/' + teacherID + '/ledger/allowance'),
+                    fetch('/api/teachers/' + teacherID + '/payments')
+                ]);
+
+                const baseData = await baseRes.json();
+                const allowData = await allowRes.json();
+                const paymentData = await paymentsRes.json();
+
+                const baseLedger = baseData.ledger || [];
+                const allowLedger = allowData.ledger || [];
+                const payments = paymentData.payments || [];
+
+                // Helper to render a consistent row
+                const renderRow = (data) => {
+                    const { period, type, reference, accrued, paid, balance, status, statusClass, actionHTML } = data;
+                    return `
+                        <tr class="border-b border-slate-50 last:border-none hover:bg-slate-50/50 transition-colors">
+                            <td class="px-4 py-4 font-bold text-slate-700 whitespace-nowrap">${period}</td>
+                            <td class="px-4 py-4 font-bold text-slate-500 uppercase text-[9px] tracking-wide">${type}</td>
+                            <td class="px-4 py-4 text-center">
+                                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-widest border border-slate-200 truncate inline-block max-w-[80px]" title="${reference}">${reference || '-'}</span>
+                            </td>
+                            <td class="px-4 py-4 font-bold text-slate-700 text-right whitespace-nowrap">${new Intl.NumberFormat('en-UG').format(accrued)}</td>
+                            <td class="px-4 py-4 font-bold text-emerald-600 text-right whitespace-nowrap">${paid > 0 ? '+' + new Intl.NumberFormat('en-UG').format(paid) : '-'}</td>
+                            <td class="px-4 py-4 font-bold text-slate-700 text-right whitespace-nowrap text-[11px]">${new Intl.NumberFormat('en-UG').format(balance)}</td>
+                            <td class="px-4 py-4 text-center">
+                                <span class="px-2 py-1 rounded-md border text-[9px] font-black uppercase tracking-widest ${statusClass}">
+                                    ${status}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-center align-middle">
+                                ${actionHTML || '<span class="text-slate-200">-</span>'}
+                            </td>
+                        </tr>
+                    `;
+                };
+
+                const processLedgerType = (typeTitle, typeKey, specificLedger) => {
+                    let timeline = [];
+
+                    // Add Accruals from the specific ledger
+                    specificLedger.forEach(entry => {
+                        if (entry.accrued > 0) {
+                            timeline.push({
+                                sortDate: new Date(entry.start_date),
+                                type: 'Requirement',
+                                label: entry.period_name,
+                                accrued: entry.accrued,
+                                paid: entry.paid,
+                                balance: entry.accrued - entry.paid,
+                                reference: 'ACCRUAL',
+                                entry: entry
+                            });
+                        }
+                    });
+
+                    // Add Individual Payouts
+                    payments.forEach(p => {
+                        // Include combined payments in Base Salary history
+                        const isMatch = (typeKey === 'base' && (p.type === 'base_salary' || p.type === 'combined')) ||
+                            (typeKey === 'allowance' && p.type === 'allowance');
+
+                        if (isMatch) {
+                            timeline.push({
+                                sortDate: new Date(p.paid_at),
+                                type: 'Payout Save',
+                                label: new Date(p.paid_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+                                accrued: 0,
+                                paid: p.amount,
+                                balance: 0,
+                                reference: p.reference || 'Ref ID',
+                                isPayment: true,
+                                payment: p
+                            });
+                        }
+                    });
+
+                    // Sort: Newest First
+                    timeline.sort((a, b) => b.sortDate - a.sortDate);
+
+                    if (timeline.length === 0) return '';
+
+                    return timeline.map(item => {
+                        let status = 'Processed';
+                        let statusClass = 'bg-slate-50 text-slate-400 border-slate-100';
+                        let actionHTML = '';
+
+                        if (item.type === 'Requirement') {
+                            const b = item.balance;
+                            if (b > 0) {
+                                status = item.entry.paid > 0 ? 'Partial' : 'Unpaid';
+                                statusClass = status === 'Partial' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-rose-50 text-rose-600 border-rose-100';
+
+                                const typeStr = typeTitle.replace(/'/g, "\\'");
+                                actionHTML = `<button onclick="handlePayLedgerItem('${typeStr}', ${b}, '${item.entry.start_date}', '${item.entry.end_date}')" class="w-7 h-7 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm mx-auto group" title="Pay Remaining">
+                                    <i class="fas fa-wallet text-[10px]"></i>
+                                </button>`;
+                            } else if (b < 0) {
+                                status = 'Overpaid';
+                                statusClass = 'bg-indigo-50 text-indigo-600 border-indigo-100';
+                            } else {
+                                status = 'Settled';
+                                statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                            }
+                        } else {
+                            status = 'Disbursed';
+                            statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                        }
+
+                        return renderRow({
+                            period: item.label,
+                            type: item.type,
+                            reference: item.reference,
+                            accrued: item.accrued,
+                            paid: item.paid,
+                            balance: item.type === 'Requirement' ? item.balance : 0,
+                            status: status,
+                            statusClass: statusClass,
+                            actionHTML: actionHTML
+                        });
+                    }).join('');
+                };
+
+                const baseHTML = processLedgerType('Base Salary', 'base', baseLedger);
+                const allowanceHTML = processLedgerType('Allowance', 'allowance', allowLedger);
+
+                baseBody.innerHTML = baseHTML || '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400 italic">No salary history recorded</td></tr>';
+                allowanceBody.innerHTML = allowanceHTML || '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400 italic">No allowance history recorded</td></tr>';
+                allowanceSection.classList.remove('hidden');
+
+            } catch (err) {
+                console.error('Ledger Processing Failed:', err);
+                baseBody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-rose-400 italic">Connectivity Error</td></tr>';
+            }
+        }
+
+        async function handleProcessPayment() {
+            const totalText = document.getElementById('totalUnpaidDisplay').textContent.replace(/,/g, '').trim();
+            const amount = parseInt(totalText);
+
+            if (!amount || amount <= 0) {
+                showNotification('No outstanding balance to pay', 'error');
+                return;
+            }
+
+            openDisburseModal({
+                balance: amount,
+                type: 'combined',
+                typeLabel: 'Total Balance',
+                periodName: '',
+                startDate: new Date().toISOString(),
+                endDate: new Date().toISOString()
+            });
+        }
+
+        async function handlePayLedgerItem(typeLabel, amount, startDate, endDate) {
+            openDisburseModal({
+                balance: amount,
+                type: typeLabel === 'Allowance' ? 'allowance' : 'base_salary',
+                typeLabel: typeLabel,
+                periodName: '',
+                startDate: startDate,
+                endDate: endDate
+            });
+        }
+
+        async function handleConfirmDisbursement() {
+            const amountInput = document.getElementById('disburseAmountInput');
+            const notesInput = document.getElementById('disburseNotesInput');
+            const amount = parseInt(amountInput.value);
+            const notes = notesInput.value;
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (amount > pendingPayment.balance) {
+                if (!confirm(`The amount exceeds the balance (${new Intl.NumberFormat('en-UG').format(pendingPayment.balance)}). Proceed anyway?`)) {
+                    return;
+                }
+            }
+
+            try {
+                const btn = document.getElementById('confirmDisburseBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+
+                const res = await fetch('/api/teachers/' + teacherID + '/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        type: pendingPayment.type,
+                        period_start: new Date(pendingPayment.startDate).toISOString(),
+                        period_end: new Date(pendingPayment.endDate).toISOString(),
+                        reference: 'Custom Payout',
+                        notes: notes
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showNotification('Disbursement Successful');
+                    closeDisburseModal();
+                    loadTeacherLedger();
+                    loadTeacherSalary();
+                } else {
+                    showNotification(data.error || 'Payment failed', 'error');
+                }
+            } catch (e) {
+                showNotification('Connectivity error', 'error');
+            } finally {
+                const btn = document.getElementById('confirmDisburseBtn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Process Payout';
                 }
             }
         }
-        // Month: All allowed (default)
-    }
+        let pendingPayment = null;
 
-    function attachConstraintListeners() {
-        document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
-            r.addEventListener('change', updateAllowanceConstraints);
-        });
-    }
-</script>
+        function openDisburseModal(data) {
+            pendingPayment = data;
+            const modal = document.getElementById('disburseModal');
+            const amountInput = document.getElementById('disburseAmountInput');
+            const notesInput = document.getElementById('disburseNotesInput');
+            const targetLabel = document.getElementById('disburseTargetLabel');
+            const owedText = document.getElementById('disburseOwedText');
+            const subtitle = document.getElementById('disburseSubtitle');
 
-<style>
-    @keyframes scaleUp {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
+            targetLabel.textContent = `${data.typeLabel} - ${data.periodName || 'Outstanding Balance'}`;
+            owedText.textContent = `Balance Due: ${new Intl.NumberFormat('en-UG').format(data.balance)}`;
+            amountInput.value = data.balance;
+            notesInput.value = ''; // Clear notes
+            subtitle.textContent = data.periodName ? 'Specify Period Payout' : 'Specify Total Payout';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                amountInput.focus();
+                amountInput.select();
+            }, 100);
         }
 
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    .animate-scale-up {
-        animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .animate-fade-in {
-        animation: fadeIn 0.4s ease-out;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+        function closeDisburseModal() {
+            document.getElementById('disburseModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            pendingPayment = null;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        function setMaxDisburseAmount() {
+            if (pendingPayment) {
+                document.getElementById('disburseAmountInput').value = pendingPayment.balance;
+            }
         }
-    }
+    </script>
 
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
+    <style>
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
 
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .animate-slide-in {
-        animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #e2e8f0;
-        border-radius: 10px;
-    }
-
-    .glass-card {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    }
-
-    /* Animation Refinements */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        .animate-scale-up {
+            animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-    }
 
-    .animate-fade-in-up {
-        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-</style>
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Animation Refinements */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>

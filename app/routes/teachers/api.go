@@ -934,15 +934,149 @@ func SetTeacherSalaryAPI(c *fiber.Ctx) error {
 		}
 	}
 
-	if err := database.UpsertTeacherSalary(config.GetDB(), &req); err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error":   "Failed to set salary",
-			"details": err.Error(),
-		})
+	// Save Base Salary
+	baseSalary := &models.TeacherBaseSalary{
+		UserID: teacherID,
+		Amount: req.Amount,
+		Period: req.Period,
+	}
+
+	if err := database.UpsertTeacherBaseSalary(config.GetDB(), baseSalary); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to set base salary", "details": err.Error()})
+	}
+
+	// Save/Update Allowance if requested
+	if req.HasAllowance {
+		allowance := &models.TeacherAllowance{
+			UserID:   teacherID,
+			Amount:   req.Allowance,
+			Period:   req.AllowancePeriod,
+			IsActive: true,
+		}
+		if err := database.UpsertTeacherAllowance(config.GetDB(), allowance); err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to set allowance", "details": err.Error()})
+		}
+	} else {
+		// Insert an inactive record to stop accruals
+		allowance := &models.TeacherAllowance{
+			UserID:   teacherID,
+			IsActive: false,
+		}
+		database.UpsertTeacherAllowance(config.GetDB(), allowance)
 	}
 
 	return c.JSON(fiber.Map{
 		"message": "Salary set successfully",
-		"salary":  req,
+	})
+}
+
+// GetTeacherLedgerAPI returns the financial history ledger
+func GetTeacherLedgerAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	// Default lookback: 6 months
+	ledger, err := database.GetTeacherLedger(config.GetDB(), teacherID, 6)
+	if err != nil {
+		log.Printf("Ledger Error: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate ledger"})
+	}
+
+	return c.JSON(fiber.Map{
+		"ledger": ledger,
+	})
+}
+
+// GetTeacherBaseSalaryLedgerAPI returns only base salary ledger history
+func GetTeacherBaseSalaryLedgerAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	ledger, err := database.GetTeacherBaseSalaryLedger(config.GetDB(), teacherID, 6)
+	if err != nil {
+		log.Printf("Base Salary Ledger Error: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate base salary ledger"})
+	}
+
+	return c.JSON(fiber.Map{
+		"ledger": ledger,
+		"type":   "base_salary",
+	})
+}
+
+// GetTeacherAllowanceLedgerAPI returns only allowance ledger history
+func GetTeacherAllowanceLedgerAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	ledger, err := database.GetTeacherAllowanceLedger(config.GetDB(), teacherID, 6)
+	if err != nil {
+		log.Printf("Allowance Ledger Error: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to generate allowance ledger"})
+	}
+
+	return c.JSON(fiber.Map{
+		"ledger": ledger,
+		"type":   "allowance",
+	})
+}
+
+// PayTeacherAPI processes a payment for a teacher
+func PayTeacherAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	var req models.TeacherPayment
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	req.TeacherID = teacherID
+
+	if req.Amount <= 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "Payment amount must be greater than zero"})
+	}
+
+	// Fetch teacher name for the expense title
+	teacher, err := database.GetTeacherByID(config.GetDB(), teacherID)
+	teacherName := "Teacher " + teacherID
+	if err == nil && teacher != nil {
+		teacherName = teacher.FirstName + " " + teacher.LastName
+	}
+
+	if err := database.CreateTeacherPayment(config.GetDB(), &req, teacherName); err != nil {
+		log.Printf("Payment Error: %v", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to process payment"})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Payment processed successfully",
+		"payment": req,
+	})
+}
+
+// GetTeacherPaymentsAPI returns the payment history for a teacher
+func GetTeacherPaymentsAPI(c *fiber.Ctx) error {
+	teacherID := c.Params("id")
+	if teacherID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Teacher ID is required"})
+	}
+
+	payments, err := database.GetTeacherPayments(config.GetDB(), teacherID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch payment history"})
+	}
+
+	return c.JSON(fiber.Map{
+		"payments": payments,
+		"count":    len(payments),
 	})
 }
