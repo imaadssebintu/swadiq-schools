@@ -42,6 +42,12 @@ func SetupSettingsRoutes(app *fiber.App) {
 	// Auto-set current based on date
 	api.Post("/auto-set-current", func(c *fiber.Ctx) error { return academic.AutoSetCurrentByDate(c, db) })
 
+	// Assessment Category routes
+	api.Get("/assessment-categories", GetAllAssessmentCategories)
+	api.Post("/assessment-categories", CreateAssessmentCategory)
+	api.Put("/assessment-categories/:id", UpdateAssessmentCategory)
+	api.Delete("/assessment-categories/:id", DeleteAssessmentCategory)
+
 	// Assessment Type routes
 	api.Get("/assessment-types", GetAllAssessmentTypes)
 	api.Post("/assessment-types", CreateAssessmentType)

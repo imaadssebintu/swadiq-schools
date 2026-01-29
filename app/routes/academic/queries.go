@@ -2,8 +2,10 @@ package academic
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"swadiq-schools/app/models"
 )
 
@@ -354,46 +356,153 @@ func autoSetCurrentTerm(db *sql.DB) error {
 }
 
 func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
-	query := `SELECT id, name, code, parent_id, category, weight, color, is_active, created_at, updated_at 
-			  FROM assessment_types WHERE deleted_at IS NULL ORDER BY category, name`
+	query := `SELECT t.id, t.name, t.code, t.category_id, c.name as category_name, t.weight, t.color, t.all_classes, t.is_active, t.created_at, t.updated_at,
+			  (SELECT json_agg(json_build_object('id', cl.id, 'name', cl.name))
+			   FROM assessment_type_classes atc
+			   JOIN classes cl ON atc.class_id = cl.id
+			   WHERE atc.assessment_type_id = t.id) as classes
+			  FROM assessment_types t
+			  JOIN assessment_categories c ON t.category_id = c.id
+			  WHERE t.deleted_at IS NULL ORDER BY c.name, t.name`
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return []*models.AssessmentType{}, nil
+		return nil, err
 	}
 	defer rows.Close()
 
-	var types []*models.AssessmentType
+	types := []*models.AssessmentType{}
 	for rows.Next() {
 		t := &models.AssessmentType{}
-		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.ParentID, &t.Category, &t.Weight, &t.Color, &t.IsActive, &t.CreatedAt, &t.UpdatedAt)
+		var classesJSON []byte
+		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.CategoryID, &t.CategoryName, &t.Weight, &t.Color, &t.AllClasses, &t.IsActive, &t.CreatedAt, &t.UpdatedAt, &classesJSON)
 		if err != nil {
+			log.Printf("Error scanning assessment type: %v", err)
 			continue
 		}
+
+		if classesJSON != nil {
+			if err := json.Unmarshal(classesJSON, &t.Classes); err != nil {
+				log.Printf("Error unmarshaling classes for assessment type: %v", err)
+			}
+		}
+
 		types = append(types, t)
 	}
 	return types, nil
 }
 
 func CreateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
-	query := `INSERT INTO assessment_types (name, code, parent_id, category, weight, color, is_active, created_at, updated_at)
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	query := `INSERT INTO assessment_types (name, code, category_id, weight, color, all_classes, is_active, created_at, updated_at)
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, t.Name, t.Code, t.ParentID, t.Category, t.Weight, t.Color, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
-	return err
+	err = tx.QueryRow(query, t.Name, t.Code, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	// Insert class links if all_classes is false
+	if !t.AllClasses && len(t.Classes) > 0 {
+		for _, class := range t.Classes {
+			_, err = tx.Exec(`INSERT INTO assessment_type_classes (assessment_type_id, class_id) VALUES ($1, $2)`, t.ID, class.ID)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return tx.Commit()
 }
 
 func UpdateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
-	query := `UPDATE assessment_types SET name = $1, code = $2, parent_id = $3, category = $4, weight = $5, color = $6, is_active = $7, updated_at = NOW()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	query := `UPDATE assessment_types SET name = $1, code = $2, category_id = $3, weight = $4, color = $5, all_classes = $6, is_active = $7, updated_at = NOW()
 			  WHERE id = $8 AND deleted_at IS NULL`
 
-	_, err := db.Exec(query, t.Name, t.Code, t.ParentID, t.Category, t.Weight, t.Color, t.IsActive, t.ID)
-	return err
+	_, err = tx.Exec(query, t.Name, t.Code, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive, t.ID)
+	if err != nil {
+		return err
+	}
+
+	// Clear existing class links
+	_, err = tx.Exec(`DELETE FROM assessment_type_classes WHERE assessment_type_id = $1`, t.ID)
+	if err != nil {
+		return err
+	}
+
+	// Insert new class links if all_classes is false
+	if !t.AllClasses && len(t.Classes) > 0 {
+		for _, class := range t.Classes {
+			_, err = tx.Exec(`INSERT INTO assessment_type_classes (assessment_type_id, class_id) VALUES ($1, $2)`, t.ID, class.ID)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return tx.Commit()
 }
 
 func DeleteAssessmentType(db *sql.DB, id string) error {
 	query := `UPDATE assessment_types SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
+}
+
+// AssessmentCategory Queries
+func GetAllAssessmentCategories(db *sql.DB) ([]*models.AssessmentCategory, error) {
+	query := `SELECT id, name, code, color, is_active, created_at, updated_at 
+			  FROM assessment_categories WHERE deleted_at IS NULL ORDER BY name`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	cats := []*models.AssessmentCategory{}
+	for rows.Next() {
+		c := &models.AssessmentCategory{}
+		err := rows.Scan(&c.ID, &c.Name, &c.Code, &c.Color, &c.IsActive, &c.CreatedAt, &c.UpdatedAt)
+		if err != nil {
+			continue
+		}
+		cats = append(cats, c)
+	}
+	return cats, nil
+}
+
+func CreateAssessmentCategory(db *sql.DB, c *models.AssessmentCategory) error {
+	query := `INSERT INTO assessment_categories (name, code, color, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, c.Name, c.Code, c.Color, c.IsActive).Scan(&c.ID, &c.CreatedAt, &c.UpdatedAt)
+	return err
+}
+
+func UpdateAssessmentCategory(db *sql.DB, c *models.AssessmentCategory) error {
+	query := `UPDATE assessment_categories SET name = $1, code = $2, color = $3, is_active = $4, updated_at = NOW()
+			  WHERE id = $5 AND deleted_at IS NULL`
+
+	_, err := db.Exec(query, c.Name, c.Code, c.Color, c.IsActive, c.ID)
+	return err
+}
+
+func DeleteAssessmentCategory(db *sql.DB, id string) error {
+	query := `UPDATE assessment_categories SET deleted_at = NOW() WHERE id = $1`
 	_, err := db.Exec(query, id)
 	return err
 }

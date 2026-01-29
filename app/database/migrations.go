@@ -39,12 +39,6 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
-	// 6. Refine assessment types
-	err = refineAssessmentTypes(db)
-	if err != nil {
-		return err
-	}
-
 	log.Println("Database migrations completed successfully")
 	return nil
 }
@@ -158,85 +152,5 @@ func createSimplifiedPayrollTables(db *sql.DB) error {
 			return err
 		}
 	}
-	return nil
-}
-
-func refineAssessmentTypes(db *sql.DB) error {
-	log.Println("Refining assessment types...")
-
-	// 1. Add columns to assessment_types
-	queries := []string{
-		"ALTER TABLE assessment_types ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES assessment_types(id)",
-		"ALTER TABLE assessment_types ADD COLUMN IF NOT EXISTS category VARCHAR(50)",
-		"ALTER TABLE assessment_types ADD COLUMN IF NOT EXISTS weight NUMERIC(5,2) DEFAULT 1.0",
-	}
-	for _, q := range queries {
-		if _, err := db.Exec(q); err != nil {
-			log.Printf("Warning: Migration step failed: %v", err)
-		}
-	}
-
-	// 2. Add column to exams
-	_, err := db.Exec("ALTER TABLE exams ADD COLUMN IF NOT EXISTS assessment_type_id UUID REFERENCES assessment_types(id)")
-	if err != nil {
-		log.Printf("Warning: Migration step failed: %v", err)
-	}
-
-	// 3. Seed Standard Assessment Types
-	seedQueries := []string{
-		`INSERT INTO assessment_types (name, code, category, color, is_active)
-		 VALUES ('Beginning of Term', 'BOT', 'Exam', 'indigo', true)
-		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
-		`INSERT INTO assessment_types (name, code, category, color, is_active)
-		 VALUES ('Mid Term', 'MT', 'Exam', 'purple', true)
-		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
-		`INSERT INTO assessment_types (name, code, category, color, is_active)
-		 VALUES ('End of Term', 'EOT', 'Exam', 'pink', true)
-		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
-		`INSERT INTO assessment_types (name, code, category, color, is_active)
-		 VALUES ('Class Test', 'CTEST', 'Test', 'amber', true)
-		 ON CONFLICT (name) DO UPDATE SET category = EXCLUDED.category, code = EXCLUDED.code`,
-		`INSERT INTO assessment_types (name, code, category, color, is_active)
-		 VALUES ('Course Project', 'CPROJ', 'Project', 'emerald', true)
-		 ON CONFLICT (name) DO UPDATE SET category = EXCLUDED.category, code = EXCLUDED.code`,
-	}
-
-	for _, q := range seedQueries {
-		if _, err := db.Exec(q); err != nil {
-			log.Printf("Warning: Seeding assessment types failed: %v", err)
-		}
-	}
-
-	// 4. Seed Sub-types (Sample)
-	subTypeLogic := `
-	DO $$ 
-	DECLARE 
-		ctest_id UUID;
-		cproj_id UUID;
-	BEGIN
-		SELECT id INTO ctest_id FROM assessment_types WHERE code = 'CTEST';
-		SELECT id INTO cproj_id FROM assessment_types WHERE code = 'CPROJ';
-
-		IF ctest_id IS NOT NULL THEN
-			INSERT INTO assessment_types (name, code, parent_id, category, color, is_active)
-			VALUES 
-			('Test 1', 'T1', ctest_id, 'Test', 'amber', true),
-			('Test 2', 'T2', ctest_id, 'Test', 'amber', true)
-			ON CONFLICT (name) DO NOTHING;
-		END IF;
-
-		IF cproj_id IS NOT NULL THEN
-			INSERT INTO assessment_types (name, code, parent_id, category, color, is_active)
-			VALUES 
-			('Project 1', 'P1', cproj_id, 'Project', 'emerald', true),
-			('Lab Report', 'LR1', cproj_id, 'Project', 'emerald', true)
-			ON CONFLICT (name) DO NOTHING;
-		END IF;
-	END $$;`
-
-	if _, err := db.Exec(subTypeLogic); err != nil {
-		log.Printf("Warning: Seeding assessment sub-types failed: %v", err)
-	}
-
 	return nil
 }

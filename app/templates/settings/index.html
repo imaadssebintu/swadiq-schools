@@ -21,7 +21,7 @@
             <button id="addAssessmentTypeBtn"
                 class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-plus"></i>
-                <span>Category</span>
+                <span>Classification</span>
             </button>
         </div>
     </div>
@@ -133,27 +133,29 @@
             <!-- Assessment Types Section -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Assessment
-                            Categories</span>
-                        <a href="/settings/assessment-types"
-                            class="text-[9px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest flex items-center gap-1.5 transition-colors ml-2">
-                            Manage All <i class="fas fa-arrow-right text-[8px]"></i>
-                        </a>
-                        <div class="h-px bg-slate-100 w-12"></div>
+                    <div class="flex flex-col gap-0.5">
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Major
+                                Classifications</span>
+                            <div class="h-px bg-slate-100 w-12"></div>
+                        </div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Primary groups (e.g.
+                            Exam, Test, Project)</p>
                     </div>
+                    <a href="/settings/assessment-types"
+                        class="text-[9px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest flex items-center gap-1.5 transition-colors">
+                        Manage All <i class="fas fa-arrow-right text-[8px]"></i>
+                    </a>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/50 border-b border-slate-100">
                                 <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    Category Name</th>
+                                    Classification</th>
                                 <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                     Code</th>
-                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    Status</th>
                                 <th
                                     class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
                                     Actions</th>
@@ -162,7 +164,7 @@
                         <tbody id="assessmentTypesList">
                             <!-- Populated via JS -->
                             <tr>
-                                <td colspan="4"
+                                <td colspan="3"
                                     class="px-5 py-12 text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest animate-pulse">
                                     Initializing Categories...</td>
                             </tr>
@@ -378,7 +380,7 @@
         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide" id="assessmentTypeModalTitle">Add
-                Category</h3>
+                Assessment</h3>
             <button onclick="hideAssessmentTypeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
@@ -396,6 +398,13 @@
                     class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 uppercase">
             </div>
             <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Classification</label>
+                <select id="assessmentTypeCatId" required
+                    class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 bg-white cursor-pointer">
+                    <option value="">Select Category</option>
+                </select>
+            </div>
+            <div class="space-y-1">
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Color Theme</label>
                 <select id="assessmentTypeColor"
                     class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 bg-white">
@@ -407,19 +416,35 @@
                     <option value="slate">Slate (Passive)</option>
                 </select>
             </div>
+            <div class="space-y-3 pt-2">
+                <div class="flex items-center justify-between">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Applicable
+                        Classes</label>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="assessmentTypeAllClasses" checked
+                            class="w-4 h-4 rounded border-slate-300">
+                        <label for="assessmentTypeAllClasses" class="text-[10px] font-bold text-slate-600">All
+                            Classes</label>
+                    </div>
+                </div>
+                <div id="assessmentClassesContainer"
+                    class="hidden grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100 max-h-32 overflow-y-auto">
+                    <!-- Classes populated via JS -->
+                </div>
+            </div>
             <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
                 <input type="checkbox" id="assessmentTypeIsActive" checked
                     class="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/5">
                 <div class="flex flex-col">
-                    <label for="assessmentTypeIsActive" class="text-xs font-bold text-slate-700">Available for
-                        Use</label>
-                    <p class="text-[9px] text-slate-400 font-medium">Show this category in the assessment creator</p>
+                    <label for="assessmentTypeIsActive"
+                        class="text-xs font-bold text-slate-700 uppercase tracking-tight">Available For Use</label>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Show in creator</p>
                 </div>
             </div>
             <div class="pt-2">
                 <button type="submit" id="saveAssessmentTypeBtn"
                     class="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
-                    <span>Save Category</span>
+                    <span>Save Assessment</span>
                 </button>
             </div>
         </form>
@@ -604,10 +629,59 @@
 
     async function loadAssessmentTypes() {
         try {
-            const response = await fetch('/api/settings/assessment-types');
-            const data = await response.json();
-            assessmentTypes = Array.isArray(data) ? data : [];
-            renderAssessmentTypes();
+            // Load types and categories
+            const [typesResp, catsResp, classesResp] = await Promise.all([
+                fetch('/api/settings/assessment-types'),
+                fetch('/api/settings/assessment-categories'),
+                fetch('/api/classes')
+            ]);
+
+            const [typesData, catsData, classesData] = await Promise.all([
+                typesResp.json(),
+                catsResp.json(),
+                classesResp.json()
+            ]);
+
+            assessmentTypes = Array.isArray(typesData) ? typesData : [];
+            const categories = Array.isArray(catsData) ? catsData : [];
+            const allAvailableClasses = Array.isArray(classesData) ? classesData : (classesData.classes || []);
+
+            // Populate category dropdown in modal
+            const select = document.getElementById('assessmentTypeCatId');
+            if (select) {
+                select.innerHTML = '<option value="">Select Category</option>';
+                (categories || []).forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.name;
+                    select.appendChild(opt);
+                });
+            }
+
+            // Populate class checkboxes
+            const classContainer = document.getElementById('assessmentClassesContainer');
+            if (classContainer) {
+                classContainer.innerHTML = '';
+                (allAvailableClasses || []).forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-2';
+                    div.innerHTML = `
+                        <input type="checkbox" name="assessmentClass" value="${c.id}" id="main_class_${c.id}" class="w-3.5 h-3.5 rounded border-slate-300">
+                        <label for="main_class_${c.id}" class="text-[10px] font-bold text-slate-600 truncate uppercase tracking-tighter">${c.name}</label>
+                    `;
+                    classContainer.appendChild(div);
+                });
+            }
+
+            // Toggle classes visibility listener
+            const allClassesToggle = document.getElementById('assessmentTypeAllClasses');
+            if (allClassesToggle) {
+                allClassesToggle.onchange = (e) => {
+                    classContainer.classList.toggle('hidden', e.target.checked);
+                };
+            }
+
+            renderAssessmentCategories(categories);
         } catch (error) {
             console.error('Error loading assessment types:', error);
         }
@@ -726,49 +800,53 @@
         });
     }
 
-    // Render assessment types as table rows
-    function renderAssessmentTypes() {
+    // Render assessment categories as table rows
+    function renderAssessmentCategories(categories) {
         const container = document.getElementById('assessmentTypesList');
         container.innerHTML = '';
 
-        if (assessmentTypes.length === 0) {
+        if (categories.length === 0) {
             container.innerHTML = `
                 <tr>
-                    <td colspan="4" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        No assessment categories defined
+                    <td colspan="3" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        No major classifications defined
                     </td>
                 </tr>`;
             return;
         }
 
-        assessmentTypes.forEach(t => {
+        categories.forEach(c => {
             const tr = document.createElement('tr');
             tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
+
+            // Map colors to hex or use inline styles since Tailwind dynamic classes might fail
+            const colors = {
+                'indigo': '#6366f1',
+                'sky': '#0ea5e9',
+                'amber': '#f59e0b',
+                'rose': '#f43f5e',
+                'emerald': '#10b981',
+                'slate': '#64748b'
+            };
+            const activeColor = colors[c.color] || '#6366f1';
+
             tr.innerHTML = `
                 <td class="px-5 py-4">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white bg-${t.color}-500 shadow-sm shadow-${t.color}-200">
-                            <i class="fas fa-tag text-[10px]"></i>
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm" style="background-color: ${activeColor}; box-shadow: 0 4px 6px -1px ${activeColor}33">
+                            <i class="fas fa-layer-group text-[10px]"></i>
                         </div>
-                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${t.name}</span>
+                        <span class="text-xs font-black text-slate-700 uppercase tracking-tight">${c.name}</span>
                     </div>
                 </td>
                 <td class="px-5 py-4">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${t.code}</span>
-                </td>
-                <td class="px-5 py-4">
-                    <span class="text-[9px] font-black px-2 py-0.5 rounded uppercase ${t.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
-                        ${t.is_active ? 'Active' : 'Disabled'}
-                    </span>
+                    <span class="text-[10px] font-black text-slate-400 tracking-widest uppercase">${c.code}</span>
                 </td>
                 <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        <button onclick="editAssessmentType('${t.id}')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                            <i class="fas fa-pen text-[10px]"></i>
-                        </button>
-                        <button onclick="showDeleteModal('${t.id}', 'assessment_type')" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-red-500 hover:text-white transition-all">
-                            <i class="fas fa-trash text-[10px]"></i>
-                        </button>
+                        <a href="/settings/assessment-types" class="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                            <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
                     </div>
                 </td>`;
             container.appendChild(tr);
@@ -944,12 +1022,23 @@
         const t = assessmentTypes.find(type => type.id === id);
         if (!t) return;
 
-        document.getElementById('assessmentTypeModalTitle').textContent = 'Edit Category';
+        document.getElementById('assessmentTypeModalTitle').textContent = 'Edit Assessment';
         document.getElementById('assessmentTypeId').value = t.id;
         document.getElementById('assessmentTypeName').value = t.name;
         document.getElementById('assessmentTypeCode').value = t.code;
+        document.getElementById('assessmentTypeCatId').value = t.category_id || '';
         document.getElementById('assessmentTypeColor').value = t.color || 'indigo';
         document.getElementById('assessmentTypeIsActive').checked = t.is_active;
+
+        const isAllClasses = t.all_classes !== false;
+        document.getElementById('assessmentTypeAllClasses').checked = isAllClasses;
+        document.getElementById('assessmentClassesContainer').classList.toggle('hidden', isAllClasses);
+
+        // Reset and set checkboxes
+        document.querySelectorAll('input[name="assessmentClass"]').forEach(cb => {
+            cb.checked = !isAllClasses && t.classes && t.classes.some(c => c.id === cb.value);
+        });
+
         animateModal('assessmentTypeModal', true);
     }
 
@@ -1027,14 +1116,26 @@
     async function saveAssessmentType(e) {
         e.preventDefault();
         const id = document.getElementById('assessmentTypeId').value;
+        const allClasses = document.getElementById('assessmentTypeAllClasses').checked;
+
+        const selectedClasses = [];
+        if (!allClasses) {
+            document.querySelectorAll('input[name="assessmentClass"]:checked').forEach(cb => {
+                selectedClasses.push({ id: cb.value });
+            });
+        }
+
         const data = {
             name: document.getElementById('assessmentTypeName').value,
             code: document.getElementById('assessmentTypeCode').value,
+            category_id: document.getElementById('assessmentTypeCatId').value,
             color: document.getElementById('assessmentTypeColor').value,
+            all_classes: allClasses,
+            classes: selectedClasses,
             is_active: document.getElementById('assessmentTypeIsActive').checked
         };
 
-        setBtnLoading('saveAssessmentTypeBtn', true, 'Save Category');
+        setBtnLoading('saveAssessmentTypeBtn', true, 'Save Assessment');
         try {
             const response = await fetch(id ? `/api/settings/assessment-types/${id}` : '/api/settings/assessment-types', {
                 method: id ? 'PUT' : 'POST',
@@ -1047,12 +1148,12 @@
                 loadAssessmentTypes();
             } else {
                 const error = await response.json();
-                alert(error.error || 'Failed to save category');
+                alert(error.error || 'Failed to save assessment');
             }
         } catch (error) {
             console.error('Error saving assessment type:', error);
         } finally {
-            setBtnLoading('saveAssessmentTypeBtn', false, 'Save Category');
+            setBtnLoading('saveAssessmentTypeBtn', false, 'Save Assessment');
         }
     }
 

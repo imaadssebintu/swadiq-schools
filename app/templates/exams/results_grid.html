@@ -184,17 +184,25 @@
             assessmentTypes = await resp.json();
             const select = document.getElementById('typeSelect');
 
+            // Filter types by class
+            const filteredTypes = assessmentTypes.filter(t => {
+                if (t.all_classes) return true;
+                if (!t.classes) return false;
+                return t.classes.some(c => c.id === CLASS_ID);
+            });
+
             // Group types by category
             const categories = {};
-            assessmentTypes.forEach(t => {
-                if (!categories[t.category]) categories[t.category] = [];
-                categories[t.category].push(t);
+            filteredTypes.forEach(t => {
+                const catName = t.category_name || 'Common';
+                if (!categories[catName]) categories[catName] = [];
+                categories[catName].push(t);
             });
 
             select.innerHTML = '';
             Object.keys(categories).forEach(cat => {
                 const group = document.createElement('optgroup');
-                group.label = cat === 'other' ? 'Common' : cat.toUpperCase();
+                group.label = cat.toUpperCase();
                 categories[cat].forEach(t => {
                     const opt = document.createElement('option');
                     opt.value = t.id;
