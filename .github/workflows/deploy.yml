@@ -20,15 +20,18 @@ jobs:
         command_timeout: 30m
         script: |
           cd ~/docker
-          # Stop and remove existing container
-          docker stop swadiq-app || true
-          docker rm swadiq-app || true
-          # Clean up old files
-          rm -rf swadiq-schools
-          # Clone latest code
-          git clone https://github.com/ImaadDean/swadiq-schools.git
-          cd swadiq-schools
-          # Build new image with increased timeout and no cache conflicts
-          DOCKER_BUILDKIT=1 docker build --no-cache -t swadiq-schools .
-          # Run container with restart policy
-          docker run -d --name swadiq-app -p 8080:8080 --restart unless-stopped swadiq-schools
+          
+          # Pull latest code or clone if missing
+          if [ -d "swadiq-schools" ]; then
+            cd swadiq-schools
+            git fetch origin
+            git reset --hard origin/main
+          else
+            git clone https://github.com/ImaadDean/swadiq-schools.git swadiq-schools
+            cd swadiq-schools
+          fi
+
+          # Start/Update using Docker Compose
+          # This builds the image and recreates containers if config changed
+          docker compose down --remove-orphans || true
+          docker compose up -d --build
