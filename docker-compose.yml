@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: swadiq-app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    environment:
+      # Set to 'true' to use local DB config, 'false' for hardcoded remote IP
+      - LOCAL_DB=false
+    restart: always
