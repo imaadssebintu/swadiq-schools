@@ -7,6 +7,7 @@ type AssessmentType struct {
 	ID           string              `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()" validate:"required,uuid"`
 	Name         string              `json:"name" gorm:"uniqueIndex;not null" validate:"required"`
 	Code         string              `json:"code" gorm:"uniqueIndex;not null" validate:"required"`
+	TermID       *string             `json:"term_id" gorm:"index;type:uuid"`
 	CategoryID   string              `json:"category_id" gorm:"index;type:uuid;not null"`
 	CategoryName string              `json:"category_name" gorm:"-"` // Not stored in DB
 	Weight       float64             `json:"weight" gorm:"default:1.0"`

@@ -114,6 +114,13 @@ func CreateAssessmentType(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
 	}
 
+	// Auto-assign to current term
+	currentTerm, err := academic.GetCurrentTerm(config.GetDB())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to determine current term: " + err.Error()})
+	}
+	t.TermID = &currentTerm.ID
+
 	if err := academic.CreateAssessmentType(config.GetDB(), &t); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create assessment type: " + err.Error()})
 	}

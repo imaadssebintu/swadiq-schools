@@ -355,8 +355,24 @@ func autoSetCurrentTerm(db *sql.DB) error {
 	return err
 }
 
+func GetCurrentTerm(db *sql.DB) (*models.Term, error) {
+	term := &models.Term{}
+	query := `SELECT id, academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+			  FROM terms WHERE is_current = true AND deleted_at IS NULL LIMIT 1`
+
+	err := db.QueryRow(query).Scan(
+		&term.ID, &term.AcademicYearID, &term.Name, &term.StartDate.Time, &term.EndDate.Time,
+		&term.IsCurrent, &term.IsActive, &term.CreatedAt, &term.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return term, nil
+}
+
 func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
-	query := `SELECT t.id, t.name, t.code, t.category_id, c.name as category_name, t.weight, t.color, t.all_classes, t.is_active, t.created_at, t.updated_at,
+	query := `SELECT t.id, t.name, t.code, t.term_id, t.category_id, c.name as category_name, t.weight, t.color, t.all_classes, t.is_active, t.created_at, t.updated_at,
 			  (SELECT json_agg(json_build_object('id', cl.id, 'name', cl.name))
 			   FROM assessment_type_classes atc
 			   JOIN classes cl ON atc.class_id = cl.id
@@ -375,7 +391,7 @@ func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
 	for rows.Next() {
 		t := &models.AssessmentType{}
 		var classesJSON []byte
-		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.CategoryID, &t.CategoryName, &t.Weight, &t.Color, &t.AllClasses, &t.IsActive, &t.CreatedAt, &t.UpdatedAt, &classesJSON)
+		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.TermID, &t.CategoryID, &t.CategoryName, &t.Weight, &t.Color, &t.AllClasses, &t.IsActive, &t.CreatedAt, &t.UpdatedAt, &classesJSON)
 		if err != nil {
 			log.Printf("Error scanning assessment type: %v", err)
 			continue
@@ -399,11 +415,11 @@ func CreateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
 	}
 	defer tx.Rollback()
 
-	query := `INSERT INTO assessment_types (name, code, category_id, weight, color, all_classes, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+	query := `INSERT INTO assessment_types (name, code, term_id, category_id, weight, color, all_classes, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err = tx.QueryRow(query, t.Name, t.Code, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
+	err = tx.QueryRow(query, t.Name, t.Code, t.TermID, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
 	if err != nil {
 		return err
 	}
@@ -428,10 +444,10 @@ func UpdateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
 	}
 	defer tx.Rollback()
 
-	query := `UPDATE assessment_types SET name = $1, code = $2, category_id = $3, weight = $4, color = $5, all_classes = $6, is_active = $7, updated_at = NOW()
-			  WHERE id = $8 AND deleted_at IS NULL`
+	query := `UPDATE assessment_types SET name = $1, code = $2, term_id = $3, category_id = $4, weight = $5, color = $6, all_classes = $7, is_active = $8, updated_at = NOW()
+			  WHERE id = $9 AND deleted_at IS NULL`
 
-	_, err = tx.Exec(query, t.Name, t.Code, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive, t.ID)
+	_, err = tx.Exec(query, t.Name, t.Code, t.TermID, t.CategoryID, t.Weight, t.Color, t.AllClasses, t.IsActive, t.ID)
 	if err != nil {
 		return err
 	}
