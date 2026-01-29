@@ -33,6 +33,7 @@ type TimetableEntry struct {
 	TeacherID   string    `json:"teacher_id" db:"teacher_id"`
 	Day         string    `json:"day" db:"day"`
 	TimeSlot    string    `json:"time_slot" db:"time_slot"`
+	PaperID     *string   `json:"paper_id" db:"paper_id"`
 	SubjectName string    `json:"subject_name,omitempty"`
 	ClassName   string    `json:"class_name,omitempty"`
 	CreatedAt   time.Time `json:"created_at" db:"created_at"`

@@ -8,6 +8,7 @@ type Result struct {
 	ExamID    string     `json:"exam_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
 	StudentID string     `json:"student_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
 	PaperID   string     `json:"paper_id" gorm:"not null;index;type:uuid" validate:"required,uuid"`
+	TermID    *string    `json:"term_id,omitempty" gorm:"index;type:uuid" validate:"omitempty,uuid"`
 	Marks     float64    `json:"marks" gorm:"not null;type:decimal(5,2)" validate:"gte=0"`
 	GradeID   *string    `json:"grade_id,omitempty" gorm:"index;type:uuid" validate:"omitempty,uuid"`
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`

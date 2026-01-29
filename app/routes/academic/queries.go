@@ -354,8 +354,8 @@ func autoSetCurrentTerm(db *sql.DB) error {
 }
 
 func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
-	query := `SELECT id, name, code, color, is_active, created_at, updated_at 
-			  FROM assessment_types WHERE deleted_at IS NULL ORDER BY name`
+	query := `SELECT id, name, code, parent_id, category, weight, color, is_active, created_at, updated_at 
+			  FROM assessment_types WHERE deleted_at IS NULL ORDER BY category, name`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -366,7 +366,7 @@ func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
 	var types []*models.AssessmentType
 	for rows.Next() {
 		t := &models.AssessmentType{}
-		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.Color, &t.IsActive, &t.CreatedAt, &t.UpdatedAt)
+		err := rows.Scan(&t.ID, &t.Name, &t.Code, &t.ParentID, &t.Category, &t.Weight, &t.Color, &t.IsActive, &t.CreatedAt, &t.UpdatedAt)
 		if err != nil {
 			continue
 		}
@@ -376,19 +376,19 @@ func GetAllAssessmentTypes(db *sql.DB) ([]*models.AssessmentType, error) {
 }
 
 func CreateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
-	query := `INSERT INTO assessment_types (name, code, color, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, NOW(), NOW())
+	query := `INSERT INTO assessment_types (name, code, parent_id, category, weight, color, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, t.Name, t.Code, t.Color, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
+	err := db.QueryRow(query, t.Name, t.Code, t.ParentID, t.Category, t.Weight, t.Color, t.IsActive).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
 	return err
 }
 
 func UpdateAssessmentType(db *sql.DB, t *models.AssessmentType) error {
-	query := `UPDATE assessment_types SET name = $1, code = $2, color = $3, is_active = $4, updated_at = NOW()
-			  WHERE id = $5 AND deleted_at IS NULL`
+	query := `UPDATE assessment_types SET name = $1, code = $2, parent_id = $3, category = $4, weight = $5, color = $6, is_active = $7, updated_at = NOW()
+			  WHERE id = $8 AND deleted_at IS NULL`
 
-	_, err := db.Exec(query, t.Name, t.Code, t.Color, t.IsActive, t.ID)
+	_, err := db.Exec(query, t.Name, t.Code, t.ParentID, t.Category, t.Weight, t.Color, t.IsActive, t.ID)
 	return err
 }
 

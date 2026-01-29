@@ -61,8 +61,8 @@ func GetTeacherAllowance(db *sql.DB, userID string) (*models.TeacherAllowance, e
 // UpsertTeacherBaseSalary creates a new base salary record
 func UpsertTeacherBaseSalary(db *sql.DB, salary *models.TeacherBaseSalary) error {
 	query := `
-		INSERT INTO teacher_base_salaries (user_id, amount, period, created_at, updated_at)
-		VALUES ($1, $2, $3, NOW(), NOW())
+		INSERT INTO teacher_base_salaries (user_id, amount, period, effective_date, created_at, updated_at)
+		VALUES ($1, $2, $3, NOW(), NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(
@@ -76,8 +76,8 @@ func UpsertTeacherBaseSalary(db *sql.DB, salary *models.TeacherBaseSalary) error
 // UpsertTeacherAllowance creates a new allowance record
 func UpsertTeacherAllowance(db *sql.DB, allowance *models.TeacherAllowance) error {
 	query := `
-		INSERT INTO teacher_allowances (user_id, amount, period, is_active, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW())
+		INSERT INTO teacher_allowances (user_id, amount, period, is_active, effective_date, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(

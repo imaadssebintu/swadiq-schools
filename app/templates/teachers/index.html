@@ -9,6 +9,10 @@
                     Logistics</p>
             </div>
             <div class="flex items-center space-x-2">
+                <button id="runPayrollBtn"
+                    class="px-3 py-1.5 bg-emerald-600 border border-emerald-700 text-white rounded-xl hover:bg-emerald-700 transition-all duration-200 text-[11px] font-bold shadow-sm">
+                    <i class="fas fa-money-bill-wave mr-1.5"></i>Run Payroll
+                </button>
                 <button
                     class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all duration-200 text-[11px] font-bold">
                     <i class="fas fa-arrow-up-from-bracket mr-1.5 opacity-50"></i>Export
@@ -1970,4 +1974,38 @@
             validatePhone(editPhoneInput, teacherId);
         }, 500));
     }
+
+    // Run Payroll Handler
+    document.getElementById('runPayrollBtn')?.addEventListener('click', async () => {
+        const periodType = prompt('Enter payroll period (day/week/month):', 'month');
+        if (!periodType || !['day', 'week', 'month'].includes(periodType.toLowerCase())) {
+            return;
+        }
+
+        const btn = document.getElementById('runPayrollBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i>Processing...';
+
+        try {
+            const res = await fetch(`/api/teachers/payroll/generate?period=${periodType.toLowerCase()}`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                alert(`Payroll Generated!\n\nGenerated: ${data.generated} teachers\nSkipped: ${data.skipped}\nPeriod: ${data.period.start} to ${data.period.end}`);
+                if (data.errors && data.errors.length > 0) {
+                    console.error('Payroll errors:', data.errors);
+                }
+            } else {
+                alert('Failed to generate payroll: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Network error occurred while generating payroll');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-money-bill-wave mr-1.5"></i>Run Payroll';
+        }
+    });
 </script>

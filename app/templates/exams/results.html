@@ -1,0 +1,448 @@
+<!-- Results Entry Page -->
+<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Enter Results</h1>
+            <p id="examDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Loading exam
+                details...</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="backToExamsBtn"
+                class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Exams</span>
+            </button>
+            <button id="saveAllResultsBtn"
+                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                <i class="fas fa-save"></i>
+                <span>Save All (Batch)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Exam Details Card -->
+    <div id="examDetailsCard" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Exam Name</div>
+                <div id="examName" class="text-sm font-bold text-slate-900">-</div>
+            </div>
+            <div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Class</div>
+                <div id="examClass" class="text-sm font-bold text-slate-900">-</div>
+            </div>
+            <div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Paper</div>
+                <div id="examPaper" class="text-sm font-bold text-slate-900">-</div>
+            </div>
+            <div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Date & Time</div>
+                <div id="examDateTime" class="text-sm font-bold text-slate-900">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="flex items-center gap-3">
+        <div class="relative flex-1 max-w-md">
+            <input type="text" id="searchStudent" placeholder="Search by student name or ID..."
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all" />
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        </div>
+        <div id="searchResultCount" class="text-xs font-bold text-slate-500 hidden">
+            <span id="visibleCount">0</span> of <span id="totalCount">0</span> students
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Header -->
+        <div
+            class="grid grid-cols-[50px_150px_1fr_150px_100px] gap-4 bg-slate-50 border-b border-slate-200 px-6 py-3 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10">
+            <div class="text-center">#</div>
+            <div>Student ID</div>
+            <div>Student Name</div>
+            <div>Marks</div>
+            <div class="text-center">Status</div>
+        </div>
+
+        <!-- Body -->
+        <div id="resultsTableBody" class="divide-y divide-slate-100">
+            <!-- Loading Skeleton -->
+            <div id="resultsLoadingSkeleton" class="divide-y divide-slate-100">
+                <!-- Row 1 -->
+                <div class="grid grid-cols-[50px_150px_1fr_150px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="h-4 bg-slate-100 rounded w-8 mx-auto"></div>
+                    <div class="h-4 bg-slate-100 rounded w-24"></div>
+                    <div class="h-4 bg-slate-100 rounded w-48"></div>
+                    <div class="h-8 bg-slate-100 rounded w-24"></div>
+                    <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
+                </div>
+                <!-- Row 2 -->
+                <div class="grid grid-cols-[50px_150px_1fr_150px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="h-4 bg-slate-100 rounded w-8 mx-auto"></div>
+                    <div class="h-4 bg-slate-100 rounded w-24"></div>
+                    <div class="h-4 bg-slate-100 rounded w-48"></div>
+                    <div class="h-8 bg-slate-100 rounded w-24"></div>
+                    <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
+                </div>
+                <!-- Row 3 -->
+                <div class="grid grid-cols-[50px_150px_1fr_150px_100px] gap-4 px-6 py-4 animate-pulse">
+                    <div class="h-4 bg-slate-100 rounded w-8 mx-auto"></div>
+                    <div class="h-4 bg-slate-100 rounded w-24"></div>
+                    <div class="h-4 bg-slate-100 rounded w-48"></div>
+                    <div class="h-8 bg-slate-100 rounded w-24"></div>
+                    <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="noStudentsMessage"
+            class="hidden py-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">
+            No students found in this class
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Toast -->
+<div id="toast"
+    class="fixed top-4 right-4 bg-white border border-slate-200 rounded-xl shadow-lg px-6 py-4 hidden z-50 transition-all">
+    <div class="flex items-center gap-3">
+        <i id="toastIcon" class="fas fa-check-circle text-emerald-500 text-xl"></i>
+        <div>
+            <div id="toastTitle" class="text-sm font-bold text-slate-900">Success</div>
+            <div id="toastMessage" class="text-xs text-slate-500">Results saved successfully</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let examData = null;
+    let studentsWithResults = [];
+    const examID = '{{.examID}}';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadExamWithStudents();
+
+        document.getElementById('backToExamsBtn').addEventListener('click', () => {
+            window.location.href = '/exams';
+        });
+
+        document.getElementById('saveAllResultsBtn').addEventListener('click', saveAllResults);
+
+        // Search functionality
+        document.getElementById('searchStudent').addEventListener('input', filterStudents);
+    });
+
+    async function loadExamWithStudents() {
+        try {
+            const response = await fetch(`/api/exams/${examID}/students-with-results`);
+            if (!response.ok) {
+                throw new Error('Failed to load exam data');
+            }
+
+            const data = await response.json();
+            examData = data.exam;
+            studentsWithResults = data.students || [];
+
+            displayExamDetails();
+            renderResultsTable();
+        } catch (error) {
+            console.error('Error loading exam data:', error);
+            showToast('Error', 'Failed to load exam data', 'error');
+        }
+    }
+
+    function displayExamDetails() {
+        if (!examData) return;
+
+        document.getElementById('examName').textContent = examData.name;
+        document.getElementById('examClass').textContent = examData.class?.name || '-';
+        document.getElementById('examPaper').textContent = examData.paper?.name || '-';
+
+        const startDate = new Date(examData.start_time);
+        const endTime = new Date(examData.end_time);
+        const dateStr = startDate.toLocaleDateString();
+        const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        document.getElementById('examDateTime').textContent = `${dateStr} ${timeStr}`;
+
+        document.getElementById('examDescription').textContent = `Enter marks for ${examData.class?.name || 'class'} - ${examData.paper?.name || 'exam'}`;
+        document.getElementById('examDetailsCard').classList.remove('hidden');
+
+        // Debug: Log term_id
+        console.log('Exam data (full):', JSON.stringify(examData, null, 2));
+        console.log('Term ID:', examData.term_id);
+        console.log('Academic Year ID:', examData.academic_year_id);
+    }
+
+    function renderResultsTable() {
+        const container = document.getElementById('resultsTableBody');
+        const skeleton = document.getElementById('resultsLoadingSkeleton');
+        const emptyState = document.getElementById('noStudentsMessage');
+
+        // Hide skeleton
+        if (skeleton) skeleton.classList.add('hidden');
+
+        // Clear previous content
+        container.innerHTML = '';
+
+        if (studentsWithResults.length === 0) {
+            emptyState.classList.remove('hidden');
+            return;
+        } else {
+            emptyState.classList.add('hidden');
+        }
+
+        studentsWithResults.forEach((swr, index) => {
+            const student = swr.student;
+            const result = swr.result;
+
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-[50px_150px_1fr_150px_100px] gap-4 px-6 py-4 items-center hover:bg-slate-50 transition-colors';
+            row.dataset.studentId = student.id;
+
+            const hasResult = result && result.marks !== null && result.marks !== undefined;
+            const statusClass = hasResult ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
+            const statusText = hasResult ? 'Saved' : 'Pending';
+
+            row.innerHTML = `
+                <div class="text-center text-xs font-bold text-slate-500">${index + 1}</div>
+                <div class="text-xs font-semibold text-slate-700">${student.student_id}</div>
+                <div class="text-sm font-bold text-slate-900">${student.first_name} ${student.last_name}</div>
+                <div class="relative">
+                    <input 
+                        type="number" 
+                        step="0.01" 
+                        min="0" 
+                        max="100"
+                        placeholder="Enter marks"
+                        value="${hasResult ? result.marks : ''}"
+                        data-student-id="${student.id}"
+                        class="marks-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all"
+                    />
+                    <div class="saving-indicator hidden absolute right-2 top-1/2 -translate-y-1/2">
+                        <i class="fas fa-spinner fa-spin text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <span class="status-badge px-2.5 py-1 inline-flex text-[10px] font-black uppercase tracking-wider rounded-lg ${statusClass}">
+                        ${statusText}
+                    </span>
+                </div>
+            `;
+
+            container.appendChild(row);
+
+            // Add auto-save event listener
+            const input = row.querySelector('.marks-input');
+            input.addEventListener('input', debounce((e) => autoSaveResult(e.target), 800));
+        });
+    }
+
+    function filterStudents() {
+        const searchQuery = document.getElementById('searchStudent').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#resultsTableBody > .grid');
+        const searchResultCount = document.getElementById('searchResultCount');
+        const visibleCountEl = document.getElementById('visibleCount');
+        const totalCountEl = document.getElementById('totalCount');
+
+        let visibleCount = 0;
+        const totalCount = rows.length;
+
+        rows.forEach(row => {
+            const studentId = row.querySelector('.text-xs.font-semibold').textContent.toLowerCase();
+            const studentName = row.querySelector('.text-sm.font-bold').textContent.toLowerCase();
+
+            const matches = studentId.includes(searchQuery) || studentName.includes(searchQuery);
+
+            if (matches || searchQuery === '') {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update search result count
+        if (searchQuery === '') {
+            searchResultCount.classList.add('hidden');
+        } else {
+            searchResultCount.classList.remove('hidden');
+            visibleCountEl.textContent = visibleCount;
+            totalCountEl.textContent = totalCount;
+        }
+    }
+
+    // Debounce function to delay auto-save
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    async function autoSaveResult(input) {
+        const marks = parseFloat(input.value);
+        const studentId = input.dataset.studentId;
+
+        // Validate marks
+        if (isNaN(marks)) {
+            if (input.value !== '') {
+                showToast('Error', 'Marks must be a valid number', 'error');
+            }
+            return;
+        }
+
+        if (marks < 0) {
+            showToast('Error', 'Marks cannot be negative', 'error');
+            input.value = '';
+            return;
+        }
+
+        if (marks > 100) {
+            showToast('Error', 'Marks cannot be above 100', 'error');
+            input.value = '';
+            return;
+        }
+
+        const row = input.closest('.grid');
+        const savingIndicator = row.querySelector('.saving-indicator');
+        const statusBadge = row.querySelector('.status-badge');
+
+        // Show saving indicator
+        savingIndicator.classList.remove('hidden');
+
+        try {
+            const response = await fetch('/api/results/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    exam_id: examID,
+                    paper_id: examData.paper_id,
+                    term_id: examData.term_id,
+                    results: [{
+                        student_id: studentId,
+                        marks: marks,
+                        grade_id: null
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save result');
+            }
+
+            // Hide saving indicator
+            savingIndicator.classList.add('hidden');
+
+            // Update status badge
+            statusBadge.className = 'status-badge px-2.5 py-1 inline-flex text-[10px] font-black uppercase tracking-wider rounded-lg bg-emerald-100 text-emerald-700';
+            statusBadge.textContent = 'Saved';
+
+            // Show brief success feedback
+            input.classList.add('border-emerald-500');
+            setTimeout(() => {
+                input.classList.remove('border-emerald-500');
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error saving result:', error);
+            savingIndicator.classList.add('hidden');
+            showToast('Error', 'Failed to save result', 'error');
+        }
+    }
+
+    async function saveAllResults() {
+        const marksInputs = document.querySelectorAll('.marks-input');
+        const results = [];
+
+        // Collect all results
+        marksInputs.forEach(input => {
+            const marks = parseFloat(input.value);
+            if (!isNaN(marks) && marks >= 0) {
+                results.push({
+                    student_id: input.dataset.studentId,
+                    marks: marks,
+                    grade_id: null // Can be enhanced later with auto-grading
+                });
+            }
+        });
+
+        if (results.length === 0) {
+            showToast('Warning', 'Please enter marks for at least one student', 'warning');
+            return;
+        }
+
+        // Validate marks
+        const invalidMarks = results.find(r => r.marks < 0);
+        if (invalidMarks) {
+            showToast('Error', 'Marks cannot be negative', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/results/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    exam_id: examID,
+                    paper_id: examData.paper_id,
+                    term_id: examData.term_id,
+                    results: results
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save results');
+            }
+
+            const data = await response.json();
+            showToast('Success', `${data.count} result(s) saved successfully`, 'success');
+
+            // Reload to show updated status
+            setTimeout(() => {
+                loadExamWithStudents();
+            }, 1500);
+        } catch (error) {
+            console.error('Error saving results:', error);
+            showToast('Error', 'Failed to save results', 'error');
+        }
+    }
+
+    function showToast(title, message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Set icon and color based on type
+        if (type === 'success') {
+            toastIcon.className = 'fas fa-check-circle text-emerald-500 text-xl';
+        } else if (type === 'error') {
+            toastIcon.className = 'fas fa-times-circle text-red-500 text-xl';
+        } else if (type === 'warning') {
+            toastIcon.className = 'fas fa-exclamation-circle text-amber-500 text-xl';
+        }
+
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        toast.classList.remove('hidden');
+
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+</script>

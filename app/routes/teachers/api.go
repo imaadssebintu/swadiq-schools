@@ -867,10 +867,12 @@ func GetTeacherSalaryAPI(c *fiber.Ctx) error {
 
 	salary, err := database.GetTeacherSalary(config.GetDB(), teacherID)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		// Check if it's a "no rows" error (teacher has no salary configured yet)
+		if err == sql.ErrNoRows || err.Error() == "sql: no rows in result set" {
 			// Return empty/null if no salary set, not 404
-			return c.JSON(fiber.Map{"salary": nil})
+			return c.JSON(fiber.Map{"salary": nil, "payroll": nil})
 		}
+		log.Printf("Error fetching teacher salary for %s: %v", teacherID, err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch salary"})
 	}
 
@@ -890,7 +892,7 @@ func GetTeacherSalaryAPI(c *fiber.Ctx) error {
 	payrollStatus, err := database.GetTeacherPayrollStatus(config.GetDB(), teacherID, firstOfMonth, endOfPeriod)
 	// Ignore error for now (or log it), return partial data
 	if err != nil {
-		// Just log? fmt.Println(err)
+		log.Printf("Error fetching payroll status for %s: %v", teacherID, err)
 	}
 
 	return c.JSON(fiber.Map{

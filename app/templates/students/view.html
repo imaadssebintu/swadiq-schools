@@ -250,219 +250,299 @@
 
         <!-- Main Content Area -->
         <main class="flex-1 p-5 lg:p-8">
-            <!-- Header Greeting -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                <div>
-                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">Financial Health</h1>
-                    <p class="text-xs text-slate-500 mt-0.5 font-medium">Ledger for <span
-                            class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="flex items-center gap-2">
-                    <button
-                        class="p-2 bg-white border border-slate-200 rounded text-slate-500 hover:text-indigo-600 transition-all">
-                        <i class="fas fa-download text-xs"></i>
-                    </button>
-                </div>
+            <!-- Navigation Tabs -->
+            <div class="flex items-center gap-1 mb-8 p-1 bg-slate-100/50 rounded-xl w-fit border border-slate-200/50">
+                <button onclick="switchTab('finance')" id="tab-button-finance"
+                    class="px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-white text-indigo-600 shadow-sm border border-slate-200/50">
+                    Finance & Ledger
+                </button>
+                <button onclick="switchTab('attendance')" id="tab-button-attendance"
+                    class="px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700">
+                    Lesson Attendance
+                </button>
             </div>
 
-            <!-- Major Stats Dashboard -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
-                <!-- Total Invoiced -->
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                            <i class="fas fa-file-invoice-dollar text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Invoiced</span>
+            <div id="tab-content-finance" class="space-y-6">
+                <!-- Header Greeting -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Financial Health</h1>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Ledger for <span
+                                class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
                     </div>
-                    <h3 id="totalPayable" class="text-2xl font-black text-slate-900 mb-1 break-words">UGX 0</h3>
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Lifetime
-                        Billing</p>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12"></div>
-                </div>
 
-                <!-- Total Collections -->
-                <div class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                            <i class="fas fa-hand-holding-dollar text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Collected</span>
-                    </div>
-                    <h3 id="totalPaid" class="text-2xl font-black text-slate-900 mb-3 break-words">UGX 0</h3>
-                    <div class="flex items-center gap-3">
-                        <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                            <div id="paymentProgress"
-                                class="bg-emerald-500 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
-                                style="width: 0%"></div>
-                        </div>
-                        <span class="text-[10px] font-black text-emerald-600 shrink-0" id="progressPct">0%</span>
-                    </div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12"></div>
-                </div>
-
-                <!-- Current Liabilities -->
-                <div
-                    class="bg-white border border-rose-100 p-5 rounded-2xl relative overflow-hidden group shadow-sm md:col-span-2 xl:col-span-1">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
-                            <i class="fas fa-receipt text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Balance Due</span>
-                    </div>
-                    <h3 id="totalBalance" class="text-2xl font-black text-rose-600 mb-1 break-words">UGX 0</h3>
-                    <p class="text-[10px] text-rose-400 font-black uppercase tracking-widest">Outstanding</p>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -mr-12 -mt-12"></div>
-                </div>
-            </div>
-
-            <!-- Detailed Ledger Table -->
-            <div class="glass-card rounded-xl overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
+                    <!-- Quick Actions -->
                     <div class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                        <h3 class="text-sm font-bold text-slate-800 tracking-tight">Fees Ledger</h3>
+                        <button
+                            class="p-2 bg-white border border-slate-200 rounded text-slate-500 hover:text-indigo-600 transition-all">
+                            <i class="fas fa-download text-xs"></i>
+                        </button>
                     </div>
-                    <span id="feeCountLabel"
-                        class="px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[9px] font-bold text-indigo-600 uppercase">0
-                        Records</span>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full responsive-table">
-                        <thead class="bg-slate-50/50 border-b border-slate-100">
-                            <tr>
-                                <th
-                                    class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                    Entity Code</th>
-                                <th
-                                    class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                    Academic Cycle</th>
-                                <th
-                                    class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                    Financial Statement</th>
-                                <th
-                                    class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                    Flow Status</th>
-                                <th
-                                    class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                    Operations</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentFeesTableBody" class="divide-y divide-slate-100">
-                            <!-- Skeletons -->
-                            <tr class="animate-pulse">
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="h-4 bg-slate-200 rounded w-16"></div> <!-- Code -->
-                                        <div class="h-3.5 bg-slate-100 rounded w-24"></div> <!-- Ref -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="h-3 bg-slate-200 rounded w-24"></div> <!-- Year -->
-                                        <div class="h-3 bg-slate-100 rounded w-20"></div> <!-- Term -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="max-w-[120px] md:ml-auto space-y-2">
-                                        <div class="h-3.5 bg-slate-200 rounded w-24 ml-auto"></div> <!-- Amount -->
-                                        <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
-                                        <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Balance -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
-                                </td>
-                            </tr>
-                            <tr class="animate-pulse">
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-1.5">
-                                        <div class="h-4 bg-slate-200 rounded w-14"></div> <!-- Code -->
-                                        <div class="h-3.5 bg-slate-100 rounded w-20"></div> <!-- Ref -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="h-3 bg-slate-200 rounded w-20"></div> <!-- Year -->
-                                        <div class="h-3 bg-slate-100 rounded w-16"></div> <!-- Term -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="max-w-[120px] md:ml-auto space-y-2">
-                                        <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Amount -->
-                                        <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
-                                        <div class="h-3.5 bg-slate-200 rounded w-16 ml-auto"></div> <!-- Balance -->
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Major Stats Dashboard -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+                    <!-- Total Invoiced -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <i class="fas fa-file-invoice-dollar text-sm"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Invoiced</span>
+                        </div>
+                        <h3 id="totalPayable" class="text-2xl font-black text-slate-900 mb-1 break-words">UGX 0</h3>
+                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Lifetime
+                            Billing</p>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12"></div>
+                    </div>
+
+                    <!-- Total Collections -->
+                    <div
+                        class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                <i class="fas fa-hand-holding-dollar text-sm"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Collected</span>
+                        </div>
+                        <h3 id="totalPaid" class="text-2xl font-black text-slate-900 mb-3 break-words">UGX 0</h3>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                <div id="paymentProgress"
+                                    class="bg-emerald-500 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                                    style="width: 0%"></div>
+                            </div>
+                            <span class="text-[10px] font-black text-emerald-600 shrink-0" id="progressPct">0%</span>
+                        </div>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12"></div>
+                    </div>
+
+                    <!-- Current Liabilities -->
+                    <div
+                        class="bg-white border border-rose-100 p-5 rounded-2xl relative overflow-hidden group shadow-sm md:col-span-2 xl:col-span-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                                <i class="fas fa-receipt text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Balance
+                                Due</span>
+                        </div>
+                        <h3 id="totalBalance" class="text-2xl font-black text-rose-600 mb-1 break-words">UGX 0</h3>
+                        <p class="text-[10px] text-rose-400 font-black uppercase tracking-widest">Outstanding</p>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -mr-12 -mt-12"></div>
+                    </div>
                 </div>
 
-                <!-- Payment History Section -->
-                <div class="mt-8 bg-white border border-slate-100 rounded shadow-sm overflow-hidden">
+                <!-- Detailed Ledger Table -->
+                <div class="glass-card rounded-xl overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-history text-indigo-500 text-xs"></i>
-                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Payment History</h3>
+                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Fees Ledger</h3>
                         </div>
+                        <span id="feeCountLabel"
+                            class="px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[9px] font-bold text-indigo-600 uppercase">0
+                            Records</span>
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                        <table class="w-full responsive-table">
                             <thead class="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
                                     <th
-                                        class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Timestamp & Gateway</th>
+                                        class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Entity Code</th>
                                     <th
-                                        class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Allocation Summary</th>
+                                        class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Academic Cycle</th>
                                     <th
                                         class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Gross Amount</th>
+                                        Financial Statement</th>
                                     <th
                                         class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Verification</th>
+                                        Flow Status</th>
+                                    <th
+                                        class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Operations</th>
                                 </tr>
                             </thead>
-                            <tbody id="paymentHistoryTableBody" class="divide-y divide-slate-100 text-sm">
+                            <tbody id="studentFeesTableBody" class="divide-y divide-slate-100">
                                 <!-- Skeletons -->
                                 <tr class="animate-pulse">
                                     <td class="px-6 py-4">
-                                        <div class="space-y-2">
-                                            <div class="h-4 bg-slate-200 rounded w-24"></div>
-                                            <div class="h-3 bg-slate-100 rounded w-16"></div>
+                                        <div class="flex flex-col gap-1.5">
+                                            <div class="h-4 bg-slate-200 rounded w-16"></div> <!-- Code -->
+                                            <div class="h-3.5 bg-slate-100 rounded w-24"></div> <!-- Ref -->
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="h-4 bg-slate-100 rounded w-32"></div>
+                                        <div class="flex flex-col gap-2">
+                                            <div class="h-3 bg-slate-200 rounded w-24"></div> <!-- Year -->
+                                            <div class="h-3 bg-slate-100 rounded w-20"></div> <!-- Term -->
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="h-4 bg-slate-200 rounded w-20 ml-auto"></div>
+                                    <td class="px-6 py-4">
+                                        <div class="max-w-[120px] md:ml-auto space-y-2">
+                                            <div class="h-3.5 bg-slate-200 rounded w-24 ml-auto"></div> <!-- Amount -->
+                                            <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
+                                            <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Balance -->
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
+                                    </td>
+                                </tr>
+                                <tr class="animate-pulse">
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-1.5">
+                                            <div class="h-4 bg-slate-200 rounded w-14"></div> <!-- Code -->
+                                            <div class="h-3.5 bg-slate-100 rounded w-20"></div> <!-- Ref -->
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-2">
+                                            <div class="h-3 bg-slate-200 rounded w-20"></div> <!-- Year -->
+                                            <div class="h-3 bg-slate-100 rounded w-16"></div> <!-- Term -->
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="max-w-[120px] md:ml-auto space-y-2">
+                                            <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Amount -->
+                                            <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
+                                            <div class="h-3.5 bg-slate-200 rounded w-16 ml-auto"></div> <!-- Balance -->
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Payment History Section -->
+                    <div class="mt-8 bg-white border border-slate-100 rounded shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-history text-indigo-500 text-xs"></i>
+                                <h3 class="text-sm font-bold text-slate-800 tracking-tight">Payment History</h3>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50/50 border-b border-slate-100">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Timestamp & Gateway</th>
+                                        <th
+                                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Allocation Summary</th>
+                                        <th
+                                            class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Gross Amount</th>
+                                        <th
+                                            class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                            Verification</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentHistoryTableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Skeletons -->
+                                    <tr class="animate-pulse">
+                                        <td class="px-6 py-4">
+                                            <div class="space-y-2">
+                                                <div class="h-4 bg-slate-200 rounded w-24"></div>
+                                                <div class="h-3 bg-slate-100 rounded w-16"></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="h-4 bg-slate-100 rounded w-32"></div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="h-4 bg-slate-200 rounded w-20 ml-auto"></div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <div id="tab-content-attendance" class="hidden space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Academic Engagement</h1>
+                            <p class="text-xs text-slate-500 mt-0.5 font-medium">Attendance report for <span
+                                    class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Lessons
+                                Taught</p>
+                            <h3 id="statTotalLessons" class="text-2xl font-black text-slate-900">0</h3>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Attended</p>
+                            <h3 id="statAttended" class="text-2xl font-black text-emerald-600">0</h3>
+                        </div>
+                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Overall Rate
+                            </p>
+                            <h3 id="statRate" class="text-2xl font-black text-indigo-600">0%</h3>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-xl overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-white/40">
+                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Lesson-by-Lesson History</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-slate-50/50 border-b border-slate-100">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Date & Time</th>
+                                        <th
+                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Subject</th>
+                                        <th
+                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Topic</th>
+                                        <th
+                                            class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                            Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceReportBody" class="divide-y divide-slate-100">
+                                    <!-- Loaded via JS -->
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">
+                                            Loading attendance data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
         </main>
     </div>
 
@@ -665,6 +745,7 @@
         let allFeeTypes = [];
 
         document.addEventListener('DOMContentLoaded', function () {
+            console.log("Student Profile Loaded. StudentID:", studentID);
             loadStudentFees();
             loadFeeFormData();
 
@@ -685,6 +766,7 @@
             if (addBtn) addBtn.addEventListener('click', openAddFeeModal);
 
             loadStudentPayments();
+            handleTabFromUrl();
         });
 
         async function loadStudentPayments() {
@@ -794,8 +876,8 @@
         async function loadFeeFormData() {
             try {
                 const [yearsRes, termsRes, typesRes] = await Promise.all([
-                    fetch('/api/academic-years'),
-                    fetch('/api/terms'),
+                    fetch('/api/settings/academic-years'),
+                    fetch('/api/settings/terms'),
                     fetch(`/api/fee-types?class_id=${classID}&student_id=${studentID}`)
                 ]);
 
@@ -1189,8 +1271,121 @@
                 alert('An error occurred. Please try again.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = originalText;
+                btn.innerHTML = `Confirm Collection`;
             }
+        }
+
+        // Initialize tab based on query parameter
+        function handleTabFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab === 'attendance') {
+                switchTab('attendance');
+            }
+        }
+
+        // --- NEW FEATURES: Tab switching and Attendance Report ---
+        function switchTab(tab) {
+            // Content visibility
+            document.getElementById('tab-content-finance').classList.toggle('hidden', tab !== 'finance');
+            document.getElementById('tab-content-attendance').classList.toggle('hidden', tab !== 'attendance');
+
+            // Button styling
+            const financeBtn = document.getElementById('tab-button-finance');
+            const attendanceBtn = document.getElementById('tab-button-attendance');
+
+            if (tab === 'finance') {
+                financeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                financeBtn.classList.remove('text-slate-500');
+                attendanceBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                attendanceBtn.classList.add('text-slate-500');
+            } else {
+                attendanceBtn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                attendanceBtn.classList.remove('text-slate-500');
+                financeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                financeBtn.classList.add('text-slate-500');
+
+                // Load report when switching to attendance tab
+                loadAttendanceReport();
+            }
+        }
+
+        async function loadAttendanceReport() {
+            const tbody = document.getElementById('attendanceReportBody');
+            console.log("Loading Attendance Report for:", studentID);
+            try {
+                const res = await fetch(`/api/attendance/student-report/${studentID}`);
+                const data = await res.json();
+                console.log("Attendance API Result:", data);
+
+                if (data.success && data.report) {
+                    renderAttendanceReport(data.report);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No attendance history found</td></tr>';
+                }
+            } catch (err) {
+                console.error("Attendance API Error:", err);
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-rose-500 text-xs font-bold">Failed to load attendance report</td></tr>';
+            }
+        }
+
+        function renderAttendanceReport(report) {
+            const tbody = document.getElementById('attendanceReportBody');
+            console.log("Rendering Attendance Report. Items:", report.length);
+
+            if (!report || report.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No lessons have been logged for this student yet.</td></tr>';
+                return;
+            }
+
+            let attended = 0;
+            tbody.innerHTML = report.map(r => {
+                if (r.status === 'present') attended++;
+
+                // Format date manually or via helper
+                const dateObj = new Date(r.date);
+                const dateStr = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                const statusColors = {
+                    'present': 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                    'absent': 'bg-rose-50 text-rose-600 border-rose-100',
+                    'late': 'bg-amber-50 text-amber-600 border-amber-100',
+                    'pending': 'bg-slate-50 text-slate-400 border-slate-100'
+                };
+
+                return `
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-700 text-xs">${dateStr}</span>
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${r.time_slot}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-700 text-xs">${r.subject}</span>
+                                ${r.paper ? `<span class="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${r.paper}</span>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs text-slate-500 line-clamp-1 max-w-[200px]" title="${r.topic || 'No topic recorded'}">${r.topic || '-'}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center">
+                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${statusColors[r.status] || statusColors.pending}">
+                                    ${r.status}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update stats
+            document.getElementById('statTotalLessons').textContent = report.length;
+            document.getElementById('statAttended').textContent = attended;
+            const rate = report.length > 0 ? Math.round((attended / report.length) * 100) : 0;
+            document.getElementById('statRate').textContent = rate + '%';
         }
     </script>
 </body>

@@ -61,8 +61,16 @@ func CreateOrUpdateAttendanceAPI(c *fiber.Ctx) error {
 		ClassID          *string `json:"class_id,omitempty"`
 		TimetableEntryID *string `json:"timetable_entry_id,omitempty"`
 		PaperID          *string `json:"paper_id,omitempty"`
+		TermID           *string `json:"term_id,omitempty"`
 		Date             string  `json:"date" validate:"required"`
 		Status           string  `json:"status" validate:"required,oneof=present absent late excused"`
+	}
+
+	normalizeUUID := func(s *string) *string {
+		if s == nil || *s == "" {
+			return nil
+		}
+		return s
 	}
 
 	var req AttendanceRequest
@@ -105,6 +113,11 @@ func CreateOrUpdateAttendanceAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid status. Must be present, absent, late, or excused"})
 	}
 
+	req.ClassID = normalizeUUID(req.ClassID)
+	req.TimetableEntryID = normalizeUUID(req.TimetableEntryID)
+	req.PaperID = normalizeUUID(req.PaperID)
+	req.TermID = normalizeUUID(req.TermID)
+
 	// Get current user ID for marked_by
 	user := c.Locals("user").(*models.User)
 	markedBy := user.ID
@@ -114,12 +127,14 @@ func CreateOrUpdateAttendanceAPI(c *fiber.Ctx) error {
 		ClassID:          req.ClassID,
 		TimetableEntryID: req.TimetableEntryID,
 		PaperID:          req.PaperID,
+		TermID:           req.TermID,
 		Date:             date,
 		Status:           status,
 		MarkedBy:         &markedBy,
 	}
 
 	if err := database.CreateOrUpdateAttendance(config.GetDB(), attendance); err != nil {
+		fmt.Printf("DEBUG: CreateOrUpdateAttendance ERROR: %v\n", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save attendance record"})
 	}
 
@@ -272,5 +287,161 @@ func GetAllLessonsAPI(c *fiber.Ctx) error {
 		"count":             len(timetableEntries),
 		"day_of_week":       dayOfWeek,
 		"user_id":           user.ID,
+	})
+}
+
+func MarkLessonConductedAPI(c *fiber.Ctx) error {
+	type ConductRequest struct {
+		TimetableEntryID string  `json:"timetable_entry_id" validate:"required"`
+		TermID           *string `json:"term_id"`
+		Date             string  `json:"date" validate:"required"`
+		Topic            string  `json:"topic"`
+		Notes            string  `json:"notes"`
+	}
+
+	var req ConductRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	date, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format"})
+	}
+
+	user := c.Locals("user").(*models.User)
+	teacherID := user.ID
+
+	logRec := &models.ConductedLesson{
+		TimetableEntryID: req.TimetableEntryID,
+		TermID:           req.TermID,
+		Date:             date,
+		TeacherID:        teacherID,
+		Topic:            req.Topic,
+		Notes:            req.Notes,
+	}
+
+	if err := database.MarkLessonAsConducted(config.GetDB(), logRec); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to mark lesson as conducted"})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Lesson marked as conducted successfully",
+		"lesson":  logRec,
+	})
+}
+
+func GetStudentAttendanceReportAPI(c *fiber.Ctx) error {
+	studentID := c.Params("studentId")
+	if studentID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Student ID is required"})
+	}
+
+	report, err := database.GetStudentLessonAttendanceReport(config.GetDB(), studentID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch attendance report"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"report":  report,
+	})
+}
+
+func GetConductedLessonAPI(c *fiber.Ctx) error {
+	timetableEntryID := c.Params("timetableEntryId")
+	dateStr := c.Params("date")
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format"})
+	}
+
+	lesson, err := database.GetConductedLesson(config.GetDB(), timetableEntryID, date)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch conducted lesson info"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"lesson":  lesson,
+	})
+}
+
+func GetClassAttendanceSummaryAPI(c *fiber.Ctx) error {
+	classID := c.Params("classId")
+	dateStr := c.Params("date")
+
+	if classID == "" || dateStr == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID and date are required"})
+	}
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
+	}
+
+	db := config.GetDB()
+	dayOfWeek := strings.ToLower(date.Weekday().String())
+
+	// 1. Get Scheduled Lessons (Timetable)
+	timetable, err := database.GetTimetableEntriesByClassAndDay(db, classID, dayOfWeek)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch timetable"})
+	}
+
+	// 2. Get Conducted Lessons
+	conducted, err := database.GetConductedLessonsByClassAndDate(db, classID, date)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch conducted lessons"})
+	}
+
+	// 3. Get Student Attendance for the day
+	attendance, err := database.GetAttendanceByClassAndDate(db, classID, date)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch attendance records"})
+	}
+
+	// 4. Get Student List (to ensure all students are represented)
+	students, err := database.GetStudentsByClass(db, classID)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch students"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success":    true,
+		"date":       dateStr,
+		"timetable":  timetable,
+		"conducted":  conducted,
+		"attendance": attendance,
+		"students":   students,
+	})
+}
+
+func GetClassTermAttendanceSummaryAPI(c *fiber.Ctx) error {
+	classID := c.Params("classId")
+	if classID == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Class ID is required"})
+	}
+
+	db := config.GetDB()
+
+	// 1. Get current term
+	term, err := database.GetCurrentTerm(db)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch current term"})
+	}
+
+	// 2. Get summary
+	summary, err := database.GetClassTermAttendanceSummary(db, classID, term.ID)
+	if err != nil {
+		fmt.Printf("Summary error: %v\n", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch term summary"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"term":    term.Name,
+		"summary": summary,
 	})
 }

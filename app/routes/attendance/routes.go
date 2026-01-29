@@ -37,6 +37,13 @@ func SetupAttendanceRoutes(app *fiber.App) {
 	api.Get("/teacher/:teacherId/date/:date/timetable", GetTimetableEntriesByTeacherAndDateAPI)
 	api.Get("/teacher-lessons/:dayOfWeek", GetCurrentUserLessonsAPI)
 	api.Get("/all-lessons/:dayOfWeek", GetAllLessonsAPI)
+
+	// Lesson conduction tracking
+	api.Post("/conduct", MarkLessonConductedAPI)
+	api.Get("/conduct/:timetableEntryId/:date", GetConductedLessonAPI)
+	api.Get("/student-report/:studentId", GetStudentAttendanceReportAPI)
+	api.Get("/class-summary/:classId/date/:date", GetClassAttendanceSummaryAPI)
+	api.Get("/class-summary/:classId/term-overview", GetClassTermAttendanceSummaryAPI)
 }
 
 func AttendancePage(c *fiber.Ctx) error {
@@ -314,18 +321,29 @@ func LessonAttendancePage(c *fiber.Ctx) error {
 		}
 	}
 
+	attendanceMapJSON, _ := json.Marshal(attendanceMap)
+
+	// Fetch current term
+	currentTerm, err := database.GetCurrentTerm(config.GetDB())
+	currentTermID := ""
+	if err == nil && currentTerm != nil {
+		currentTermID = currentTerm.ID
+	}
+
 	user := c.Locals("user").(*models.User)
 	return c.Render("attendance/lesson", fiber.Map{
-		"Title":            "Take Lesson Attendance - Swadiq Schools",
-		"CurrentPage":      "attendance",
-		"students":         students,
-		"date":             dateStr,
-		"timetableEntryID": timetableEntryID,
-		"lessonInfo":       lessonInfo,
-		"attendanceMap":    attendanceMap,
-		"user":             user,
-		"FirstName":        user.FirstName,
-		"LastName":         user.LastName,
-		"Email":            user.Email,
+		"Title":             "Take Lesson Attendance - Swadiq Schools",
+		"CurrentPage":       "attendance",
+		"students":          students,
+		"date":              dateStr,
+		"timetableEntryID":  timetableEntryID,
+		"currentTermID":     currentTermID,
+		"lessonInfo":        lessonInfo,
+		"attendanceMap":     attendanceMap,
+		"attendanceMapJSON": string(attendanceMapJSON),
+		"user":              user,
+		"FirstName":         user.FirstName,
+		"LastName":          user.LastName,
+		"Email":             user.Email,
 	})
 }

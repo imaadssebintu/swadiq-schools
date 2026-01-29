@@ -926,7 +926,7 @@
 
     // Load helper functions
     function loadAcademicYears() {
-        fetch('/api/academic-years')
+        fetch('/api/settings/academic-years')
             .then(res => res.json())
             .then(data => {
                 const filter = document.getElementById('yearFilter');
@@ -940,7 +940,7 @@
     }
 
     function loadTerms() {
-        fetch('/api/terms')
+        fetch('/api/settings/terms')
             .then(res => res.json())
             .then(data => {
                 const filter = document.getElementById('termFilter');

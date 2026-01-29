@@ -1,3 +1,8 @@
+<div id="attendance-metadata" class="hidden" data-timetable-entry-id="{{.timetableEntryID}}" data-date="{{.date}}"
+    data-lesson-info="{{.lessonInfo}}" data-attendance-map="{{.attendanceMapJSON}}"
+    data-total-students="{{len .students}}" data-term-id="{{.currentTermID}}">
+</div>
+
 <div class="p-6 space-y-6 animate-fade-in">
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -15,6 +20,13 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
+            <button onclick="openLessonLogModal()"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-black transition-all flex items-center gap-3">
+                <i class="fas fa-book-open text-xs"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Lesson Log</span>
+                <span id="lessonConductedStatus"
+                    class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </button>
             <div class="px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center gap-3">
                 <i class="fas fa-calendar-day text-indigo-500 text-xs"></i>
                 <span class="text-xs font-bold text-slate-700 uppercase tracking-tight">{{.date}}</span>
@@ -91,271 +103,546 @@
         </div>
     </div>
 
+    <!-- Lesson Log Requirement Warning -->
+    <div id="lessonLogWarning"
+        class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4 animate-pulse">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-amber-900 uppercase tracking-tight">Lesson Log Required</p>
+                <p class="text-[10px] text-amber-600 font-bold uppercase tracking-widest">Please save the Lesson Log
+                    (Topic & Notes) before marking attendance.</p>
+            </div>
+        </div>
+        <button onclick="openLessonLogModal()"
+            class="px-4 py-2 bg-amber-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-700 transition-all">
+            Open Lesson Log
+        </button>
+    </div>
+
     <!-- Student Registry Table -->
-    <div class="glass-card rounded-2xl overflow-hidden border border-slate-200 bg-white">
-        <!-- Search Toolbar -->
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
-            <div class="relative flex-1 max-w-md">
-                <input type="text" id="studentSearch" placeholder="Search by name or ID (e.g. STU-2025-014)..."
-                    onkeyup="filterStudents()"
-                    class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-slate-400 text-xs"></i>
+    <div class="relative group">
+        <div id="attendanceLockOverlay"
+            class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center rounded-2xl transition-all duration-500">
+            <div
+                class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs text-center">
+                <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300">
+                    <i class="fas fa-lock text-3xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Registry Locked</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2 leading-relaxed">The
+                        student attendance registry will unlock once the lesson log is saved.</p>
+                </div>
+                <button onclick="openLessonLogModal()"
+                    class="w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100">
+                    Set Lesson Log
+                </button>
+            </div>
+        </div>
+        <div class="glass-card rounded-2xl overflow-hidden border border-slate-200 bg-white">
+            <!-- Search Toolbar -->
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-4 bg-slate-50/50">
+                <div class="relative flex-1 max-w-md">
+                    <input type="text" id="studentSearch" placeholder="Search by name or ID (e.g. STU-2025-014)..."
+                        onkeyup="filterStudents()"
+                        class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-lg border border-slate-200"
+                        id="recordCount">{{len .students}} Records</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-lg border border-slate-200"
-                    id="recordCount">{{len .students}} Records</span>
+
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50 border-b border-slate-100">
+                            <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                Student
+                                Information</th>
+                            <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Global
+                                ID
+                            </th>
+                            <th
+                                class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                                Metric Status</th>
+                            <th
+                                class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                Registry Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {{if .students}}
+                        {{range .students}}
+                        <tr class="hover:bg-indigo-50/30 transition-colors group">
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-indigo-50 group-hover:border-indigo-100 group-hover:text-indigo-600 transition-all">
+                                        <i class="fas fa-user text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">
+                                            {{.FirstName}} {{.LastName}}</p>
+                                        <p
+                                            class="text-[10px] font-bold text-slate-400 uppercase mt-0.5 tracking-tighter">
+                                            Academic Status: Active</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-5 py-3">
+                                <span
+                                    class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200">{{.StudentID}}</span>
+                            </td>
+                            <td class="px-5 py-3 text-center" id="status-badge-{{.ID}}">
+                                <span
+                                    class="bg-slate-50 text-slate-300 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-dashed border-slate-200">Pending</span>
+                            </td>
+                            <td class="px-5 py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button onclick="setPresence('{{.ID}}', 'present')" data-status="present"
+                                        class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-all shadow-sm"
+                                        title="Mark Present">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button onclick="setPresence('{{.ID}}', 'absent')" data-status="absent"
+                                        class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all shadow-sm"
+                                        title="Mark Absent">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button onclick="setPresence('{{.ID}}', 'late')" data-status="late"
+                                        class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-amber-600 hover:bg-amber-50 border border-transparent hover:border-amber-100 transition-all shadow-sm"
+                                        title="Mark Late">
+                                        <i class="fas fa-clock"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{else}}
+                        <tr>
+                            <td colspan="4"
+                                class="px-5 py-8 text-center text-slate-400 font-bold uppercase tracking-widest">
+                                No students found in this class
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="md:hidden p-4 space-y-4" id="mobileCardsContainer">
+                {{if .students}}
+                {{range .students}}
+                <div class="student-card bg-white rounded-xl border border-slate-100 p-4 shadow-sm space-y-4"
+                    data-student-id="{{.ID}}" data-student-name="{{.FirstName}} {{.LastName}}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-900">{{.FirstName}} {{.LastName}}</p>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{.StudentID}}
+                                </p>
+                            </div>
+                        </div>
+                        <div id="status-badge-mobile-{{.ID}}">
+                            <span
+                                class="bg-slate-50 text-slate-300 px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-dashed border-slate-200">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setPresence('{{.ID}}', 'present')" data-status="present"
+                            class="flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-slate-100 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-100 transition-all text-slate-400 hover:text-emerald-600">
+                            <i class="fas fa-check text-xs"></i>
+                            <span class="text-[8px] font-black uppercase">Present</span>
+                        </button>
+                        <button onclick="setPresence('{{.ID}}', 'absent')" data-status="absent"
+                            class="flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-slate-100 bg-slate-50 hover:bg-rose-50 hover:border-rose-100 transition-all text-slate-400 hover:text-rose-600">
+                            <i class="fas fa-times text-xs"></i>
+                            <span class="text-[8px] font-black uppercase">Absent</span>
+                        </button>
+                        <button onclick="setPresence('{{.ID}}', 'late')" data-status="late"
+                            class="flex flex-col items-center justify-center gap-1 p-2 rounded-xl border border-slate-100 bg-slate-50 hover:bg-amber-50 hover:border-amber-100 transition-all text-slate-400 hover:text-amber-600">
+                            <i class="fas fa-clock text-xs"></i>
+                            <span class="text-[8px] font-black uppercase">Late</span>
+                        </button>
+                    </div>
+                </div>
+                {{end}}
+                {{else}}
+                <div class="py-8 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
+                    No students found in class
+                </div>
+                {{end}}
             </div>
         </div>
+    </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Student
-                            Information</th>
-                        <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Global ID
-                        </th>
-                        <th
-                            class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-                            Metric Status</th>
-                        <th
-                            class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
-                            Registry Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {{if .students}}
-                    {{range .students}}
-                    <tr class="hover:bg-indigo-50/30 transition-colors group">
-                        <td class="px-5 py-3">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-indigo-50 group-hover:border-indigo-100 group-hover:text-indigo-600 transition-all">
-                                    <i class="fas fa-user text-sm"></i>
-                                </div>
-                                <div>
-                                    <p
-                                        class="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">
-                                        {{.FirstName}} {{.LastName}}</p>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase mt-0.5 tracking-tighter">
-                                        Academic Status: Active</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span
-                                class="bg-slate-100 text-slate-500 px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200">{{.StudentID}}</span>
-                        </td>
-                        <td class="px-5 py-3 text-center" id="status-badge-{{.ID}}">
-                            <span
-                                class="bg-slate-50 text-slate-300 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-dashed border-slate-200">Pending</span>
-                        </td>
-                        <td class="px-5 py-3">
-                            <div class="flex items-center justify-end gap-2">
-                                <button onclick="setPresence('{{.ID}}', 'present')"
-                                    class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-all shadow-sm"
-                                    title="Mark Present">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                                <button onclick="setPresence('{{.ID}}', 'absent')"
-                                    class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all shadow-sm"
-                                    title="Mark Absent">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button onclick="setPresence('{{.ID}}', 'late')"
-                                    class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-amber-600 hover:bg-amber-50 border border-transparent hover:border-amber-100 transition-all shadow-sm"
-                                    title="Mark Late">
-                                    <i class="fas fa-clock"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {{end}}
-                    {{else}}
-                    <tr>
-                        <td colspan="4"
-                            class="px-5 py-8 text-center text-slate-400 font-bold uppercase tracking-widest">
-                            No students found in this class
-                        </td>
-                    </tr>
-                    {{end}}
-                </tbody>
-            </table>
+    <!-- Lesson Log Modal -->
+    <div id="lessonLogModal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-95"
+            id="lessonLogModalContent">
+            <div class="px-8 py-5 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+                <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest">Lesson Conducted</h3>
+                <button onclick="closeLessonLogModal()"
+                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+
+            <form id="lessonLogForm" class="p-6 space-y-4">
+                <div>
+                    <label for="lessonTopic"
+                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Topic /
+                        Lesson
+                        Content</label>
+                    <input type="text" id="lessonTopic" required placeholder="e.g. Introduction to Fractions"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-sm">
+                </div>
+
+                <div>
+                    <label for="lessonNotes"
+                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Additional
+                        Notes (Optional)</label>
+                    <textarea id="lessonNotes" rows="3" placeholder="Any specific observations or issues..."
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-medium text-xs"></textarea>
+                </div>
+
+                <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg flex items-center gap-3 mb-2">
+                    <i class="fas fa-info-circle text-emerald-500 text-xs"></i>
+                    <p class="text-[10px] text-emerald-700 font-bold uppercase tracking-tight">
+                        Saving this marks the lesson as "Conducted/Touched".
+                    </p>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeLessonLogModal()"
+                        class="flex-1 px-4 py-3 text-slate-500 font-bold text-xs hover:bg-slate-50 rounded transition-all">
+                        Dismiss
+                    </button>
+                    <button type="submit"
+                        class="flex-[2] px-4 py-3 bg-indigo-600 hover:bg-black text-white rounded font-bold text-xs shadow transition-all">
+                        Save Lesson Log
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<script>
-    const timetableEntryId = "{{.timetableEntryID}}";
-    const attendanceDate = "{{.date}}";
-    const lessonInfoStr = '{{.lessonInfo}}'.replace(/&quot;/g, '"');
-    let lessonInfo = null;
-    try {
-        if (lessonInfoStr) {
-            lessonInfo = JSON.parse(lessonInfoStr);
-        }} catch (e) {
-        console.error('Failed to parse lesson info:', e);
-    }
-    const attendanceRecords = {};
+    <script>
+        // Initialize data from DOM metadata to avoid Go template conflict in JS
+        const metadata = document.getElementById('attendance-metadata').dataset;
+        const timetableEntryId = metadata.timetableEntryId;
+        const attendanceDate = metadata.date;
+        const termId = metadata.termId;
+        const totalStudents = parseInt(metadata.totalStudents || '0');
+        let lessonInfo = null;
+        let attendanceData = {};
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (lessonInfo) {
-            document.getElementById('sessionTitle').textContent = (lessonInfo.subject_name || lessonInfo.subject_id) + " - " + (lessonInfo.class_name || lessonInfo.class_id);
-            document.getElementById('sessionInfoDisplay').textContent = `Time Slot: ${lessonInfo.time_slot} | Status: Academic Node Active`;
-            document.getElementById('teacherInfoDisplay').textContent = `Instructor: ${lessonInfo.teacher_name || 'N/A'}`;
+        try {
+            if (metadata.lessonInfo) lessonInfo = JSON.parse(metadata.lessonInfo);
+            if (metadata.attendanceMap) attendanceData = JSON.parse(metadata.attendanceMap);
+        } catch (e) {
+            console.error('Data parsing error:', e);
         }
 
-        // Initialize from existing attendance if any
-        {{range $studentId, $status := .attendanceMap }}
-        setPresence('{{$studentId}}', '{{$status}}', false);
-        {{end}}
+        const paperId = lessonInfo ? (lessonInfo.paper_id || lessonInfo.PaperID) : null;
+        const attendanceRecords = {};
 
-        updateStats();
-    });
+        document.addEventListener('DOMContentLoaded', () => {
+            if (lessonInfo) {
+                const paperCode = lessonInfo.paper_code || lessonInfo.PaperCode;
+                const paperSuffix = paperCode ? ` (${paperCode})` : "";
+                const title = (lessonInfo.subject_name || lessonInfo.subject_id) + paperSuffix + " - " + (lessonInfo.class_name || lessonInfo.class_id);
+                document.getElementById('sessionTitle').textContent = title;
+                document.getElementById('sessionInfoDisplay').textContent = `Time Slot: ${lessonInfo.time_slot} | Status: Academic Node Active`;
+                document.getElementById('teacherInfoDisplay').textContent = `Instructor: ${lessonInfo.teacher_name || 'N/A'}`;
+            }
 
-    async function setPresence(studentId, status, shouldUpdateStats = true) {
-        const badgeContainer = document.getElementById(`status-badge-${studentId}`);
-        if (!badgeContainer) return;
+            // Initialize from existing attendance data if any
+            if (attendanceData) {
+                Object.entries(attendanceData).forEach(([studentId, status]) => {
+                    setPresence(studentId, status, false);
+                });
+            }
 
-        const originalContent = badgeContainer.innerHTML;
+            updateStats();
+        });
 
-        // Find the action buttons for this student to provide feedback/prevent double-clicks
-        const actionRow = badgeContainer.closest('tr');
-        const buttons = actionRow ? actionRow.querySelectorAll('button') : [];
+        async function setPresence(studentId, status, shouldUpdateStats = true) {
+            const badgeContainer = document.getElementById(`status-badge-${studentId}`);
+            const mobileBadgeContainer = document.getElementById(`status-badge-mobile-${studentId}`);
+            if (!badgeContainer) return;
 
-        // If it's a real-time update from the UI
-        if (shouldUpdateStats) {
-            // Disable buttons and show loading
-            buttons.forEach(btn => btn.classList.add('opacity-50', 'pointer-events-none'));
-            badgeContainer.innerHTML = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-dashed border-indigo-200 text-indigo-400 bg-indigo-50/50"><i class="fas fa-spinner fa-spin"></i> Saving...</span>';
+            const originalContent = badgeContainer.innerHTML;
+            const originalMobileContent = mobileBadgeContainer ? mobileBadgeContainer.innerHTML : '';
+
+            // Find buttons in both desktop table and mobile cards
+            const actionRow = badgeContainer.closest('tr');
+            const mobileCard = mobileBadgeContainer ? mobileBadgeContainer.closest('.student-card') : null;
+
+            const desktopButtons = actionRow ? actionRow.querySelectorAll('button') : [];
+            const mobileButtons = mobileCard ? mobileCard.querySelectorAll('button') : [];
+            const allButtons = [...desktopButtons, ...mobileButtons];
+
+            if (shouldUpdateStats) {
+                allButtons.forEach(btn => btn.classList.add('opacity-50', 'pointer-events-none'));
+                const loadingHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-dashed border-indigo-200 text-indigo-400 bg-indigo-50/50"><i class="fas fa-spinner fa-spin"></i> Saving...</span>';
+                badgeContainer.innerHTML = loadingHtml;
+                if (mobileBadgeContainer) mobileBadgeContainer.innerHTML = loadingHtml;
+
+                try {
+                    const response = await fetch('/api/attendance/single', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            student_id: studentId,
+                            timetable_entry_id: timetableEntryId,
+                            paper_id: paperId,
+                            term_id: termId,
+                            date: attendanceDate,
+                            status: status
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        showNotification(error.error || 'Failed to sync with registry', 'error');
+                        badgeContainer.innerHTML = originalContent;
+                        if (mobileBadgeContainer) mobileBadgeContainer.innerHTML = originalMobileContent;
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Registry sync failure:', err);
+                    showNotification('Network connection unstable', 'error');
+                    badgeContainer.innerHTML = originalContent;
+                    if (mobileBadgeContainer) mobileBadgeContainer.innerHTML = originalMobileContent;
+                    return;
+                } finally {
+                    allButtons.forEach(btn => btn.classList.remove('opacity-50', 'pointer-events-none'));
+                }
+            }
+
+            // Update button highlighting
+            allButtons.forEach(btn => {
+                const btnStatus = btn.getAttribute('data-status');
+
+                // Reset to default classes (remove active states)
+                btn.classList.remove('bg-emerald-600', 'bg-rose-600', 'bg-amber-600', 'text-white', 'border-emerald-600', 'border-rose-600', 'border-amber-600', 'active');
+                btn.classList.add('text-slate-400');
+
+                if (btnStatus === status) {
+                    btn.classList.add('active');
+                    btn.classList.remove('text-slate-400');
+                    if (status === 'present') btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600');
+                    if (status === 'absent') btn.classList.add('bg-rose-600', 'text-white', 'border-rose-600');
+                    if (status === 'late') btn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+                }
+            });
+
+            attendanceRecords[studentId] = status;
+            let badgeHtml = '';
+
+            switch (status) {
+                case 'present':
+                    badgeHtml = '<span class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-100 inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Present</span>';
+                    break;
+                case 'absent':
+                    badgeHtml = '<span class="bg-rose-50 text-rose-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-rose-100 inline-flex items-center gap-1.5">Absent</span>';
+                    break;
+                case 'late':
+                    badgeHtml = '<span class="bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-amber-100 inline-flex items-center gap-1.5">Late Arrival</span>';
+                    break;
+            }
+
+            badgeContainer.innerHTML = badgeHtml;
+            if (mobileBadgeContainer) mobileBadgeContainer.innerHTML = badgeHtml;
+            if (shouldUpdateStats) updateStats();
+        }
+
+        function updateStats() {
+            let present = 0, absent = 0, late = 0;
+            const total = totalStudents;
+
+            Object.values(attendanceRecords).forEach(status => {
+                if (status === 'present') present++;
+                if (status === 'absent') absent++;
+                if (status === 'late') late++;
+            });
+
+            document.getElementById('statsPresent').textContent = present;
+            document.getElementById('statsAbsent').textContent = absent;
+            document.getElementById('statsPending').textContent = total - (present + absent + late);
+        }
+
+        function filterStudents() {
+            const input = document.getElementById('studentSearch');
+            const filter = input.value.toUpperCase();
+
+            // Filter Table rows
+            const tr = document.querySelectorAll('table tbody tr');
+            let tableVisibleCount = 0;
+            tr.forEach(row => {
+                const nameTd = row.getElementsByTagName('td')[0];
+                const idTd = row.getElementsByTagName('td')[1];
+                if (nameTd && idTd) {
+                    const name = nameTd.textContent || nameTd.innerText;
+                    const id = idTd.textContent || idTd.innerText;
+                    if (name.toUpperCase().indexOf(filter) > -1 || id.toUpperCase().indexOf(filter) > -1) {
+                        row.style.display = "";
+                        tableVisibleCount++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            });
+
+            // Filter Mobile Cards
+            const cards = document.querySelectorAll('.student-card');
+            let cardVisibleCount = 0;
+            cards.forEach(card => {
+                const name = card.getAttribute('data-student-name');
+                const id = card.getAttribute('data-student-id');
+                if (name.toUpperCase().indexOf(filter) > -1 || id.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                    cardVisibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            const visibleCount = Math.max(tableVisibleCount, cardVisibleCount);
+            document.getElementById('recordCount').textContent = visibleCount + " Records";
+        }
+
+        function showNotification(message, type = 'success') {
+            const bg = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 ${bg} text-white px-6 py-3 rounded-xl shadow-2xl z-[100] animate-bounce transform transition-all duration-300 flex items-center gap-3`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span class="text-[11px] font-black uppercase tracking-widest">${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Lesson Log Functions
+        function openLessonLogModal() {
+            const modal = document.getElementById('lessonLogModal');
+            const content = document.getElementById('lessonLogModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => content.classList.remove('scale-95'), 10);
+        }
+
+        function closeLessonLogModal() {
+            const modal = document.getElementById('lessonLogModal');
+            const content = document.getElementById('lessonLogModalContent');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function unlockAttendance() {
+            const overlay = document.getElementById('attendanceLockOverlay');
+            const warning = document.getElementById('lessonLogWarning');
+            if (overlay) {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => overlay.remove(), 500);
+            }
+            if (warning) {
+                warning.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('lessonLogForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const topic = document.getElementById('lessonTopic').value;
+            const notes = document.getElementById('lessonNotes').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
 
             try {
-                const response = await fetch('/api/attendance/single', {
+                const response = await fetch('/api/attendance/conduct', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        student_id: studentId,
                         timetable_entry_id: timetableEntryId,
+                        term_id: termId,
                         date: attendanceDate,
-                        status: status
+                        topic: topic,
+                        notes: notes
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    showNotification(errorData.error || 'Failed to sync with registry', 'error');
-                    badgeContainer.innerHTML = originalContent;
-                    buttons.forEach(btn => btn.classList.remove('opacity-50', 'pointer-events-none'));
-                    return;
-                }
-
-                // Re-enable buttons after success
-                buttons.forEach(btn => btn.classList.remove('opacity-50', 'pointer-events-none'));
-            } catch (error) {
-                console.error('Registry sync failure:', error);
-                showNotification('Network connection unstable', 'error');
-                badgeContainer.innerHTML = originalContent;
-                buttons.forEach(btn => btn.classList.remove('opacity-50', 'pointer-events-none'));
-                return;
-            }}
-
-        attendanceRecords[studentId] = status;
-        let badgeHtml = '';
-
-        switch (status) {
-            case 'present':
-                badgeHtml = '<span class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-100 inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>Present</span>';
-                break;
-            case 'absent':
-                badgeHtml = '<span class="bg-rose-50 text-rose-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-rose-100 inline-flex items-center gap-1.5">Absent</span>';
-                break;
-            case 'late':
-                badgeHtml = '<span class="bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-amber-100 inline-flex items-center gap-1.5">Late Arrival</span>';
-                break;
-        }
-
-        badgeContainer.innerHTML = badgeHtml;
-        if (shouldUpdateStats) updateStats();
-    }
-
-    function updateStats() {
-        let present = 0, absent = 0, late = 0;
-        const total = {{ len .students }};
-
-    Object.values(attendanceRecords).forEach(status => {
-        if (status === 'present') present++;
-        if (status === 'absent') absent++;
-        if (status === 'late') late++;
-    });
-
-    document.getElementById('statsPresent').textContent = present;
-    document.getElementById('statsAbsent').textContent = absent;
-    document.getElementById('statsPending').textContent = total - (present + absent + late);
-    }
-
-
-
-    function filterStudents() {
-        const input = document.getElementById('studentSearch');
-        const filter = input.value.toUpperCase();
-        const table = document.querySelector('table');
-        const tr = table.getElementsByTagName('tr');
-        let visibleCount = 0;
-
-        // Start from 1 to skip header
-        for (let i = 1; i < tr.length; i++) {
-            const nameTd = tr[i].getElementsByTagName('td')[0];
-            const idTd = tr[i].getElementsByTagName('td')[1];
-
-            if (nameTd && idTd) {
-                const nameValue = nameTd.textContent || nameTd.innerText;
-                const idValue = idTd.textContent || idTd.innerText;
-
-                if (nameValue.toUpperCase().indexOf(filter) > -1 || idValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                    visibleCount++;
+                if (response.ok) {
+                    showNotification('Lesson conduct recorded');
+                    document.getElementById('lessonConductedStatus').classList.remove('hidden');
+                    unlockAttendance();
+                    closeLessonLogModal();
                 } else {
-                    tr[i].style.display = "none";
-                }}
+                    showNotification('Failed to record lesson log', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification('Network error', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Save Lesson Log';
+            }
+        });
+
+        // Check for existing lesson log on load
+        (async () => {
+            try {
+                const res = await fetch(`/api/attendance/conduct/${timetableEntryId}/${attendanceDate}`);
+                const data = await res.json();
+                if (data.success && data.lesson) {
+                    document.getElementById('lessonConductedStatus').classList.remove('hidden');
+                    document.getElementById('lessonTopic').value = data.lesson.topic || '';
+                    document.getElementById('lessonNotes').value = data.lesson.notes || '';
+                    unlockAttendance();
+                }
+            } catch (err) {
+                console.error('Failed to load lesson conducted status', err);
+            }
+        })();
+    </script>
+
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        // Update record count
-        document.getElementById('recordCount').textContent = visibleCount + " Records";
-    }
-
-    function showNotification(msg, type = 'success') {
-        const toast = document.createElement('div');
-        toast.className = `fixed bottom-6 right-6 z-[200] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-slide-in ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`;
-        toast.innerHTML = `
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-            <p class="text-xs font-black uppercase tracking-widest">${msg}</p>
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
-</script>
-
-<style>
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
+        .animate-slide-in {
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }}
-
-    .animate-slide-in {
-        animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-    }
-</style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+    </style>

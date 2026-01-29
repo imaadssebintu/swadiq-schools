@@ -106,7 +106,7 @@ func GetTotalPaid(db *sql.DB, teacherID string, startDate, endDate time.Time) (i
 		COALESCE(SUM(CASE WHEN type = 'allowance' THEN amount ELSE 0 END), 0) as allowance_paid,
 		COALESCE(SUM(amount), 0) as total_paid
 		FROM teacher_payments 
-		WHERE teacher_id = $1 AND paid_at >= $2 AND paid_at <= $3`
+		WHERE teacher_id = $1 AND paid_at >= $2 AND paid_at <= $3 AND status = 'completed'`
 
 	var basePaid, allowPaid, totalPaid int64
 	err := db.QueryRow(query, teacherID, startDate, endDate).Scan(&basePaid, &allowPaid, &totalPaid)

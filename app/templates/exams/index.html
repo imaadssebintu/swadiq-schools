@@ -431,9 +431,14 @@
                 </span>
             </td>
             <td class="px-5 py-4 text-right">
-                <button class="text-xs font-bold text-slate-900 hover:text-slate-600 flex items-center justify-end gap-1.5 transition-colors">
-                    Manage <i class="fas fa-arrow-right text-[10px]"></i>
-                </button>
+                <div class="flex items-center justify-end gap-3">
+                    <button onclick="event.stopPropagation(); window.location.href='/exams/class/${cls.id}/results-grid'" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center gap-2">
+                        <i class="fas fa-table"></i> Results Grid
+                    </button>
+                    <button class="text-xs font-bold text-slate-900 hover:text-slate-600 flex items-center justify-end gap-1.5 transition-colors">
+                        Manage <i class="fas fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
             </td>
         `;
             tbody.appendChild(row);
@@ -715,6 +720,9 @@
 
             <!-- Actions -->
             <div class="text-right transition-opacity flex justify-end gap-2">
+                <button onclick="window.location.href='/exams/${exam.id}/results'" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Enter Results">
+                    <i class="fas fa-clipboard-list text-xs"></i>
+                </button>
                 <button onclick="editExam('${exam.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Edit">
                     <i class="fas fa-pen-to-square text-xs"></i>
                 </button>

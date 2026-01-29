@@ -47,6 +47,22 @@ func GetUserByEmail(db *sql.DB, email string) (*models.User, error) {
 	return user, nil
 }
 
+func GetCurrentTerm(db *sql.DB) (*models.Term, error) {
+	term := &models.Term{}
+	query := `SELECT id, academic_year_id, name, start_date, end_date, is_current, is_active, created_at, updated_at
+			  FROM terms WHERE is_current = true AND deleted_at IS NULL LIMIT 1`
+
+	err := db.QueryRow(query).Scan(
+		&term.ID, &term.AcademicYearID, &term.Name, &term.StartDate.Time, &term.EndDate.Time,
+		&term.IsCurrent, &term.IsActive, &term.CreatedAt, &term.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return term, nil
+}
+
 func GetUserByID(db *sql.DB, userID string) (*models.User, error) {
 	user := &models.User{}
 	query := `SELECT id, email, password, first_name, last_name, COALESCE(phone, ''), is_active, created_at, updated_at
@@ -826,7 +842,7 @@ func GetStudentsByClass(db *sql.DB, classID string) ([]*models.Student, error) {
 }
 
 func GetAttendanceByClassAndDate(db *sql.DB, classID string, date time.Time) ([]*models.Attendance, error) {
-	query := `SELECT id, student_id, class_id, timetable_entry_id, paper_id, date, status, marked_by, created_at, updated_at
+	query := `SELECT id, student_id, class_id, timetable_entry_id, paper_id, term_id, date, status, marked_by, created_at, updated_at
 			  FROM attendance
 			  WHERE class_id = $1 AND date = $2 AND deleted_at IS NULL`
 
@@ -842,7 +858,7 @@ func GetAttendanceByClassAndDate(db *sql.DB, classID string, date time.Time) ([]
 		var status string
 		err := rows.Scan(
 			&record.ID, &record.StudentID, &record.ClassID, &record.TimetableEntryID,
-			&record.PaperID, &record.Date, &status, &record.MarkedBy,
+			&record.PaperID, &record.TermID, &record.Date, &status, &record.MarkedBy,
 			&record.CreatedAt, &record.UpdatedAt,
 		)
 		if err != nil {
@@ -870,14 +886,14 @@ func CreateOrUpdateAttendance(db *sql.DB, attendance *models.Attendance) error {
 
 	if err == nil {
 		// Update
-		query := "UPDATE attendance SET status = $1, marked_by = $2, updated_at = NOW() WHERE id = $3"
-		_, err = db.Exec(query, attendance.Status, attendance.MarkedBy, id)
+		query := "UPDATE attendance SET status = $1, marked_by = $2, term_id = COALESCE($4, term_id), updated_at = NOW() WHERE id = $3"
+		_, err = db.Exec(query, attendance.Status, attendance.MarkedBy, id, attendance.TermID)
 		return err
 	} else if err == sql.ErrNoRows {
 		// Insert
-		query := `INSERT INTO attendance (id, student_id, class_id, timetable_entry_id, paper_id, date, status, marked_by, created_at, updated_at)
-				  VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`
-		_, err = db.Exec(query, attendance.StudentID, attendance.ClassID, attendance.TimetableEntryID, attendance.PaperID, attendance.Date, attendance.Status, attendance.MarkedBy)
+		query := `INSERT INTO attendance (id, student_id, class_id, timetable_entry_id, paper_id, term_id, date, status, marked_by, created_at, updated_at)
+				  VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())`
+		_, err = db.Exec(query, attendance.StudentID, attendance.ClassID, attendance.TimetableEntryID, attendance.PaperID, attendance.TermID, attendance.Date, attendance.Status, attendance.MarkedBy)
 		return err
 	}
 
@@ -2420,7 +2436,7 @@ func UpdateTeacherAvailability(db *sql.DB, teacherID string, availability []*mod
 
 // GetAttendanceByTimetableEntryAndDate gets attendance records for a timetable entry and date
 func GetAttendanceByTimetableEntryAndDate(db *sql.DB, timetableEntryID string, date time.Time) ([]*models.Attendance, error) {
-	query := `SELECT id, student_id, class_id, timetable_entry_id, paper_id, date, status, marked_by, created_at, updated_at
+	query := `SELECT id, student_id, class_id, timetable_entry_id, paper_id, term_id, date, status, marked_by, created_at, updated_at
 			  FROM attendance
 			  WHERE timetable_entry_id = $1 AND date = $2 AND deleted_at IS NULL`
 
@@ -2436,7 +2452,7 @@ func GetAttendanceByTimetableEntryAndDate(db *sql.DB, timetableEntryID string, d
 		var status string
 		err := rows.Scan(
 			&record.ID, &record.StudentID, &record.ClassID, &record.TimetableEntryID,
-			&record.PaperID, &record.Date, &status, &record.MarkedBy,
+			&record.PaperID, &record.TermID, &record.Date, &status, &record.MarkedBy,
 			&record.CreatedAt, &record.UpdatedAt,
 		)
 		if err != nil {
@@ -2484,22 +2500,24 @@ func GetStudentsByTimetableEntry(db *sql.DB, timetableEntryID string) ([]*models
 func GetTimetableEntryByID(db *sql.DB, id string) (*models.TimetableEntryResponse, error) {
 	query := `SELECT te.id, te.class_id, te.subject_id, te.teacher_id, te.day_of_week, 
 			  CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
-			  te.created_at, te.updated_at,
+			  te.created_at, te.updated_at, te.paper_id,
 			  s.name as subject_name, c.name as class_name, u.first_name, u.last_name,
-			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count
+			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count,
+			  COALESCE(p.code, '') as paper_code
 			  FROM timetable_entries te
 			  LEFT JOIN subjects s ON te.subject_id = s.id
 			  LEFT JOIN classes c ON te.class_id = c.id
 			  LEFT JOIN users u ON te.teacher_id = u.id
+			  LEFT JOIN papers p ON te.paper_id = p.id
 			  WHERE te.id = $1 AND te.is_active = true`
 
 	entry := &models.TimetableEntryResponse{}
 	var subjectName, className, teacherFirstName, teacherLastName *string
 	err := db.QueryRow(query, id).Scan(
 		&entry.ID, &entry.ClassID, &entry.SubjectID, &entry.TeacherID,
-		&entry.Day, &entry.TimeSlot, &entry.CreatedAt, &entry.UpdatedAt,
+		&entry.Day, &entry.TimeSlot, &entry.CreatedAt, &entry.UpdatedAt, &entry.PaperID,
 		&subjectName, &className, &teacherFirstName, &teacherLastName,
-		&entry.StudentCount,
+		&entry.StudentCount, &entry.PaperCode,
 	)
 	if err != nil {
 		return nil, err
@@ -2522,13 +2540,15 @@ func GetTimetableEntryByID(db *sql.DB, id string) (*models.TimetableEntryRespons
 func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string) ([]*models.TimetableEntryResponse, error) {
 	query := `SELECT te.id, te.class_id, te.subject_id, te.teacher_id, te.day_of_week, 
 			  CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
-			  te.created_at, te.updated_at,
+			  te.created_at, te.updated_at, te.paper_id,
 			  s.name as subject_name, c.name as class_name, u.first_name, u.last_name,
-			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count
+			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count,
+			  COALESCE(p.code, '') as paper_code
 			  FROM timetable_entries te
 			  LEFT JOIN subjects s ON te.subject_id = s.id
 			  LEFT JOIN classes c ON te.class_id = c.id
 			  LEFT JOIN users u ON te.teacher_id = u.id
+			  LEFT JOIN papers p ON te.paper_id = p.id
 			  WHERE te.teacher_id = $1 AND LOWER(te.day_of_week) = LOWER($2) AND te.is_active = true
 			  ORDER BY te.start_time`
 
@@ -2544,9 +2564,9 @@ func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string)
 		var subjectName, className, teacherFirstName, teacherLastName *string
 		err := rows.Scan(
 			&entry.ID, &entry.ClassID, &entry.SubjectID, &entry.TeacherID,
-			&entry.Day, &entry.TimeSlot, &entry.CreatedAt, &entry.UpdatedAt,
+			&entry.Day, &entry.TimeSlot, &entry.CreatedAt, &entry.UpdatedAt, &entry.PaperID,
 			&subjectName, &className, &teacherFirstName, &teacherLastName,
-			&entry.StudentCount,
+			&entry.StudentCount, &entry.PaperCode,
 		)
 		if err != nil {
 			continue
@@ -2626,7 +2646,7 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 
 // Exam functions
 func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
-	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.type, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
+	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.assessment_type_id, e.type, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
 			  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name, p.subject_id, s.name as subject_name
 			  FROM exams e
 			  LEFT JOIN classes c ON e.class_id = c.id
@@ -2655,7 +2675,7 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 		var className, academicYearName, termName, paperName, subjectName *string
 		var subjectID *string
 		err := rows.Scan(
-			&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.Type,
+			&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.AssessmentTypeID, &exam.Type,
 			&exam.StartTime, &exam.EndTime, &exam.IsActive, &exam.CreatedAt, &exam.UpdatedAt,
 			&className, &academicYearName, &termName, &paperName, &subjectID, &subjectName,
 		)
@@ -2687,38 +2707,38 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 }
 
 func GetExamByID(db *sql.DB, id string) (*models.Exam, error) {
-	query := `SELECT id, name, class_id, academic_year_id, term_id, paper_id, type, start_time, end_time, is_active, created_at, updated_at
+	query := `SELECT id, name, class_id, academic_year_id, term_id, paper_id, assessment_type_id, type, start_time, end_time, is_active, created_at, updated_at
 			  FROM exams WHERE id = $1 AND deleted_at IS NULL`
 
 	exam := &models.Exam{}
 	err := db.QueryRow(query, id).Scan(
-		&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.Type,
+		&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.AssessmentTypeID, &exam.Type,
 		&exam.StartTime, &exam.EndTime, &exam.IsActive, &exam.CreatedAt, &exam.UpdatedAt,
 	)
 	return exam, err
 }
 
 func CreateExam(db *sql.DB, exam *models.Exam) error {
-	query := `INSERT INTO exams (name, class_id, academic_year_id, term_id, paper_id, type, start_time, end_time, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+	query := `INSERT INTO exams (name, class_id, academic_year_id, term_id, paper_id, assessment_type_id, type, start_time, end_time, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
 	exam.IsActive = true
 	if exam.Type == "" {
 		exam.Type = "exam"
 	}
-	err := db.QueryRow(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID, exam.Type,
+	err := db.QueryRow(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID, exam.AssessmentTypeID, exam.Type,
 		exam.StartTime, exam.EndTime, exam.IsActive).Scan(&exam.ID, &exam.CreatedAt, &exam.UpdatedAt)
 	return err
 }
 
 func UpdateExam(db *sql.DB, exam *models.Exam) error {
 	query := `UPDATE exams SET name = $1, class_id = $2, academic_year_id = $3, term_id = $4, paper_id = $5,
-			  type = $6, start_time = $7, end_time = $8, is_active = $9, updated_at = NOW()
-			  WHERE id = $10 AND deleted_at IS NULL`
+			  assessment_type_id = $6, type = $7, start_time = $8, end_time = $9, is_active = $10, updated_at = NOW()
+			  WHERE id = $11 AND deleted_at IS NULL`
 
 	_, err := db.Exec(query, exam.Name, exam.ClassID, exam.AcademicYearID, exam.TermID, exam.PaperID,
-		exam.Type, exam.StartTime, exam.EndTime, exam.IsActive, exam.ID)
+		exam.AssessmentTypeID, exam.Type, exam.StartTime, exam.EndTime, exam.IsActive, exam.ID)
 	return err
 }
 
@@ -2813,4 +2833,203 @@ func GetPapersByClassAndSubject(db *sql.DB, classID, subjectID string) ([]*model
 		papers = append(papers, paper)
 	}
 	return papers, nil
+}
+
+func MarkLessonAsConducted(db *sql.DB, logRec *models.ConductedLesson) error {
+	query := `INSERT INTO conducted_lessons (id, timetable_entry_id, term_id, date, teacher_id, topic, notes, created_at, updated_at)
+			  VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW(), NOW())
+			  ON CONFLICT (timetable_entry_id, date) 
+			  DO UPDATE SET topic = EXCLUDED.topic, notes = EXCLUDED.notes, updated_at = NOW()`
+	_, err := db.Exec(query, logRec.TimetableEntryID, logRec.TermID, logRec.Date, logRec.TeacherID, logRec.Topic, logRec.Notes)
+	return err
+}
+
+func GetConductedLesson(db *sql.DB, timetableEntryID string, date time.Time) (*models.ConductedLesson, error) {
+	query := `SELECT id, timetable_entry_id, term_id, date, teacher_id, topic, notes, created_at, updated_at
+			  FROM conducted_lessons
+			  WHERE timetable_entry_id = $1 AND date = $2`
+
+	l := &models.ConductedLesson{}
+	err := db.QueryRow(query, timetableEntryID, date).Scan(
+		&l.ID, &l.TimetableEntryID, &l.TermID, &l.Date, &l.TeacherID, &l.Topic, &l.Notes, &l.CreatedAt, &l.UpdatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	return l, err
+}
+
+func GetStudentLessonAttendanceReport(db *sql.DB, studentID string) ([]map[string]interface{}, error) {
+	query := `SELECT 
+				cl.id as lesson_log_id,
+				cl.date,
+				te.day_of_week,
+				CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
+				s.name as subject_name,
+				COALESCE(p.code, '') as paper_code,
+				COALESCE(cl.topic, '') as topic,
+				COALESCE(a.status, 'pending') as status
+			FROM conducted_lessons cl
+			JOIN timetable_entries te ON cl.timetable_entry_id = te.id
+			JOIN subjects s ON te.subject_id = s.id
+			LEFT JOIN papers p ON te.paper_id = p.id
+			LEFT JOIN attendance a ON a.timetable_entry_id = cl.timetable_entry_id AND a.date = cl.date AND a.student_id = $1
+			WHERE te.class_id = (SELECT class_id FROM students WHERE id = $1)
+			ORDER BY cl.date DESC, te.start_time DESC`
+
+	rows, err := db.Query(query, studentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var report []map[string]interface{}
+	for rows.Next() {
+		var id, date, day, timeSlot, subject, paper, topic, status string
+		err := rows.Scan(&id, &date, &day, &timeSlot, &subject, &paper, &topic, &status)
+		if err != nil {
+			continue
+		}
+		report = append(report, map[string]interface{}{
+			"id":        id,
+			"date":      date,
+			"day":       day,
+			"time_slot": timeSlot,
+			"subject":   subject,
+			"paper":     paper,
+			"topic":     topic,
+			"status":    status,
+		})
+	}
+	return report, nil
+}
+
+func GetTimetableEntriesByClassAndDay(db *sql.DB, classID, dayOfWeek string) ([]*models.TimetableEntryResponse, error) {
+	query := `SELECT te.id, te.class_id, te.subject_id, te.teacher_id, te.day_of_week, 
+			  CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
+			  te.created_at, te.updated_at, te.paper_id,
+			  s.name as subject_name, c.name as class_name, u.first_name, u.last_name,
+			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count,
+			  COALESCE(p.code, '') as paper_code
+			  FROM timetable_entries te
+			  LEFT JOIN subjects s ON te.subject_id = s.id
+			  LEFT JOIN classes c ON te.class_id = c.id
+			  LEFT JOIN users u ON te.teacher_id = u.id
+			  LEFT JOIN papers p ON te.paper_id = p.id
+			  WHERE te.class_id = $1 AND LOWER(te.day_of_week) = LOWER($2) AND te.is_active = true
+			  ORDER BY te.start_time`
+
+	rows, err := db.Query(query, classID, dayOfWeek)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var entries []*models.TimetableEntryResponse
+	for rows.Next() {
+		entry := &models.TimetableEntryResponse{}
+		var subjectName, className, teacherFirstName, teacherLastName *string
+		err := rows.Scan(
+			&entry.ID, &entry.ClassID, &entry.SubjectID, &entry.TeacherID,
+			&entry.Day, &entry.TimeSlot, &entry.CreatedAt, &entry.UpdatedAt, &entry.PaperID,
+			&subjectName, &className, &teacherFirstName, &teacherLastName,
+			&entry.StudentCount, &entry.PaperCode,
+		)
+		if err != nil {
+			continue
+		}
+		if subjectName != nil {
+			entry.SubjectName = *subjectName
+		}
+		if className != nil {
+			entry.ClassName = *className
+		}
+		if teacherFirstName != nil && teacherLastName != nil {
+			entry.TeacherName = *teacherFirstName + " " + *teacherLastName
+		}
+		entries = append(entries, entry)
+	}
+
+	return entries, nil
+}
+
+func GetConductedLessonsByClassAndDate(db *sql.DB, classID string, date time.Time) ([]*models.ConductedLesson, error) {
+	query := `SELECT cl.id, cl.timetable_entry_id, cl.term_id, cl.date, cl.teacher_id, cl.topic, cl.notes, cl.created_at, cl.updated_at
+			  FROM conducted_lessons cl
+			  JOIN timetable_entries te ON cl.timetable_entry_id = te.id
+			  WHERE te.class_id = $1 AND cl.date = $2`
+
+	rows, err := db.Query(query, classID, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var lessons []*models.ConductedLesson
+	for rows.Next() {
+		l := &models.ConductedLesson{}
+		err := rows.Scan(
+			&l.ID, &l.TimetableEntryID, &l.TermID, &l.Date, &l.TeacherID, &l.Topic, &l.Notes, &l.CreatedAt, &l.UpdatedAt,
+		)
+		if err != nil {
+			continue
+		}
+		lessons = append(lessons, l)
+	}
+	return lessons, nil
+}
+
+func GetClassTermAttendanceSummary(db *sql.DB, classID, termID string) ([]map[string]interface{}, error) {
+	// Query to get aggregated stats for each student in the class for the term
+	query := `
+		SELECT 
+			s.id as student_id,
+			s.first_name,
+			s.last_name,
+			s.student_id as student_code,
+			COUNT(DISTINCT cl.id) as total_conducted,
+			COUNT(a.id) FILTER (WHERE a.status = 'present') as present_count,
+			COUNT(a.id) FILTER (WHERE a.status = 'absent') as absent_count,
+			COUNT(a.id) FILTER (WHERE a.status = 'late') as late_count
+		FROM students s
+		CROSS JOIN conducted_lessons cl
+		JOIN timetable_entries te ON cl.timetable_entry_id = te.id
+		LEFT JOIN attendance a ON a.student_id = s.id 
+			AND a.timetable_entry_id = cl.timetable_entry_id 
+			AND a.date = cl.date
+		WHERE s.class_id = $1 
+			AND te.class_id = $1
+			AND cl.term_id = $2
+			AND s.is_active = true
+		GROUP BY s.id, s.first_name, s.last_name, s.student_id
+		ORDER BY s.first_name, s.last_name
+	`
+
+	rows, err := db.Query(query, classID, termID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var summary []map[string]interface{}
+	for rows.Next() {
+		var sid, fname, lname, scode string
+		var total, present, absent, late int
+		err := rows.Scan(&sid, &fname, &lname, &scode, &total, &present, &absent, &late)
+		if err != nil {
+			continue
+		}
+		summary = append(summary, map[string]interface{}{
+			"student_id":      sid,
+			"first_name":      fname,
+			"last_name":       lname,
+			"student_code":    scode,
+			"total_conducted": total,
+			"present_count":   present,
+			"absent_count":    absent,
+			"late_count":      late,
+		})
+	}
+
+	return summary, nil
 }

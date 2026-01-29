@@ -78,12 +78,57 @@
                         </th>
                         <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Students
                         </th>
+                        <th class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status
+                        </th>
                         <th
                             class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
                             Action</th>
                     </tr>
                 </thead>
                 <tbody id="todaysScheduleBody" class="divide-y divide-slate-100 bg-white">
+                    <!-- JavaScript will populate this -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Term Student Attendance Overview -->
+    <div class="glass-card rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div>
+                <h2 class="text-sm font-black text-slate-900 uppercase tracking-tight">
+                    Term Student Attendance Overview</h2>
+                <p class="text-[10px] font-bold text-slate-400 mt-0.5">Aggregated attendance statistics for the current
+                    term (<span id="currentTermName" class="text-indigo-600">...</span>)</p>
+            </div>
+            <i class="fas fa-chart-line text-slate-300 text-xl"></i>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th
+                            class="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest min-w-[200px]">
+                            Student Information</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Conducted</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                            Present</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-rose-500 uppercase tracking-widest">
+                            Absent</th>
+                        <th
+                            class="px-5 py-3 text-center text-[10px] font-black text-amber-500 uppercase tracking-widest">
+                            Late</th>
+                        <th
+                            class="px-5 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Rate</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTermSummaryBody" class="divide-y divide-slate-100 bg-white text-xs">
                     <!-- JavaScript will populate this -->
                 </tbody>
             </table>
@@ -102,95 +147,135 @@
 
         const dateStr = dateInput.value;
         const selectedDate = new Date(dateStr);
-        const dayOfWeek = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
         document.getElementById('currentDayText').textContent = `Schedule for ${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`;
 
-        // Show skeleton loading
-        body.innerHTML = Array(4).fill(0).map(() => `
+        // Skeleton loading
+        const skeletonHtml = Array(4).fill(0).map(() => `
             <tr class="animate-pulse">
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-slate-200"></div>
-                        <div class="h-4 w-24 bg-slate-200 rounded"></div>
-                    </div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="h-4 w-32 bg-slate-200 rounded"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="h-4 w-32 bg-slate-200 rounded"></div>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="h-4 w-20 bg-slate-200 rounded"></div>
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <div class="h-8 w-24 bg-slate-200 rounded-xl ml-auto"></div>
-                </td>
+                <td class="px-5 py-3"><div class="h-4 w-24 bg-slate-100 rounded"></div></td>
+                <td class="px-5 py-3"><div class="h-4 w-32 bg-slate-100 rounded"></div></td>
+                <td class="px-5 py-3"><div class="h-4 w-32 bg-slate-100 rounded"></div></td>
+                <td class="px-5 py-3"><div class="h-4 w-20 bg-slate-100 rounded"></div></td>
+                <td class="px-5 py-3"><div class="h-4 w-16 bg-slate-100 rounded"></div></td>
+                <td class="px-5 py-3 text-right"><div class="h-8 w-24 bg-slate-100 rounded-xl ml-auto"></div></td>
             </tr>
         `).join('');
+        body.innerHTML = skeletonHtml;
 
         try {
-            const endpoint = canAccessAllClasses ?
-                `/api/attendance/all-lessons/${dayOfWeek}` :
-                `/api/attendance/teacher-lessons/${dayOfWeek}`;
-
-            const response = await fetch(endpoint);
+            const response = await fetch(`/api/attendance/class-summary/${classId}/date/${dateStr}`);
             const data = await response.json();
 
-            if (response.ok) {
-                const lessons = (data.timetable_entries || []).filter(l => l.class_id === classId);
-
-                if (lessons.length === 0) {
-                    body.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-slate-400">
-                                <i class="fas fa-calendar-times text-2xl mb-2"></i>
-                                <p class="text-xs font-bold uppercase tracking-widest">No lessons scheduled for this day</p>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                body.innerHTML = lessons.map(lesson => `
-                    <tr class="hover:bg-slate-50/50 transition-colors group">
-                        <td class="px-5 py-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-colors">
-                                    <i class="fas fa-clock text-xs"></i>
-                                </div>
-                                <span class="text-sm font-bold text-slate-700">${lesson.time_slot}</span>
-                            </div>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">${lesson.subject_name || lesson.subject_id}</span>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="text-sm font-bold text-slate-600">Tr. ${lesson.teacher_name || 'Assigned'}</span>
-                        </td>
-                        <td class="px-5 py-3">
-                            <div class="flex items-center gap-1 text-slate-500">
-                                <i class="fas fa-users text-xs"></i>
-                                <span class="text-sm font-bold">${lesson.student_count || 0} Students</span>
-                            </div>
-                        </td>
-                        <td class="px-5 py-3 text-right">
-                            <button onclick="selectLesson('${lesson.id}', '${dateStr}')" 
-                                    class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100">
-                                <i class="fas fa-check-circle"></i>
-                                Take Roll
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
+            if (data.success) {
+                renderSchedule(data.timetable, data.conducted, dateStr);
             } else {
-                body.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-rose-500 font-bold uppercase tracking-widest">Failed to load schedule</td></tr>`;
+                body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-500 font-bold">Failed to load schedule: ${data.error}</td></tr>`;
             }
         } catch (error) {
             console.error('Error:', error);
-            body.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-rose-500 font-bold uppercase tracking-widest">Network error occurred</td></tr>`;
+            body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-500 font-bold">Network error occurred</td></tr>`;
         }
+    }
+
+    async function loadTermSummary() {
+        const body = document.getElementById('studentTermSummaryBody');
+        const termNameSpan = document.getElementById('currentTermName');
+
+        body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">Loading term statistics...</td></tr>`;
+
+        try {
+            const response = await fetch(`/api/attendance/class-summary/${classId}/term-overview`);
+            const data = await response.json();
+
+            if (data.success) {
+                termNameSpan.textContent = data.term || 'Current Term';
+                renderTermSummary(data.summary);
+            } else {
+                body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-500 font-bold">Error: ${data.error}</td></tr>`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-500 font-bold">Failed to load term summary</td></tr>`;
+        }
+    }
+
+    function renderTermSummary(summary) {
+        const body = document.getElementById('studentTermSummaryBody');
+
+        if (!summary || summary.length === 0) {
+            body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold italic uppercase tracking-widest">No attendance records found for this term</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = summary.map(row => {
+            const rate = row.total_conducted > 0 ? Math.round((row.present_count / row.total_conducted) * 100) : 0;
+            let rateColor = 'text-rose-600';
+            if (rate >= 90) rateColor = 'text-emerald-600';
+            else if (rate >= 75) rateColor = 'text-amber-600';
+
+            return `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-5 py-3">
+                        <a href="/students/${row.student_id}?tab=attendance" class="font-bold text-slate-700 hover:text-indigo-600 transition-colors">${row.first_name} ${row.last_name}</a>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${row.student_code}</div>
+                    </td>
+                    <td class="px-5 py-3 text-center font-bold text-slate-600">${row.total_conducted}</td>
+                    <td class="px-5 py-3 text-center">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-black">${row.present_count}</span>
+                    </td>
+                    <td class="px-5 py-3 text-center">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] font-black">${row.absent_count}</span>
+                    </td>
+                    <td class="px-5 py-3 text-center">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-black">${row.late_count}</span>
+                    </td>
+                    <td class="px-5 py-3 text-right">
+                        <span class="font-black ${rateColor}">${rate}%</span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderSchedule(timetable, conducted, dateStr) {
+        const body = document.getElementById('todaysScheduleBody');
+        const conductedIds = new Set(conducted.map(c => c.timetable_entry_id));
+
+        if (!timetable || timetable.length === 0) {
+            body.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest">No lessons scheduled for this day</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = timetable.map(lesson => {
+            const isConducted = conductedIds.has(lesson.id);
+            const statusBadge = isConducted ?
+                `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-black uppercase tracking-widest"><i class="fas fa-check-circle"></i> Conducted</span>` :
+                `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest">Not Yet</span>`;
+
+            return `
+                <tr class="hover:bg-slate-50/50 transition-colors group">
+                    <td class="px-5 py-3">
+                        <span class="text-sm font-bold text-slate-700">${lesson.time_slot}</span>
+                    </td>
+                    <td class="px-5 py-3">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">${lesson.subject_name}</span>
+                            ${lesson.paper_code ? `<span class="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${lesson.paper_code}</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="px-5 py-3"><span class="text-sm font-bold text-slate-600">Tr. ${lesson.teacher_name}</span></td>
+                    <td class="px-5 py-3"><span class="text-sm font-bold text-slate-500">${lesson.student_count} Students</span></td>
+                    <td class="px-5 py-3">${statusBadge}</td>
+                    <td class="px-5 py-3 text-right">
+                        <button onclick="selectLesson('${lesson.id}', '${dateStr}')" 
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100">
+                            <i class="fas fa-check-circle"></i> ${isConducted ? 'Edit Roll' : 'Take Roll'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
     function selectLesson(timetableEntryId, date) {
@@ -201,5 +286,8 @@
         window.location.href = `/attendance/lesson?${params.toString()}`;
     }
 
-    window.addEventListener('DOMContentLoaded', loadScheduleForDate);
+    window.addEventListener('DOMContentLoaded', () => {
+        loadScheduleForDate();
+        loadTermSummary();
+    });
 </script>
