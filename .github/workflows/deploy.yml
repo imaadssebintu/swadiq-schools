@@ -31,6 +31,10 @@ jobs:
             cd swadiq-schools
           fi
 
+          # Ensure no conflicting containers exist from previous manual runs
+          docker stop swadiq-app || true
+          docker rm swadiq-app || true
+
           # Start/Update using Docker Compose
           # This builds the image and recreates containers if config changed
           docker compose down --remove-orphans || true
