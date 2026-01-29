@@ -186,19 +186,19 @@ func refineAssessmentTypes(db *sql.DB) error {
 	seedQueries := []string{
 		`INSERT INTO assessment_types (name, code, category, color, is_active)
 		 VALUES ('Beginning of Term', 'BOT', 'Exam', 'indigo', true)
-		 ON CONFLICT (code) DO UPDATE SET category = 'Exam'`,
+		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
 		`INSERT INTO assessment_types (name, code, category, color, is_active)
 		 VALUES ('Mid Term', 'MT', 'Exam', 'purple', true)
-		 ON CONFLICT (code) DO UPDATE SET category = 'Exam'`,
+		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
 		`INSERT INTO assessment_types (name, code, category, color, is_active)
 		 VALUES ('End of Term', 'EOT', 'Exam', 'pink', true)
-		 ON CONFLICT (code) DO UPDATE SET category = 'Exam'`,
+		 ON CONFLICT (name) DO UPDATE SET category = 'Exam', code = EXCLUDED.code`,
 		`INSERT INTO assessment_types (name, code, category, color, is_active)
 		 VALUES ('Class Test', 'CTEST', 'Test', 'amber', true)
-		 ON CONFLICT (code) DO UPDATE SET category = EXCLUDED.category`,
+		 ON CONFLICT (name) DO UPDATE SET category = EXCLUDED.category, code = EXCLUDED.code`,
 		`INSERT INTO assessment_types (name, code, category, color, is_active)
 		 VALUES ('Course Project', 'CPROJ', 'Project', 'emerald', true)
-		 ON CONFLICT (code) DO UPDATE SET category = EXCLUDED.category`,
+		 ON CONFLICT (name) DO UPDATE SET category = EXCLUDED.category, code = EXCLUDED.code`,
 	}
 
 	for _, q := range seedQueries {
@@ -222,7 +222,7 @@ func refineAssessmentTypes(db *sql.DB) error {
 			VALUES 
 			('Test 1', 'T1', ctest_id, 'Test', 'amber', true),
 			('Test 2', 'T2', ctest_id, 'Test', 'amber', true)
-			ON CONFLICT (code) DO NOTHING;
+			ON CONFLICT (name) DO NOTHING;
 		END IF;
 
 		IF cproj_id IS NOT NULL THEN
@@ -230,7 +230,7 @@ func refineAssessmentTypes(db *sql.DB) error {
 			VALUES 
 			('Project 1', 'P1', cproj_id, 'Project', 'emerald', true),
 			('Lab Report', 'LR1', cproj_id, 'Project', 'emerald', true)
-			ON CONFLICT (code) DO NOTHING;
+			ON CONFLICT (name) DO NOTHING;
 		END IF;
 	END $$;`
 

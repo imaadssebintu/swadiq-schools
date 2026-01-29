@@ -13,6 +13,7 @@ func SetupSettingsRoutes(app *fiber.App) {
 	settings.Use(auth.AuthMiddleware)
 
 	settings.Get("/", SettingsPageHandler())
+	settings.Get("/assessment-types", AssessmentTypePageHandler())
 
 	// API Routes for Settings
 	db := config.GetDB()

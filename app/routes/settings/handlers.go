@@ -43,6 +43,17 @@ func SettingsPageHandler() fiber.Handler {
 	}
 }
 
+func AssessmentTypePageHandler() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+		return c.Render("settings/assessment_types", fiber.Map{
+			"Title":       "Assessment Categories",
+			"CurrentPage": "settings",
+			"user":        user,
+		})
+	}
+}
+
 // Assessment Type Handlers
 func GetAllAssessmentTypes(c *fiber.Ctx) error {
 	types, err := academic.GetAllAssessmentTypes(config.GetDB())
