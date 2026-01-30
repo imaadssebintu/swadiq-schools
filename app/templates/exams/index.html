@@ -110,11 +110,11 @@
             </div>
         </div>
 
-        <!-- Timetable View -->
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden relative">
-
+        <!-- Exams Dynamic Content Container -->
+        <div id="examsContentContainer" class="space-y-6">
             <!-- Loading Skeleton -->
-            <div id="examsLoadingSkeleton" class="">
+            <div id="examsLoadingSkeleton"
+                class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                 <!-- Header Skeleton -->
                 <div
                     class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200">
@@ -146,37 +146,21 @@
                 <!-- Rows Skeleton -->
                 <div class="divide-y divide-slate-200">
                     <div class="grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200">
-                        <div class="p-4 bg-slate-50 flex flex-col items-center justify-center gap-1">
-                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
-                        <div class="p-2.5">
-                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
-                        </div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
+                        <div class="p-10 bg-white"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Empty State -->
             <div id="noExamsMessage"
-                class="hidden absolute inset-0 flex flex-col items-center justify-center text-center bg-white/80 backdrop-blur-sm z-20">
+                class="hidden py-20 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200 shadow-sm">
                 <div
                     class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 ring-1 ring-slate-100 shadow-sm rotate-3">
                     <i class="fas fa-clipboard-list text-slate-300 text-2xl"></i>
@@ -189,24 +173,9 @@
                     Add Assessment
                 </button>
             </div>
-
-            <!-- Header Row (Days of Week) -->
-            <div id="timetableHeader"
-                class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10 shadow-sm">
-                <div class="p-3 flex items-center justify-center bg-white">
-                    <i class="fas fa-clock text-slate-300 text-lg"></i>
-                </div>
-                <!-- Days will be injected here by JavaScript -->
-            </div>
-
-            <!-- Timetable Body -->
-            <div class="bg-slate-50/50 relative overflow-auto max-h-[600px]" id="timetableScrollArea">
-                <div id="examsListBody">
-                    <!-- Time slots and exams will be injected here -->
-                </div>
-            </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Exam Modal -->
@@ -662,8 +631,7 @@
     }
 
     function renderExams() {
-        const container = document.getElementById('examsListBody');
-        const header = document.getElementById('timetableHeader');
+        const contentContainer = document.getElementById('examsContentContainer');
         const emptyState = document.getElementById('noExamsMessage');
         const skeleton = document.getElementById('examsLoadingSkeleton');
         const searchQuery = document.getElementById('searchExams').value.toLowerCase();
@@ -689,129 +657,173 @@
             return matchesSearch && matchesType && matchesSubject && matchesPaper;
         });
 
-        // Clear previous content
-        container.innerHTML = '';
+        // Clear only dynamic sections, keep empty state and skeleton references
+        const dynamicSections = contentContainer.querySelectorAll('.exams-dynamic-section');
+        dynamicSections.forEach(s => s.remove());
 
         if (filteredExams.length === 0) {
-            // If no exams at all, show initial empty state
             if (exams.length === 0) {
                 emptyState.classList.remove('hidden');
             } else {
                 emptyState.classList.add('hidden');
-                container.innerHTML = '<div class="py-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No assessments match your criteria</div>';
+                const noMatch = document.createElement('div');
+                noMatch.className = 'exams-dynamic-section py-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm text-slate-400 text-xs font-bold uppercase tracking-widest';
+                noMatch.innerHTML = 'No assessments match your criteria';
+                contentContainer.appendChild(noMatch);
             }
             return;
         } else {
             emptyState.classList.add('hidden');
         }
 
-        // Organize exams by week and time
+        // Group exams by display style
+        const timetableExams = filteredExams.filter(e => (e.assessment_type?.category?.display_style || 'timetable') === 'timetable');
+        const tableExams = filteredExams.filter(e => e.assessment_type?.category?.display_style === 'table');
+
+        // Render Timetable Section if there are timetable exams
+        if (timetableExams.length > 0) {
+            renderTimetableSection(timetableExams, contentContainer);
+        }
+
+        // Render Table Section if there are table exams
+        if (tableExams.length > 0) {
+            renderTableSection(tableExams, contentContainer);
+        }
+    }
+
+    function renderTimetableSection(timetableExams, container) {
+        const section = document.createElement('div');
+        section.className = 'exams-dynamic-section space-y-4';
+        section.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-widest">Timetable View</span>
+                <div class="h-px bg-slate-100 flex-1"></div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
+                <div class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10 shadow-sm">
+                    <div class="p-3 flex items-center justify-center bg-white"><i class="fas fa-clock text-slate-300 text-lg"></i></div>
+                    ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => `
+                        <div class="p-2 text-center border-r border-slate-200 last:border-0 bg-slate-50">
+                            <span class="block text-indigo-900 font-extrabold text-xs">${day}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="bg-slate-50/50 relative overflow-auto max-h-[500px]">
+                    <div class="timetable-rows"></div>
+                </div>
+            </div>
+        `;
+
+        const rowsContainer = section.querySelector('.timetable-rows');
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        // Render header with days
-        const headerHTML = `
-            <div class="p-3 flex items-center justify-center bg-white">
-                <i class="fas fa-clock text-slate-300 text-lg"></i>
-            </div>
-            ${days.map(day => `
-                <div class="p-2 text-center border-r border-slate-200 last:border-0 bg-slate-50">
-                    <span class="block text-indigo-900 font-extrabold text-xs">${day}</span>
-                </div>
-            `).join('')}
-        `;
-        header.innerHTML = headerHTML;
+        // Get unique hours
+        const hourSet = new Set();
+        timetableExams.forEach(e => hourSet.add(new Date(e.start_time).getHours()));
+        const sortedHours = Array.from(hourSet).sort((a, b) => a - b);
 
-        // Group exams by date
-        const examsByDate = {};
-        filteredExams.forEach(exam => {
-            const examDate = new Date(exam.start_time);
-            const dateKey = examDate.toDateString();
-            if (!examsByDate[dateKey]) {
-                examsByDate[dateKey] = [];
-            }
-            examsByDate[dateKey].push(exam);
-        });
-
-        // Get all unique time slots
-        const timeSlots = new Set();
-        filteredExams.forEach(exam => {
-            const startTime = new Date(exam.start_time);
-            const hour = startTime.getHours();
-            timeSlots.add(hour);
-        });
-        const sortedTimeSlots = Array.from(timeSlots).sort((a, b) => a - b);
-
-        // Render time slots
-        sortedTimeSlots.forEach(hour => {
+        sortedHours.forEach(hour => {
             const row = document.createElement('div');
             row.className = 'grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200 border-b border-slate-200';
-
-            // Time column
             const timeLabel = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
-            row.innerHTML = `
-                <div class="p-3 bg-slate-50 flex items-center justify-center sticky left-0 z-10">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">${timeLabel}</span>
-                </div>
-            `;
 
-            // Day columns
+            let colsHtml = `<div class="p-3 bg-slate-50 flex items-center justify-center sticky left-0 z-10">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">${timeLabel}</span>
+            </div>`;
+
             days.forEach((day, dayIndex) => {
-                const cell = document.createElement('div');
-                cell.className = 'p-2 min-h-[80px] bg-white hover:bg-slate-50/50 transition-colors';
-
-                // Find exams for this day and hour
-                const cellExams = filteredExams.filter(exam => {
-                    const examDate = new Date(exam.start_time);
-                    const examHour = examDate.getHours();
-                    const examDay = examDate.getDay();
-                    return examDay === dayIndex && examHour === hour;
+                const cellExams = timetableExams.filter(e => {
+                    const d = new Date(e.start_time);
+                    return d.getDay() === dayIndex && d.getHours() === hour;
                 });
 
-                // Render exams in this cell
-                if (cellExams.length > 0) {
-                    cell.innerHTML = cellExams.map(exam => {
-                        const isActive = exam.is_active;
-                        const statusClass = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
-                        const badgeStyle = getBadgeStyle(exam.type);
-
-                        return `
-                            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-2 mb-2 hover:shadow-md transition-all group cursor-pointer">
-                                <div class="flex items-start justify-between gap-2 mb-1">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-[11px] font-bold text-slate-900 truncate">${exam.name}</div>
-                                        <div class="text-[9px] text-slate-500 truncate">${exam.paper ? exam.paper.name : 'N/A'}</div>
-                                    </div>
-                                    <span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded border ${badgeStyle} whitespace-nowrap">
-                                        ${exam.type || 'Exam'}
-                                    </span>
+                colsHtml += `<div class="p-2 min-h-[80px] bg-white hover:bg-slate-50/50 transition-colors">
+                    ${cellExams.map(exam => `
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-2 mb-2 hover:shadow-md transition-all group cursor-pointer" onclick="editExam('${exam.id}')">
+                            <div class="flex items-start justify-between gap-2 mb-1">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] font-bold text-slate-900 truncate">${exam.name}</div>
+                                    <div class="text-[9px] text-slate-500 truncate">${exam.paper ? exam.paper.name : 'N/A'}</div>
                                 </div>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-[9px] font-bold text-slate-600">
-                                        ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                                        ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onclick="event.stopPropagation(); window.location.href='/exams/${exam.id}/results'" class="p-1 text-emerald-600 hover:bg-emerald-100 rounded transition-all" title="Enter Results">
-                                            <i class="fas fa-clipboard-list text-[10px]"></i>
-                                        </button>
-                                        <button onclick="event.stopPropagation(); editExam('${exam.id}')" class="p-1 text-indigo-600 hover:bg-indigo-100 rounded transition-all" title="Edit">
-                                            <i class="fas fa-pen-to-square text-[10px]"></i>
-                                        </button>
-                                        <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" class="p-1 text-red-600 hover:bg-red-100 rounded transition-all" title="Delete">
-                                            <i class="fas fa-trash-alt text-[10px]"></i>
-                                        </button>
-                                    </div>
+                                <span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded border ${getBadgeStyle(exam.type)} whitespace-nowrap">
+                                    ${exam.type || 'Exam'}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="text-[9px] font-bold text-slate-600">
+                                    ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onclick="event.stopPropagation(); window.location.href='/exams/${exam.id}/results'" class="p-1 text-emerald-600 hover:bg-emerald-100 rounded transition-all"><i class="fas fa-clipboard-list text-[10px]"></i></button>
+                                    <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" class="p-1 text-red-600 hover:bg-red-100 rounded transition-all"><i class="fas fa-trash-alt text-[10px]"></i></button>
                                 </div>
                             </div>
-                        `;
-                    }).join('');
-                }
-
-                row.appendChild(cell);
+                        </div>
+                    `).join('')}
+                </div>`;
             });
-
-            container.appendChild(row);
+            row.innerHTML = colsHtml;
+            rowsContainer.appendChild(row);
         });
+
+        container.appendChild(section);
+    }
+
+    function renderTableSection(tableExams, container) {
+        const section = document.createElement('div');
+        section.className = 'exams-dynamic-section space-y-4';
+        section.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span class="text-[9px] font-black text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 uppercase tracking-widest">List View</span>
+                <div class="h-px bg-slate-100 flex-1"></div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Assessment</th>
+                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Type</th>
+                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Subject/Paper</th>
+                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Schedule</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        ${tableExams.map(exam => `
+                            <tr class="hover:bg-slate-50 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-bold text-slate-900">${exam.name}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border ${getBadgeStyle(exam.type)}">
+                                        ${exam.type || 'Exam'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-xs text-slate-600 font-semibold">${exam.paper?.subject?.name || 'N/A'}</div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase">${exam.paper?.name || 'N/A'}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-[11px] font-bold text-slate-700">${new Date(exam.start_time).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                        ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button onclick="window.location.href='/exams/${exam.id}/results'" class="w-8 h-8 rounded-lg bg-slate-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"><i class="fas fa-clipboard-list text-[10px]"></i></button>
+                                        <button onclick="editExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-indigo-600 hover:bg-indigo-900 hover:text-white transition-all shadow-sm"><i class="fas fa-pen text-[10px]"></i></button>
+                                        <button onclick="deleteExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        container.appendChild(section);
     }
 
     function populateClassDropdown() {

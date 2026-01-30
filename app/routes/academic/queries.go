@@ -479,7 +479,7 @@ func DeleteAssessmentType(db *sql.DB, id string) error {
 
 // AssessmentCategory Queries
 func GetAllAssessmentCategories(db *sql.DB) ([]*models.AssessmentCategory, error) {
-	query := `SELECT id, name, code, color, is_active, created_at, updated_at 
+	query := `SELECT id, name, code, color, display_style, is_active, created_at, updated_at 
 			  FROM assessment_categories WHERE deleted_at IS NULL ORDER BY name`
 
 	rows, err := db.Query(query)
@@ -491,7 +491,7 @@ func GetAllAssessmentCategories(db *sql.DB) ([]*models.AssessmentCategory, error
 	cats := []*models.AssessmentCategory{}
 	for rows.Next() {
 		c := &models.AssessmentCategory{}
-		err := rows.Scan(&c.ID, &c.Name, &c.Code, &c.Color, &c.IsActive, &c.CreatedAt, &c.UpdatedAt)
+		err := rows.Scan(&c.ID, &c.Name, &c.Code, &c.Color, &c.DisplayStyle, &c.IsActive, &c.CreatedAt, &c.UpdatedAt)
 		if err != nil {
 			continue
 		}
@@ -501,19 +501,19 @@ func GetAllAssessmentCategories(db *sql.DB) ([]*models.AssessmentCategory, error
 }
 
 func CreateAssessmentCategory(db *sql.DB, c *models.AssessmentCategory) error {
-	query := `INSERT INTO assessment_categories (name, code, color, is_active, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, NOW(), NOW())
+	query := `INSERT INTO assessment_categories (name, code, color, display_style, is_active, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	err := db.QueryRow(query, c.Name, c.Code, c.Color, c.IsActive).Scan(&c.ID, &c.CreatedAt, &c.UpdatedAt)
+	err := db.QueryRow(query, c.Name, c.Code, c.Color, c.DisplayStyle, c.IsActive).Scan(&c.ID, &c.CreatedAt, &c.UpdatedAt)
 	return err
 }
 
 func UpdateAssessmentCategory(db *sql.DB, c *models.AssessmentCategory) error {
-	query := `UPDATE assessment_categories SET name = $1, code = $2, color = $3, is_active = $4, updated_at = NOW()
-			  WHERE id = $5 AND deleted_at IS NULL`
+	query := `UPDATE assessment_categories SET name = $1, code = $2, color = $3, display_style = $4, is_active = $5, updated_at = NOW()
+			  WHERE id = $6 AND deleted_at IS NULL`
 
-	_, err := db.Exec(query, c.Name, c.Code, c.Color, c.IsActive, c.ID)
+	_, err := db.Exec(query, c.Name, c.Code, c.Color, c.DisplayStyle, c.IsActive, c.ID)
 	return err
 }
 
