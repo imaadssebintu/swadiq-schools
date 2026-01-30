@@ -11,7 +11,7 @@ import (
 // SetupExamRoutes sets up all exam-related routes
 func SetupExamRoutes(app *fiber.App, db *sql.DB) {
 	// API routes
-	api := app.Group("/api/exams")
+	api := app.Group("/api/assessments")
 	api.Get("/", func(c *fiber.Ctx) error { return GetAllExams(c, db) })
 	api.Get("/:id", func(c *fiber.Ctx) error { return GetExam(c, db) })
 	api.Post("/", func(c *fiber.Ctx) error { return CreateExam(c, db) })
@@ -19,11 +19,11 @@ func SetupExamRoutes(app *fiber.App, db *sql.DB) {
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteExam(c, db) })
 
 	// Page routes
-	app.Get("/exams", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+	app.Get("/assessments", auth.AuthMiddleware, func(c *fiber.Ctx) error {
 		user := c.Locals("user").(*models.User)
-		c.Locals("Title", "Assessments")
+		c.Locals("Title", "Assessments Hub")
 		return c.Render("exams/index", fiber.Map{
-			"Title":       "Assessments",
+			"Title":       "Assessments Hub",
 			"CurrentPage": "exams",
 			"FirstName":   user.FirstName,
 			"LastName":    user.LastName,

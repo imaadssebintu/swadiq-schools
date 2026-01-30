@@ -2655,7 +2655,7 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 			  LEFT JOIN terms t ON e.term_id = t.id
 			  LEFT JOIN papers p ON e.paper_id = p.id
 			  LEFT JOIN subjects s ON p.subject_id = s.id
-			  LEFT JOIN assessment_types at ON e.assessment_type_id = at.id
+			  LEFT JOIN assessment_types at ON (e.assessment_type_id = at.id OR (e.assessment_type_id IS NULL AND LOWER(e.type) = LOWER(at.code)))
 			  LEFT JOIN assessment_categories ac ON at.category_id = ac.id
 			  WHERE e.deleted_at IS NULL`
 

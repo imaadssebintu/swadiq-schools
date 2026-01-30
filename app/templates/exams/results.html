@@ -127,7 +127,7 @@
         loadExamWithStudents();
 
         document.getElementById('backToExamsBtn').addEventListener('click', () => {
-            window.location.href = '/exams';
+            window.location.href = '/assessments';
         });
 
         document.getElementById('saveAllResultsBtn').addEventListener('click', saveAllResults);
@@ -138,7 +138,7 @@
 
     async function loadExamWithStudents() {
         try {
-            const response = await fetch(`/api/exams/${examID}/students-with-results`);
+            const response = await fetch(`/api/assessments/${examID}/students-with-results`);
             if (!response.ok) {
                 throw new Error('Failed to load exam data');
             }

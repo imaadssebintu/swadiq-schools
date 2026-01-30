@@ -19,12 +19,12 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteSingleResult(c, db) })
 
 	// Exam-specific API route
-	examAPI := app.Group("/api/exams")
+	examAPI := app.Group("/api/assessments")
 	examAPI.Use(auth.AuthMiddleware)
 	examAPI.Get("/:id/students-with-results", func(c *fiber.Ctx) error { return GetStudentsWithResults(c, db) })
 
 	// Page route for results entry
-	app.Get("/exams/:id/results", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+	app.Get("/assessments/:id/results", auth.AuthMiddleware, func(c *fiber.Ctx) error {
 		user := c.Locals("user").(*models.User)
 		examID := c.Params("id")
 
