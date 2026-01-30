@@ -2965,7 +2965,7 @@ func GetConductedLessonsByClassAndDate(db *sql.DB, classID string, date time.Tim
 	}
 	defer rows.Close()
 
-	var lessons []*models.ConductedLesson
+	lessons := []*models.ConductedLesson{}
 	for rows.Next() {
 		l := &models.ConductedLesson{}
 		err := rows.Scan(
