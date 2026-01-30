@@ -17,18 +17,15 @@ func GetDashboard(c *fiber.Ctx) error {
 	db := config.GetDB()
 	var upcomingEvents []models.Event
 
-	// TODO: Create specialized GetUpcomingEvents query for efficiency
-	if allEvents, err := database.GetEvents(db); err == nil {
+	// Fetch upcoming events only (Efficiency: GetEvents(db, true))
+	if allEvents, err := database.GetEvents(db, true); err == nil {
 		count := 0
-		// now := .Now().AddDate(0, 0, -1) // Temporary removed filter for debugging
 		for _, e := range allEvents {
-			// if e.StartDate.After(now) {
 			upcomingEvents = append(upcomingEvents, e)
 			count++
 			if count >= 2 {
 				break
 			}
-			// }
 		}
 	} else {
 		// Log error if any (can't see stdout, but good practice)

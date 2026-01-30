@@ -44,6 +44,8 @@ type Event struct {
 	Type         string    `json:"type"` // Keep for backward compatibility or display
 	CategoryID   string    `json:"category_id"`
 	CategoryName string    `json:"category_name"`
+	TermID       string    `json:"term_id"`
+	TermName     string    `json:"term_name"`
 	Location     string    `json:"location"`
 	Color        string    `json:"color"` // Populated from category
 	CreatedAt    time.Time `json:"created_at"`

@@ -7,6 +7,8 @@ import (
 	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -42,21 +44,28 @@ func renderEventsPage(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 
 	db := config.GetDB()
-	events, err := database.GetEvents(db)
+	// Get ALL events for the calendar widget
+	allEvents, _ := database.GetEvents(db, false)
 
-	errorMsg := ""
-	if err != nil {
-		fmt.Printf("Error fetching events: %v\n", err)
-		errorMsg = err.Error()
+	// Determine current time for filtering
+	now := time.Now()
+
+	// Filter and group ONLY upcoming events for the main list
+	var eventGroups []EventGroup
+	var upcomingEvents []models.Event
+
+	for _, event := range allEvents {
+		// Event is upcoming if its end date is now or in the future
+		if event.EndDate.After(now) || event.EndDate.Equal(now) {
+			upcomingEvents = append(upcomingEvents, event)
+		}
 	}
 
-	// Group events by Month Year
-	var eventGroups []EventGroup
-	if len(events) > 0 {
+	if len(upcomingEvents) > 0 {
 		currentMonth := ""
 		var currentGroup *EventGroup
 
-		for _, event := range events {
+		for _, event := range upcomingEvents {
 			monthYear := event.StartDate.Format("January 2006")
 			if monthYear != currentMonth {
 				if currentGroup != nil {
@@ -79,8 +88,8 @@ func renderEventsPage(c *fiber.Ctx) error {
 	// Get categories for the sidebar labels/filter
 	categories, _ := database.GetEventCategories(db)
 
-	// Get category counts
-	categoryCounts, _ := database.GetEventCategoryCounts(db)
+	// Get category counts - show count for upcoming events only to match the list
+	categoryCounts, _ := database.GetEventCategoryCounts(db, true)
 
 	return c.Render("events/index", fiber.Map{
 		"Title":          "Events - Swadiq Schools",
@@ -90,10 +99,9 @@ func renderEventsPage(c *fiber.Ctx) error {
 		"Email":          user.Email,
 		"User":           user,
 		"EventGroups":    eventGroups,
-		"Events":         events,
+		"Events":         allEvents, // Pass all events for the calendar
+		"HasEvents":      len(upcomingEvents) > 0,
 		"Categories":     categories,
-		"HasEvents":      len(events) > 0,
-		"ErrorMessage":   errorMsg,
 		"CategoryCounts": categoryCounts,
 	})
 }

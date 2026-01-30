@@ -62,6 +62,11 @@ func InitEventDatabase(db *sql.DB) error {
 			IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='color') THEN
 				ALTER TABLE events DROP COLUMN color;
 			END IF;
+
+			-- Add term_id to events table if it doesn't exist
+			IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='term_id') THEN
+				ALTER TABLE events ADD COLUMN term_id UUID REFERENCES terms(id);
+			END IF;
 		END $$;
 	`
 	if _, err := db.Exec(addColumnQuery); err != nil {
@@ -128,8 +133,8 @@ func DeleteEventCategory(db *sql.DB, id string) error {
 // CreateEvent adds a new event to the database
 func CreateEvent(db *sql.DB, event *models.Event) error {
 	query := `
-		INSERT INTO events (title, description, start_date, end_date, type, category_id, location, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::UUID, $7, NOW(), NOW())
+		INSERT INTO events (title, description, start_date, end_date, type, category_id, term_id, location, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::UUID, NULLIF($7, '')::UUID, $8, NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(
@@ -140,20 +145,29 @@ func CreateEvent(db *sql.DB, event *models.Event) error {
 		event.EndDate,
 		event.Type,
 		event.CategoryID,
+		event.TermID,
 		event.Location,
 	).Scan(&event.ID, &event.CreatedAt, &event.UpdatedAt)
 }
 
-// GetEvents retrieves all events from the database ordered by start_date
-func GetEvents(db *sql.DB) ([]models.Event, error) {
-	query := `
+// GetEvents retrieves events from the database ordered by start_date.
+// If upcomingOnly is true, it only returns events where end_date is now or in the future.
+func GetEvents(db *sql.DB, upcomingOnly bool) ([]models.Event, error) {
+	whereClause := ""
+	if upcomingOnly {
+		whereClause = "WHERE e.end_date >= NOW()"
+	}
+
+	query := fmt.Sprintf(`
 		SELECT e.id, e.title, e.description, e.start_date, e.end_date, e.type, e.category_id, 
-		       COALESCE(c.name, e.type) as category_name, e.location, 
+		       COALESCE(c.name, e.type) as category_name, e.term_id, COALESCE(t.name, '') as term_name, e.location, 
 		       COALESCE(c.color, '#0f172a') as color, e.created_at, e.updated_at
 		FROM events e
 		LEFT JOIN event_categories c ON e.category_id = c.id
+		LEFT JOIN terms t ON e.term_id = t.id
+		%s
 		ORDER BY e.start_date ASC
-	`
+	`, whereClause)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -165,7 +179,7 @@ func GetEvents(db *sql.DB) ([]models.Event, error) {
 		var e models.Event
 		if err := rows.Scan(
 			&e.ID, &e.Title, &e.Description, &e.StartDate, &e.EndDate,
-			&e.Type, &e.CategoryID, &e.CategoryName, &e.Location, &e.Color, &e.CreatedAt, &e.UpdatedAt,
+			&e.Type, &e.CategoryID, &e.CategoryName, &e.TermID, &e.TermName, &e.Location, &e.Color, &e.CreatedAt, &e.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -181,14 +195,21 @@ func DeleteEvent(db *sql.DB, id string) error {
 	return err
 }
 
-// GetEventCategoryCounts returns the count of events for each category
-func GetEventCategoryCounts(db *sql.DB) (map[string]int, error) {
-	query := `
+// GetEventCategoryCounts returns the count of events for each category.
+// If upcomingOnly is true, it only counts upcoming events.
+func GetEventCategoryCounts(db *sql.DB, upcomingOnly bool) (map[string]int, error) {
+	whereClause := ""
+	if upcomingOnly {
+		whereClause = "WHERE e.end_date >= NOW()"
+	}
+
+	query := fmt.Sprintf(`
 		SELECT COALESCE(c.name, e.type), COUNT(*) 
 		FROM events e
 		LEFT JOIN event_categories c ON e.category_id = c.id
+		%s
 		GROUP BY COALESCE(c.name, e.type)
-	`
+	`, whereClause)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -220,12 +241,12 @@ func UpdateEvent(db *sql.DB, event *models.Event) error {
 	query := `
 		UPDATE events
 		SET title = $1, description = $2, start_date = $3, end_date = $4,
-			type = $5, category_id = NULLIF($6, '')::UUID, location = $7, updated_at = NOW()
-		WHERE id = $8
+			type = $5, category_id = NULLIF($6, '')::UUID, term_id = NULLIF($7, '')::UUID, location = $8, updated_at = NOW()
+		WHERE id = $9
 	`
 	_, err := db.Exec(query,
 		event.Title, event.Description, event.StartDate, event.EndDate,
-		event.Type, event.CategoryID, event.Location, event.ID,
+		event.Type, event.CategoryID, event.TermID, event.Location, event.ID,
 	)
 	return err
 }

@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <button
-                        onclick='openEditModal("{{.ID}}", "{{.Title}}", "{{.Description}}", "{{.StartDate.Format "2006-01-02T15:04"}}", "{{.EndDate.Format "2006-01-02T15:04"}}", "{{.Type}}", "{{.CategoryID}}", "{{.Location}}", "{{.Color}}")'
+                        onclick='openEditModal("{{.ID}}", "{{.Title}}", "{{.Description}}", "{{.StartDate.Format "2006-01-02T15:04"}}", "{{.EndDate.Format "2006-01-02T15:04"}}", "{{.Type}}", "{{.CategoryID}}", "{{.Location}}", "{{.Color}}", "{{.TermID}}")'
                         class="absolute bottom-3 right-3 bg-slate-100 text-slate-600 text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wide border border-slate-200 hover:bg-slate-200 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1">
                         <i class="fas fa-pen text-[8px]"></i>
                         <span>Edit</span>
@@ -300,6 +300,7 @@
         </div>
         <form id="editEventForm" class="p-6 space-y-4">
             <input type="hidden" name="id">
+            <input type="hidden" name="term_id">
             <div class="space-y-1">
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Event Title</label>
                 <input type="text" name="title" required
@@ -488,7 +489,7 @@
         }
     }
 
-    function openEditModal(id, title, description, startDate, endDate, type, categoryId, location, color) {
+    function openEditModal(id, title, description, startDate, endDate, type, categoryId, location, color, termId) {
         const form = document.getElementById('editEventForm');
         form.id.value = id;
         form.title.value = title;
@@ -498,6 +499,7 @@
         form.type.value = type;
         form.category_id.value = categoryId;
         form.location.value = location;
+        form.term_id.value = termId;
         toggleEditModal(true);
     }
 

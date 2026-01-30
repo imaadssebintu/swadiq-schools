@@ -11,7 +11,7 @@ import (
 // GetEventsAPI returns a list of events
 func GetEventsAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
-	events, err := database.GetEvents(db)
+	events, err := database.GetEvents(db, false)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,
@@ -35,6 +35,14 @@ func CreateEventAPI(c *fiber.Ctx) error {
 	}
 
 	db := config.GetDB()
+
+	// Automatically assign current term ID if not provided
+	if event.TermID == "" {
+		if term, err := database.GetCurrentTerm(db); err == nil {
+			event.TermID = term.ID
+		}
+	}
+
 	if err := database.CreateEvent(db, event); err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,
@@ -62,6 +70,14 @@ func UpdateEventAPI(c *fiber.Ctx) error {
 	event.ID = id
 
 	db := config.GetDB()
+
+	// Automatically assign current term ID if not provided
+	if event.TermID == "" {
+		if term, err := database.GetCurrentTerm(db); err == nil {
+			event.TermID = term.ID
+		}
+	}
+
 	if err := database.UpdateEvent(db, event); err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,
