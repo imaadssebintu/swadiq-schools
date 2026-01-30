@@ -1,89 +1,33 @@
-<!-- Exams Management Page -->
+<!-- Class Assessments Management -->
 <div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
     <!-- Page Header -->
     <div class="flex items-center justify-between">
         <div class="flex flex-col gap-1">
-            <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase">Assessments Hub</h1>
-            <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select a class
-                to manage assessments</p>
+            <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase">Loading Class...</h1>
+            <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage and
+                schedule assessments</p>
         </div>
-        <div class="flex items-center gap-3" id="actionButtons">
-            <button id="backToClassesBtn"
-                class="hidden bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
+        <div class="flex items-center gap-3">
+            <a href="/assessments"
+                class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i>
                 <span>Back</span>
-            </button>
+            </a>
             <button id="addExamBtn"
-                class="hidden bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-plus"></i>
                 <span>Assessment</span>
             </button>
         </div>
     </div>
 
-    <!-- Classes Section -->
-    <div id="classesView" class="space-y-4">
-        <div class="flex items-center gap-2">
-            <span
-                class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Available
-                Classes</span>
-            <div class="h-px bg-slate-100 w-12"></div>
-        </div>
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Class Name
-                        </th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Code</th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Students
-                        </th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="classesTableBody">
-                    <!-- Skeleton Rows -->
-                    <tr class="animate-pulse border-b border-slate-50">
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-24 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-16 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-5 w-20 bg-slate-100 rounded-lg"></div>
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div>
-                        </td>
-                    </tr>
-                    <tr class="animate-pulse border-b border-slate-50">
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-28 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-14 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-5 w-20 bg-slate-100 rounded-lg"></div>
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- Exams Section -->
-    <div id="examsView" class="space-y-4 hidden">
+    <div id="examsView" class="space-y-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <span
                     class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest"
-                    id="examsTitle">Scheduled Assessments</span>
+                    id="examsTitle">Class Assessments</span>
                 <div class="h-px bg-slate-100 w-12"></div>
             </div>
             <div class="flex items-center gap-3">
@@ -325,22 +269,25 @@
 
 <script>
     let exams = [];
-    let classes = [];
+    let classes = []; // We still need this for the dropdown if needed, though we primarily use fixed class
     let subjects = [];
     let papers = [];
     let assessmentTypes = [];
-    let selectedClass = null;
+    const currentClassID = "{{.classID}}";
 
-    document.addEventListener('DOMContentLoaded', function () {
-        loadClasses();
+    document.addEventListener('DOMContentLoaded', async function () {
+        // Load static data
         loadSubjects();
         loadPapers();
         loadAssessmentTypes();
 
+        // Load class info and assessments
+        await loadClassInfo(currentClassID);
+        await loadExams(currentClassID);
+
         document.getElementById('addExamBtn').addEventListener('click', showAddExamModal);
         document.getElementById('cancelExamBtn').addEventListener('click', hideExamModal);
         document.getElementById('examForm').addEventListener('submit', saveExam);
-        document.getElementById('backToClassesBtn').addEventListener('click', showClassesView);
 
         // Filter Listeners
         document.getElementById('searchExams').addEventListener('input', renderExams);
@@ -413,79 +360,34 @@
         }
     }
 
-    function renderClasses() {
-        const tbody = document.getElementById('classesTableBody');
-        tbody.innerHTML = '';
+    async function loadClassInfo(classId) {
+        try {
+            const response = await fetch(`/api/classes/${classId}`);
+            if (!response.ok) throw new Error('Failed to load class info');
+            const cls = await response.json();
 
-        if (classes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-8 text-center text-xs text-slate-400">No classes found</td></tr>';
-            return;
+            document.getElementById('pageTitle').textContent = cls.name;
+            document.getElementById('pageDescription').textContent = `Manage and schedule assessments for ${cls.name}`;
+            document.title = `${cls.name} - Assessments | Swadiq Schools`;
+
+            // Set fixed class in modal
+            const select = document.getElementById('examClass');
+            select.innerHTML = `<option value="${cls.id}" selected>${cls.name}</option>`;
+            select.disabled = true;
+        } catch (error) {
+            console.error('Error loading class info:', error);
+            document.getElementById('pageTitle').textContent = 'Class Assessments';
         }
-
-        classes.forEach(cls => {
-            const row = document.createElement('tr');
-            row.className = 'border-b border-slate-50 hover:bg-slate-50/50 cursor-pointer transition-colors';
-            row.onclick = () => showClassExams(cls);
-            row.innerHTML = `
-            <td class="px-5 py-4">
-                <div class="text-xs font-semibold text-slate-900">${cls.name}</div>
-            </td>
-            <td class="px-5 py-4">
-                <div class="text-xs text-slate-500">${cls.code || '-'}</div>
-            </td>
-            <td class="px-5 py-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
-                    ${cls.student_count || 0} students
-                </span>
-            </td>
-            <td class="px-5 py-4 text-right">
-                <div class="flex items-center justify-end gap-3">
-                    <button class="text-xs font-bold text-slate-900 hover:text-slate-600 flex items-center justify-end gap-1.5 transition-colors">
-                        Manage <i class="fas fa-arrow-right text-[10px]"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function showClassExams(cls) {
-        selectedClass = cls;
-        document.getElementById('classesView').classList.add('hidden');
-        document.getElementById('examsView').classList.remove('hidden');
-        document.getElementById('addExamBtn').classList.remove('hidden');
-        document.getElementById('backToClassesBtn').classList.remove('hidden');
-        document.getElementById('pageTitle').textContent = cls.name;
-        document.getElementById('pageDescription').textContent = `Manage and schedule assessments for ${cls.name}`;
-        document.getElementById('examsTitle').textContent = `Class Assessments`;
-        document.title = `${cls.name} - Assessments | Swadiq Schools`;
-        loadExams(cls.id);
-    }
-
-    function showClassesView() {
-        selectedClass = null;
-        document.getElementById('classesView').classList.remove('hidden');
-        document.getElementById('examsView').classList.add('hidden');
-        document.getElementById('addExamBtn').classList.add('hidden');
-        document.getElementById('backToClassesBtn').classList.add('hidden');
-        document.getElementById('pageTitle').textContent = 'Assessments Hub';
-        document.getElementById('pageDescription').textContent = 'Select a class to manage assessments';
-        document.title = `Assessments Hub - Swadiq Schools`;
     }
 
     async function loadClasses() {
+        // Minimal load for dropdown fallback if needed, but primarily we use fixed class
         try {
             const response = await fetch('/api/classes');
             const data = await response.json();
-            console.log('Classes API response:', data);
             classes = Array.isArray(data) ? data : (data.classes || data.data || []);
-            console.log('Processed classes:', classes);
-            renderClasses();
-            populateClassDropdown();
         } catch (error) {
             console.error('Error loading classes:', error);
-            classes = [];
         }
     }
 
@@ -840,22 +742,6 @@
         container.appendChild(section);
     }
 
-    function populateClassDropdown() {
-        const select = document.getElementById('examClass');
-        select.innerHTML = '<option value="">Select Class</option>';
-        classes.forEach(cls => {
-            const option = document.createElement('option');
-            option.value = cls.id;
-            option.textContent = cls.name;
-            select.appendChild(option);
-        });
-
-        // Pre-select current class if viewing class exams
-        if (selectedClass) {
-            select.value = selectedClass.id;
-            select.disabled = true;
-        }
-    }
 
     function renderSubjectList(subjectsToShow = []) {
         const container = document.getElementById('subjectListContainer');
@@ -940,14 +826,12 @@
         renderSubjectList([]);
         renderPaperList([]);
 
-        if (selectedClass) {
-            document.getElementById('examClass').value = selectedClass.id;
-            document.getElementById('examClass').disabled = true; // Use disabled property instead of attribute
+        if (currentClassID) {
+            document.getElementById('examClass').value = currentClassID;
+            document.getElementById('examClass').disabled = true;
 
-            // Trigger loading of subjects for the selected class
-            loadSubjectsByClass(selectedClass.id);
-        } else {
-            document.getElementById('examClass').disabled = false;
+            // Trigger loading of subjects for the current class
+            loadSubjectsByClass(currentClassID);
         }
 
         document.getElementById('examModal').classList.remove('hidden');
@@ -990,7 +874,7 @@
 
             if (response.ok) {
                 hideExamModal();
-                loadExams(selectedClass ? selectedClass.id : null);
+                loadExams(currentClassID);
             } else {
                 const error = await response.json();
                 alert('Error: ' + error.error);
@@ -1055,7 +939,7 @@
         try {
             const response = await fetch(`/api/assessments/${id}`, { method: 'DELETE' });
             if (response.ok) {
-                loadExams(selectedClass ? selectedClass.id : null);
+                loadExams(currentClassID);
             } else {
                 alert('Failed to delete exam');
             }

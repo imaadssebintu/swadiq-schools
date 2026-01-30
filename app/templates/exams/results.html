@@ -313,12 +313,12 @@
                             <span class="text-[10px] font-black text-indigo-600 uppercase">${initials}</span>
                         </div>
                         <div>
-                            <p class="text-[11px] font-black text-slate-700 uppercase tracking-wide group-hover:text-indigo-700 transition-colors">${student.first_name} ${student.last_name}</p>
+                            <p class="student-name-text text-[11px] font-black text-slate-700 uppercase tracking-wide group-hover:text-indigo-700 transition-colors">${student.first_name} ${student.last_name}</p>
                         </div>
                     </div>
                 </td>
                 <td class="px-5 py-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 uppercase tracking-wider">
+                    <span class="student-id-text inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 uppercase tracking-wider">
                         ${student.student_id}
                     </span>
                 </td>
@@ -358,8 +358,8 @@
                             <span class="text-xs font-black text-indigo-600 uppercase">${initials}</span>
                         </div>
                         <div>
-                            <p class="text-xs font-black text-slate-700 uppercase tracking-tight">${student.first_name} ${student.last_name}</p>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${student.student_id}</p>
+                            <p class="student-name-text text-xs font-black text-slate-700 uppercase tracking-tight">${student.first_name} ${student.last_name}</p>
+                            <p class="student-id-text text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${student.student_id}</p>
                         </div>
                     </div>
                     <span class="status-badge-mobile inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider border ${statusClass}">
@@ -417,8 +417,8 @@
 
         rows.forEach((row, i) => {
             const card = cards[i];
-            const studentId = row.querySelector('.inline-flex.text-[10px]').textContent.toLowerCase();
-            const studentName = row.querySelector('p.text-[11px]').textContent.toLowerCase();
+            const studentId = row.querySelector('.student-id-text').textContent.toLowerCase();
+            const studentName = row.querySelector('.student-name-text').textContent.toLowerCase();
 
             const matches = studentId.includes(searchQuery) || studentName.includes(searchQuery);
 
