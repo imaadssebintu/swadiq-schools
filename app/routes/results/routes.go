@@ -18,10 +18,6 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 	api.Put("/:id", func(c *fiber.Ctx) error { return UpdateSingleResult(c, db) })
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteSingleResult(c, db) })
 
-	// Grid specific API
-	api.Get("/matrix", func(c *fiber.Ctx) error { return ApiGetClassResultsMatrix(c, db) })
-	api.Post("/grid-batch", func(c *fiber.Ctx) error { return ApiBatchSaveGridResults(c, db) })
-
 	// Exam-specific API route
 	examAPI := app.Group("/api/exams")
 	examAPI.Use(auth.AuthMiddleware)
@@ -44,16 +40,4 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 		})
 	})
 
-	// Grid entry page
-	app.Get("/exams/class/:class_id/results-grid", auth.AuthMiddleware, func(c *fiber.Ctx) error {
-		user := c.Locals("user").(*models.User)
-		classID := c.Params("class_id")
-
-		return c.Render("exams/results_grid", fiber.Map{
-			"Title":       "Bulk Results Entry",
-			"CurrentPage": "exams",
-			"user":        user,
-			"classID":     classID,
-		})
-	})
 }

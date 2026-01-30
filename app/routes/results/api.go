@@ -2,7 +2,6 @@ package results
 
 import (
 	"database/sql"
-	"fmt"
 	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -128,111 +127,6 @@ func BatchSaveResults(c *fiber.Ctx, db *sql.DB) error {
 		"success": true,
 		"message": "Results saved successfully",
 		"count":   len(results),
-	})
-}
-
-// ApiGetClassResultsMatrix returns all data for the grid entry view
-func ApiGetClassResultsMatrix(c *fiber.Ctx, db *sql.DB) error {
-	classID := c.Query("class_id")
-	termID := c.Query("term_id")
-	assessmentTypeID := c.Query("assessment_type_id")
-
-	if classID == "" || termID == "" || assessmentTypeID == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "class_id, term_id, and assessment_type_id are required",
-		})
-	}
-
-	matrix, err := GetClassResultsMatrix(db, classID, termID, assessmentTypeID)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to fetch results matrix: " + err.Error(),
-		})
-	}
-
-	return c.JSON(matrix)
-}
-
-// ApiBatchSaveGridResults handles high-frequency saving from the grid view
-func ApiBatchSaveGridResults(c *fiber.Ctx, db *sql.DB) error {
-	var request struct {
-		ClassID          string `json:"class_id"`
-		TermID           string `json:"term_id"`
-		AcademicYearID   string `json:"academic_year_id"`
-		AssessmentTypeID string `json:"assessment_type_id"`
-		Results          []struct {
-			StudentID string  `json:"student_id"`
-			PaperID   string  `json:"paper_id"`
-			Marks     float64 `json:"marks"`
-		} `json:"results"`
-	}
-
-	if err := c.BodyParser(&request); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid request body"})
-	}
-
-	// 1. Get or Create Exams for each paper involved
-	examMap := make(map[string]string)
-
-	rows, err := db.Query(`
-		SELECT id, paper_id FROM exams 
-		WHERE class_id = $1 AND term_id = $2 AND assessment_type_id = $3 AND deleted_at IS NULL`,
-		request.ClassID, request.TermID, request.AssessmentTypeID)
-	if err == nil {
-		defer rows.Close()
-		for rows.Next() {
-			var id, pID string
-			if err := rows.Scan(&id, &pID); err == nil {
-				examMap[pID] = id
-			}
-		}
-	}
-
-	var finalResults []*models.Result
-
-	for _, r := range request.Results {
-		examID, exists := examMap[r.PaperID]
-		if !exists {
-			// Create new exam record for this paper
-			var paperName, subjectName string
-			db.QueryRow(`
-				SELECT p.name, s.name FROM papers p 
-				JOIN subjects s ON p.subject_id = s.id 
-				WHERE p.id = $1`, r.PaperID).Scan(&paperName, &subjectName)
-
-			examName := fmt.Sprintf("%s - %s", subjectName, paperName)
-
-			// Insert exam directly to avoid complex imports for now
-			err := db.QueryRow(`
-				INSERT INTO exams (name, class_id, academic_year_id, term_id, paper_id, assessment_type_id, type, start_time, end_time, is_active, created_at, updated_at)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + INTERVAL '2 hours', true, NOW(), NOW())
-				RETURNING id`,
-				examName, request.ClassID, request.AcademicYearID, request.TermID, r.PaperID, request.AssessmentTypeID, "exam").Scan(&examID)
-
-			if err != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create exam record: " + err.Error()})
-			}
-			examMap[r.PaperID] = examID
-		}
-
-		finalResults = append(finalResults, &models.Result{
-			ExamID:    examID,
-			StudentID: r.StudentID,
-			PaperID:   r.PaperID,
-			TermID:    &request.TermID,
-			Marks:     r.Marks,
-		})
-	}
-
-	// 2. Batch save results
-	if err := BatchCreateOrUpdateResults(db, finalResults); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to save results: " + err.Error()})
-	}
-
-	return c.JSON(fiber.Map{
-		"success": true,
-		"message": "Grid results saved successfully",
-		"count":   len(finalResults),
 	})
 }
 
