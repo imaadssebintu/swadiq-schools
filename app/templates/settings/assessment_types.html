@@ -207,6 +207,14 @@
                     <input type="text" id="catCode" required placeholder="e.g. EXM"
                         class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg uppercase">
                 </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Display Style</label>
+                    <select id="catDisplayStyle"
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg bg-white">
+                        <option value="table">Table/List Format</option>
+                        <option value="timetable">Timetable/Calendar Format</option>
+                    </select>
+                </div>
                 <button type="submit"
                     class="w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Save
                     Classification</button>
@@ -361,8 +369,18 @@
             (allCategories || []).forEach(c => {
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-slate-50 hover:bg-slate-50 group transition-colors';
+
+                const displayStyle = c.display_style || 'table';
+                const styleIcon = displayStyle === 'timetable' ? 'fa-calendar' : 'fa-list';
+                const styleBadge = `<span class="text-[9px] font-black ${displayStyle === 'timetable' ? 'text-indigo-600 bg-indigo-50 border-indigo-100' : 'text-slate-600 bg-slate-50 border-slate-100'} px-2 py-0.5 rounded border uppercase tracking-widest"><i class="fas ${styleIcon} mr-1"></i>${displayStyle}</span>`;
+
                 tr.innerHTML = `
-                    <td class="px-5 py-4"><span class="text-xs font-black text-slate-800 uppercase tracking-tight">${c.name}</span></td>
+                    <td class="px-5 py-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-tight">${c.name}</span>
+                            ${styleBadge}
+                        </div>
+                    </td>
                     <td class="px-5 py-4"><span class="text-[10px] font-black text-slate-400 tracking-widest">${c.code}</span></td>
                     <td class="px-5 py-4 text-right">
                         <div class="flex items-center justify-end gap-2 transition-opacity">
@@ -456,6 +474,7 @@
             document.getElementById('catId').value = c.id;
             document.getElementById('catName').value = c.name;
             document.getElementById('catCode').value = c.code;
+            document.getElementById('catDisplayStyle').value = c.display_style || 'table';
             document.getElementById('categoryModal').classList.remove('hidden');
         }
 
@@ -486,7 +505,8 @@
             const id = document.getElementById('catId').value;
             const data = {
                 name: document.getElementById('catName').value,
-                code: document.getElementById('catCode').value
+                code: document.getElementById('catCode').value,
+                display_style: document.getElementById('catDisplayStyle').value
             };
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/api/settings/assessment-categories/${id}` : '/api/settings/assessment-categories';

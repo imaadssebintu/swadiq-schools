@@ -109,48 +109,67 @@
                 </div>
             </div>
         </div>
-        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden relative min-h-[400px]">
-            <!-- Header -->
-            <div
-                class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 bg-slate-50 border-b border-slate-200 px-6 py-3 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10">
-                <div>Assessment Name</div>
-                <div>Type</div>
-                <div>Paper</div>
-                <div>Date & Time</div>
-                <div class="text-center">Status</div>
-                <div class="text-right">Actions</div>
-            </div>
 
-            <!-- Body -->
-            <div id="examsListBody" class="divide-y divide-slate-100">
-                <!-- Skeleton Loading -->
-                <div id="examsLoadingSkeleton" class="divide-y divide-slate-100">
-                    <!-- Row 1 -->
-                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
-                        <div class="h-4 bg-slate-100 rounded w-3/4"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
-                        <div class="h-8 bg-slate-100 rounded w-8 ml-auto"></div>
+        <!-- Timetable View -->
+        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden relative">
+
+            <!-- Loading Skeleton -->
+            <div id="examsLoadingSkeleton" class="">
+                <!-- Header Skeleton -->
+                <div
+                    class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200">
+                    <div class="p-2 flex items-center justify-center">
+                        <div class="w-4 h-4 bg-slate-200 rounded-full animate-pulse"></div>
                     </div>
-                    <!-- Row 2 -->
-                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
-                        <div class="h-4 bg-slate-100 rounded w-2/3"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
-                        <div class="h-8 bg-slate-100 rounded w-8 ml-auto"></div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
                     </div>
-                    <!-- Row 3 -->
-                    <div class="grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 animate-pulse">
-                        <div class="h-4 bg-slate-100 rounded w-3/4"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-4 bg-slate-100 rounded w-1/2"></div>
-                        <div class="h-5 bg-slate-100 rounded-full w-16 mx-auto"></div>
-                        <div class="h-8 bg-slate-100 rounded w-8 ml-auto"></div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                    <div class="p-2 text-center">
+                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
+                    </div>
+                </div>
+                <!-- Rows Skeleton -->
+                <div class="divide-y divide-slate-200">
+                    <div class="grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200">
+                        <div class="p-4 bg-slate-50 flex flex-col items-center justify-center gap-1">
+                            <div class="h-2 bg-slate-200 rounded animate-pulse w-14"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
+                        <div class="p-2.5">
+                            <div class="h-16 bg-slate-100/50 rounded animate-pulse w-full"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,8 +186,24 @@
                 </p>
                 <button onclick="showAddExamModal()"
                     class="mt-4 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all text-xs font-bold shadow-lg shadow-slate-200">
-                    With Expected Schedule
+                    Add Assessment
                 </button>
+            </div>
+
+            <!-- Header Row (Days of Week) -->
+            <div id="timetableHeader"
+                class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10 shadow-sm">
+                <div class="p-3 flex items-center justify-center bg-white">
+                    <i class="fas fa-clock text-slate-300 text-lg"></i>
+                </div>
+                <!-- Days will be injected here by JavaScript -->
+            </div>
+
+            <!-- Timetable Body -->
+            <div class="bg-slate-50/50 relative overflow-auto max-h-[600px]" id="timetableScrollArea">
+                <div id="examsListBody">
+                    <!-- Time slots and exams will be injected here -->
+                </div>
             </div>
         </div>
     </div>
@@ -628,6 +663,7 @@
 
     function renderExams() {
         const container = document.getElementById('examsListBody');
+        const header = document.getElementById('timetableHeader');
         const emptyState = document.getElementById('noExamsMessage');
         const skeleton = document.getElementById('examsLoadingSkeleton');
         const searchQuery = document.getElementById('searchExams').value.toLowerCase();
@@ -669,65 +705,111 @@
             emptyState.classList.add('hidden');
         }
 
-        filteredExams.forEach(exam => {
-            const row = document.createElement('div');
-            row.className = 'grid grid-cols-[1.5fr_1fr_1.2fr_1.2fr_100px_100px] gap-4 px-6 py-4 items-center hover:bg-slate-50 transition-colors group relative';
+        // Organize exams by week and time
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-            const isActive = exam.is_active;
-            const statusClass = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
-            const statusText = isActive ? 'Active' : 'Inactive';
-
-            row.innerHTML = `
-            <div>
-                <div class="text-sm font-bold text-slate-800">${exam.name}</div>
-                <div class="text-[10px] bg-indigo-50/50 text-indigo-600 px-1.5 py-0.5 rounded inline-block mt-1 font-black tracking-wider uppercase">
-                    ${selectedClass ? selectedClass.name : 'Class'} 
-                </div> 
+        // Render header with days
+        const headerHTML = `
+            <div class="p-3 flex items-center justify-center bg-white">
+                <i class="fas fa-clock text-slate-300 text-lg"></i>
             </div>
-
-            <!-- Type -->
-            <div>
-                <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border 
-                    ${getBadgeStyle(exam.type)}">
-                    ${exam.type || 'Exam'}
-                </span>
-            </div>
-
-            <!-- Paper -->
-            <div class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                <i class="fas fa-file-alt text-slate-300"></i>
-                ${exam.paper ? exam.paper.name : 'N/A'}
-            </div>
-
-            <!-- Date -->
-            <div class="flex flex-col">
-                <span class="text-xs font-bold text-slate-700">${new Date(exam.start_time).toLocaleDateString()}</span>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                    ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
-            </div>
-
-            <!-- Status -->
-            <div class="text-center">
-                 <span class="px-2.5 py-1 inline-flex text-[10px] font-black uppercase tracking-wider rounded-lg ${statusClass}">
-                    ${statusText}
-                </span>
-            </div>
-
-            <!-- Actions -->
-            <div class="text-right transition-opacity flex justify-end gap-2">
-                <button onclick="window.location.href='/exams/${exam.id}/results'" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Enter Results">
-                    <i class="fas fa-clipboard-list text-xs"></i>
-                </button>
-                <button onclick="editExam('${exam.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Edit">
-                    <i class="fas fa-pen-to-square text-xs"></i>
-                </button>
-                <button onclick="deleteExam('${exam.id}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
-                    <i class="fas fa-trash-alt text-xs"></i>
-                </button>
-            </div>
+            ${days.map(day => `
+                <div class="p-2 text-center border-r border-slate-200 last:border-0 bg-slate-50">
+                    <span class="block text-indigo-900 font-extrabold text-xs">${day}</span>
+                </div>
+            `).join('')}
         `;
+        header.innerHTML = headerHTML;
+
+        // Group exams by date
+        const examsByDate = {};
+        filteredExams.forEach(exam => {
+            const examDate = new Date(exam.start_time);
+            const dateKey = examDate.toDateString();
+            if (!examsByDate[dateKey]) {
+                examsByDate[dateKey] = [];
+            }
+            examsByDate[dateKey].push(exam);
+        });
+
+        // Get all unique time slots
+        const timeSlots = new Set();
+        filteredExams.forEach(exam => {
+            const startTime = new Date(exam.start_time);
+            const hour = startTime.getHours();
+            timeSlots.add(hour);
+        });
+        const sortedTimeSlots = Array.from(timeSlots).sort((a, b) => a - b);
+
+        // Render time slots
+        sortedTimeSlots.forEach(hour => {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200 border-b border-slate-200';
+
+            // Time column
+            const timeLabel = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
+            row.innerHTML = `
+                <div class="p-3 bg-slate-50 flex items-center justify-center sticky left-0 z-10">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">${timeLabel}</span>
+                </div>
+            `;
+
+            // Day columns
+            days.forEach((day, dayIndex) => {
+                const cell = document.createElement('div');
+                cell.className = 'p-2 min-h-[80px] bg-white hover:bg-slate-50/50 transition-colors';
+
+                // Find exams for this day and hour
+                const cellExams = filteredExams.filter(exam => {
+                    const examDate = new Date(exam.start_time);
+                    const examHour = examDate.getHours();
+                    const examDay = examDate.getDay();
+                    return examDay === dayIndex && examHour === hour;
+                });
+
+                // Render exams in this cell
+                if (cellExams.length > 0) {
+                    cell.innerHTML = cellExams.map(exam => {
+                        const isActive = exam.is_active;
+                        const statusClass = isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500';
+                        const badgeStyle = getBadgeStyle(exam.type);
+
+                        return `
+                            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-2 mb-2 hover:shadow-md transition-all group cursor-pointer">
+                                <div class="flex items-start justify-between gap-2 mb-1">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[11px] font-bold text-slate-900 truncate">${exam.name}</div>
+                                        <div class="text-[9px] text-slate-500 truncate">${exam.paper ? exam.paper.name : 'N/A'}</div>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded border ${badgeStyle} whitespace-nowrap">
+                                        ${exam.type || 'Exam'}
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-[9px] font-bold text-slate-600">
+                                        ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                        ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onclick="event.stopPropagation(); window.location.href='/exams/${exam.id}/results'" class="p-1 text-emerald-600 hover:bg-emerald-100 rounded transition-all" title="Enter Results">
+                                            <i class="fas fa-clipboard-list text-[10px]"></i>
+                                        </button>
+                                        <button onclick="event.stopPropagation(); editExam('${exam.id}')" class="p-1 text-indigo-600 hover:bg-indigo-100 rounded transition-all" title="Edit">
+                                            <i class="fas fa-pen-to-square text-[10px]"></i>
+                                        </button>
+                                        <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" class="p-1 text-red-600 hover:bg-red-100 rounded transition-all" title="Delete">
+                                            <i class="fas fa-trash-alt text-[10px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                row.appendChild(cell);
+            });
+
             container.appendChild(row);
         });
     }
