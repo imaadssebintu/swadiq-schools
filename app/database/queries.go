@@ -2647,8 +2647,8 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 // Exam functions
 func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.assessment_type_id, e.type, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
-			  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name, p.subject_id, s.name as subject_name,
-			  at.name as assessment_type_name, ac.display_style as display_style
+				  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name, p.subject_id, s.name as subject_name,
+				  at.name as assessment_type_name, COALESCE(ac.display_style, 'table') as display_style
 			  FROM exams e
 			  LEFT JOIN classes c ON e.class_id = c.id
 			  LEFT JOIN academic_years ay ON e.academic_year_id = ay.id
@@ -2724,15 +2724,64 @@ func GetAllExams(db *sql.DB, classID string) ([]*models.Exam, error) {
 }
 
 func GetExamByID(db *sql.DB, id string) (*models.Exam, error) {
-	query := `SELECT id, name, class_id, academic_year_id, term_id, paper_id, assessment_type_id, type, start_time, end_time, is_active, created_at, updated_at
-			  FROM exams WHERE id = $1 AND deleted_at IS NULL`
+	query := `SELECT e.id, e.name, e.class_id, e.academic_year_id, e.term_id, e.paper_id, e.assessment_type_id, e.type, e.start_time, e.end_time, e.is_active, e.created_at, e.updated_at,
+			  c.name as class_name, ay.name as academic_year_name, t.name as term_name, p.name as paper_name, p.subject_id, s.name as subject_name,
+			  at.name as assessment_type_name, COALESCE(ac.display_style, 'table') as display_style
+			  FROM exams e
+			  LEFT JOIN classes c ON e.class_id = c.id
+			  LEFT JOIN academic_years ay ON e.academic_year_id = ay.id
+			  LEFT JOIN terms t ON e.term_id = t.id
+			  LEFT JOIN papers p ON e.paper_id = p.id
+			  LEFT JOIN subjects s ON p.subject_id = s.id
+			  LEFT JOIN assessment_types at ON (e.assessment_type_id = at.id OR (e.assessment_type_id IS NULL AND LOWER(e.type) = LOWER(at.code)))
+			  LEFT JOIN assessment_categories ac ON at.category_id = ac.id
+			  WHERE e.id = $1 AND e.deleted_at IS NULL`
 
 	exam := &models.Exam{}
+	var className, academicYearName, termName, paperName, subjectName *string
+	var assessmentTypeName, displayStyle *string
+	var subjectID *string
+
 	err := db.QueryRow(query, id).Scan(
 		&exam.ID, &exam.Name, &exam.ClassID, &exam.AcademicYearID, &exam.TermID, &exam.PaperID, &exam.AssessmentTypeID, &exam.Type,
 		&exam.StartTime, &exam.EndTime, &exam.IsActive, &exam.CreatedAt, &exam.UpdatedAt,
+		&className, &academicYearName, &termName, &paperName, &subjectID, &subjectName,
+		&assessmentTypeName, &displayStyle,
 	)
-	return exam, err
+	if err != nil {
+		return nil, err
+	}
+
+	if className != nil {
+		exam.Class = &models.Class{ID: exam.ClassID, Name: *className}
+	}
+	if academicYearName != nil && exam.AcademicYearID != nil {
+		exam.AcademicYear = &models.AcademicYear{ID: *exam.AcademicYearID, Name: *academicYearName}
+	}
+	if termName != nil && exam.TermID != nil {
+		exam.Term = &models.Term{ID: *exam.TermID, Name: *termName}
+	}
+	if paperName != nil {
+		exam.Paper = &models.Paper{ID: exam.PaperID, Name: *paperName}
+		if subjectID != nil && subjectName != nil {
+			exam.Paper.SubjectID = *subjectID
+			exam.Paper.Subject = &models.Subject{ID: *subjectID, Name: *subjectName}
+		}
+	}
+	if assessmentTypeName != nil {
+		if exam.AssessmentType == nil {
+			exam.AssessmentType = &models.AssessmentType{}
+		}
+		exam.AssessmentType.Name = *assessmentTypeName
+		if displayStyle != nil {
+			if exam.AssessmentType.Category == nil {
+				exam.AssessmentType.Category = &models.AssessmentCategory{}
+			}
+			exam.AssessmentType.Category.DisplayStyle = *displayStyle
+		}
+	}
+
+	return exam, nil
 }
 
 func CreateExam(db *sql.DB, exam *models.Exam) error {

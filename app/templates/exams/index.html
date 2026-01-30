@@ -686,7 +686,7 @@
 
         // Group exams by display style
         const timetableExams = filteredExams.filter(e => {
-            const style = e.assessment_type?.category?.display_style || 'timetable';
+            const style = e.assessment_type?.category?.display_style || 'table';
             console.log(`Exam: ${e.name}, Style: ${style}`);
             return style === 'timetable';
         });

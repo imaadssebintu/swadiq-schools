@@ -11,7 +11,7 @@
             <button id="backToExamsBtn"
                 class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i>
-                <span>Back to Exams</span>
+                <span>Back to Hub</span>
             </button>
             <button id="saveAllResultsBtn"
                 class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
@@ -25,7 +25,7 @@
     <div id="examDetailsCard" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 hidden">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Exam Name</div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Assessment Name</div>
                 <div id="examName" class="text-sm font-bold text-slate-900">-</div>
             </div>
             <div>
@@ -168,7 +168,7 @@
         const timeStr = `${startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
         document.getElementById('examDateTime').textContent = `${dateStr} ${timeStr}`;
 
-        document.getElementById('examDescription').textContent = `Enter marks for ${examData.class?.name || 'class'} - ${examData.paper?.name || 'exam'}`;
+        document.getElementById('examDescription').textContent = `Enter marks for ${examData.class?.name || 'class'} - ${examData.paper?.name || 'assessment'}`;
         document.getElementById('examDetailsCard').classList.remove('hidden');
 
         // Debug: Log term_id
