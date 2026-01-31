@@ -4,9 +4,10 @@
     <div class="max-w-7xl mx-auto px-4 py-4 lg:px-6 lg:py-5">
         <!-- Header -->
         <div class="mb-5">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">{{.class.Name}}</h1>
+                    <h1 class="text-xl lg:text-lg font-black text-slate-900 tracking-tight uppercase">{{.class.Name}}
+                    </h1>
                     <div class="flex items-center gap-2 mt-1">
                         <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">CODE:
                             {{.class.Code}}</span>
@@ -14,24 +15,24 @@
                         <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-wider">ACTIVE NODE</span>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="grid grid-cols-2 sm:flex items-center gap-2">
                     <button id="classSubjectsBtn"
-                        class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center gap-2">
+                        class="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center justify-center gap-2">
                         <i class="fas fa-book text-indigo-500 opacity-70"></i>
                         <span>Subjects</span>
                     </button>
                     <a href="/timetable/class/{{.classID}}"
-                        class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center gap-2">
+                        class="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center justify-center gap-2">
                         <i class="fas fa-calendar-alt text-purple-500 opacity-70"></i>
                         <span>Timetable</span>
                     </a>
                     <button id="editClassBtn"
-                        class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center gap-2">
+                        class="px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-100 transition-all duration-200 text-[11px] font-bold shadow-sm flex items-center justify-center gap-2">
                         <i class="fas fa-edit opacity-70"></i>
                         <span>Edit</span>
                     </button>
                     <button id="addStudentBtn"
-                        class="px-4 py-1.5 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50 flex items-center gap-2">
+                        class="px-4 py-2 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50 flex items-center justify-center gap-2">
                         <i class="fas fa-plus"></i>
                         <span>Add Student</span>
                     </button>
@@ -260,27 +261,27 @@
                     <table class="w-full border-collapse">
                         <thead class="bg-slate-50/50 border-b border-slate-100">
                             <tr>
-                                <th class="px-5 py-3 text-left">
+                                <th class="px-4 py-3 text-left whitespace-nowrap">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Student
                                         Profile</span>
                                 </th>
-                                <th class="px-5 py-3 text-left">
+                                <th class="px-4 py-3 text-left whitespace-nowrap">
                                     <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID
                                         Ref</span>
                                 </th>
-                                <th class="px-5 py-3 text-left">
+                                <th class="px-4 py-3 text-left whitespace-nowrap">
                                     <span
                                         class="text-[9px] font-black text-slate-400 uppercase tracking-widest">DOB</span>
                                 </th>
-                                <th class="px-5 py-3 text-left">
+                                <th class="px-4 py-3 text-left whitespace-nowrap">
                                     <span
                                         class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gender</span>
                                 </th>
-                                <th class="px-5 py-3 text-left">
+                                <th class="px-4 py-3 text-left whitespace-nowrap">
                                     <span
                                         class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Residence</span>
                                 </th>
-                                <th class="px-5 py-3 text-right">
+                                <th class="px-4 py-3 text-right whitespace-nowrap">
                                     <span
                                         class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Actions</span>
                                 </th>
@@ -298,16 +299,16 @@
                                 <td class="px-5 py-4">
                                     <div class="h-4 bg-slate-100 rounded-full w-20"></div>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-4 py-4">
                                     <div class="h-3 bg-slate-100 rounded w-16"></div>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-4 py-4">
                                     <div class="h-4 bg-slate-100 rounded-full w-16"></div>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-4 py-4">
                                     <div class="h-3 bg-slate-100 rounded w-32"></div>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-4 py-4">
                                     <div class="flex justify-end gap-2">
                                         <div class="w-7 h-7 bg-slate-100 rounded-lg"></div>
                                         <div class="w-7 h-7 bg-slate-100 rounded-lg"></div>
@@ -502,7 +503,7 @@
             </div>
 
             <div
-                class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100 mt-6 lg:mt-0 lg:absolute lg:bottom-0 lg:left-0 lg:right-0 lg:bg-white lg:p-6 lg:z-10">
+                class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100 mt-6 lg:mt-0 sticky bottom-0 bg-white p-6 z-10">
                 <button onclick="document.getElementById('subjectsModal').classList.add('hidden')"
                     class="px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors">
                     Cancel
@@ -685,27 +686,27 @@
             }
 
             tableBody.innerHTML = students.map(student => `
-            <tr class="hover:bg-indigo-50/30 transition-colors group border-b border-slate-50 last:border-b-0 cursor-pointer" onclick="viewStudent('${student.id}')">
-                <td class="px-5 py-3">
-                    <div class="flex items-center">
+             <tr class="hover:bg-indigo-50/30 transition-colors group border-b border-slate-50 last:border-b-0 cursor-pointer">
+                <td class="px-4 py-3">
+                    <a href="/students/${student.id}" class="flex items-center min-w-max hover:opacity-80 transition-opacity">
                         <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center border border-indigo-100 mr-3 group-hover:scale-105 transition-transform shadow-sm">
                             <span class="text-[10px] font-black text-indigo-600 uppercase">${student.first_name.charAt(0)}${student.last_name.charAt(0)}</span>
                         </div>
                         <div>
-                            <p class="text-[11px] font-black text-slate-700 uppercase tracking-wide group-hover:text-indigo-700 transition-colors">${student.first_name} ${student.last_name}</p>
+                            <p class="text-[11px] font-black text-slate-700 uppercase tracking-wide group-hover:text-indigo-700 transition-colors whitespace-nowrap">${student.first_name} ${student.last_name}</p>
                         </div>
-                    </div>
+                    </a>
                 </td>
-                <td class="px-5 py-3">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 uppercase tracking-wider group-hover:bg-white transition-colors">
+                <td class="px-4 py-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 uppercase tracking-wider group-hover:bg-white transition-colors whitespace-nowrap">
                         ${student.student_id}
                     </span>
                 </td>
-                <td class="px-5 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                <td class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wide whitespace-nowrap">
                     ${student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString() : '<span class="text-slate-300">N/A</span>'}
                 </td>
-                <td class="px-5 py-3">
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${student.gender === 'male' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                <td class="px-4 py-3">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border whitespace-nowrap ${student.gender === 'male' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                     student.gender === 'female' ? 'bg-pink-50 text-pink-600 border-pink-100' :
                         'bg-slate-50 text-slate-500 border-slate-200'
                 }">
@@ -714,14 +715,14 @@
                         'NOT SPECIFIED'}
                     </span>
                 </td>
-                <td class="px-5 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wide max-w-xs truncate">
+                <td class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-wide max-w-xs truncate whitespace-nowrap">
                     ${student.address || '<span class="text-slate-300">N/A</span>'}
                 </td>
-                <td class="px-5 py-3">
-                    <div class="flex items-center justify-end gap-2" onclick="event.stopPropagation()">
-                        <button onclick="viewStudent('${student.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-100 transition-all shadow-sm" title="View Profile">
+                <td class="px-4 py-3">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="/students/${student.id}" class="w-7 h-7 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-100 transition-all shadow-sm" title="View Profile">
                             <i class="fas fa-eye text-[10px]"></i>
-                        </button>
+                        </a>
                         <button onclick="removeStudent('${student.id}')" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 border border-slate-200 hover:border-red-200 transition-all shadow-sm" title="Remove Student">
                             <i class="fas fa-trash-alt text-[10px]"></i>
                         </button>
