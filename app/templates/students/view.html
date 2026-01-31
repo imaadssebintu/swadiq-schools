@@ -1,554 +1,331 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.05);
-        }
-
-        .glass-sidebar {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            scrollbar-width: thin;
-            scrollbar-color: #e2e8f0 transparent;
-        }
-
-        .premium-gradient {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        }
-
-        @keyframes pulse-slow {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .skeleton-row-cell {
-            height: 1rem;
-            background: #e2e8f0;
-            border-radius: 0.5rem;
-            animation: pulse-slow 2s infinite;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #cbd5e1;
-        }
-
-        @media (max-width: 768px) {
-            .responsive-table thead {
-                display: none;
-            }
-
-            .responsive-table tr {
-                display: flex !important;
-                flex-direction: column;
-                padding: 1rem !important;
-                border-bottom: 2px solid #f1f5f9;
-                gap: 0.5rem;
-            }
-
-            .responsive-table td {
-                display: flex !important;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0 !important;
-                border: none !important;
-                text-align: right !important;
-            }
-
-            .responsive-table td::before {
-                content: attr(data-label);
-                font-weight: 700;
-                color: #94a3b8;
-                font-size: 10px;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                text-align: left;
-            }
-
-            .responsive-table td:last-child {
-                margin-top: 0.5rem;
-                padding-top: 0.5rem !important;
-                border-top: 1px solid #f8fafc !important;
-                justify-content: center !important;
-            }
-        }
-    </style>
-</head>
-
-<body class="min-h-screen text-slate-900 overflow-x-hidden">
-    <!-- Main Decorative Gradients -->
-    <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none opacity-40">
-        <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-200 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-100 rounded-full blur-[120px]"></div>
+<div class="p-4 lg:p-6 space-y-6 animate-fade-in-up bg-slate-50 min-h-screen relative">
+    <!-- Premium Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div
+                    class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                </div>
+                <span class="text-2xl font-black text-indigo-600 uppercase relative z-10">{{slice .student.FirstName 0
+                    1}}{{slice .student.LastName 0 1}}</span>
+            </div>
+            <div>
+                <div class="flex items-center gap-3 mb-1">
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">{{.student.FirstName}}
+                        {{.student.LastName}}</h2>
+                    <span
+                        class="px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded text-[10px] font-black uppercase tracking-widest">Active</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <div class="flex items-center gap-1.5 p-1 px-2 bg-slate-100 rounded-lg border border-slate-200/50">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">System ID</span>
+                        <span class="text-[10px] font-black text-slate-700">#{{slice .studentID 0 8}}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-400">
+                        <i class="fas fa-graduation-cap text-[10px]"></i>
+                        <span class="text-[10px] font-black uppercase tracking-widest">{{if
+                            .student.Class}}{{.student.Class.Name}}{{else}}UNASSIGNED{{end}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.history.back()"
+                class="h-10 px-4 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-sm">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button onclick="openAddFeeModal()"
+                class="h-10 px-6 bg-slate-900 hover:bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                <i class="fas fa-plus"></i> Assign Fee
+            </button>
+        </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row min-h-[calc(100vh-3.5rem)]">
-        <!-- Sidebar: Student & Guardian Info -->
-        <aside
-            class="w-full lg:w-80 glass-sidebar lg:sticky lg:top-0 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto z-10 p-6 overscroll-contain">
-            <div class="flex items-center gap-3 mb-8">
-                <a href="/fees"
-                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm border border-slate-200 text-slate-500 hover:text-indigo-600 transition-all">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <span class="font-bold text-slate-800 text-lg">Fees Center</span>
-            </div>
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Profile Section -->
-            <div class="text-center mb-6">
-                <div class="relative inline-block mb-4">
-                    <div
-                        class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl flex items-center justify-center text-white text-2xl font-black border-4 border-white/30">
-                        <span>
-                            {{if .student.FirstName}}
-                            {{if .student.LastName}}
-                            {{printf "%c%c" (index .student.FirstName 0) (index .student.LastName 0)}}
-                            {{else}}
-                            {{printf "%c" (index .student.FirstName 0)}}
-                            {{end}}
-                            {{else}}?{{end}}
-                        </span>
-                    </div>
-                </div>
-                <h2 class="text-xl font-black text-slate-900 tracking-tight leading-tight px-2">{{.student.FirstName}}
-                    {{.student.LastName}}</h2>
-                <div class="inline-flex items-center px-2.5 py-1 mt-3 bg-slate-900 text-white rounded-lg shadow-sm">
-                    <span class="text-[10px] font-black tracking-widest uppercase">ID: {{.student.StudentID}}</span>
-                </div>
-            </div>
-
-            <div class="space-y-6 pb-6">
-                <!-- Academic Stats -->
-                <div>
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Academic
-                        Profile</h3>
-                    <div
-                        class="bg-white border border-slate-200/60 p-4 rounded-xl space-y-3 shadow-sm shadow-slate-200/50">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Current
-                                Class</span>
-                            <span
-                                class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded text-[10px] font-black tracking-widest uppercase border border-indigo-100/50">
-                                {{if .student.Class}}{{.student.Class.Name}}{{else}}UNASSIGNED{{end}}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Gender</span>
-                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-widest">
-                                {{if .student.Gender}}{{.student.Gender}}{{else}}N/A{{end}}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span
-                                class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Enrollment</span>
-                            <span
-                                class="inline-flex items-center px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[9px] font-black uppercase tracking-widest border border-emerald-100/50">
-                                <i class="fas fa-circle-check mr-1 text-[8px]"></i>ACTIVE
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Guardian Info -->
-                <div>
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Guardian
-                        Network</h3>
-                    <div
-                        class="bg-white border border-slate-200/60 p-4 rounded-xl space-y-4 shadow-sm shadow-slate-200/50">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                                <i class="fas fa-user-shield text-emerald-600 text-xs"></i>
-                            </div>
-                            <div class="overflow-hidden">
-                                <p
-                                    class="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1.5">
-                                    Primary Contact</p>
-                                <p class="text-[12px] font-black text-slate-800 break-words leading-tight">
-                                    {{if .student.Parents}}
-                                    {{with index .student.Parents 0}}{{.FirstName}} {{.LastName}}{{end}}
-                                    {{else}}SYSTEM UNASSIGNED{{end}}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
-                                <i class="fas fa-phone-alt text-indigo-600 text-xs"></i>
-                            </div>
-                            <div class="overflow-hidden">
-                                <p
-                                    class="text-[9px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1.5">
-                                    Cellular Line</p>
-                                <p class="text-[12px] font-black text-slate-800 break-all leading-tight">
-                                    {{if .student.Parents}}
-                                    {{with index .student.Parents 0}}
-                                    {{if .Phone}}
-                                    <a href="tel:{{.Phone}}"
-                                        class="hover:text-indigo-600 transition-colors inline-flex items-center gap-1.5">
-                                        {{.Phone}}
-                                        <i class="fas fa-external-link-alt text-[8px] opacity-30"></i>
-                                    </a>
-                                    {{else}}
-                                    N/A
-                                    {{end}}
-                                    {{end}}
-                                    {{else}}N/A{{end}}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2 sticky bottom-0 bg-transparent pb-4 lg:relative lg:p-0">
-                    <button id="addFeeForStudentBtn"
-                        class="w-full py-4 premium-gradient text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-100 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5">
-                        <i class="fas fa-plus-circle text-xs"></i>
-                        Assign New Record
-                    </button>
-                </div>
-            </div>
-        </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 p-5 lg:p-8">
-            <!-- Navigation Tabs -->
-            <div class="flex items-center gap-1 mb-8 p-1 bg-slate-100/50 rounded-xl w-fit border border-slate-200/50">
-                <button onclick="switchTab('finance')" id="tab-button-finance"
-                    class="px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-white text-indigo-600 shadow-sm border border-slate-200/50">
-                    Finance & Ledger
-                </button>
-                <button onclick="switchTab('attendance')" id="tab-button-attendance"
-                    class="px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-slate-700">
-                    Lesson Attendance
-                </button>
+        <div class="lg:col-span-8 space-y-6">
+            <!-- Financial Health Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i class="fas fa-file-invoice-dollar text-4xl"></i>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Invoiced</p>
+                    <h3 id="totalPayable" class="text-xl font-black text-slate-800 tracking-tight">UGX 0</h3>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span
+                            class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 uppercase tracking-widest">Session
+                            Total</span>
+                    </div>
+                </div>
+
+                <div
+                    class="p-5 rounded-3xl bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500 shadow-lg shadow-indigo-100 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <i class="fas fa-hand-holding-dollar text-4xl text-white"></i>
+                    </div>
+                    <p class="text-[10px] font-black text-indigo-100 uppercase tracking-widest mb-1 opacity-80">Fees
+                        Collected</p>
+                    <h3 id="totalPaid" class="text-xl font-black text-white tracking-tight">UGX 0</h3>
+                    <div class="mt-3 flex items-center gap-2">
+                        <div class="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                            <div id="paymentProgress" class="h-full bg-white transition-all duration-1000"
+                                style="width: 0%"></div>
+                        </div>
+                        <span id="progressPct"
+                            class="text-[10px] font-black text-white uppercase tracking-widest">0%</span>
+                    </div>
+                </div>
+
+                <div class="p-5 rounded-3xl bg-white border border-slate-200 shadow-sm relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i class="fas fa-clock text-4xl"></i>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Outstanding Balance
+                    </p>
+                    <h3 id="totalBalance" class="text-xl font-black text-rose-600 tracking-tight">UGX 0</h3>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span
+                            class="text-[9px] font-black text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 uppercase tracking-widest">Payable
+                            Item</span>
+                    </div>
+                </div>
             </div>
 
-            <div id="tab-content-finance" class="space-y-6">
-                <!-- Header Greeting -->
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Financial Health</h1>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Ledger for <span
-                                class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
-                    </div>
 
-                    <!-- Quick Actions -->
-                    <div class="flex items-center gap-2">
+            <!-- Detailed Records Tabbed Section -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden min-h-[500px]">
+                <div
+                    class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/30 gap-4">
+                    <div
+                        class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl w-full sm:w-auto overflow-x-auto no-scrollbar">
+                        <button onclick="switchTab('finance')" id="tab-button-finance"
+                            class="flex-1 sm:flex-none px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all bg-white text-indigo-600 shadow-sm border border-slate-200/50 whitespace-nowrap">
+                            Financial Ledger
+                        </button>
+                        <button onclick="switchTab('attendance')" id="tab-button-attendance"
+                            class="flex-1 sm:flex-none px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-indigo-600 whitespace-nowrap">
+                            Lesson Attendance
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+                        <span id="feeCountLabel"
+                            class="px-2 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-bold text-slate-500 uppercase">0
+                            Records</span>
                         <button
-                            class="p-2 bg-white border border-slate-200 rounded text-slate-500 hover:text-indigo-600 transition-all">
-                            <i class="fas fa-download text-xs"></i>
+                            class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:border-indigo-600 transition-all">
+                            <i class="fas fa-download text-[10px]"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Major Stats Dashboard -->
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
-                    <!-- Total Invoiced -->
-                    <div
-                        class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                <i class="fas fa-file-invoice-dollar text-sm"></i>
-                            </div>
-                            <span
-                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Invoiced</span>
-                        </div>
-                        <h3 id="totalPayable" class="text-2xl font-black text-slate-900 mb-1 break-words">UGX 0</h3>
-                        <p class="text-[10px] text-slate-500 font-black uppercase tracking-tight opacity-50">Lifetime
-                            Billing</p>
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full -mr-12 -mt-12"></div>
-                    </div>
-
-                    <!-- Total Collections -->
-                    <div
-                        class="bg-white border border-slate-200 p-5 rounded-2xl relative overflow-hidden group shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                                <i class="fas fa-hand-holding-dollar text-sm"></i>
-                            </div>
-                            <span
-                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Collected</span>
-                        </div>
-                        <h3 id="totalPaid" class="text-2xl font-black text-slate-900 mb-3 break-words">UGX 0</h3>
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div id="paymentProgress"
-                                    class="bg-emerald-500 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
-                                    style="width: 0%"></div>
-                            </div>
-                            <span class="text-[10px] font-black text-emerald-600 shrink-0" id="progressPct">0%</span>
-                        </div>
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12"></div>
-                    </div>
-
-                    <!-- Current Liabilities -->
-                    <div
-                        class="bg-white border border-rose-100 p-5 rounded-2xl relative overflow-hidden group shadow-sm md:col-span-2 xl:col-span-1">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
-                                <i class="fas fa-receipt text-sm"></i>
-                            </div>
-                            <span class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Balance
-                                Due</span>
-                        </div>
-                        <h3 id="totalBalance" class="text-2xl font-black text-rose-600 mb-1 break-words">UGX 0</h3>
-                        <p class="text-[10px] text-rose-400 font-black uppercase tracking-widest">Outstanding</p>
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-full -mr-12 -mt-12"></div>
-                    </div>
-                </div>
-
-                <!-- Detailed Ledger Table -->
-                <div class="glass-card rounded-xl overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Fees Ledger</h3>
-                        </div>
-                        <span id="feeCountLabel"
-                            class="px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[9px] font-bold text-indigo-600 uppercase">0
-                            Records</span>
-                    </div>
-
+                <!-- Finance Tab -->
+                <div id="tab-content-finance" class="animate-fade-in p-0">
                     <div class="overflow-x-auto">
-                        <table class="w-full responsive-table">
+                        <table class="w-full">
                             <thead class="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
                                     <th
-                                        class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Entity Code</th>
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Entity Details</th>
                                     <th
-                                        class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Academic Cycle</th>
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Academic Session</th>
                                     <th
-                                        class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Financial Statement</th>
+                                        class="px-4 md:px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Settlement Status</th>
                                     <th
-                                        class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Flow Status</th>
+                                        class="px-4 md:px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Condition</th>
                                     <th
-                                        class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                        Operations</th>
+                                        class="px-4 md:px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="studentFeesTableBody" class="divide-y divide-slate-100">
-                                <!-- Skeletons -->
-                                <tr class="animate-pulse">
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-col gap-1.5">
-                                            <div class="h-4 bg-slate-200 rounded w-16"></div> <!-- Code -->
-                                            <div class="h-3.5 bg-slate-100 rounded w-24"></div> <!-- Ref -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-col gap-2">
-                                            <div class="h-3 bg-slate-200 rounded w-24"></div> <!-- Year -->
-                                            <div class="h-3 bg-slate-100 rounded w-20"></div> <!-- Term -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="max-w-[120px] md:ml-auto space-y-2">
-                                            <div class="h-3.5 bg-slate-200 rounded w-24 ml-auto"></div> <!-- Amount -->
-                                            <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
-                                            <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Balance -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
-                                    </td>
-                                </tr>
-                                <tr class="animate-pulse">
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-col gap-1.5">
-                                            <div class="h-4 bg-slate-200 rounded w-14"></div> <!-- Code -->
-                                            <div class="h-3.5 bg-slate-100 rounded w-20"></div> <!-- Ref -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-col gap-2">
-                                            <div class="h-3 bg-slate-200 rounded w-20"></div> <!-- Year -->
-                                            <div class="h-3 bg-slate-100 rounded w-16"></div> <!-- Term -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="max-w-[120px] md:ml-auto space-y-2">
-                                            <div class="h-3.5 bg-slate-200 rounded w-20 ml-auto"></div> <!-- Amount -->
-                                            <div class="h-1.5 bg-slate-100 rounded-full w-full"></div> <!-- Progress -->
-                                            <div class="h-3.5 bg-slate-200 rounded w-16 ml-auto"></div> <!-- Balance -->
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="h-8 bg-slate-200 rounded w-24 ml-auto"></div>
-                                    </td>
+                                <!-- Loaded via JS -->
+                                <tr>
+                                    <td colspan="5" class="px-6 py-20 text-center italic text-slate-400">Initializing
+                                        financial ledger...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Payment History Section -->
-                    <div class="mt-8 bg-white border border-slate-100 rounded shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/40">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-history text-indigo-500 text-xs"></i>
-                                <h3 class="text-sm font-bold text-slate-800 tracking-tight">Payment History</h3>
+                    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/30">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                            <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-tight">Recent Payment
+                                Activity</h3>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50/50 border-b border-slate-100">
+                                <tr>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Timestamp</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Allocation Summary</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Gross Amount</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentHistoryTableBody"
+                                class="divide-y divide-slate-100 italic text-slate-400 text-[11px]">
+                                <tr>
+                                    <td colspan="4"
+                                        class="px-6 py-10 text-center uppercase tracking-widest font-black opacity-40">
+                                        Loading ledger history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Attendance Tab -->
+                <div id="tab-content-attendance" class="hidden animate-fade-in p-0">
+                    <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest">Attendance Metric
+                            </h4>
+                            <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">Real-time lesson tracking</p>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="text-center">
+                                <p id="statTotalLessons" class="text-sm font-black text-slate-800 tracking-tight">0</p>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Lessons</p>
+                            </div>
+                            <div class="text-center">
+                                <p id="statAttended" class="text-sm font-black text-emerald-600 tracking-tight">0</p>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Present</p>
+                            </div>
+                            <div class="text-center">
+                                <p id="statRate" class="text-sm font-black text-indigo-600 tracking-tight">0%</p>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Rate</p>
                             </div>
                         </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50/50 border-b border-slate-100">
+                                <tr>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Timestamp</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Subject Detail</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Topic Covered</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Mark</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceReportBody"
+                                class="divide-y divide-slate-100 italic text-slate-400 text-[11px]">
+                                <tr>
+                                    <td colspan="4"
+                                        class="px-6 py-20 text-center uppercase tracking-widest font-black opacity-40">
+                                        Initializing attendance report...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of lg:col-span-8 -->
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50/50 border-b border-slate-100">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                            Timestamp & Gateway</th>
-                                        <th
-                                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                            Allocation Summary</th>
-                                        <th
-                                            class="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                            Gross Amount</th>
-                                        <th
-                                            class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-                                            Verification</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paymentHistoryTableBody" class="divide-y divide-slate-100 text-sm">
-                                    <!-- Skeletons -->
-                                    <tr class="animate-pulse">
-                                        <td class="px-6 py-4">
-                                            <div class="space-y-2">
-                                                <div class="h-4 bg-slate-200 rounded w-24"></div>
-                                                <div class="h-3 bg-slate-100 rounded w-16"></div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="h-4 bg-slate-100 rounded w-32"></div>
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <div class="h-4 bg-slate-200 rounded w-20 ml-auto"></div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center">
-                                            <div class="h-5 bg-slate-100 rounded w-16 mx-auto"></div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+        <!-- Sidebar / Academic Info -->
+        <div class="lg:col-span-4 space-y-6">
+            <!-- Academic Profile Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 overflow-hidden relative group">
+                <div class="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 transition-opacity">
+                    <i class="fas fa-graduation-cap text-4xl text-indigo-600"></i>
+                </div>
+                <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-6">Academic Profile</h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled
+                            Class</span>
+                        <span class="text-[10px] font-black text-indigo-600 uppercase">{{if
+                            .student.Class}}{{.student.Class.Name}}{{else}}UNASSIGNED{{end}}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gender Spec</span>
+                        <span class="text-[10px] font-black text-slate-700 uppercase">{{if
+                            .student.Gender}}{{.student.Gender}}{{else}}N/A{{end}}</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100">
+                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Guardian Network
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+                                <i class="fas fa-user-shield text-indigo-500 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-800 leading-none mb-1">
+                                    {{if .student.Parents}}{{with index .student.Parents 0}}{{.FirstName}}
+                                    {{.LastName}}{{end}}{{else}}SYSTEM UNASSIGNED{{end}}
+                                </p>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Primary Liaison
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                                <i class="fas fa-phone-alt text-emerald-500 text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-800 leading-none mb-1">
+                                    {{if .student.Parents}}{{with index .student.Parents 0}}{{if
+                                    .Phone}}{{.Phone}}{{else}}N/A{{end}}{{end}}{{else}}N/A{{end}}
+                                </p>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Cellular line
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="tab-content-attendance" class="hidden space-y-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                        <div>
-                            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Academic Engagement</h1>
-                            <p class="text-xs text-slate-500 mt-0.5 font-medium">Attendance report for <span
-                                    class="text-indigo-600 font-bold">{{.student.FirstName}}</span></p>
-                        </div>
-                    </div>
-
-                    <!-- Attendance Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Lessons
-                                Taught</p>
-                            <h3 id="statTotalLessons" class="text-2xl font-black text-slate-900">0</h3>
-                        </div>
-                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Attended</p>
-                            <h3 id="statAttended" class="text-2xl font-black text-emerald-600">0</h3>
-                        </div>
-                        <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Overall Rate
-                            </p>
-                            <h3 id="statRate" class="text-2xl font-black text-indigo-600">0%</h3>
-                        </div>
-                    </div>
-
-                    <div class="glass-card rounded-xl overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-100 bg-white/40">
-                            <h3 class="text-sm font-bold text-slate-800 tracking-tight">Lesson-by-Lesson History</h3>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-slate-50/50 border-b border-slate-100">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Date & Time</th>
-                                        <th
-                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Subject</th>
-                                        <th
-                                            class="px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Topic</th>
-                                        <th
-                                            class="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="attendanceReportBody" class="divide-y divide-slate-100">
-                                    <!-- Loaded via JS -->
-                                    <tr>
-                                        <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">
-                                            Loading attendance data...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="mt-8">
+                    <button id="addFeeForStudentBtn"
+                        class="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i> Assign New Fee
+                    </button>
                 </div>
-        </main>
-    </div>
+            </div>
 
-    <!-- Modals & Scripts included from original logic -->
+            <!-- Quick Tips/Info -->
+            <div class="p-6 rounded-3xl bg-indigo-600 text-white shadow-lg shadow-indigo-100 relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12">
+                    <i class="fas fa-lightbulb text-8xl"></i>
+                </div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-2 relative z-10">Financial Tip</h4>
+                <p class="text-[11px] leading-relaxed opacity-90 relative z-10">Consolidate multiple small fees into
+                    single semester records for cleaner ledger management and easier collection tracking.</p>
+            </div>
+        </div>
+    </div> <!-- End of grid -->
 
-    <!-- Record Payment Modal -->
+
+    <!-- Revenue Collection Modal -->
     <div id="paymentModal"
         class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-95"
@@ -565,51 +342,55 @@
                 <input type="hidden" id="paymentFeeId">
                 <input type="hidden" id="paymentStudentId">
 
-                <div class="p-3 bg-indigo-50 border border-indigo-100 rounded">
-                    <p id="paymentStudentName" class="text-xs font-bold text-indigo-900"></p>
-                    <p id="paymentFeeTitle" class="text-[10px] text-indigo-600/70 mt-0.5 font-bold"></p>
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-indigo-200/50">
-                        <span class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest">Balance Due</span>
-                        <span id="paymentCurrentBalance" class="text-base font-black text-rose-600"></span>
+                <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
+                    <p id="paymentStudentName" class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">
+                    </p>
+                    <p id="paymentFeeTitle" class="text-[11px] text-indigo-600/70 mt-1 font-bold"></p>
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-indigo-200/50">
+                        <span class="text-[9px] text-indigo-400 font-black uppercase tracking-widest">Balance Due</span>
+                        <span id="paymentCurrentBalance" class="text-lg font-black text-rose-600 tracking-tight"></span>
                     </div>
                 </div>
 
-                <div>
-                    <label for="paymentAmount"
-                        class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Amount
-                        (UGX)</label>
-                    <input type="number" id="paymentAmount" step="0.01" min="0" required
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all text-lg font-bold color-slate-900">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-4">
                     <div>
-                        <label for="paymentMethod"
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Method</label>
-                        <select id="paymentMethod" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-xs appearance-none">
-                            <option value="Cash">Cash</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                            <option value="Mobile Money">Mobile Money</option>
-                            <option value="Cheque">Cheque</option>
-                        </select>
+                        <label for="paymentAmount"
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Collection
+                            Amount (UGX)</label>
+                        <input type="number" id="paymentAmount" step="0.01" min="0" required
+                            class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-xl font-black text-slate-900">
                     </div>
-                    <div>
-                        <label for="paymentTxId"
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Ref
-                            #</label>
-                        <input type="text" id="paymentTxId" placeholder="ID/Txn"
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-xs">
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="paymentMethod"
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Payment
+                                Method</label>
+                            <select id="paymentMethod" required
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                                <option value="Cash">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Mobile Money">Mobile Money</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="paymentTxId"
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Reference
+                                ID</label>
+                            <input type="text" id="paymentTxId" placeholder="TXN-XXXX"
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[10px] uppercase tracking-widest">
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex gap-2 pt-2">
+                <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closePaymentModal()"
-                        class="flex-1 px-4 py-3 text-slate-500 font-bold text-xs hover:bg-slate-50 rounded transition-all">
+                        class="flex-1 px-6 py-4 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 rounded-2xl transition-all">
                         Discard
                     </button>
                     <button type="submit" id="submitPaymentBtn"
-                        class="flex-[2] px-4 py-3 bg-indigo-600 hover:bg-black text-white rounded font-bold text-xs shadow transition-all">
+                        class="flex-[2] px-6 py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all shadow-slate-200">
                         Confirm Collection
                     </button>
                 </div>
@@ -617,82 +398,85 @@
         </div>
     </div>
 
-    <!-- Add Fee Modal -->
+    <!-- Assign Revenue Record Modal -->
     <div id="addFeeModal"
         class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300">
-        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-95"
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-95"
             id="addFeeModalContent">
-            <div class="px-10 py-6 flex justify-between items-center border-b border-slate-100 bg-slate-50/30">
+            <div class="px-10 py-8 flex justify-between items-center border-b border-slate-100 bg-slate-50/30">
                 <div>
-                    <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest leading-none">Assign
-                        Revenue Record</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5 opacity-60">
-                        Financial Debit Entry</p>
+                    <h3 class="text-[17px] font-black text-slate-900 uppercase tracking-widest leading-none">Assign
+                        Revenue</h3>
+                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-2 opacity-60">Financial
+                        Debit Entry</p>
                 </div>
                 <button onclick="closeAddFeeModal()"
-                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
-                    <i class="fas fa-times text-xs"></i>
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
 
-            <form id="addFeeForm" class="p-8 space-y-4">
+            <form id="addFeeForm" class="p-10 space-y-6">
                 <input type="hidden" id="addFeeStudentId" value="{{.studentID}}">
-
                 <input type="hidden" id="addFeeTitle">
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="col-span-2">
                         <label
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Category</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Fee
+                            Classification</label>
                         <button type="button" onclick="openFeeTypeSelectionModal()" id="categorySelectBtn"
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-lg hover:border-indigo-200 focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-[11px] text-left flex items-center justify-between group">
-                            <span id="selectedCategoryName" class="text-slate-400">Choose category...</span>
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl hover:border-indigo-200 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[10px] uppercase tracking-widest text-left flex items-center justify-between group">
+                            <span id="selectedCategoryName" class="text-slate-400 italic">Determine category...</span>
                             <i
                                 class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-indigo-500 transition-colors"></i>
                         </button>
                         <input type="hidden" id="addFeeType" required>
                     </div>
-                    <div>
-                        <label
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Amount
-                            (UGX)</label>
-                        <input type="number" id="addFeeAmount" required placeholder="0"
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-sm text-indigo-600">
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Billing
+                            Amount (UGX)</label>
+                        <input type="number" id="addFeeAmount" required placeholder="0.00"
+                            class="w-full px-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-2xl text-slate-900">
+                    </div>
+
                     <div>
                         <label
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Academic
-                            Year</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Academic
+                            Cycle</label>
                         <select id="addFeeYear" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-xs appearance-none">
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                            <!-- Populated via JS -->
                         </select>
                     </div>
                     <div>
                         <label
-                            class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Term</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Session
+                            Term</label>
                         <select id="addFeeTerm" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-xs appearance-none">
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[10px] uppercase tracking-widest appearance-none">
+                            <!-- Populated via JS -->
                         </select>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Settlement
+                            Deadline</label>
+                        <input type="date" id="addFeeDueDate" required
+                            class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-black text-[11px] uppercase tracking-widest">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-1">Due
-                        Date</label>
-                    <input type="date" id="addFeeDueDate" required
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-bold text-sm">
-                </div>
-
-                <div class="flex gap-3 pt-4 border-t border-slate-50">
+                <div class="flex gap-4 pt-6">
                     <button type="button" onclick="closeAddFeeModal()"
-                        class="flex-1 px-6 py-3 text-slate-500 font-bold text-xs hover:bg-slate-50 rounded transition-all">
+                        class="flex-1 px-8 py-4 text-slate-400 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 rounded-2xl transition-all">
                         Cancel
                     </button>
                     <button type="submit" id="saveFeeBtn"
-                        class="flex-[2] px-6 py-3 bg-indigo-600 hover:bg-black text-white rounded font-bold text-xs shadow transition-all">
+                        class="flex-[2] px-8 py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl transition-all shadow-slate-200">
                         Assign Record
                     </button>
                 </div>
@@ -700,43 +484,53 @@
         </div>
     </div>
 
-    <!-- Fee Category Selection Modal (Visual Model) -->
+    <!-- Category Library Selection Modal -->
     <div id="feeTypeSelectionModal"
         class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] transition-opacity duration-300">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden transform transition-all scale-95"
+        <div class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full mx-4 overflow-hidden transform transition-all scale-95"
             id="feeTypeSelectionModalContent">
-            <div class="px-8 py-6 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+            <div class="px-10 py-8 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
                 <div>
-                    <h3 class="text-[15px] font-black text-slate-900 uppercase tracking-widest">Category Library</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">Select Financial
+                    <h3 class="text-[17px] font-black text-slate-900 uppercase tracking-widest">Category Library</h3>
+                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-2">Select Financial
                         Classification</p>
                 </div>
                 <button onclick="closeFeeTypeSelectionModal()"
-                    class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
-                    <i class="fas fa-times text-xs"></i>
+                    class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
 
-            <div class="p-4 border-b border-slate-50 bg-slate-50/30">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <div class="p-6 border-b border-slate-50 bg-slate-50/30">
+                <div class="relative group">
+                    <i
+                        class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 text-sm group-focus-within:text-indigo-500 transition-colors"></i>
                     <input type="text" id="feeTypeSearch" oninput="filterFeeTypes(this.value)"
-                        placeholder="Search categories by name or code..."
-                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all font-medium text-sm">
+                        placeholder="Search classifications..."
+                        class="w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-bold text-sm shadow-sm">
                 </div>
             </div>
 
-            <div class="max-h-[400px] overflow-y-auto p-4 custom-scrollbar bg-slate-50/20">
-                <div id="feeTypesGrid" class="flex flex-col gap-2">
-                    <!-- Fee types will be rendered here as list items -->
-                </div>
+            <div class="p-6 max-h-[400px] overflow-y-auto" id="feeTypeList">
+                <!-- Loaded via JS -->
+                <div id="feeTypesGrid" class="flex flex-col gap-2"></div>
                 <div id="feeTypesEmptyState" class="hidden py-12 text-center" style="display: none;">
                     <i class="fas fa-search text-slate-200 text-4xl mb-4"></i>
-                    <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">No categories found</p>
+                    <p class="text-slate-400 font-black text-xs uppercase tracking-widest">No categories found</p>
                 </div>
+            </div>
+
+            <div class="px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pick a category to populate
+                    the assignment form</p>
+                <button onclick="closeFeeTypeSelectionModal()"
+                    class="px-6 py-2 bg-white border border-slate-200 rounded-xl text-[9px] font-black text-slate-800 uppercase tracking-widest hover:bg-slate-50 transition-all">
+                    System Close
+                </button>
             </div>
         </div>
     </div>
+
 
     <script>
         const studentID = "{{.studentID}}";
@@ -827,23 +621,23 @@
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="px-6 py-4">
+                        <td class="px-4 md:px-6 py-4">
                             <div class="flex flex-col">
-                                <span class="font-bold text-slate-700">${date}</span>
-                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${method}</span>
+                                <span class="font-bold text-slate-700 whitespace-nowrap">${date}</span>
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 whitespace-nowrap">${method}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col min-w-[200px]">
                                 ${allocationsHtml}
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-right">
-                            <span class="font-bold text-slate-700 text-sm">UGX ${total}</span>
+                        <td class="px-4 md:px-6 py-4 text-right">
+                            <span class="font-bold text-slate-700 text-sm whitespace-nowrap">UGX ${total}</span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 md:px-6 py-4">
                             <div class="flex justify-center">
-                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold uppercase tracking-widest">Successful</span>
+                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">Successful</span>
                             </div>
                         </td>
                     </tr>
@@ -949,9 +743,10 @@
         function selectFeeType(id, name, amount) {
             document.getElementById('addFeeType').value = id;
             document.getElementById('addFeeTitle').value = name;
-            document.getElementById('selectedCategoryName').textContent = name;
-            document.getElementById('selectedCategoryName').classList.remove('text-slate-400');
-            document.getElementById('selectedCategoryName').classList.add('text-slate-900');
+            const categorySpan = document.getElementById('selectedCategoryName');
+            categorySpan.textContent = name;
+            categorySpan.classList.remove('text-slate-400', 'italic');
+            categorySpan.classList.add('text-slate-900');
 
             // Auto fill amount
             const amountInput = document.getElementById('addFeeAmount');
@@ -1010,20 +805,20 @@
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition-colors group border-b border-slate-50 last:border-0">
-                        <td class="px-6 py-4">
+                        <td class="px-4 md:px-6 py-4">
                             <div class="flex flex-col items-start gap-1">
-                                <span class="text-[13px] font-black text-slate-900 tracking-tight uppercase">${fee.fee_type_code || 'GEN'}</span>
-                                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200/50">ID: ${fee.id.substring(0, 8)}</span>
+                                <span class="text-[13px] font-black text-slate-900 tracking-tight uppercase whitespace-nowrap">${fee.fee_type_code || 'GEN'}</span>
+                                <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200/50 whitespace-nowrap">ID: ${fee.id.substring(0, 8)}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col whitespace-nowrap">
                                 <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider">${fee.academic_year_name || '-'}</span>
                                 <span class="text-[9px] font-black text-slate-400 mt-1 uppercase tracking-widest">${fee.term_name || '-'}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="max-w-[150px] md:ml-auto flex flex-col gap-1.5">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="min-w-[140px] md:max-w-[150px] md:ml-auto flex flex-col gap-1.5">
                                 <div class="flex justify-between items-center whitespace-nowrap">
                                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gross</span>
                                     <span class="text-[10px] font-black text-indigo-600">${Math.round(progress)}%</span>
@@ -1037,16 +832,16 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${statusClass} shadow-sm border border-black/5">
+                        <td class="px-4 md:px-6 py-4 text-center">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${statusClass} shadow-sm border border-black/5 whitespace-nowrap">
                                 <i class="fas ${isPaid ? 'fa-circle-check' : (balance < amount ? 'fa-circle-half-stroke' : 'fa-circle-dot')} mr-1.5 text-[9px]"></i>${statusText}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-right">
+                        <td class="px-4 md:px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-1.5">
                                 ${!isPaid ? `
                                     <button onclick="openPaymentModal('${fee.id}', '${fee.student_id}', '${fee.student_name}', '${fee.title}', ${fee.balance})" 
-                                        class="h-8 px-4 bg-slate-900 hover:bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md hover:scale-[1.05] active:scale-95">
+                                        class="h-8 px-4 bg-slate-900 hover:bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all shadow-md hover:scale-[1.05] active:scale-95 whitespace-nowrap">
                                         Collect
                                     </button>
                                 ` : `
@@ -1229,6 +1024,12 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
                 document.getElementById('addFeeForm').reset();
+
+                // Reset category selection span
+                const categorySpan = document.getElementById('selectedCategoryName');
+                categorySpan.textContent = 'Determine category...';
+                categorySpan.classList.remove('text-slate-900');
+                categorySpan.classList.add('text-slate-400', 'italic');
             }, 300);
             document.body.style.overflow = 'auto';
         }
@@ -1271,7 +1072,7 @@
                 alert('An error occurred. Please try again.');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `Confirm Collection`;
+                btn.innerHTML = originalText;
             }
         }
 
@@ -1355,24 +1156,24 @@
 
                 return `
                     <tr class="hover:bg-slate-50/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col whitespace-nowrap">
                                 <span class="font-bold text-slate-700 text-xs">${dateStr}</span>
                                 <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${r.time_slot}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-col">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col min-w-[120px]">
                                 <span class="font-bold text-slate-700 text-xs">${r.subject}</span>
                                 ${r.paper ? `<span class="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${r.paper}</span>` : ''}
                             </div>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 md:px-6 py-4">
                             <span class="text-xs text-slate-500 line-clamp-1 max-w-[200px]" title="${r.topic || 'No topic recorded'}">${r.topic || '-'}</span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 md:px-6 py-4">
                             <div class="flex justify-center">
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${statusColors[r.status] || statusColors.pending}">
+                                <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${statusColors[r.status] || statusColors.pending} whitespace-nowrap">
                                     ${r.status}
                                 </span>
                             </div>
@@ -1388,6 +1189,6 @@
             document.getElementById('statRate').textContent = rate + '%';
         }
     </script>
-</body>
+    </body>
 
-</html>
+    </html>
