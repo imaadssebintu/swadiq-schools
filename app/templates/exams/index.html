@@ -1,214 +1,213 @@
 <!-- Class Assessments Management -->
-<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
-    <!-- Page Header -->
-    <div class="flex items-center justify-between">
-        <div class="flex flex-col gap-1">
-            <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase">Loading Class...</h1>
-            <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage and
-                schedule assessments</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="/assessments"
-                class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
-                <i class="fas fa-arrow-left"></i>
-                <span>Back</span>
-            </a>
-            <button id="addExamBtn"
-                class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
-                <i class="fas fa-plus"></i>
-                <span>Assessment</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Exams Section -->
-    <div id="examsView" class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <span
-                    class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest"
-                    id="examsTitle">Class Assessments</span>
-                <div class="h-px bg-slate-100 w-12"></div>
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase">Loading Class...
+                </h1>
+                <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage and
+                    schedule assessments</p>
             </div>
             <div class="flex items-center gap-3">
-                <!-- Type Filter -->
-                <select id="filterType"
-                    class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
-                    <option value="">Type</option>
-                </select>
-                <!-- Subject Filter -->
-                <select id="filterSubject"
-                    class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
-                    <option value="">Subject</option>
-                </select>
-                <!-- Paper Filter -->
-                <select id="filterPaper"
-                    class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-wider text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
-                    <option value="">Paper</option>
-                </select>
-                <div class="relative">
-                    <input type="text" id="searchExams" placeholder="Search assessments..."
-                        class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
-                    <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Exams Dynamic Content Container -->
-        <div id="examsContentContainer" class="space-y-6">
-            <!-- Loading Skeleton -->
-            <div id="examsLoadingSkeleton"
-                class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
-                <!-- Header Skeleton -->
-                <div
-                    class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200">
-                    <div class="p-2 flex items-center justify-center">
-                        <div class="w-4 h-4 bg-slate-200 rounded-full animate-pulse"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                    <div class="p-2 text-center">
-                        <div class="h-3 bg-slate-200 rounded animate-pulse mx-auto w-12"></div>
-                    </div>
-                </div>
-                <!-- Rows Skeleton -->
-                <div class="divide-y divide-slate-200">
-                    <div class="grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200">
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                        <div class="p-10 bg-white"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Empty State -->
-            <div id="noExamsMessage"
-                class="hidden py-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-4">
-                <div
-                    class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 text-2xl group-hover:scale-110 transition-transform duration-500">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="space-y-1">
-                    <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest">No Assessments Scheduled
-                    </p>
-                    <p class="text-slate-400 text-[10px] font-bold">Get started by creating your first assessment.</p>
-                </div>
-                <button onclick="showAddExamModal()"
-                    class="bg-slate-900 text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm">
-                    New Assessment
+                <a href="/assessments"
+                    class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-arrow-left text-[8px]"></i>
+                    <span>Back</span>
+                </a>
+                <button id="addExamBtn"
+                    class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-plus text-[8px]"></i>
+                    <span>New Assessment</span>
                 </button>
             </div>
         </div>
+
+        <!-- Exams Section -->
+        <div id="examsView" class="space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-[10px] font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md uppercase tracking-widest"
+                        id="examsTitle">Class Assessments</span>
+                    <div class="h-px bg-slate-100 w-12"></div>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Type Filter -->
+                    <div class="relative min-w-[100px]">
+                        <select id="filterType"
+                            class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300 shadow-sm">
+                            <option value="">Type</option>
+                        </select>
+                        <i
+                            class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+                    </div>
+                    <!-- Subject Filter -->
+                    <div class="relative min-w-[120px]">
+                        <select id="filterSubject"
+                            class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300 shadow-sm">
+                            <option value="">Subject</option>
+                        </select>
+                        <i
+                            class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+                    </div>
+                    <!-- Paper Filter -->
+                    <div class="relative min-w-[120px]">
+                        <select id="filterPaper"
+                            class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300 shadow-sm">
+                            <option value="">Paper</option>
+                        </select>
+                        <i
+                            class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+                    </div>
+                    <div class="relative flex-1 sm:min-w-[200px]">
+                        <input type="text" id="searchExams" placeholder="Search assessments..."
+                            class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all shadow-sm">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exams Dynamic Content Container -->
+            <div id="examsContentContainer" class="space-y-6">
+                <!-- Loading Skeleton -->
+                <div id="examsLoadingSkeleton"
+                    class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="h-10 bg-slate-50 border-b border-slate-100 flex items-center px-6">
+                        <div class="h-3 w-32 bg-slate-200 rounded animate-pulse"></div>
+                    </div>
+                    <div class="divide-y divide-slate-50">
+                        <div class="h-16 flex items-center px-6 gap-4">
+                            <div class="h-4 w-4 bg-slate-100 rounded"></div>
+                            <div class="h-4 w-32 bg-slate-100 rounded"></div>
+                            <div class="h-4 w-24 bg-slate-100 rounded ml-auto"></div>
+                        </div>
+                        <div class="h-16 flex items-center px-6 gap-4">
+                            <div class="h-4 w-4 bg-slate-100 rounded"></div>
+                            <div class="h-4 w-40 bg-slate-100 rounded"></div>
+                            <div class="h-4 w-24 bg-slate-100 rounded ml-auto"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="noExamsMessage"
+                    class="hidden py-16 text-center bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-4">
+                    <div
+                        class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 text-3xl">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs font-black text-slate-800 uppercase tracking-widest">No Assessments Scheduled
+                        </p>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Get started by creating
+                            your first assessment.</p>
+                    </div>
+                    <button onclick="showAddExamModal()"
+                        class="bg-slate-900 text-white px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-sm transform hover:scale-105 active:scale-95">
+                        New Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </div>
 
-<!-- Exam Modal -->
-<div id="examModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
-        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
-            <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight" id="examModalTitle">Add Assessment
-            </h3>
+<!-- Add/Edit Assessment Modal -->
+<div id="examModal"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 transition-all duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all">
+        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div class="flex flex-col gap-0.5">
+                <h2 id="examModalTitle" class="text-lg font-black text-slate-900 uppercase tracking-widest">Create
+                    Assessment</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fill in the details for the new
+                    assessment</p>
+            </div>
+            <button type="button" onclick="hideExamModal()"
+                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                <i class="fas fa-times text-sm"></i>
+            </button>
         </div>
-        <form id="examForm" class="px-6 py-5 space-y-4">
-            <input type="hidden" id="examId">
-
-            <div>
-                <div class="flex items-center justify-between mb-2">
+        <form id="examForm" class="p-8 space-y-6">
+            <input type="hidden" id="examId" name="id">
+            <input type="hidden" id="examClass" name="class_id" required>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="examName"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assessment
+                        Name</label>
+                    <input type="text" id="examName" name="name" required placeholder="e.g. Mid-Term Test"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all placeholder:text-slate-300">
+                </div>
+                <div class="space-y-2">
                     <label for="examTypeDisplay"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Assessment
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assessment
                         Type</label>
-                    <a href="/settings"
-                        class="text-[9px] font-bold text-indigo-600 hover:text-indigo-700 uppercase tracking-wider flex items-center gap-1 transition-colors">
-                        <i class="fas fa-cog text-[8px]"></i>
-                        Manage
-                    </a>
-                </div>
-                <div class="relative">
-                    <input type="hidden" id="examType" required>
-                    <input type="hidden" id="assessmentTypeId">
-                    <input type="text" id="examTypeDisplay" placeholder="Select Type" readonly
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer">
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <i class="fas fa-chevron-down text-xs"></i>
+                    <div class="relative group">
+                        <input type="hidden" id="assessmentTypeId" name="assessment_type_id" required>
+                        <input type="text" id="examTypeDisplay" placeholder="Select Type" readonly
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
+                        <i
+                            class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
                     </div>
                 </div>
             </div>
 
-            <div>
-                <label for="examClass"
-                    class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Class</label>
-                <select id="examClass" required
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
-                    <option value="">Select Class</option>
-                </select>
-            </div>
-            <div>
-                <label for="examSubjectDisplay"
-                    class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Subject</label>
-                <div class="relative">
-                    <input type="hidden" id="examSubject" name="subject_id" required>
-                    <input type="text" id="examSubjectDisplay" placeholder="Select Subject" readonly
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer">
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <i class="fas fa-chevron-down text-xs"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="examSubjectDisplay"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
+                    <div class="relative group">
+                        <input type="hidden" id="examSubject" name="subject_id" required>
+                        <input type="text" id="examSubjectDisplay" placeholder="Select Subject" readonly
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
+                        <i
+                            class="fas fa-book absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label for="examPaperDisplay"
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Paper</label>
+                    <div class="relative group">
+                        <input type="hidden" id="examPaper" name="paper_id" required>
+                        <input type="text" id="examPaperDisplay" placeholder="Select Paper" readonly
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
+                        <i
+                            class="fas fa-file-alt absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
                     </div>
                 </div>
             </div>
-            <div>
-                <label for="examPaperDisplay"
-                    class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Paper</label>
-                <div class="relative">
-                    <input type="hidden" id="examPaper" name="paper_id" required>
-                    <input type="text" id="examPaperDisplay" placeholder="Select Paper" readonly
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer">
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
                     <label for="examStartTime"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Start
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Start
                         Time</label>
-                    <input type="datetime-local" id="examStartTime" required
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
+                    <div class="relative group">
+                        <input type="datetime-local" id="examStartTime" name="start_time" required
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
+                    </div>
                 </div>
-                <div>
+                <div class="space-y-2">
                     <label for="examEndTime"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">End
+                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">End
                         Time</label>
-                    <input type="datetime-local" id="examEndTime" required
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
+                    <div class="relative group">
+                        <input type="datetime-local" id="examEndTime" name="end_time" required
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
+                    </div>
                 </div>
             </div>
-            <div class="flex justify-end gap-3 pt-2">
-                <button type="button" id="cancelExamBtn"
-                    class="px-4 py-2 text-xs font-bold uppercase tracking-wide text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+
+            <div class="flex items-center justify-end gap-3 pt-4">
+                <button type="button" onclick="hideExamModal()"
+                    class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-2xl transition-all">Cancel</button>
                 <button type="submit"
-                    class="px-4 py-2 text-xs font-bold uppercase tracking-wide text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-colors shadow-sm">Save</button>
+                    class="px-8 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
+                    Save Assessment
+                </button>
             </div>
         </form>
     </div>
@@ -216,16 +215,21 @@
 
 <!-- Subject Selection Modal -->
 <div id="subjectSelectionModal"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-[60]">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh]">
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Subject</h3>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    <div
+        class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Select Subject</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Choose a subject for this
+                    assessment</p>
+            </div>
             <button type="button" id="closeSubjectModalBtn"
-                class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-2 overflow-y-auto flex-1" id="subjectListContainer">
+        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="subjectListContainer">
             <!-- Subjects will be loaded here -->
             <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
         </div>
@@ -234,15 +238,21 @@
 
 <!-- Paper Selection Modal -->
 <div id="paperSelectionModal"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-[60]">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh]">
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Paper</h3>
-            <button type="button" id="closePaperModalBtn" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    <div
+        class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Select Paper</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Choose a paper for this subject
+                </p>
+            </div>
+            <button type="button" id="closePaperModalBtn"
+                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-2 overflow-y-auto flex-1" id="paperListContainer">
+        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="paperListContainer">
             <!-- Papers will be loaded here -->
             <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
         </div>
@@ -251,16 +261,21 @@
 
 <!-- Assessment Type Selection Modal -->
 <div id="assessmentTypeSelectionModal"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-[60]">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh]">
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Select Assessment Type</h3>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    <div
+        class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Assessment Type</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Select the type of assessment
+                </p>
+            </div>
             <button type="button" id="closeAssessmentTypeModalBtn"
-                class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-2 overflow-y-auto flex-1" id="assessmentTypeListContainer">
+        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="assessmentTypeListContainer">
             <!-- Assessment Types will be loaded here -->
             <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
         </div>
@@ -364,7 +379,8 @@
         try {
             const response = await fetch(`/api/classes/${classId}`);
             if (!response.ok) throw new Error('Failed to load class info');
-            const cls = await response.json();
+            const data = await response.json();
+            const cls = data.class || data;
 
             document.getElementById('pageTitle').textContent = cls.name;
             document.getElementById('pageDescription').textContent = `Manage and schedule assessments for ${cls.name}`;
@@ -372,8 +388,10 @@
 
             // Set fixed class in modal
             const select = document.getElementById('examClass');
-            select.innerHTML = `<option value="${cls.id}" selected>${cls.name}</option>`;
-            select.disabled = true;
+            if (select) {
+                select.innerHTML = `<option value="${cls.id}" selected>${cls.name}</option>`;
+                select.disabled = true;
+            }
         } catch (error) {
             console.error('Error loading class info:', error);
             document.getElementById('pageTitle').textContent = 'Class Assessments';
@@ -460,6 +478,20 @@
         const papersArr = Array.from(paperMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
         paperFilter.innerHTML = '<option value="">Paper</option>' +
             papersArr.map(([id, name]) => `<option value="${id}" ${currentPaper === id ? 'selected' : ''}>${name}</option>`).join('');
+    }
+
+    function getBadgeStyle(type) {
+        const t = (type || '').toLowerCase();
+        if (t.includes('exam') || t.includes('mid') || t.includes('final')) {
+            return 'bg-indigo-50 text-indigo-700 border-indigo-100';
+        }
+        if (t.includes('test') || t.includes('quiz')) {
+            return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+        }
+        if (t.includes('assign') || t.includes('project')) {
+            return 'bg-amber-50 text-amber-700 border-amber-100';
+        }
+        return 'bg-slate-50 text-slate-700 border-slate-100';
     }
 
     function renderAssessmentTypeList(typesToShow = []) {
@@ -615,16 +647,18 @@
                 <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-widest">Timetable View</span>
                 <div class="h-px bg-slate-100 flex-1"></div>
             </div>
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden relative">
-                <div class="grid grid-cols-[100px_repeat(7,1fr)] bg-slate-50 border-b border-slate-200 divide-x divide-slate-200 font-bold text-[10px] uppercase tracking-wider text-slate-500 sticky top-0 z-10 shadow-sm">
-                    <div class="p-3 flex items-center justify-center bg-white"><i class="fas fa-clock text-slate-300 text-lg"></i></div>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden relative">
+                <div class="grid grid-cols-[80px_repeat(7,1fr)] bg-slate-50 border-b border-slate-100 divide-x divide-slate-100 font-black text-[9px] uppercase tracking-widest text-slate-400 sticky top-0 z-10 shadow-sm">
+                    <div class="p-3 shadow-inner bg-white flex items-center justify-center">
+                        <i class="fas fa-clock text-slate-300 text-sm"></i>
+                    </div>
                     ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(day => `
-                        <div class="p-2 text-center border-r border-slate-200 last:border-0 bg-slate-50">
-                            <span class="block text-indigo-900 font-extrabold text-xs">${day}</span>
+                        <div class="p-3 text-center bg-slate-50/50">
+                            <span class="block text-slate-600">${day.substring(0, 3)}</span>
                         </div>
                     `).join('')}
                 </div>
-                <div class="bg-slate-50/50 relative overflow-auto max-h-[500px]">
+                <div class="bg-white relative overflow-auto max-h-[600px] custom-scrollbar">
                     <div class="timetable-rows"></div>
                 </div>
             </div>
@@ -640,11 +674,11 @@
 
         sortedHours.forEach(hour => {
             const row = document.createElement('div');
-            row.className = 'grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-slate-200 border-b border-slate-200';
+            row.className = 'grid grid-cols-[80px_repeat(7,1fr)] divide-x divide-slate-50 border-b border-slate-50 last:border-0';
             const timeLabel = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
 
-            let colsHtml = `<div class="p-3 bg-slate-50 flex items-center justify-center sticky left-0 z-10">
-                <span class="text-[10px] font-bold text-slate-500 uppercase">${timeLabel}</span>
+            let colsHtml = `<div class="p-3 bg-slate-50/30 flex items-center justify-center sticky left-0 z-[5] backdrop-blur-sm">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${timeLabel}</span>
             </div>`;
 
             days.forEach((day, dayIndex) => {
@@ -653,25 +687,37 @@
                     return d.getDay() === dayIndex && d.getHours() === hour;
                 });
 
-                colsHtml += `<div class="p-2 min-h-[80px] bg-white hover:bg-slate-50/50 transition-colors">
+                colsHtml += `<div class="p-2 min-h-[100px] transition-colors relative">
                     ${cellExams.map(exam => `
-                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-2 mb-2 hover:shadow-md transition-all group cursor-pointer" onclick="editExam('${exam.id}')">
-                            <div class="flex items-start justify-between gap-2 mb-1">
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-[11px] font-bold text-slate-900 truncate">${exam.name}</div>
-                                    <div class="text-[9px] text-slate-500 truncate">${exam.paper ? exam.paper.name : 'N/A'}</div>
+                        <div class="group/card bg-gradient-to-br from-white to-slate-50/50 border border-slate-200 rounded-xl p-2.5 mb-2 hover:shadow-xl hover:border-indigo-100 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer relative overflow-hidden" onclick="editExam('${exam.id}')">
+                            <div class="absolute -right-2 -top-2 w-8 h-8 bg-slate-50 rounded-full group-hover/card:bg-indigo-50 transition-colors"></div>
+                            
+                            <div class="relative space-y-2">
+                                <div class="flex items-start justify-between gap-1.5">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-[10px] font-black text-slate-800 uppercase tracking-tight truncate group-hover/card:text-indigo-600 transition-colors">${exam.name}</div>
+                                        <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest truncate mt-0.5">${exam.paper ? exam.paper.name : 'N/A'}</div>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 text-[7px] font-black uppercase tracking-widest rounded-md border ${getBadgeStyle(exam.type)} shadow-sm whitespace-nowrap">
+                                        ${exam.type || 'Exam'}
+                                    </span>
                                 </div>
-                                <span class="px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded border ${getBadgeStyle(exam.type)} whitespace-nowrap">
-                                    ${exam.type || 'Exam'}
-                                </span>
-                            </div>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="text-[9px] font-bold text-slate-600">
-                                    ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onclick="event.stopPropagation(); window.location.href='/assessments/${exam.id}/results'" class="p-1 text-emerald-600 hover:bg-emerald-100 rounded transition-all"><i class="fas fa-clipboard-list text-[10px]"></i></button>
-                                    <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" class="p-1 text-red-600 hover:bg-red-100 rounded transition-all"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                                
+                                <div class="flex items-center justify-between pt-2 border-t border-slate-50">
+                                    <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1">
+                                        <i class="fas fa-clock text-[7px]"></i>
+                                        ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    </span>
+                                    <div class="flex gap-1 transition-all">
+                                        <button onclick="event.stopPropagation(); window.location.href='/assessments/${exam.id}/results'" 
+                                            class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="fas fa-clipboard-list text-[8px]"></i>
+                                        </button>
+                                        <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" 
+                                            class="w-6 h-6 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center">
+                                            <i class="fas fa-trash-alt text-[8px]"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -690,53 +736,64 @@
         section.className = 'exams-dynamic-section space-y-4';
         section.innerHTML = `
             <div class="flex items-center gap-2">
-                <span class="text-[9px] font-black text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 uppercase tracking-widest">List View</span>
+                <span class="text-[9px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 uppercase tracking-widest">List View</span>
                 <div class="h-px bg-slate-100 flex-1"></div>
             </div>
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Assessment</th>
-                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Type</th>
-                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Subject/Paper</th>
-                            <th class="px-6 py-3 text-[10px] font-black text-slate-500 uppercase tracking-widest">Schedule</th>
-                            <th class="px-6 py-3 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        ${tableExams.map(exam => `
-                            <tr class="hover:bg-slate-50 transition-colors group">
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-bold text-slate-900">${exam.name}</div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border ${getBadgeStyle(exam.type)}">
-                                        ${exam.type || 'Exam'}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-xs text-slate-600 font-semibold">${exam.paper?.subject?.name || 'N/A'}</div>
-                                    <div class="text-[10px] text-slate-400 font-bold uppercase">${exam.paper?.name || 'N/A'}</div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-[11px] font-bold text-slate-700">${new Date(exam.start_time).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                        ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
-                                        ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <button onclick="window.location.href='/assessments/${exam.id}/results'" class="w-8 h-8 rounded-lg bg-slate-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm"><i class="fas fa-clipboard-list text-[10px]"></i></button>
-                                        <button onclick="editExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-indigo-600 hover:bg-indigo-900 hover:text-white transition-all shadow-sm"><i class="fas fa-pen text-[10px]"></i></button>
-                                        <button onclick="deleteExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm"><i class="fas fa-trash-alt text-[10px]"></i></button>
-                                    </div>
-                                </td>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-100">
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Assessment</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Type</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Subject & Paper</th>
+                                <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Schedule</th>
+                                <th class="px-6 py-4 text-right text-[9px] font-black text-slate-400 uppercase tracking-widest">Actions</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            ${tableExams.map(exam => `
+                                <tr class="hover:bg-slate-50/50 transition-all duration-200 group cursor-pointer" onclick="window.location.href='/assessments/${exam.id}/results'">
+                                    <td class="px-6 py-4">
+                                        <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">${exam.name}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border ${getBadgeStyle(exam.type)} shadow-sm">
+                                            ${exam.type || 'Exam'}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-[10px] text-slate-600 font-black uppercase tracking-tight">${exam.paper?.subject?.name || 'N/A'}</div>
+                                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${exam.paper?.name || 'N/A'}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-[10px] font-black text-slate-700 uppercase tracking-tight">${new Date(exam.start_time).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+                                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                                            ${new Date(exam.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                                            ${new Date(exam.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <button onclick="event.stopPropagation(); window.location.href='/assessments/${exam.id}/results'" 
+                                                class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all hover:bg-emerald-600 shadow-sm">
+                                                Results <i class="fas fa-clipboard-list ml-1 text-[8px]"></i>
+                                            </button>
+                                            <div class="flex items-center gap-1">
+                                                <button onclick="event.stopPropagation(); editExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 transition-all flex items-center justify-center shadow-sm">
+                                                    <i class="fas fa-pen text-[10px]"></i>
+                                                </button>
+                                                <button onclick="event.stopPropagation(); deleteExam('${exam.id}')" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 hover:border-rose-200 transition-all flex items-center justify-center shadow-sm">
+                                                    <i class="fas fa-trash-alt text-[10px]"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         `;
         container.appendChild(section);
