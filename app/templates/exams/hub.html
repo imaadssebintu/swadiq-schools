@@ -1,53 +1,88 @@
 <!-- Assessments Hub Page -->
-<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
-    <!-- Page Header -->
-    <div class="flex items-center justify-between">
-        <div class="flex flex-col gap-1">
-            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Assessments Hub</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select a class to manage
-                assessments</p>
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Assessments Hub</h1>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select a class to manage
+                    assessments</p>
+            </div>
+            <div class="relative w-full sm:w-64">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="searchClass" placeholder="Search classes..."
+                    class="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all shadow-sm">
+            </div>
         </div>
-    </div>
 
-    <!-- Classes Section -->
-    <div id="classesView" class="space-y-4">
-        <div class="flex items-center gap-2">
-            <span
-                class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Available
-                Classes</span>
-            <div class="h-px bg-slate-100 w-12"></div>
-        </div>
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-100">
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Class Name
-                        </th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Code</th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Students
-                        </th>
-                        <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
-                            Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="classesTableBody">
-                    <!-- Skeleton Rows -->
-                    <tr class="animate-pulse border-b border-slate-50">
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-24 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-3 w-16 bg-slate-100 rounded"></div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <div class="h-5 w-20 bg-slate-100 rounded-lg"></div>
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Classes Section -->
+        <div id="classesView" class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-[10px] font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Available
+                    Classes</span>
+                <div class="h-px bg-slate-100 flex-1"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-100">
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Class Name</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Code</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Students</th>
+                                <th
+                                    class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classesTableBody">
+                            <!-- Skeleton Rows -->
+                            <tr class="animate-pulse border-b border-slate-50 last:border-0">
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-28 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-16 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-20 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                            <tr class="animate-pulse border-b border-slate-50 last:border-0">
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-24 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-3 w-14 bg-slate-100 rounded"></div>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="h-5 w-20 bg-slate-100 rounded-lg"></div>
+                                </td>
+                                <td class="px-5 py-4 text-right">
+                                    <div class="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- No Classes Message -->
+            <div id="noClassesMessage"
+                class="hidden py-12 text-center bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-search text-slate-300"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No classes found</p>
+            </div>
         </div>
     </div>
 </div>
@@ -57,6 +92,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         loadClasses();
+        document.getElementById('searchClass').addEventListener('input', renderClasses);
     });
 
     async function loadClasses() {
@@ -68,39 +104,53 @@
         } catch (error) {
             console.error('Error loading classes:', error);
             classes = [];
+            renderClasses();
         }
     }
 
     function renderClasses() {
         const tbody = document.getElementById('classesTableBody');
+        const emptyState = document.getElementById('noClassesMessage');
+        const searchQuery = document.getElementById('searchClass').value.toLowerCase().trim();
+
         tbody.innerHTML = '';
 
-        if (classes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-8 text-center text-xs text-slate-400">No classes found</td></tr>';
+        const filteredClasses = classes.filter(cls =>
+            cls.name.toLowerCase().includes(searchQuery) ||
+            (cls.code && cls.code.toLowerCase().includes(searchQuery))
+        );
+
+        if (filteredClasses.length === 0) {
+            emptyState.classList.remove('hidden');
             return;
         }
 
-        classes.forEach(cls => {
+        emptyState.classList.add('hidden');
+
+        filteredClasses.forEach(cls => {
             const row = document.createElement('tr');
-            row.className = 'border-b border-slate-50 hover:bg-slate-50/50 cursor-pointer transition-colors';
+            row.className = 'border-b border-slate-50 last:border-0 hover:bg-slate-50/50 cursor-pointer transition-all duration-200 group';
             row.onclick = () => window.location.href = `/assessments/${cls.id}`;
+
             row.innerHTML = `
                 <td class="px-5 py-4">
-                    <div class="text-xs font-semibold text-slate-900">${cls.name}</div>
+                    <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">${cls.name}</div>
                 </td>
                 <td class="px-5 py-4">
-                    <div class="text-xs text-slate-500">${cls.code || '-'}</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${cls.code || '-'}</div>
                 </td>
                 <td class="px-5 py-4">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600">
-                        ${cls.student_count || 0} students
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-users text-[8px]"></i>
+                        ${cls.student_count || 0} Students
                     </span>
                 </td>
                 <td class="px-5 py-4 text-right">
-                    <div class="flex items-center justify-end gap-3">
-                        <button class="text-xs font-bold text-slate-900 hover:text-slate-600 flex items-center justify-end gap-1.5 transition-colors">
-                            Manage <i class="fas fa-arrow-right text-[10px]"></i>
-                        </button>
+                    <button class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all hover:bg-indigo-600 shadow-sm transform group-hover:translate-x-0 translate-x-1">
+                        Manage <i class="fas fa-arrow-right ml-1 text-[8px]"></i>
+                    </button>
+                    <div class="group-hover:hidden text-slate-300">
+                        <i class="fas fa-chevron-right text-[10px]"></i>
                     </div>
                 </td>
             `;
