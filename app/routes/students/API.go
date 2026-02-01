@@ -334,11 +334,9 @@ func GetStudentByIDAPI(c *fiber.Ctx) error {
 		parent := student.Parents[0] // Get primary parent
 
 		// Get relationship information
-		relationships, err := database.GetStudentParentRelationship(config.GetDB(), studentID, parent.ID)
-		relationship := "guardian" // Default if not found
-		if err == nil && len(relationships) > 0 {
-			// Use the first relationship type found
-			relationship = "guardian" // You can extract relationship from the parent data if needed
+		relationship, err := database.GetStudentParentRelationship(config.GetDB(), studentID, parent.ID)
+		if err != nil {
+			relationship = "guardian" // Default if not found
 		}
 
 		response["parent"] = fiber.Map{

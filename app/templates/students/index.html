@@ -458,14 +458,14 @@
                                     class="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mb-6 shadow-sm border border-rose-100 animate-bounce">
                                     <i class="fas fa-satellite-dish text-rose-400 text-3xl"></i>
                                 </div>
-                                <p class="text-sm font-black text-slate-800 uppercase tracking-widest">Signal
-                                    Interference Detected</p>
+                                <p class="text-sm font-black text-slate-800 uppercase tracking-widest">Database
+                                    Connection Error</p>
                                 <p
                                     class="text-[11px] font-bold text-slate-400 mt-2 uppercase tracking-widest opacity-60">
-                                    Database uplinks are currently compromised</p>
+                                    Failed to retrieve data from the server</p>
                                 <button onclick="loadStudents()"
                                     class="mt-6 px-6 py-2 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200">
-                                    Re-establish Connection
+                                    Retry Connection
                                 </button>
                             </div>
                         </td>
@@ -515,7 +515,7 @@
                         <div class="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center">
                             <i class="fas fa-check text-[10px] text-emerald-600"></i>
                         </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest">Base Registry Reached</span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">All Students Registered</span>
                     </div>
                 </div>
             </div>
@@ -531,8 +531,8 @@
         <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/30">
             <div>
                 <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">New Student Enrollment</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Initialize
-                    biometric registry & deployment</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Register a new
+                    student to the system</p>
             </div>
             <button id="closeModalBtn"
                 class="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-300 shadow-sm">
@@ -551,10 +551,10 @@
                         <i class="fas fa-id-card text-indigo-600 text-sm"></i>
                     </div>
                     <div>
-                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Registry Parameters
+                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Academic Assignment
                         </h5>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                            System identification & classification</p>
+                            Class and identification parameters</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -569,8 +569,7 @@
                     </div>
                     <div>
                         <label for="classId"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Operational
-                            Battalion / Class</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Class</label>
                         <select id="classId" name="classId"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider">
                             <option value="">Awaiting Assignment</option>
@@ -588,28 +587,28 @@
                         <i class="fas fa-user-gear text-purple-600 text-sm"></i>
                     </div>
                     <div>
-                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Bio-Metric Registry
+                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Personal Information
                         </h5>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                            Personal identification parameters</p>
+                            Student identity details</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="firstName"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Forename
-                            / Primary ID *</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">First
+                            Name *</label>
                         <input type="text" id="firstName" name="firstName" required
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                            placeholder="Enter forename...">
+                            placeholder="Enter first name...">
                     </div>
                     <div>
                         <label for="lastName"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Surname
-                            / Family ID *</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Last
+                            Name *</label>
                         <input type="text" id="lastName" name="lastName" required
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                            placeholder="Enter surname...">
+                            placeholder="Enter last name...">
                     </div>
                     <div>
                         <label for="dateOfBirth"
@@ -634,7 +633,7 @@
                     <div class="md:col-span-2">
                         <label for="address"
                             class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Residential
-                            Sector / Address</label>
+                            Address</label>
                         <textarea id="address" name="address" rows="3"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
                             placeholder="Enter residential coordinates..."></textarea>
@@ -651,17 +650,17 @@
                         <i class="fas fa-users-viewfinder text-emerald-600 text-sm"></i>
                     </div>
                     <div>
-                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Guardian Network
+                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Guardian Information
                         </h5>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                            Primary Support Protocols</p>
+                            Primary contact details</p>
                     </div>
                 </div>
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1 opacity-70">Primary
-                            Contact Identity</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1 opacity-70">Assigned
+                            Guardian</label>
                         <div class="flex flex-col sm:flex-row gap-3">
                             <!-- Hidden input to store selected parent ID -->
                             <input type="hidden" id="parentId" name="parentId" value="">
@@ -675,7 +674,7 @@
                             <div class="flex gap-2">
                                 <button type="button" id="searchParentBtn"
                                     class="flex-1 sm:flex-none px-4 py-2.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-sm flex items-center justify-center gap-2">
-                                    <i class="fas fa-satellite-dish text-[9px]"></i>Search
+                                    <i class="fas fa-search text-[9px]"></i>Search
                                 </button>
                                 <button type="button" id="addParentBtn"
                                     class="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 hover:text-white transition-all duration-300 shadow-sm flex items-center justify-center gap-2">
@@ -686,11 +685,10 @@
                     </div>
                     <div>
                         <label for="parentRelationship"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Relationship
-                            Protocol</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Relationship</label>
                         <select id="parentRelationship" name="parentRelationship"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider">
-                            <option value="">Unidentified Relationship</option>
+                            <option value="">Select Relationship</option>
                             <option value="father">Biological Father</option>
                             <option value="mother">Biological Mother</option>
                             <option value="guardian">Legal Guardian</option>
@@ -724,10 +722,10 @@
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/30">
             <div>
-                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Network Node Identification
+                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Parent / Guardian Search
                 </h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Synchronize
-                    guardian connection parameters</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Search for an
+                    existing parent or add a new one</p>
             </div>
             <button id="closeParentSearchBtn"
                 class="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-300 shadow-sm">
@@ -740,10 +738,10 @@
             <!-- Search Bar -->
             <div class="mb-8 p-1 bg-slate-50 rounded-2xl border border-slate-100 shadow-inner">
                 <div class="relative group">
-                    <input type="text" id="parentSearchInput" placeholder="Scanning network for guardian identity..."
+                    <input type="text" id="parentSearchInput" placeholder="Search by name, phone or email..."
                         class="w-full pl-12 pr-4 py-4 text-[11px] font-black border-2 border-transparent focus:border-indigo-500/20 rounded-xl focus:outline-none bg-white shadow-sm transition-all duration-300 uppercase tracking-widest placeholder:text-slate-300">
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center gap-3">
-                        <i class="fas fa-satellite-dish text-indigo-500 animate-pulse text-sm"></i>
+                        <i class="fas fa-search text-indigo-500 text-sm"></i>
                     </div>
                 </div>
             </div>
@@ -790,13 +788,13 @@
                     class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-200 shadow-sm">
                     <i class="fas fa-users-slash text-slate-300 text-2xl"></i>
                 </div>
-                <h4 class="text-[12px] font-black text-slate-900 uppercase tracking-widest">No Network Nodes Identified
+                <h4 class="text-[12px] font-black text-slate-900 uppercase tracking-widest">No Parents Found
                 </h4>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Initialize new guardian
-                    registry</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Create a new parent
+                    record to get started</p>
                 <button type="button" id="createNewParentBtn"
                     class="mt-6 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] transition-all duration-300">
-                    <i class="fas fa-plus mr-2 opacity-70"></i>Deploy New Node
+                    <i class="fas fa-plus mr-2 opacity-70"></i>Add New Parent
                 </button>
             </div>
         </div>
@@ -805,14 +803,14 @@
 
 <!-- Add Parent Modal -->
 <div id="addParentModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-slate-200">
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/30">
             <div>
-                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Initial Node Registry</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Authorize new
-                    guardian connection</p>
+                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Register New Parent</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Enter parent /
+                    guardian details below</p>
             </div>
             <button id="closeParentModalBtn"
                 class="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-300 shadow-sm">
@@ -831,28 +829,28 @@
                         <i class="fas fa-user-gear text-indigo-600 text-sm"></i>
                     </div>
                     <div>
-                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Identity Registry
+                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Personal Details
                         </h5>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                            Personal identification parameters</p>
+                            Primary identity information</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="parentFirstName"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Primary
-                            Forename *</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">First
+                            Name *</label>
                         <input type="text" id="parentFirstName" name="firstName" required
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                            placeholder="Enter forename...">
+                            placeholder="Enter first name...">
                     </div>
                     <div>
                         <label for="parentLastName"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Primary
-                            Surname *</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Last
+                            Name *</label>
                         <input type="text" id="parentLastName" name="lastName" required
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                            placeholder="Enter surname...">
+                            placeholder="Enter last name...">
                     </div>
                 </div>
             </div>
@@ -866,35 +864,36 @@
                         <i class="fas fa-link text-emerald-600 text-sm"></i>
                     </div>
                     <div>
-                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Comms Network</h5>
+                        <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Contact Information
+                        </h5>
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                            Communication bridge parameters</p>
+                            Primary contact details</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-6">
                     <div>
                         <label for="parentPhone"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Secure
-                            Phone Line</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Phone
+                            Number</label>
                         <input type="tel" id="parentPhone" name="phone"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300"
-                            placeholder="Enter active phone line...">
+                            placeholder="Enter phone number...">
                     </div>
                     <div>
                         <label for="parentEmail"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Electronic
-                            Mail Identity</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Email
+                            Address</label>
                         <input type="email" id="parentEmail" name="email"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300"
                             placeholder="Enter verified email...">
                     </div>
                     <div>
                         <label for="parentAddress"
-                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Operational
-                            HQ / Address</label>
+                            class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Home
+                            Address</label>
                         <textarea id="parentAddress" name="address" rows="3"
                             class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                            placeholder="Enter geographic coordinates..."></textarea>
+                            placeholder="Enter residential address..."></textarea>
                     </div>
                 </div>
             </div>
@@ -907,7 +906,7 @@
                 </button>
                 <button type="submit"
                     class="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] transition-all duration-300 border border-white/10">
-                    <i class="fas fa-plus mr-2.5 opacity-50"></i>Finalize Registry
+                    <i class="fas fa-plus mr-2.5 opacity-50"></i>Add Parent
                 </button>
             </div>
         </form>
@@ -921,10 +920,10 @@
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/30">
             <div>
-                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Student intelligence Profile
+                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Student Profile
                 </h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Comprehensive
-                    record retrieval & analysis</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">View and
+                    manage student details</p>
             </div>
             <button id="closeViewStudentModal"
                 class="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-300 shadow-sm">
@@ -979,7 +978,7 @@
                 <!-- Intelligence Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white rounded-xl border border-slate-200/60 p-3 shadow-sm">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Unit
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Class
                         </p>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-graduation-cap text-indigo-600 text-[9px]"></i>
@@ -1023,7 +1022,7 @@
                     </div>
                     <div class="min-w-0">
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 opacity-70">
-                            Residential Sector</p>
+                            Address</p>
                         <p id="viewAddress"
                             class="text-[10px] font-bold text-slate-600 uppercase tracking-widest truncate max-w-full">
                         </p>
@@ -1035,7 +1034,7 @@
                     <div class="flex items-center mb-4 pb-3 border-b border-slate-200/50">
                         <h5
                             class="text-[11px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fas fa-users-viewfinder text-indigo-600"></i>Guardian Nexus
+                            <i class="fas fa-user-shield text-indigo-600"></i>Guardian Information
                         </h5>
                     </div>
 
@@ -1066,7 +1065,7 @@
                         </div>
                     </div>
                     <div id="noParentInfo" class="hidden py-4 text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Primary Contact
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Guardian Assigned
                             Linked</p>
                     </div>
                 </div>
@@ -1076,7 +1075,7 @@
             <div class="flex items-center justify-end gap-3 p-4 border-t border-slate-100 bg-slate-50/30">
                 <button id="closeViewStudentBtn"
                     class="px-6 py-2.5 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg hover:bg-slate-800 transition-all duration-300">
-                    Close Profile
+                    Close
                 </button>
             </div>
         </div>
@@ -1463,6 +1462,15 @@
             }
         });
 
+        // Add New Parent button in empty state
+        const createNewParentBtn = document.getElementById('createNewParentBtn');
+        if (createNewParentBtn) {
+            createNewParentBtn.addEventListener('click', function () {
+                closeParentSearchModal();
+                openParentModal();
+            });
+        }
+
         // Edit modal parent search functionality
         document.addEventListener('click', function (e) {
             if (e.target && e.target.id === 'editSearchParentBtn') {
@@ -1531,7 +1539,7 @@
                                         <h4 class="text-[11px] font-black text-slate-900 uppercase tracking-widest text-ellipsis overflow-hidden whitespace-nowrap">${parent.first_name} ${parent.last_name}</h4>
                                         <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                                             <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2 leading-none">
-                                                <i class="fas fa-satellite-dish text-emerald-500 text-[9px]"></i>${parent.phone || 'NO SECURE LINE'}
+                                                <i class="fas fa-phone text-emerald-500 text-[9px]"></i>${parent.phone || 'NO PHONE RECORDED'}
                                             </span>
                                             ${parent.email ? `
                                             <span class="text-[10px] text-slate-400 font-bold lowercase tracking-widest flex items-center gap-2 leading-none">
@@ -1540,8 +1548,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-sm border border-indigo-100/50">
-                                    Link Node
+                                 <button class="px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-sm border border-indigo-100/50">
+                                    Select Parent
                                 </button>
                             </div>
                         `;
@@ -2051,7 +2059,7 @@
             const showingCountEl = document.getElementById('showing-students-count');
             const totalCountEl = document.getElementById('total-students-count');
             const endOfResults = document.getElementById('end-of-students');
-            const loadMoreBtn = document.getElementById('load-more-students');
+            const loadMoreBtn = document.getElementById('load-more-btn');
 
             // Update counts
             if (showingCountEl) showingCountEl.textContent = currentCount || totalCount;
@@ -2163,7 +2171,7 @@
                 document.getElementById('editStudentForm').classList.add('hidden');
 
                 // Load student data
-                const response = await fetch(`/ api / students / ${studentId} `);
+                const response = await fetch(`/api/students/${studentId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch student details');
                 }
@@ -2215,7 +2223,7 @@
 
             try {
                 const response = await fetch(`/api/students/${studentId}`);
-                if (!response.ok) throw new Error('Failed to fetch student intelligence');
+                if (!response.ok) throw new Error('Failed to fetch student profile');
 
                 const data = await response.json();
                 const student = data.student;
@@ -2225,15 +2233,15 @@
                 document.getElementById('viewFullName').textContent = `${student.first_name} ${student.last_name}`;
                 document.getElementById('viewStudentID').textContent = student.student_id;
                 document.getElementById('viewInitials').textContent = (student.first_name[0] || '?') + (student.last_name[0] || '?');
-                document.getElementById('viewClassName').textContent = student.class_name || 'Assignment Pending';
+                document.getElementById('viewClassName').textContent = student.class_name || 'Awaiting Assignment';
                 document.getElementById('viewIDShort').textContent = student.student_id;
-                document.getElementById('viewGender').textContent = student.gender || 'Unspecified';
-                document.getElementById('viewDOB').textContent = student.date_of_birth || 'Data Missing';
-                document.getElementById('viewAddress').textContent = student.address || 'No Registered Address';
+                document.getElementById('viewGender').textContent = student.gender || 'Not Specified';
+                document.getElementById('viewDOB').textContent = student.date_of_birth || 'Not Provided';
+                document.getElementById('viewAddress').textContent = student.address || 'No Address Registered';
 
                 // Status Badge
                 const statusBadge = document.getElementById('viewStatus');
-                statusBadge.textContent = student.is_active ? 'Active Unit' : 'Inactive Unit';
+                statusBadge.textContent = student.is_active ? 'Active' : 'Inactive';
                 statusBadge.className = `inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${student.is_active ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`;
 
                 // Populate Guardian Data
@@ -2243,8 +2251,8 @@
                     document.getElementById('viewParentName').textContent = `${parent.first_name} ${parent.last_name}`;
                     document.getElementById('parentInitials').textContent = (parent.first_name[0] || '?') + (parent.last_name[0] || '?');
                     document.getElementById('viewRelationship').textContent = parent.relationship || 'Guardian';
-                    document.getElementById('viewParentPhone').textContent = parent.phone || 'No Line';
-                    document.getElementById('viewParentEmail').textContent = parent.email || 'No Comms';
+                    document.getElementById('viewParentPhone').textContent = parent.phone || 'Not Provided';
+                    document.getElementById('viewParentEmail').textContent = parent.email || 'Not Provided';
                 } else {
                     document.getElementById('viewParentInfo').classList.add('hidden');
                     document.getElementById('noParentInfo').classList.remove('hidden');
@@ -2255,8 +2263,8 @@
                 content.classList.remove('hidden');
 
             } catch (error) {
-                console.error('Intelligence retrieval error:', error);
-                alert('Critical: Failed to retrieve record.');
+                console.error('Profile retrieval error:', error);
+                alert('Error: Failed to retrieve record.');
                 modal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }
@@ -2332,7 +2340,7 @@
             console.log('Submitting edit form with data:', formData);
 
             try {
-                const response = await fetch(`/ api / students / ${studentId} `, {
+                const response = await fetch(`/api/students/${studentId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -2370,7 +2378,7 @@
             const studentId = this.dataset.studentId;
 
             try {
-                const response = await fetch(`/ api / students / ${studentId}`, {
+                const response = await fetch(`/api/students/${studentId}`, {
                     method: 'DELETE'
                 });
 
@@ -2479,10 +2487,10 @@
         <!-- Modal Header -->
         <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/30">
             <div>
-                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Student Profile Correction
+                <h2 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Edit Student Profile
                 </h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Synchronize
-                    deployment parameters & registries</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 opacity-60">Update student
+                    information</p>
             </div>
             <button id="closeEditStudentModal"
                 class="w-8 h-8 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all duration-300 shadow-sm">
@@ -2530,18 +2538,19 @@
                             <i class="fas fa-id-card-clip text-indigo-600 text-sm"></i>
                         </div>
                         <div>
-                            <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Bio-Metric
-                                Registry</h5>
+                            <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Personal
+                                Information
+                            </h5>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                                Personal identification parameters</p>
+                                Student identity details</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Student ID (Read-only) -->
                         <div class="md:col-span-2">
                             <label
-                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Identification
-                                Reference (Read-Only)</label>
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Student
+                                ID (Read-Only)</label>
                             <input type="text" id="editStudentID"
                                 class="w-full px-4 py-2.5 text-[11px] font-black border border-slate-100 rounded-xl bg-slate-50 text-slate-500 uppercase tracking-wider cursor-not-allowed shadow-inner"
                                 readonly>
@@ -2550,8 +2559,8 @@
                         <!-- First Name -->
                         <div>
                             <label
-                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Forename
-                                / Primary ID *</label>
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">First
+                                Name *</label>
                             <input type="text" id="editFirstName"
                                 class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
                                 required>
@@ -2560,8 +2569,8 @@
                         <!-- Last Name -->
                         <div>
                             <label
-                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Surname
-                                / Family ID *</label>
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Last
+                                Name *</label>
                             <input type="text" id="editLastName"
                                 class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
                                 required>
@@ -2595,10 +2604,10 @@
                         <div class="md:col-span-2">
                             <label
                                 class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Residential
-                                Sector / Address</label>
+                                Address</label>
                             <textarea id="editAddress" rows="3"
                                 class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider"
-                                placeholder="Enter operational base coordinates..."></textarea>
+                                placeholder="Enter residential address..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -2613,9 +2622,9 @@
                         </div>
                         <div>
                             <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Academic
-                                Configuration</h5>
+                                Details</h5>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                                Deployment Parameters</p>
+                                Class and enrollment information</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-6">
@@ -2623,10 +2632,10 @@
                         <div>
                             <label
                                 class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Assigned
-                                Battalion / Class</label>
+                                Class</label>
                             <select id="editClassID"
                                 class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider">
-                                <option value="">Awaiting Assignment</option>
+                                <option value="">Select Class</option>
                                 <!-- Classes will be loaded dynamically -->
                             </select>
                         </div>
@@ -2642,18 +2651,19 @@
                             <i class="fas fa-users-viewfinder text-emerald-600 text-sm"></i>
                         </div>
                         <div>
-                            <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Guardian Network
+                            <h5 class="text-[13px] font-black text-slate-900 uppercase tracking-widest">Guardian
+                                Information
                             </h5>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 opacity-60">
-                                Primary Support Protocols</p>
+                                Primary contact details</p>
                         </div>
                     </div>
                     <div class="space-y-6">
                         <!-- Current Parent Display -->
                         <div>
                             <label
-                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1 opacity-70">Primary
-                                Contact Identity</label>
+                                class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1 opacity-70">Assigned
+                                Guardian</label>
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <!-- Hidden input to store selected parent ID -->
                                 <input type="hidden" id="editParentId">
@@ -2681,16 +2691,16 @@
                         <div>
                             <label
                                 class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 opacity-70">Relationship
-                                Protocol</label>
+                                Relationship</label>
                             <select id="editParentRelationship"
                                 class="w-full px-4 py-2.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-white transition-all duration-300 uppercase tracking-wider">
-                                <option value="">Unidentified Relationship</option>
-                                <option value="father">Biological Father</option>
-                                <option value="mother">Biological Mother</option>
+                                <option value="">Select Relationship</option>
+                                <option value="father">Father</option>
+                                <option value="mother">Mother</option>
                                 <option value="guardian">Legal Guardian</option>
                                 <option value="brother">Sibling (Brother)</option>
                                 <option value="sister">Sibling (Sister)</option>
-                                <option value="other">Other Connection</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                     </div>
@@ -2700,11 +2710,11 @@
             <div class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-100">
                 <button type="button" id="cancelEditStudent"
                     class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all duration-200">
-                    Abort
+                    Cancel
                 </button>
                 <button type="submit"
                     class="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-[1.02] transition-all duration-300 border border-white/10">
-                    Synchronize Record
+                    Save Changes
                 </button>
             </div>
         </form>
@@ -2719,22 +2729,22 @@
         <div class="p-8">
             <div
                 class="flex items-center justify-center w-16 h-16 mx-auto bg-rose-50 rounded-2xl mb-6 shadow-sm border border-rose-100/50">
-                <i class="fas fa-biohazard text-rose-500 text-2xl"></i>
+                <i class="fas fa-trash-can text-rose-500 text-2xl"></i>
             </div>
-            <h3 class="text-[15px] font-black text-slate-900 text-center uppercase tracking-widest mb-2">Record Purge
-                Authorization</h3>
+            <h3 class="text-[15px] font-black text-slate-900 text-center uppercase tracking-widest mb-2">Confirm Student
+                Deletion</h3>
             <p class="text-[11px] text-slate-400 font-bold text-center mb-8 uppercase tracking-widest leading-relaxed">
-                You are about to permanently erase <span id="deleteStudentName" class="text-rose-600"></span> from the
-                biometric registry. This action is <span class="text-rose-600">irreversible</span>.
+                You are about to permanently delete <span id="deleteStudentName" class="text-rose-600"></span> from the
+                system records. This action is <span class="text-rose-600">irreversible</span>.
             </p>
             <div class="flex flex-col gap-3">
                 <button id="confirmDeleteStudent"
                     class="w-full py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-200 hover:bg-rose-700 hover:scale-[1.02] transition-all duration-300">
-                    Execute Purge Protocol
+                    Confirm Deletion
                 </button>
                 <button id="cancelDeleteStudent"
                     class="w-full py-3 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all duration-200">
-                    Abort Deletion
+                    Cancel
                 </button>
             </div>
         </div>

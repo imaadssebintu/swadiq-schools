@@ -797,15 +797,75 @@ func GetUserDepartments(db *sql.DB, userID string) ([]*models.Department, error)
 
 // Placeholder functions to resolve compilation errors
 func GetAllParents(db *sql.DB) ([]*models.Parent, error) {
-	return []*models.Parent{}, nil
+	query := `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, ''), COALESCE(address, ''), is_active, created_at, updated_at 
+			  FROM parents WHERE deleted_at IS NULL ORDER BY first_name, last_name`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []*models.Parent{}, err
+	}
+	defer rows.Close()
+
+	var parents []*models.Parent
+	for rows.Next() {
+		parent := &models.Parent{}
+		var phone, email, address string
+		err := rows.Scan(
+			&parent.ID, &parent.FirstName, &parent.LastName, &phone, &email, &address,
+			&parent.IsActive, &parent.CreatedAt, &parent.UpdatedAt,
+		)
+		if err != nil {
+			continue
+		}
+		parent.Phone = &phone
+		parent.Email = &email
+		parent.Address = &address
+		parents = append(parents, parent)
+	}
+	return parents, nil
 }
 
 func CreateParent(db *sql.DB, parent *models.Parent) error {
-	return nil
+	query := `INSERT INTO parents (id, first_name, last_name, phone, email, address, is_active, created_at, updated_at)
+			  VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	err := db.QueryRow(query, parent.FirstName, parent.LastName, parent.Phone, parent.Email, parent.Address, parent.IsActive).Scan(
+		&parent.ID, &parent.CreatedAt, &parent.UpdatedAt,
+	)
+	return err
 }
 
 func SearchParents(db *sql.DB, query string) ([]*models.Parent, error) {
-	return []*models.Parent{}, nil
+	searchPattern := "%" + strings.ToLower(query) + "%"
+	sqlQuery := `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, ''), COALESCE(address, ''), is_active
+			  FROM parents 
+			  WHERE deleted_at IS NULL 
+			  AND (LOWER(first_name) LIKE $1 OR LOWER(last_name) LIKE $1 OR LOWER(email) LIKE $1 OR LOWER(phone) LIKE $1)
+			  ORDER BY first_name, last_name`
+
+	rows, err := db.Query(sqlQuery, searchPattern)
+	if err != nil {
+		return []*models.Parent{}, err
+	}
+	defer rows.Close()
+
+	var parents []*models.Parent
+	for rows.Next() {
+		parent := &models.Parent{}
+		var phone, email, address string
+		err := rows.Scan(
+			&parent.ID, &parent.FirstName, &parent.LastName, &phone, &email, &address, &parent.IsActive,
+		)
+		if err != nil {
+			continue
+		}
+		parent.Phone = &phone
+		parent.Email = &email
+		parent.Address = &address
+		parents = append(parents, parent)
+	}
+	return parents, nil
 }
 
 func GetStudentsByClass(db *sql.DB, classID string) ([]*models.Student, error) {
@@ -2115,8 +2175,16 @@ func GetStudentByID(db *sql.DB, id string) (*models.Student, error) {
 	return student, nil
 }
 
-func GetStudentParentRelationship(db *sql.DB, studentID, relationshipType string) ([]*models.Parent, error) {
-	return []*models.Parent{}, nil
+func GetStudentParentRelationship(db *sql.DB, studentID, parentID string) (string, error) {
+	var relationship string
+	err := db.QueryRow("SELECT relationship FROM student_parents WHERE student_id = $1 AND parent_id = $2 AND deleted_at IS NULL", studentID, parentID).Scan(&relationship)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "guardian", nil
+		}
+		return "", err
+	}
+	return relationship, nil
 }
 
 func GetStudentsByYear(db *sql.DB, year int) ([]*models.Student, error) {
@@ -2124,11 +2192,24 @@ func GetStudentsByYear(db *sql.DB, year int) ([]*models.Student, error) {
 }
 
 func CreateStudent(db *sql.DB, student *models.Student) error {
-	return nil
+	query := `INSERT INTO students (id, student_id, first_name, last_name, date_of_birth, gender, address, class_id, is_active, created_at, updated_at)
+			  VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+			  RETURNING id, created_at, updated_at`
+
+	student.IsActive = true
+	err := db.QueryRow(query, student.StudentID, student.FirstName, student.LastName, student.DateOfBirth, student.Gender, student.Address, student.ClassID, student.IsActive).Scan(
+		&student.ID, &student.CreatedAt, &student.UpdatedAt,
+	)
+	return err
 }
 
 func LinkStudentToParent(db *sql.DB, studentID, parentID, relationshipType string) error {
-	return nil
+	query := `INSERT INTO student_parents (id, student_id, parent_id, relationship, is_primary, created_at, updated_at)
+			  VALUES (gen_random_uuid(), $1, $2, $3, true, NOW(), NOW())
+			  ON CONFLICT (student_id, parent_id) DO UPDATE SET relationship = $3, updated_at = NOW()`
+
+	_, err := db.Exec(query, studentID, parentID, relationshipType)
+	return err
 }
 
 func SearchSubjects(db *sql.DB, query string) ([]*models.Subject, error) {
@@ -2220,19 +2301,85 @@ func DeleteSubject(db *sql.DB, id string) error {
 }
 
 func UpdateStudent(db *sql.DB, student *models.Student) error {
-	return nil
+	query := `UPDATE students 
+			  SET first_name = $1, last_name = $2, date_of_birth = $3, gender = $4, address = $5, class_id = $6, updated_at = NOW()
+			  WHERE id = $7`
+
+	_, err := db.Exec(query, student.FirstName, student.LastName, student.DateOfBirth, student.Gender, student.Address, student.ClassID, student.ID)
+	return err
 }
 
 func ChangeStudentParent(db *sql.DB, studentID, parentID, relationshipType string) error {
-	return nil
+	// Start transaction
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	// Clear existing parent relationships for this student
+	_, err = tx.Exec("DELETE FROM student_parents WHERE student_id = $1", studentID)
+	if err != nil {
+		return err
+	}
+
+	// If parentID is provided, link to the new parent
+	if parentID != "" {
+		query := `INSERT INTO student_parents (id, student_id, parent_id, relationship, is_primary, created_at, updated_at)
+				  VALUES (gen_random_uuid(), $1, $2, $3, true, NOW(), NOW())`
+		_, err = tx.Exec(query, studentID, parentID, relationshipType)
+		if err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
 }
 
 func DeleteStudent(db *sql.DB, id string) error {
-	return nil
+	query := `UPDATE students SET is_active = false, updated_at = NOW(), deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
 }
 
 func GetParentsForSelection(db *sql.DB, search string) ([]*models.Parent, error) {
-	return []*models.Parent{}, nil
+	var query string
+	var args []interface{}
+
+	if search != "" {
+		query = `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, '')
+				 FROM parents 
+				 WHERE deleted_at IS NULL AND is_active = true
+				 AND (LOWER(first_name) LIKE $1 OR LOWER(last_name) LIKE $1 OR LOWER(phone) LIKE $1)
+				 ORDER BY first_name, last_name
+				 LIMIT 10`
+		args = append(args, "%"+strings.ToLower(search)+"%")
+	} else {
+		query = `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, '')
+				 FROM parents 
+				 WHERE deleted_at IS NULL AND is_active = true
+				 ORDER BY first_name, last_name
+				 LIMIT 10`
+	}
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var parents []*models.Parent
+	for rows.Next() {
+		p := &models.Parent{}
+		var phone, email string
+		if err := rows.Scan(&p.ID, &p.FirstName, &p.LastName, &phone, &email); err != nil {
+			continue
+		}
+		p.Phone = &phone
+		p.Email = &email
+		parents = append(parents, p)
+	}
+	return parents, nil
 }
 
 func SearchStudents(db *sql.DB, query string) ([]*models.Student, error) {
