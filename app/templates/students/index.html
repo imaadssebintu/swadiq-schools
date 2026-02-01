@@ -1090,7 +1090,7 @@
 </style>
 
 <script>
-    console.log('Students page script loaded');
+    console.log('Students page script loaded - v1.0.1 (Force Refresh)');
     // Loading utility functions
     function setButtonLoading(button, isLoading, originalText = null) {
         if (isLoading) {
@@ -1410,17 +1410,15 @@
         });
 
         // Parent Search Modal functionality
+        // Parent Search Modal functionality
         function openParentSearchModal() {
             parentSearchModal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            parentSearchInput.value = ''; // Reset search field
             parentSearchInput.focus();
 
-            // Show loading skeleton initially
-            document.getElementById('parentsLoading').classList.remove('hidden');
-            document.getElementById('parentsList').classList.add('hidden');
-            document.getElementById('noParentsFound').classList.add('hidden');
-
-            loadParents();
+            // Trigger initial load of all parents
+            searchParents('');
         }
 
         function closeParentSearchModal() {
@@ -1435,141 +1433,28 @@
             document.getElementById('noParentsFound').classList.add('hidden');
         }
 
-        // Load parents for selection
-        async function loadParents(search = '') {
-            try {
-                const url = search ? `/api/parents?search=${encodeURIComponent(search)}` : '/api/parents';
-                const response = await fetch(url);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    displayParents(data.parents);
-                } else {
-                    console.error('Failed to load parents');
-                    showNoParentsFound();
-                }
-            } catch (error) {
-                console.error('Error loading parents:', error);
-                showNoParentsFound();
-            }
-        }
-
-        // Display parents in the search modal
-        function displayParents(parents) {
-            // Hide loading skeleton
-            document.getElementById('parentsLoading').classList.add('hidden');
-
-            parentsList.innerHTML = '';
-            noParentsFound.classList.add('hidden');
-
-            if (parents.length === 0) {
-                showNoParentsFound();
-                return;
-            }
-
-            // Show parents list
-            document.getElementById('parentsList').classList.remove('hidden');
-
-            parents.forEach(parent => {
-                const parentItem = document.createElement('div');
-                parentItem.className = 'flex items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-md hover:bg-indigo-50/10 cursor-pointer transition-all duration-300 group';
-                parentItem.innerHTML = `
-                <div class="flex items-center gap-5">
-                    <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-indigo-600 font-black text-xs uppercase tracking-widest group-hover:scale-110 transition-transform duration-300">
-                        ${parent.first_name.charAt(0)}${parent.last_name.charAt(0)}
-                    </div>
-                    <div>
-                        <h4 class="text-[12px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1.5">${parent.first_name} ${parent.last_name}</h4>
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-satellite-dish text-[9px] opacity-60"></i>${parent.phone || 'NO SECURE LINE'}
-                            </span>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-envelope text-[9px] opacity-60"></i>${parent.email || 'NO COMMS'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <button class="px-5 py-2.5 bg-slate-50 text-slate-500 border border-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all duration-300 shadow-sm">
-                    Select Identity
-                </button>
-            `;
-
-                parentItem.addEventListener('click', () => selectParent(parent));
-                parentsList.appendChild(parentItem);
-            });
-        }
-
-        // Show no parents found message
-        function showNoParentsFound() {
-            // Hide loading skeleton and parents list
-            document.getElementById('parentsLoading').classList.add('hidden');
-            document.getElementById('parentsList').classList.add('hidden');
-
-            parentsList.innerHTML = '';
-            noParentsFound.classList.remove('hidden');
-        }
-
         // Select a parent
-        function selectParent(parent) {
-            // Check if we're in create or edit mode by checking which modal is visible
+        // Unified Parent Selection
+        function selectParent(id, name) {
+            // Check if we're in create or edit mode
             const editModal = document.getElementById('editStudentModal');
             const isEditMode = editModal && !editModal.classList.contains('hidden');
 
             if (isEditMode) {
-                // Edit mode
-                document.getElementById('editParentId').value = parent.id;
-                document.getElementById('editSelectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
-                console.log('Selected parent for edit:', parent.first_name, parent.last_name, 'ID:', parent.id);
+                document.getElementById('editParentId').value = id;
+                document.getElementById('editSelectedParentDisplay').textContent = name;
             } else {
-                // Create mode
-                document.getElementById('parentId').value = parent.id;
-                document.getElementById('selectedParentDisplay').textContent = `${parent.first_name} ${parent.last_name}`;
-                console.log('Selected parent for create:', parent.first_name, parent.last_name, 'ID:', parent.id);
+                document.getElementById('parentId').value = id;
+                document.getElementById('selectedParentDisplay').textContent = name;
             }
 
             closeParentSearchModal();
-        }
-
-        function resetSearchResults() {
-            if (parentSearchResults) {
-                parentSearchResults.innerHTML = `
-                <div id="parentSearchLoading" class="hidden p-4 text-center text-gray-500">
-                    <i class="fas fa-spinner fa-spin mr-2"></i>Searching...
-                </div>
-
-                <div id="parentSearchEmpty" class="p-8 text-center text-gray-500">
-                    <i class="fas fa-search text-3xl mb-3 text-gray-300"></i>
-                    <p>Start typing to search for parents...</p>
-                </div>
-
-                <div id="parentSearchNoResults" class="hidden p-8 text-center text-gray-500">
-                    <i class="fas fa-user-slash text-3xl mb-3 text-gray-300"></i>
-                    <p>No parents found matching your search.</p>
-                </div>
-            `;
-            }
         }
 
         // Event listeners for parent search modal
         searchParentBtn.addEventListener('click', openParentSearchModal);
         closeParentSearchBtn.addEventListener('click', closeParentSearchModal);
 
-        // Search input functionality
-        parentSearchInput.addEventListener('input', function () {
-            const searchTerm = this.value.trim();
-
-            // Show loading skeleton when searching
-            document.getElementById('parentsLoading').classList.remove('hidden');
-            document.getElementById('parentsList').classList.add('hidden');
-            document.getElementById('noParentsFound').classList.add('hidden');
-
-            if (searchTerm.length >= 2) {
-                loadParents(searchTerm);
-            } else if (searchTerm.length === 0) {
-                loadParents();
-            }
-        });
 
         // Close parent search modal when clicking outside
         parentSearchModal.addEventListener('click', function (e) {
@@ -1593,99 +1478,95 @@
             }
         });
 
-        // Parent search functionality
+        // Parent research functionality
         let parentSearchTimeout;
-
         if (parentSearchInput) {
             parentSearchInput.addEventListener('input', function () {
                 const query = this.value.trim();
+                if (parentSearchTimeout) clearTimeout(parentSearchTimeout);
 
-                // Clear previous timeout
-                if (parentSearchTimeout) {
-                    clearTimeout(parentSearchTimeout);
-                }
-
-                // Set new timeout for search
                 parentSearchTimeout = setTimeout(() => {
-                    if (query.length === 0) {
-                        resetSearchResults();
-                    } else if (query.length >= 2) {
-                        searchParents(query);
-                    }
-                }, 300); // 300ms debounce
+                    searchParents(query);
+                }, 300);
             });
         }
 
-        async function searchParents(query) {
-            if (!parentSearchResults) return;
+        // Consolidated Parent Search & Loading
+        async function searchParents(query = '') {
+            if (!parentsList || !noParentsFound) return;
 
-            const loadingDiv = document.getElementById('parentSearchLoading');
-            const emptyDiv = document.getElementById('parentSearchEmpty');
-            const noResultsDiv = document.getElementById('parentSearchNoResults');
+            const loadingDiv = document.getElementById('parentsLoading');
 
             // Show loading state
-            parentSearchResults.innerHTML = '';
-            if (loadingDiv) {
-                loadingDiv.classList.remove('hidden');
-                parentSearchResults.appendChild(loadingDiv);
-            }
+            parentsList.innerHTML = '';
+            parentsList.classList.add('hidden');
+            noParentsFound.classList.add('hidden');
+            if (loadingDiv) loadingDiv.classList.remove('hidden');
 
             try {
-                const response = await fetch(`/api/parents/search?q=${encodeURIComponent(query)}`);
+                const url = query.trim()
+                    ? `/api/parents/search?q=${encodeURIComponent(query.trim())}`
+                    : `/api/parents`;
+
+                const response = await fetch(url);
                 const data = await response.json();
 
-                parentSearchResults.innerHTML = '';
+                if (loadingDiv) loadingDiv.classList.add('hidden');
+                parentsList.innerHTML = ''; // Final clear before render
 
                 if (data.parents && data.parents.length > 0) {
+                    parentsList.classList.remove('hidden');
+                    noParentsFound.classList.add('hidden');
+
                     data.parents.forEach(parent => {
                         const parentDiv = document.createElement('div');
-                        parentDiv.className = 'p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0';
+                        parentDiv.className = 'group p-5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-100/50 transition-all duration-300 cursor-pointer mb-3 last:mb-0';
                         parentDiv.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex-1">
-                                <h4 class="font-medium text-gray-900">${parent.first_name} ${parent.last_name}</h4>
-                                <div class="text-sm text-gray-500 mt-1">
-                                    <div class="flex items-center space-x-4">
-                                        <span><i class="fas fa-phone mr-1"></i>${parent.phone || 'No phone'}</span>
-                                        ${parent.email ? `<span><i class="fas fa-envelope mr-1"></i>${parent.email}</span>` : ''}
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-slate-50 group-hover:bg-indigo-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-600 font-black text-xs uppercase transition-colors shadow-sm border border-slate-100 group-hover:border-indigo-100">
+                                        ${parent.first_name[0]}${parent.last_name[0]}
                                     </div>
-                                    ${parent.address ? `<div class="mt-1"><i class="fas fa-map-marker-alt mr-1"></i>${parent.address}</div>` : ''}
+                                    <div class="flex-1">
+                                        <h4 class="text-[11px] font-black text-slate-900 uppercase tracking-widest text-ellipsis overflow-hidden whitespace-nowrap">${parent.first_name} ${parent.last_name}</h4>
+                                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-2 leading-none">
+                                                <i class="fas fa-satellite-dish text-emerald-500 text-[9px]"></i>${parent.phone || 'NO SECURE LINE'}
+                                            </span>
+                                            ${parent.email ? `
+                                            <span class="text-[10px] text-slate-400 font-bold lowercase tracking-widest flex items-center gap-2 leading-none">
+                                                <i class="fas fa-envelope-open-text text-purple-500 text-[9px]"></i>${parent.email}
+                                            </span>` : ''}
+                                        </div>
+                                    </div>
                                 </div>
+                                <button class="px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-sm border border-indigo-100/50">
+                                    Link Node
+                                </button>
                             </div>
-                            <button class="select-parent-btn px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700 transition-colors duration-200"
-                                    data-parent-id="${parent.id}" data-parent-name="${parent.first_name} ${parent.last_name}">
-                                Select
-                            </button>
-                        </div>
-                    `;
-                        parentSearchResults.appendChild(parentDiv);
-                    });
+                        `;
 
-                    // Add event listeners to select buttons
-                    document.querySelectorAll('.select-parent-btn').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const parentId = this.dataset.parentId;
-                            const parentName = this.dataset.parentName;
-
-                            // Set the selected parent
-                            setSelectedParent(parentId, parentName);
-                            closeSearchParentModal();
+                        parentDiv.addEventListener('click', () => {
+                            selectParent(parent.id, `${parent.first_name} ${parent.last_name}`);
                         });
+
+                        const btn = parentDiv.querySelector('button');
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            selectParent(parent.id, `${parent.first_name} ${parent.last_name}`);
+                        });
+
+                        parentsList.appendChild(parentDiv);
                     });
                 } else {
-                    if (noResultsDiv) {
-                        noResultsDiv.classList.remove('hidden');
-                        parentSearchResults.appendChild(noResultsDiv);
-                    }
+                    parentsList.classList.add('hidden');
+                    noParentsFound.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error searching parents:', error);
-                parentSearchResults.innerHTML = `
-                <div class="p-8 text-center text-red-500">
-                    <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
-                    <p>Error searching parents. Please try again.</p>
-                </div>
-            `;
+                console.error('Error fetching parents:', error);
+                if (loadingDiv) loadingDiv.classList.add('hidden');
+                parentsList.classList.add('hidden');
+                noParentsFound.classList.remove('hidden');
             }
         }
 
@@ -1720,7 +1601,7 @@
                     alert('Parent added successfully!');
                     closeParentModal();
                     // Set the newly created parent as selected
-                    setSelectedParent(result.parent.id, `${result.parent.first_name} ${result.parent.last_name}`);
+                    selectParent(result.parent.id, `${result.parent.first_name} ${result.parent.last_name}`);
                 } else {
                     alert('Error: ' + result.error);
                 }
