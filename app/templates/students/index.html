@@ -1973,7 +1973,10 @@
         // Show skeleton loading
         function showSkeletonLoading() {
             const skeletonRows = document.querySelectorAll('.skeleton-row');
-            skeletonRows.forEach(row => row.classList.remove('hidden'));
+            skeletonRows.forEach(row => {
+                row.classList.remove('hidden');
+                row.style.display = ''; // Reset inline style
+            });
 
             // Hide any existing student rows
             const existingRows = document.querySelectorAll('#studentsTableBody tr:not(.skeleton-row):not(#emptyRow):not(#errorRow)');
@@ -1983,7 +1986,10 @@
         // Hide skeleton loading
         function hideSkeletonLoading() {
             const skeletonRows = document.querySelectorAll('.skeleton-row');
-            skeletonRows.forEach(row => row.classList.add('hidden'));
+            skeletonRows.forEach(row => {
+                row.classList.add('hidden');
+                row.style.display = 'none'; // Force hide
+            });
         }
 
         // Show auto-loading students state
