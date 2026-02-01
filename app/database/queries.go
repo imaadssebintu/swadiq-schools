@@ -1767,13 +1767,17 @@ func GetStudentsStats(db *sql.DB) (map[string]interface{}, error) {
 	// Active students (same as total for now)
 	stats["active_students"] = totalStudents
 
-	// New students this month
-	var newThisMonth int
-	err = db.QueryRow("SELECT COUNT(*) FROM students WHERE is_active = true AND created_at >= date_trunc('month', CURRENT_DATE)").Scan(&newThisMonth)
+	// New students this term
+	var newThisTerm int
+	err = db.QueryRow(`
+		SELECT COUNT(*) FROM students 
+		WHERE is_active = true 
+		AND created_at >= COALESCE((SELECT start_date FROM terms WHERE is_current = true AND deleted_at IS NULL LIMIT 1), 'infinity')
+	`).Scan(&newThisTerm)
 	if err != nil {
-		newThisMonth = 0
+		newThisTerm = 0
 	}
-	stats["new_this_month"] = newThisMonth
+	stats["new_this_term"] = newThisTerm
 
 	// Pending applications (placeholder - you can implement based on your needs)
 	stats["pending_applications"] = 0

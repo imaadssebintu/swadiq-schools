@@ -73,8 +73,8 @@
             </div>
             <div class="flex items-center justify-between relative z-10">
                 <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">New This Month</p>
-                    <p id="newThisMonth" class="text-2xl font-black text-slate-900 leading-none">0</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">New This Term</p>
+                    <p id="newThisTerm" class="text-2xl font-black text-slate-900 leading-none">0</p>
                 </div>
                 <div
                     class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
@@ -2033,15 +2033,15 @@
                 // Update stat values with animation
                 updateStatValue('totalStudents', stats.total_students);
                 updateStatValue('activeStudents', stats.active_students);
-                updateStatValue('newThisMonth', stats.new_this_month);
-                updateStatValue('pendingApplications', stats.pending_applications);
+                updateStatValue('newThisTerm', stats.new_this_term ?? 0);
+                updateStatValue('pendingApplications', stats.pending_applications ?? 0);
 
             } catch (error) {
                 console.error('Error loading stats:', error);
                 // Show fallback values or error state
                 updateStatValue('totalStudents', '—');
                 updateStatValue('activeStudents', '—');
-                updateStatValue('newThisMonth', '—');
+                updateStatValue('newThisTerm', '—');
                 updateStatValue('pendingApplications', '—');
             }
         }
