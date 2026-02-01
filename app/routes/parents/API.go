@@ -9,7 +9,10 @@ import (
 )
 
 func GetParentsAPI(c *fiber.Ctx) error {
-	parents, err := database.GetAllParents(config.GetDB())
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
+
+	parents, err := database.GetParentsForSelection(config.GetDB(), "", limit, offset)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch parents"})
 	}
@@ -66,6 +69,8 @@ func CreateParentAPI(c *fiber.Ctx) error {
 // SearchParentsAPI handles searching for parents
 func SearchParentsAPI(c *fiber.Ctx) error {
 	query := c.Query("q", "")
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
 
 	if query == "" {
 		return c.Status(400).JSON(fiber.Map{
@@ -74,7 +79,7 @@ func SearchParentsAPI(c *fiber.Ctx) error {
 	}
 
 	db := config.GetDB()
-	parents, err := database.SearchParents(db, query)
+	parents, err := database.GetParentsForSelection(db, query, limit, offset)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": "Failed to search parents",
@@ -83,5 +88,6 @@ func SearchParentsAPI(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"parents": parents,
+		"count":   len(parents),
 	})
 }

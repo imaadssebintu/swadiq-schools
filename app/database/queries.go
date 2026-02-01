@@ -2342,25 +2342,23 @@ func DeleteStudent(db *sql.DB, id string) error {
 	return err
 }
 
-func GetParentsForSelection(db *sql.DB, search string) ([]*models.Parent, error) {
+func GetParentsForSelection(db *sql.DB, search string, limit, offset int) ([]*models.Parent, error) {
 	var query string
 	var args []interface{}
+	argIndex := 1
+
+	query = `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, '')
+			 FROM parents 
+			 WHERE deleted_at IS NULL AND is_active = true`
 
 	if search != "" {
-		query = `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, '')
-				 FROM parents 
-				 WHERE deleted_at IS NULL AND is_active = true
-				 AND (LOWER(first_name) LIKE $1 OR LOWER(last_name) LIKE $1 OR LOWER(phone) LIKE $1)
-				 ORDER BY first_name, last_name
-				 LIMIT 10`
+		query += fmt.Sprintf(` AND (LOWER(first_name) LIKE $%d OR LOWER(last_name) LIKE $%d OR LOWER(phone) LIKE $%d)`, argIndex, argIndex, argIndex)
 		args = append(args, "%"+strings.ToLower(search)+"%")
-	} else {
-		query = `SELECT id, first_name, last_name, COALESCE(phone, ''), COALESCE(email, '')
-				 FROM parents 
-				 WHERE deleted_at IS NULL AND is_active = true
-				 ORDER BY first_name, last_name
-				 LIMIT 10`
+		argIndex++
 	}
+
+	query += fmt.Sprintf(` ORDER BY first_name, last_name LIMIT $%d OFFSET $%d`, argIndex, argIndex+1)
+	args = append(args, limit, offset)
 
 	rows, err := db.Query(query, args...)
 	if err != nil {

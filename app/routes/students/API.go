@@ -580,8 +580,10 @@ func DeleteStudentAPI(c *fiber.Ctx) error {
 // GetParentsAPI returns all parents for selection
 func GetParentsAPI(c *fiber.Ctx) error {
 	search := c.Query("search", "")
+	limit := c.QueryInt("limit", 10)
+	offset := c.QueryInt("offset", 0)
 
-	parents, err := database.GetParentsForSelection(config.GetDB(), search)
+	parents, err := database.GetParentsForSelection(config.GetDB(), search, limit, offset)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch parents"})
 	}
