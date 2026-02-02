@@ -111,6 +111,10 @@
                             class="flex-1 sm:flex-none px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-indigo-600 whitespace-nowrap">
                             Lesson Attendance
                         </button>
+                        <button onclick="switchTab('assessments')" id="tab-button-assessments"
+                            class="flex-1 sm:flex-none px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-indigo-600 whitespace-nowrap">
+                            Assessment Results
+                        </button>
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                         <span id="feeCountLabel"
@@ -240,6 +244,46 @@
                                     <td colspan="4"
                                         class="px-6 py-20 text-center uppercase tracking-widest font-black opacity-40">
                                         Initializing attendance report...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Assessment Results Tab -->
+                <div id="tab-content-assessments" class="hidden animate-fade-in p-0">
+                    <div class="p-6 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest">Academic Performance
+                            </h4>
+                            <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">Exam and test score history
+                            </p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50/50 border-b border-slate-100">
+                                <tr>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Exam Name</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Paper / Subject</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Marks</th>
+                                    <th
+                                        class="px-4 md:px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                                        Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assessmentResultsBody"
+                                class="divide-y divide-slate-100 italic text-slate-400 text-[11px]">
+                                <tr>
+                                    <td colspan="4"
+                                        class="px-6 py-20 text-center uppercase tracking-widest font-black opacity-40">
+                                        Loading academic results...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1085,30 +1129,117 @@
             }
         }
 
-        // --- NEW FEATURES: Tab switching and Attendance Report ---
+        // --- NEW FEATURES: Tab switching and Attendance/Assessment Reports ---
         function switchTab(tab) {
             // Content visibility
             document.getElementById('tab-content-finance').classList.toggle('hidden', tab !== 'finance');
             document.getElementById('tab-content-attendance').classList.toggle('hidden', tab !== 'attendance');
+            document.getElementById('tab-content-assessments').classList.toggle('hidden', tab !== 'assessments');
 
             // Button styling
             const financeBtn = document.getElementById('tab-button-finance');
             const attendanceBtn = document.getElementById('tab-button-attendance');
+            const assessmentsBtn = document.getElementById('tab-button-assessments');
 
-            if (tab === 'finance') {
-                financeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
-                financeBtn.classList.remove('text-slate-500');
-                attendanceBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
-                attendanceBtn.classList.add('text-slate-500');
-            } else {
-                attendanceBtn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
-                attendanceBtn.classList.remove('text-slate-500');
-                financeBtn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
-                financeBtn.classList.add('text-slate-500');
+            const toggleBtn = (btn, isActive) => {
+                if (isActive) {
+                    btn.classList.add('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                    btn.classList.remove('text-slate-500');
+                } else {
+                    btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm', 'border', 'border-slate-200/50');
+                    btn.classList.add('text-slate-500');
+                }
+            };
 
-                // Load report when switching to attendance tab
+            toggleBtn(financeBtn, tab === 'finance');
+            toggleBtn(attendanceBtn, tab === 'attendance');
+            toggleBtn(assessmentsBtn, tab === 'assessments');
+
+            // Load data based on tab
+            if (tab === 'attendance') {
                 loadAttendanceReport();
+            } else if (tab === 'assessments') {
+                loadAssessmentResults();
             }
+        }
+
+        async function loadAssessmentResults() {
+            const tbody = document.getElementById('assessmentResultsBody');
+            console.log("Loading Assessment Results for:", studentID);
+            try {
+                const res = await fetch(`/api/results/student/${studentID}`);
+                const data = await res.json();
+                console.log("Results API Result:", data);
+
+                if (data.success && data.results) {
+                    renderAssessmentResults(data.results);
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No assessment history found</td></tr>';
+                }
+            } catch (err) {
+                console.error("Results API Error:", err);
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-rose-500 text-xs font-bold">Failed to load assessment history</td></tr>';
+            }
+        }
+
+        function renderAssessmentResults(results) {
+            const tbody = document.getElementById('assessmentResultsBody');
+            console.log("Rendering Assessment Results. Items:", results.length);
+
+            if (!results || results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">No assessment results have been recorded for this student yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = results.map(r => {
+                const exam = r.exam || {};
+                const paper = r.paper || {};
+                const subject = paper.subject || {};
+                const grade = r.grade || {};
+                const hasResult = r.id && r.id !== "";
+                const marksValue = hasResult ? r.marks : "";
+                const gradeDisplay = hasResult && grade.name ? grade.name : 'PENDING';
+                const gradeClass = hasResult && grade.name
+                    ? 'bg-indigo-50 text-indigo-600 border-indigo-100'
+                    : 'bg-amber-50 text-amber-600 border-amber-100 shadow-sm';
+
+                return `
+                    <tr class="hover:bg-slate-50/50 transition-colors" data-exam-id="${exam.id || ''}" data-paper-id="${r.paper_id || ''}" data-term-id="${r.term_id || ''}">
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-700 text-xs uppercase">${exam.name || 'Unnamed Exam'}</span>
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${exam.type || 'General'}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-bold text-slate-700 text-xs">${subject.name || 'Unknown'}</span>
+                                <span class="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${paper.name || '-'}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex flex-col items-center relative group min-w-[80px]">
+                                <input type="number" step="0.01" min="0" max="100" 
+                                    class="marks-input w-16 text-center text-xs font-black text-slate-700 bg-transparent border-b border-transparent hover:border-slate-200 focus:border-indigo-500 focus:outline-none transition-all p-1"
+                                    value="${marksValue}" 
+                                    oninput="debounceResultSave(this)"
+                                    placeholder="-">
+                                <div class="saving-spinner hidden absolute -right-2 top-2">
+                                    <i class="fas fa-circle-notch fa-spin text-indigo-400 text-[10px]"></i>
+                                </div>
+                                <span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Marks</span>
+                            </div>
+                        </td>
+                        <td class="px-4 md:px-6 py-4">
+                            <div class="flex justify-center">
+                                <span class="grade-badge px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${gradeClass} whitespace-nowrap">
+                                    ${gradeDisplay}
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         async function loadAttendanceReport() {
@@ -1187,6 +1318,66 @@
             document.getElementById('statAttended').textContent = attended;
             const rate = report.length > 0 ? Math.round((attended / report.length) * 100) : 0;
             document.getElementById('statRate').textContent = rate + '%';
+        }
+
+        let saveTimeout;
+        function debounceResultSave(input) {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => saveResultMark(input), 1200);
+        }
+
+        async function saveResultMark(input) {
+            const marks = parseFloat(input.value);
+            if (isNaN(marks)) return; // Don't save empty/invalid locally
+
+            const row = input.closest('tr');
+            const examID = row.dataset.examId;
+            const paperID = row.dataset.paperId;
+            const termID = row.dataset.termId;
+            const spinner = row.querySelector('.saving-spinner');
+            const badge = row.querySelector('.grade-badge');
+
+            if (marks < 0 || marks > 100) {
+                alert('Marks must be between 0 and 100');
+                return;
+            }
+
+            try {
+                spinner.classList.remove('hidden');
+
+                const response = await fetch('/api/results/batch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        exam_id: examID,
+                        paper_id: paperID,
+                        term_id: termID || null,
+                        results: [{
+                            student_id: studentID,
+                            marks: marks,
+                            grade_id: null
+                        }]
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    console.log("Mark saved successfully");
+                    // Optionally refresh the tab to get updated grade, 
+                    // or just update badge to show "SAVED" temporarily
+                    badge.textContent = 'SAVED';
+                    badge.className = 'grade-badge px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border bg-emerald-50 text-emerald-600 border-emerald-100 shadow-sm whitespace-nowrap';
+
+                    // Reload assessment results after a delay to get definitive grade
+                    setTimeout(() => loadAssessmentResults(), 5000);
+                } else {
+                    console.error("Failed to save mark:", result.error);
+                }
+            } catch (err) {
+                console.error("Error saving mark:", err);
+            } finally {
+                spinner.classList.add('hidden');
+            }
         }
     </script>
     </body>

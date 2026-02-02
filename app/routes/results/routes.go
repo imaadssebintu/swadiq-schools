@@ -16,6 +16,7 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 	api.Get("/", func(c *fiber.Ctx) error { return GetResultsByExam(c, db) })
 	api.Post("/batch", func(c *fiber.Ctx) error { return BatchSaveResults(c, db) })
 	api.Put("/:id", func(c *fiber.Ctx) error { return UpdateSingleResult(c, db) })
+	api.Get("/student/:id", func(c *fiber.Ctx) error { return GetStudentResults(c, db) })
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteSingleResult(c, db) })
 
 	// Exam-specific API route

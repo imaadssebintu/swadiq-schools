@@ -254,3 +254,25 @@ func getExamByID(db *sql.DB, examID string) (*models.Exam, error) {
 
 	return &exam, nil
 }
+
+// GetStudentResults returns all results for a specific student
+func GetStudentResults(c *fiber.Ctx, db *sql.DB) error {
+	studentID := c.Params("id")
+	if studentID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "student_id is required",
+		})
+	}
+
+	results, err := GetStudentAssessmentHistory(db, studentID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch student assessment history",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"results": results,
+	})
+}

@@ -454,3 +454,151 @@ func GetClassResultsMatrix(db *sql.DB, classID, termID, assessmentTypeID string)
 
 	return matrix, nil
 }
+
+// GetResultsByStudentID fetches all results for a specific student with joined relations
+func GetResultsByStudentID(db *sql.DB, studentID string) ([]*models.Result, error) {
+	query := `
+		SELECT 
+			r.id, r.exam_id, r.student_id, r.paper_id, r.marks, r.grade_id,
+			r.created_at, r.updated_at,
+			e.id, e.name, e.type,
+			p.id, p.name, p.code,
+			s.id, s.name, s.code,
+			g.id, g.name
+		FROM results r
+		LEFT JOIN exams e ON r.exam_id = e.id
+		LEFT JOIN papers p ON r.paper_id = p.id
+		LEFT JOIN subjects s ON p.subject_id = s.id
+		LEFT JOIN grades g ON r.grade_id = g.id
+		WHERE r.student_id = $1 AND r.deleted_at IS NULL
+		ORDER BY r.created_at DESC
+	`
+
+	rows, err := db.Query(query, studentID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch student results: %w", err)
+	}
+	defer rows.Close()
+
+	var results []*models.Result
+	for rows.Next() {
+		var r models.Result
+		var e models.Exam
+		var p models.Paper
+		var sub models.Subject
+		var g models.Grade
+		var gradeID, gradeName sql.NullString
+		var gid sql.NullString
+
+		err := rows.Scan(
+			&r.ID, &r.ExamID, &r.StudentID, &r.PaperID, &r.Marks, &gradeID,
+			&r.CreatedAt, &r.UpdatedAt,
+			&e.ID, &e.Name, &e.Type,
+			&p.ID, &p.Name, &p.Code,
+			&sub.ID, &sub.Name, &sub.Code,
+			&gid, &gradeName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan student result: %w", err)
+		}
+
+		if gradeID.Valid {
+			r.GradeID = &gradeID.String
+			if gradeName.Valid {
+				g.ID = gid.String
+				g.Name = gradeName.String
+				r.Grade = &g
+			}
+		}
+
+		p.Subject = &sub
+		r.Exam = &e
+		r.Paper = &p
+		results = append(results, &r)
+	}
+
+	return results, nil
+}
+
+// GetStudentAssessmentHistory fetches all exams for the student's class and their specific results
+func GetStudentAssessmentHistory(db *sql.DB, studentID string) ([]*models.Result, error) {
+	query := `
+		SELECT 
+			e.id, e.name, e.type, e.term_id,
+			p.id, p.name, p.code,
+			s.id, s.name, s.code,
+			r.id, r.marks, r.grade_id,
+			g.id, g.name
+		FROM students st
+		JOIN exams e ON st.class_id = e.class_id
+		LEFT JOIN papers p ON e.paper_id = p.id
+		LEFT JOIN subjects s ON p.subject_id = s.id
+		LEFT JOIN results r ON e.id = r.exam_id AND st.id = r.student_id AND r.deleted_at IS NULL
+		LEFT JOIN grades g ON r.grade_id = g.id
+		WHERE st.id = $1 AND st.deleted_at IS NULL AND e.deleted_at IS NULL
+		ORDER BY e.start_time DESC
+	`
+
+	rows, err := db.Query(query, studentID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch assessment history: %w", err)
+	}
+	defer rows.Close()
+
+	var results []*models.Result
+	for rows.Next() {
+		var r models.Result
+		var e models.Exam
+		var p models.Paper
+		var sub models.Subject
+		var g models.Grade
+		var resID, gradeID, gradeName, gid, termID sql.NullString
+		var marks sql.NullFloat64
+
+		err := rows.Scan(
+			&e.ID, &e.Name, &e.Type, &termID,
+			&p.ID, &p.Name, &p.Code,
+			&sub.ID, &sub.Name, &sub.Code,
+			&resID, &marks, &gradeID,
+			&gid, &gradeName,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan assessment history: %w", err)
+		}
+
+		if termID.Valid {
+			e.TermID = &termID.String
+			r.TermID = &termID.String
+		}
+
+		p.Subject = &sub
+		e.Paper = &p
+		e.PaperID = p.ID
+		r.Exam = &e
+		r.Paper = &p
+		r.PaperID = p.ID
+		r.StudentID = studentID
+		r.ExamID = e.ID
+
+		if resID.Valid {
+			r.ID = resID.String
+			r.Marks = marks.Float64
+			if gradeID.Valid {
+				r.GradeID = &gradeID.String
+				if gradeName.Valid {
+					g.ID = gid.String
+					g.Name = gradeName.String
+					r.Grade = &g
+				}
+			}
+		} else {
+			// Mark as "no result" by setting ID to empty or leaving marks as 0
+			// The frontend will check if ID is present or marks are null-ish
+			r.ID = ""
+		}
+
+		results = append(results, &r)
+	}
+
+	return results, nil
+}
