@@ -6,36 +6,15 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
     - uses: actions/checkout@v3
     
-    - name: Deploy to server
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        command_timeout: 30m
-        script: |
-          cd ~/docker
-          
-          # Pull latest code or clone if missing
-          if [ -d "swadiq-schools" ]; then
-            cd swadiq-schools
-            git fetch origin
-            git reset --hard origin/main
-          else
-            git clone https://github.com/ImaadDean/swadiq-schools.git swadiq-schools
-            cd swadiq-schools
-          fi
-
-          # Ensure no conflicting containers exist from previous manual runs
-          docker stop swadiq-app || true
-          docker rm swadiq-app || true
-
-          # Start/Update using Docker Compose
-          # This builds the image and recreates containers if config changed
-          docker compose down --remove-orphans || true
-          docker compose up -d --build
+    - name: Deploy application
+      run: |
+        cd ~/docker/swadiq-schools
+        git fetch origin
+        git reset --hard origin/main
+        docker compose down --remove-orphans
+        docker compose up -d --build
