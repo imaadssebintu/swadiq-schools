@@ -8,6 +8,7 @@ type Grade struct {
 	Name      string     `json:"name" gorm:"uniqueIndex;not null" validate:"required"`
 	MinMarks  float64    `json:"min_marks" gorm:"not null;type:decimal(5,2)" validate:"gte=0"`
 	MaxMarks  float64    `json:"max_marks" gorm:"not null;type:decimal(5,2)" validate:"gte=0"`
+	GradeValue float64    `json:"grade_value" gorm:"default:0;type:decimal(5,2)" validate:"gte=0"`
 	IsActive  bool       `json:"is_active" gorm:"default:true"`
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"autoUpdateTime"`

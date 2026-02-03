@@ -602,3 +602,81 @@ func GetStudentAssessmentHistory(db *sql.DB, studentID string) ([]*models.Result
 
 	return results, nil
 }
+
+// GetAllGrades fetches all grades from the system
+func GetAllGrades(db *sql.DB) ([]*models.Grade, error) {
+	query := `
+		SELECT id, name, min_marks, max_marks, grade_value, is_active, created_at, updated_at
+		FROM grades
+		WHERE deleted_at IS NULL
+		ORDER BY min_marks DESC
+	`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch grades: %w", err)
+	}
+	defer rows.Close()
+
+	var grades []*models.Grade
+	for rows.Next() {
+		var g models.Grade
+		err := rows.Scan(
+			&g.ID, &g.Name, &g.MinMarks, &g.MaxMarks, &g.GradeValue,
+			&g.IsActive, &g.CreatedAt, &g.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan grade: %w", err)
+		}
+		grades = append(grades, &g)
+	}
+
+	return grades, nil
+}
+
+// CreateGrade inserts a new grade record
+func CreateGrade(db *sql.DB, g *models.Grade) error {
+	query := `
+		INSERT INTO grades (name, min_marks, max_marks, grade_value, is_active)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, created_at, updated_at
+	`
+
+	err := db.QueryRow(
+		query,
+		g.Name, g.MinMarks, g.MaxMarks, g.GradeValue, g.IsActive,
+	).Scan(&g.ID, &g.CreatedAt, &g.UpdatedAt)
+
+	if err != nil {
+		return fmt.Errorf("failed to create grade: %w", err)
+	}
+
+	return nil
+}
+
+// UpdateGrade updates an existing grade record
+func UpdateGrade(db *sql.DB, g *models.Grade) error {
+	query := `
+		UPDATE grades
+		SET name = $1, min_marks = $2, max_marks = $3, grade_value = $4, is_active = $5, updated_at = NOW()
+		WHERE id = $6 AND deleted_at IS NULL
+	`
+
+	_, err := db.Exec(
+		query,
+		g.Name, g.MinMarks, g.MaxMarks, g.GradeValue, g.IsActive, g.ID,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to update grade: %w", err)
+	}
+
+	return nil
+}
+
+// DeleteGrade soft deletes a grade record
+func DeleteGrade(db *sql.DB, id string) error {
+	query := `UPDATE grades SET deleted_at = NOW() WHERE id = $1`
+	_, err := db.Exec(query, id)
+	return err
+}

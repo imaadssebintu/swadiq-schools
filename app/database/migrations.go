@@ -39,8 +39,42 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// 6. Create grades table
+	err = createGradesTable(db)
+	if err != nil {
+		return err
+	}
+
+	// 7. Add grade_value to grades if not exists
+	err = addGradeValueColumn(db)
+	if err != nil {
+		return err
+	}
+
 	log.Println("Database migrations completed successfully")
 	return nil
+}
+
+func createGradesTable(db *sql.DB) error {
+	query := `CREATE TABLE IF NOT EXISTS grades (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		name VARCHAR(50) UNIQUE NOT NULL,
+		min_marks DECIMAL(5,2) NOT NULL,
+		max_marks DECIMAL(5,2) NOT NULL,
+		grade_value DECIMAL(5,2) DEFAULT 0,
+		is_active BOOLEAN DEFAULT true,
+		created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		deleted_at TIMESTAMP WITH TIME ZONE
+	)`
+	_, err := db.Exec(query)
+	return err
+}
+
+func addGradeValueColumn(db *sql.DB) error {
+	query := `ALTER TABLE grades ADD COLUMN IF NOT EXISTS grade_value DECIMAL(5,2) DEFAULT 0`
+	_, err := db.Exec(query)
+	return err
 }
 
 func updatePaymentTableSchema(db *sql.DB) error {

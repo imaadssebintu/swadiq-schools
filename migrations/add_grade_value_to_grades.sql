@@ -1,0 +1,1 @@
+ALTER TABLE grades ADD COLUMN grade_value DECIMAL(5,2) DEFAULT 0;

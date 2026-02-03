@@ -63,6 +63,7 @@ func InitExpensesDB(db *sql.DB) error {
 		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS period_start DATE`,
 		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS period_end DATE`,
 		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS due_date DATE`,
+		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'PAID'`,
 		`ALTER TABLE expenses ADD COLUMN IF NOT EXISTS notes TEXT`,
 	}
 
@@ -90,7 +91,7 @@ func InitExpensesDB(db *sql.DB) error {
 // Expense Queries
 func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 	query := `SELECT e.id, e.category_id, e.title, e.amount, e.currency, e.date, 
-			  e.period_start, e.period_end, e.due_date, e.notes,
+			  e.period_start, e.period_end, e.due_date, e.status, e.notes,
 			  e.created_at, e.updated_at, c.id, c.name
 			  FROM expenses e
 			  LEFT JOIN categories c ON e.category_id = c.id
@@ -112,7 +113,7 @@ func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 
 		err := rows.Scan(
 			&e.ID, &e.CategoryID, &e.Title, &e.Amount, &e.Currency, &e.Date,
-			&pStart, &pEnd, &dDate, &notes,
+			&pStart, &pEnd, &dDate, &e.Status, &notes,
 			&e.CreatedAt, &e.UpdatedAt, &catID, &catName,
 		)
 		if err != nil {
@@ -145,7 +146,7 @@ func GetAllExpenses(db *sql.DB) ([]*models.Expense, error) {
 
 func GetExpenseByID(db *sql.DB, id string) (*models.Expense, error) {
 	query := `SELECT e.id, e.category_id, e.title, e.amount, e.currency, e.date, 
-			  e.period_start, e.period_end, e.due_date, e.notes,
+			  e.period_start, e.period_end, e.due_date, e.status, e.notes,
 			  e.created_at, e.updated_at, c.id, c.name
 			  FROM expenses e
 			  LEFT JOIN categories c ON e.category_id = c.id
@@ -158,7 +159,7 @@ func GetExpenseByID(db *sql.DB, id string) (*models.Expense, error) {
 
 	err := db.QueryRow(query, id).Scan(
 		&e.ID, &e.CategoryID, &e.Title, &e.Amount, &e.Currency, &e.Date,
-		&pStart, &pEnd, &dDate, &notes,
+		&pStart, &pEnd, &dDate, &e.Status, &notes,
 		&e.CreatedAt, &e.UpdatedAt, &catID, &catName,
 	)
 	if err != nil {
@@ -188,20 +189,20 @@ func GetExpenseByID(db *sql.DB, id string) (*models.Expense, error) {
 }
 
 func CreateExpense(db *sql.DB, e *models.Expense) error {
-	query := `INSERT INTO expenses (category_id, title, amount, currency, date, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+	query := `INSERT INTO expenses (category_id, title, amount, currency, date, status, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
 			  RETURNING id, created_at, updated_at`
 
-	return db.QueryRow(query, e.CategoryID, e.Title, e.Amount, e.Currency, e.Date).
+	return db.QueryRow(query, e.CategoryID, e.Title, e.Amount, e.Currency, e.Date, e.Status).
 		Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
 }
 
 func UpdateExpense(db *sql.DB, e *models.Expense) error {
 	query := `UPDATE expenses 
-			  SET category_id = $1, title = $2, amount = $3, currency = $4, date = $5, updated_at = NOW()
-			  WHERE id = $6 AND deleted_at IS NULL`
+			  SET category_id = $1, title = $2, amount = $3, currency = $4, date = $5, status = $6, updated_at = NOW()
+			  WHERE id = $7 AND deleted_at IS NULL`
 
-	result, err := db.Exec(query, e.CategoryID, e.Title, e.Amount, e.Currency, e.Date, e.ID)
+	result, err := db.Exec(query, e.CategoryID, e.Title, e.Amount, e.Currency, e.Date, e.Status, e.ID)
 	if err != nil {
 		return err
 	}

@@ -28,7 +28,8 @@
             class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <p class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest mb-1">Total Expenses</p>
+                    <p class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest mb-1">Total Expenses (UGX)
+                    </p>
                     <p id="totalExpenses" class="text-2xl font-black text-white leading-none">0 UGX</p>
                     <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
                     </div>
@@ -44,7 +45,8 @@
             class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <p class="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1">Monthly Spend</p>
+                    <p class="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1">Monthly Spend (UGX)
+                    </p>
                     <p id="monthlyExpenses" class="text-2xl font-black text-white leading-none">0 UGX</p>
                     <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
                     </div>
@@ -78,7 +80,8 @@
             class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-4 transform hover:-translate-y-1 cursor-pointer">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <p class="text-[10px] font-bold text-orange-100 uppercase tracking-widest mb-1">Avg Expense</p>
+                    <p class="text-[10px] font-bold text-orange-100 uppercase tracking-widest mb-1">Avg Expense (UGX)
+                    </p>
                     <p id="avgExpense" class="text-2xl font-black text-white leading-none">0 UGX</p>
                     <div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-3">
                     </div>
@@ -121,8 +124,11 @@
                                 class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">
                                 Date</th>
                             <th
-                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
-                                Amount</th>
+                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                                Amount (UGX)</th>
+                            <th
+                                class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">
+                                Status</th>
                             <th
                                 class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
                                 Actions</th>
@@ -142,6 +148,9 @@
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <div class="h-3 w-16 bg-slate-100 rounded ml-auto"></div>
+                            </td>
+                            <td class="px-5 py-4 text-center">
+                                <div class="h-5 w-16 bg-slate-100 rounded-full mx-auto"></div>
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <div class="h-8 w-8 bg-slate-100 rounded-lg ml-auto"></div>
@@ -201,6 +210,14 @@
                             <option value="UGX" selected>UGX</option>
                         </select>
                     </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Status</label>
+                    <select id="expenseStatus" required
+                        class="w-full bg-slate-50 border-none text-xs font-bold py-2.5 px-4 rounded-xl focus:ring-2 focus:ring-indigo-500/20 appearance-none">
+                        <option value="PAID">Paid</option>
+                        <option value="UNPAID">Unpaid</option>
+                    </select>
                 </div>
                 <div class="space-y-1">
                     <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Category</label>
@@ -281,6 +298,14 @@
                             <span class="text-xs font-black text-slate-700">UGX / Local</span>
                         </div>
                     </div>
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Payment Status
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <span id="detailStatus"
+                                class="text-xs font-black uppercase tracking-wide px-2 py-0.5 rounded">--</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Salary Period Block (Hidden if not salary) -->
@@ -355,7 +380,7 @@
     });
 
     function formatAmount(amt) {
-        return currencyFormatter.format(Math.round(amt)) + ' UGX';
+        return currencyFormatter.format(Math.round(amt));
     }
 
     async function init() {
@@ -430,6 +455,11 @@
                 <td class="px-5 py-4 text-right">
                     <span class="text-xs font-black text-slate-900">${formatAmount(e.amount)}</span>
                 </td>
+                <td class="px-5 py-4 text-center">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-widest ${e.status === 'PAID' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}">
+                        ${e.status || 'PAID'}
+                    </span>
+                </td>
                 <td class="px-5 py-4 text-right">
                     <div class="flex items-center justify-end gap-2 text-right">
                         <button onclick="showExpenseDetails('${e.id}')" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center" title="View Details">
@@ -497,7 +527,7 @@
 
         const topCat = categories.find(c => c.id === topCatId);
         document.getElementById('topCategoryNameLabel').textContent = topCat ? topCat.name : 'Top Category';
-        document.getElementById('topCategoryAmount').textContent = formatAmount(maxAmt);
+        document.getElementById('topCategoryAmount').textContent = formatAmount(maxAmt) + ' UGX';
     }
 
     function populateCategoryDropdowns() {
@@ -530,6 +560,7 @@
             title: document.getElementById('expenseTitle').value,
             amount: parseFloat(document.getElementById('expenseAmount').value),
             currency: 'UGX',
+            status: document.getElementById('expenseStatus').value,
             category_id: document.getElementById('expenseCategory').value,
             date: new Date(document.getElementById('expenseDate').value).toISOString()
         };
@@ -601,10 +632,12 @@
                 document.getElementById('expenseAmount').value = Math.round(e.amount);
                 // Currency is always UGX
                 document.getElementById('expenseCategory').value = e.category_id;
+                document.getElementById('expenseStatus').value = e.status || 'PAID';
                 document.getElementById('expenseDate').value = new Date(e.date).toISOString().split('T')[0];
             }
         } else {
             document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseStatus').value = 'PAID';
         }
 
         modal.classList.remove('hidden');
@@ -670,13 +703,23 @@
 
         // Header and basic info
         document.getElementById('detailTitle').textContent = expense.title;
-        document.getElementById('detailAmount').textContent = formatAmount(expense.amount);
+        document.getElementById('detailAmount').textContent = formatAmount(expense.amount) + ' UGX';
         document.getElementById('detailCategory').textContent = expense.category ? expense.category.name : 'Uncategorized';
         document.getElementById('detailDate').textContent = new Date(expense.date).toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
         });
+
+        // Status
+        const statusEl = document.getElementById('detailStatus');
+        const status = expense.status || 'PAID';
+        statusEl.textContent = status;
+        if (status === 'PAID') {
+            statusEl.className = 'text-[10px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded uppercase border border-emerald-200';
+        } else {
+            statusEl.className = 'text-[10px] font-black bg-rose-100 text-rose-600 px-2 py-0.5 rounded uppercase border border-rose-200';
+        }
 
         // Notes
         document.getElementById('detailNotes').textContent = expense.notes || 'No additional context provided.';

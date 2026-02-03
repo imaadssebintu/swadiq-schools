@@ -13,6 +13,7 @@ type Expense struct {
 	PeriodStart *time.Time `json:"period_start,omitempty" gorm:"type:date"`
 	PeriodEnd   *time.Time `json:"period_end,omitempty" gorm:"type:date"`
 	DueDate     *time.Time `json:"due_date,omitempty" gorm:"type:date"`
+	Status      string     `json:"status" gorm:"default:'PAID';type:varchar(20)"`
 	Notes       string     `json:"notes,omitempty" gorm:"type:text"`
 	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`

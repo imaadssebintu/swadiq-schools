@@ -22,6 +22,7 @@ import (
 	"swadiq-schools/app/routes/subjects"
 	"swadiq-schools/app/routes/teachers"
 	"swadiq-schools/app/routes/timetable"
+	"swadiq-schools/app/services"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -100,6 +101,9 @@ func main() {
 	if err := database.RunMigrations(config.GetDB()); err != nil {
 		log.Fatal("Failed to run migrations:", err)
 	}
+
+	// Start background scheduler
+	services.StartScheduler(config.GetDB())
 
 	// Initialize template engine
 	engine := html.New("./app/templates", ".html")

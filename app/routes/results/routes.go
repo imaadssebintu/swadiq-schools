@@ -41,4 +41,25 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 		})
 	})
 
+	// Grades API routes
+	gradesAPI := app.Group("/api/settings/grades")
+	gradesAPI.Use(auth.AuthMiddleware)
+	gradesAPI.Get("/", func(c *fiber.Ctx) error { return GetGradesAPI(c, db) })
+	gradesAPI.Post("/", func(c *fiber.Ctx) error { return CreateGradeAPI(c, db) })
+	gradesAPI.Put("/:id", func(c *fiber.Ctx) error { return UpdateGradeAPI(c, db) })
+	gradesAPI.Delete("/:id", func(c *fiber.Ctx) error { return DeleteGradeAPI(c, db) })
+
+	// Grades management page
+	app.Get("/settings/grades", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+		c.Locals("Title", "Manage Grades")
+		return c.Render("results/grades", fiber.Map{
+			"Title":       "Manage Grades",
+			"CurrentPage": "settings",
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
+			"user":        user,
+		})
+	})
 }

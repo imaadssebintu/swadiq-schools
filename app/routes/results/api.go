@@ -276,3 +276,65 @@ func GetStudentResults(c *fiber.Ctx, db *sql.DB) error {
 		"results": results,
 	})
 }
+
+// GetGradesAPI returns all grades
+func GetGradesAPI(c *fiber.Ctx, db *sql.DB) error {
+	grades, err := GetAllGrades(db)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch grades",
+		})
+	}
+
+	return c.JSON(grades)
+}
+
+// CreateGradeAPI handles the creation of a new grade
+func CreateGradeAPI(c *fiber.Ctx, db *sql.DB) error {
+	var g models.Grade
+	if err := c.BodyParser(&g); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	if err := CreateGrade(db, &g); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create grade",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(g)
+}
+
+// UpdateGradeAPI handles updating an existing grade
+func UpdateGradeAPI(c *fiber.Ctx, db *sql.DB) error {
+	id := c.Params("id")
+	var g models.Grade
+	if err := c.BodyParser(&g); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	g.ID = id
+	if err := UpdateGrade(db, &g); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update grade",
+		})
+	}
+
+	return c.JSON(g)
+}
+
+// DeleteGradeAPI handles the deletion of a grade
+func DeleteGradeAPI(c *fiber.Ctx, db *sql.DB) error {
+	id := c.Params("id")
+	if err := DeleteGrade(db, id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete grade",
+		})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}
