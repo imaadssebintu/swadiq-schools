@@ -57,6 +57,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// 9. Create teacher_allowance_accruals table
+	err = createTeacherAllowanceAccrualsTable(db)
+	if err != nil {
+		return err
+	}
+
 	log.Println("Database migrations completed successfully")
 	return nil
 }
@@ -207,5 +213,21 @@ func createPaperWeightsTable(db *sql.DB) error {
 		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 		UNIQUE(class_id, subject_id, paper_id, term_id)
 	)`)
+	return err
+}
+
+func createTeacherAllowanceAccrualsTable(db *sql.DB) error {
+	query := `CREATE TABLE IF NOT EXISTS teacher_allowance_accruals (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		teacher_id UUID NOT NULL REFERENCES users(id),
+		amount BIGINT NOT NULL,
+		date DATE NOT NULL,
+		status VARCHAR(20) DEFAULT 'unpaid',
+		notes TEXT,
+		created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		UNIQUE(teacher_id, date)
+	)`
+	_, err := db.Exec(query)
 	return err
 }

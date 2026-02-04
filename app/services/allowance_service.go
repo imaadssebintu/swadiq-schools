@@ -7,48 +7,34 @@ import (
 	"time"
 )
 
-// GenerateDailyAllowances checks for teachers present today and creates allowance expenses
+// GenerateDailyAllowances checks for teachers who conducted lessons today and creates allowance records
 func GenerateDailyAllowances(db *sql.DB) error {
 	log.Println("Starting daily allowance generation...")
 
-	// 1. Get or Create "Allowance" Category
-	var categoryID string
-	err := db.QueryRow("SELECT id FROM categories WHERE name = 'Allowance'").Scan(&categoryID)
-	if err == sql.ErrNoRows {
-		log.Println("Allowance category not found, creating it...")
-		err = db.QueryRow("INSERT INTO categories (name, is_active) VALUES ('Allowance', true) RETURNING id").Scan(&categoryID)
-		if err != nil {
-			return fmt.Errorf("failed to create allowance category: %v", err)
-		}
-	} else if err != nil {
-		return fmt.Errorf("failed to fetch allowance category: %v", err)
-	}
-
-	// 2. Find eligible teachers (Present today AND have active allowance > 0)
-	// We check for expenses created today for this category and teacher to avoid duplicates
+	// 1. Find eligible teachers (Conducted a lesson today AND have active allowance > 0)
+	// We check for records already created today in teacher_allowance_accruals to avoid duplicates
 	today := time.Now().Format("2006-01-02")
 
 	query := `
-		SELECT 
+		SELECT DISTINCT
 			u.id, 
 			u.first_name || ' ' || u.last_name as name,
 			ta.amount
-		FROM teacher_attendances att
-		JOIN teacher_allowances ta ON att.teacher_id = ta.user_id
-		JOIN users u ON u.id = att.teacher_id
-		WHERE att.date = $1 
-		AND att.status = 'present'
+		FROM conducted_lessons cl
+		JOIN teacher_allowances ta ON cl.teacher_id = ta.user_id
+		JOIN users u ON u.id = cl.teacher_id
+		WHERE cl.date = $1 
 		AND ta.is_active = true
+		AND ta.period = 'day'
 		AND ta.amount > 0
 		AND NOT EXISTS (
-			SELECT 1 FROM expenses e 
-			WHERE e.category_id = $2 
-			AND e.date = $1 
-			AND e.title LIKE 'Daily Allowance: ' || u.first_name || ' ' || u.last_name || '%'
+			SELECT 1 FROM teacher_allowance_accruals taa 
+			WHERE taa.teacher_id = u.id 
+			AND taa.date = $1
 		)
 	`
 
-	rows, err := db.Query(query, today, categoryID)
+	rows, err := db.Query(query, today)
 	if err != nil {
 		return fmt.Errorf("failed to query eligible teachers: %v", err)
 	}
@@ -63,23 +49,22 @@ func GenerateDailyAllowances(db *sql.DB) error {
 			continue
 		}
 
-		// 3. Create Expense Record
-		title := fmt.Sprintf("Daily Allowance: %s", teacherName)
-		notes := fmt.Sprintf("Auto-generated allowance for being on duty on %s", today)
+		// 2. Create Accrual Record
+		notes := fmt.Sprintf("Auto-generated allowance for lessons conducted on %s", today)
 
 		_, err := db.Exec(`
-			INSERT INTO expenses (
-				category_id, title, amount, currency, date, status, notes
+			INSERT INTO teacher_allowance_accruals (
+				teacher_id, amount, date, status, notes
 			) VALUES (
-				$1, $2, $3, 'UGX', $4, 'UNPAID', $5
+				$1, $2, $3, 'unpaid', $4
 			)
-		`, categoryID, title, amount, today, notes)
+		`, teacherID, amount, today, notes)
 
 		if err != nil {
-			log.Printf("Failed to create allowance expense for %s: %v", teacherName, err)
+			log.Printf("Failed to create allowance accrual for %s: %v", teacherName, err)
 		} else {
 			count++
-			log.Printf("Created allowance expense for %s: %d UGX", teacherName, amount)
+			log.Printf("Created allowance accrual for %s: %d UGX", teacherName, amount)
 		}
 	}
 

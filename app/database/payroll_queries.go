@@ -2,17 +2,17 @@ package database
 
 import (
 	"database/sql"
+	"log"
 	"math"
 	"swadiq-schools/app/models"
 	"time"
 )
 
-// GetTeacherDutyDays counts the number of days a teacher was present within a date range
+// GetTeacherDutyDays counts the number of days a teacher conducted at least one lesson within a date range
 func GetTeacherDutyDays(db *sql.DB, teacherID string, startDate, endDate time.Time) (int, error) {
-	query := `SELECT COUNT(*) FROM teacher_attendance 
+	query := `SELECT COUNT(DISTINCT date) FROM conducted_lessons 
 	          WHERE teacher_id = $1 
-	          AND date >= $2 AND date <= $3 
-	          AND status = 'present'`
+	          AND date >= $2 AND date <= $3`
 
 	var count int
 	err := db.QueryRow(query, teacherID, startDate, endDate).Scan(&count)
@@ -176,8 +176,20 @@ func GetTeacherPayrollStatus(db *sql.DB, teacherID string, startDate, endDate ti
 		salary.Allowance = allowance.Amount
 		salary.AllowancePeriod = allowance.Period
 	}
+	baseAccrued, onTheFlyAllowAccrued, _ := CalculateAccruedSalary(salary, dutyDays, weeks)
 
-	baseAccrued, allowAccrued, totalAccrued := CalculateAccruedSalary(salary, dutyDays, weeks)
+	allowAccrued := onTheFlyAllowAccrued
+	if allowance != nil && allowance.IsActive && allowance.Period == "day" {
+		// Override with persistent data for daily allowances
+		query := `SELECT COALESCE(SUM(amount), 0) FROM teacher_allowance_accruals 
+				  WHERE teacher_id = $1 AND date >= $2 AND date <= $3`
+		err = db.QueryRow(query, teacherID, startDate, endDate).Scan(&allowAccrued)
+		if err != nil {
+			log.Printf("Error fetching accrued allowance for status: %v", err)
+			allowAccrued = onTheFlyAllowAccrued // Fallback
+		}
+	}
+	totalAccrued := baseAccrued + allowAccrued
 	basePaid, allowPaid, totalPaid, err := GetTotalPaid(db, teacherID, startDate, endDate)
 	if err != nil {
 		return nil, err
@@ -390,7 +402,7 @@ func GetTeacherAllowanceLedger(db *sql.DB, teacherID string, monthsToLookBack in
 			}
 		}
 
-		dutyDays, err := GetTeacherDutyDays(db, teacherID, startOfMonth, endOfMonth)
+		_, err = GetTeacherDutyDays(db, teacherID, startOfMonth, endOfMonth)
 		if err != nil {
 			continue
 		}
@@ -401,7 +413,14 @@ func GetTeacherAllowanceLedger(db *sql.DB, teacherID string, monthsToLookBack in
 		// Calculate allowance accrual
 		var allowAccrued int64
 		if allowance.Period == "day" {
-			allowAccrued = allowance.Amount * int64(dutyDays)
+			// Sum from the persistent accruals table
+			query := `SELECT COALESCE(SUM(amount), 0) FROM teacher_allowance_accruals 
+					  WHERE teacher_id = $1 AND date >= $2 AND date <= $3`
+			err = db.QueryRow(query, teacherID, startOfMonth, endOfMonth).Scan(&allowAccrued)
+			if err != nil {
+				log.Printf("Error fetching accrued allowance: %v", err)
+				allowAccrued = 0
+			}
 		} else if allowance.Period == "week" {
 			allowAccrued = int64(float64(allowance.Amount) * weeks)
 		} else {
