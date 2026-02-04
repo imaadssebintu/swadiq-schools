@@ -1141,7 +1141,7 @@
             try {
                 const papers = [];
                 for (const subjectId of subjectIds) {
-                    const response = await fetch(`/api/papers/by-subject/${subjectId}`);
+                    const response = await fetch(`/api/subjects/papers/by-subject/${subjectId}`);
                     if (response.ok) {
                         const data = await response.json();
                         papers.push(...(data.papers || []));
@@ -1281,7 +1281,7 @@
 
             try {
                 // Load all papers for the subject
-                const subjectResponse = await fetch(`/api/papers/by-subject/${subjectId}`);
+                const subjectResponse = await fetch(`/api/subjects/papers/by-subject/${subjectId}`);
                 if (!subjectResponse.ok) {
                     const errorData = await subjectResponse.json();
                     console.error('Papers API error:', errorData);

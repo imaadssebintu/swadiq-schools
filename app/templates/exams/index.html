@@ -408,12 +408,12 @@
 
         try {
             // 1. Get Papers
-            const paperRes = await fetch(`/api/papers?class_id=${classId}&subject_id=${subjectId}`);
+            const paperRes = await fetch(`/api/subjects/papers?class_id=${classId}&subject_id=${subjectId}`);
             const paperData = await paperRes.json();
             const papersList = Array.isArray(paperData) ? paperData : (paperData.data || []);
 
             // 2. Get Existing Weights
-            const weightRes = await fetch(`/api/papers/weights?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}`);
+            const weightRes = await fetch(`/api/subjects/papers/weights?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}`);
             let weights = [];
             if (weightRes.ok) {
                 weights = await weightRes.json();
@@ -497,7 +497,7 @@
         };
 
         try {
-            const res = await fetch('/api/papers/weights', {
+            const res = await fetch('/api/subjects/papers/weights', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -669,7 +669,7 @@
 
     async function loadPapers() {
         try {
-            const response = await fetch('/api/papers');
+            const response = await fetch('/api/subjects/papers');
             const data = await response.json();
             papers = Array.isArray(data) ? data : (data.data || []);
         } catch (error) {
@@ -769,7 +769,7 @@
 
     async function loadPapersByClassAndSubject(classId, subjectId) {
         try {
-            const response = await fetch(`/api/papers?class_id=${classId}&subject_id=${subjectId}`);
+            const response = await fetch(`/api/subjects/papers?class_id=${classId}&subject_id=${subjectId}`);
             const data = await response.json();
             // Handle null/undefined data safely
             const filteredPapers = (data && Array.isArray(data)) ? data : (data?.data || []);

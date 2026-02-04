@@ -8,14 +8,14 @@ import (
 )
 
 func SetupPapersRoutes(app *fiber.App) {
-	papers := app.Group("/papers")
+	papers := app.Group("/subjects/papers")
 	papers.Use(auth.AuthMiddleware)
 
 	// HTML Routes
 	papers.Get("/", PapersPage)
 
 	// API Routes
-	api := app.Group("/api/papers")
+	api := app.Group("/api/subjects/papers")
 	api.Get("/", GetPapersAPI)
 	api.Get("/table", GetPapersTableAPI)
 	api.Get("/stats", GetPapersStatsAPI)

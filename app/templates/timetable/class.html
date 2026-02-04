@@ -679,7 +679,7 @@
             async function getPapersForSubject(subjectId) {
                 if (papersCache[subjectId]) return papersCache[subjectId];
                 try {
-                    const response = await fetch(`/api/papers/by-subject/${subjectId}`);
+                    const response = await fetch(`/api/subjects/papers/by-subject/${subjectId}`);
                     const data = await response.json();
                     papersCache[subjectId] = data.papers || [];
                     return papersCache[subjectId];

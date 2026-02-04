@@ -66,16 +66,27 @@ func SubjectsPage(c *fiber.Ctx) error {
 		papers = []*models.Paper{}
 	}
 
+	// Calculate subject counts
+	totalSubjects := len(subjects)
+	activeSubjects := 0
+	for _, s := range subjects {
+		if s.IsActive {
+			activeSubjects++
+		}
+	}
+
 	user := c.Locals("user").(*models.User)
 	return c.Render("subjects/index", fiber.Map{
-		"Title":            "Subjects Management - Swadiq Schools",
-		"CurrentPage":      "subjects",
-		"subjects":         subjects,
-		"departmentsCount": len(departments),
-		"papersCount":      len(papers),
-		"user":             user,
-		"FirstName":        user.FirstName,
-		"LastName":         user.LastName,
-		"Email":            user.Email,
+		"Title":               "Subjects Management - Swadiq Schools",
+		"CurrentPage":         "subjects",
+		"subjects":            subjects,
+		"totalSubjectsCount":  totalSubjects,
+		"activeSubjectsCount": activeSubjects,
+		"departmentsCount":    len(departments),
+		"papersCount":         len(papers),
+		"user":                user,
+		"FirstName":           user.FirstName,
+		"LastName":            user.LastName,
+		"Email":               user.Email,
 	})
 }
