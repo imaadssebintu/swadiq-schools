@@ -32,7 +32,7 @@ func PapersPage(c *fiber.Ctx) error {
 	user := c.Locals("user").(*models.User)
 	return c.Render("papers/index", fiber.Map{
 		"Title":       "Papers Management - Swadiq Schools",
-		"CurrentPage": "papers",
+		"CurrentPage": "subjects",
 		"user":        user,
 		"FirstName":   user.FirstName,
 		"LastName":    user.LastName,
