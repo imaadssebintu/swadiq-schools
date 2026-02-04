@@ -24,6 +24,8 @@ func SetupPapersRoutes(app *fiber.App) {
 	api.Post("/", CreatePaperAPI)
 	api.Put("/:id", UpdatePaperAPI)
 	api.Delete("/:id", DeletePaperAPI)
+	api.Get("/weights", GetPaperWeightsAPI)
+	api.Post("/weights", SavePaperWeightsAPI)
 }
 
 func PapersPage(c *fiber.Ctx) error {

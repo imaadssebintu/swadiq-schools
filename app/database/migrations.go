@@ -51,6 +51,12 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// 8. Create paper_weights table
+	err = createPaperWeightsTable(db)
+	if err != nil {
+		return err
+	}
+
 	log.Println("Database migrations completed successfully")
 	return nil
 }
@@ -187,4 +193,19 @@ func createSimplifiedPayrollTables(db *sql.DB) error {
 		}
 	}
 	return nil
+}
+
+func createPaperWeightsTable(db *sql.DB) error {
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS paper_weights (
+		id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+		class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+		subject_id UUID NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+		paper_id UUID NOT NULL REFERENCES papers(id) ON DELETE CASCADE,
+		term_id UUID NOT NULL REFERENCES terms(id) ON DELETE CASCADE,
+		weight INTEGER NOT NULL CHECK (weight >= 0 AND weight <= 100),
+		created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+		UNIQUE(class_id, subject_id, paper_id, term_id)
+	)`)
+	return err
 }

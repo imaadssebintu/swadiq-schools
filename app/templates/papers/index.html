@@ -1,21 +1,17 @@
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Papers Management</h1>
-                    <p class="mt-1 text-sm text-gray-500">Manage subject papers and their teachers</p>
-                </div>
-                <button onclick="openAddPaperModal()" 
-                        class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Add New Paper
-                </button>
-            </div>
+<!-- Papers Management Page -->
+<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-1">
+            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Papers Management</h1>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Manage Subject Papers & Assignments
+            </p>
         </div>
+        <button onclick="openAddPaperModal()"
+            class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            <span>New Paper</span>
+        </button>
     </div>
 
     <!-- Main Content -->
@@ -68,19 +64,23 @@
                     <h2 class="text-lg font-semibold text-gray-900">All Papers</h2>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
                         <div class="relative w-full sm:w-64">
-                            <input type="text" id="paperSearch" placeholder="Search papers..." 
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            <input type="text" id="paperSearch" placeholder="Search papers..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
                         <div class="flex gap-2">
-                            <select id="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <select id="statusFilter"
+                                class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                                 <option value="">All Status</option>
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
-                            <select id="subjectFilter" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <select id="subjectFilter"
+                                class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                                 <option value="">All Subjects</option>
                             </select>
                         </div>
@@ -92,12 +92,20 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paper Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Paper Name</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Code</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Subject</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Weight</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Type</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="papersTableBody">
@@ -109,9 +117,15 @@
                                     <div class="h-4 bg-gray-200 rounded w-32"></div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-20"></div></td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-24"></div></td>
-                            <td class="px-4 py-3"><div class="h-6 bg-gray-200 rounded-full w-16"></div></td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-20"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-24"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                            </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="h-4 bg-gray-200 rounded w-8"></div>
@@ -126,9 +140,15 @@
                                     <div class="h-4 bg-gray-200 rounded w-28"></div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-16"></div></td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-20"></div></td>
-                            <td class="px-4 py-3"><div class="h-6 bg-gray-200 rounded-full w-16"></div></td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-16"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-20"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                            </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="h-4 bg-gray-200 rounded w-8"></div>
@@ -143,9 +163,15 @@
                                     <div class="h-4 bg-gray-200 rounded w-36"></div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-18"></div></td>
-                            <td class="px-4 py-3"><div class="h-4 bg-gray-200 rounded w-22"></div></td>
-                            <td class="px-4 py-3"><div class="h-6 bg-gray-200 rounded-full w-16"></div></td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-18"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-4 bg-gray-200 rounded w-22"></div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="h-6 bg-gray-200 rounded-full w-16"></div>
+                            </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="h-4 bg-gray-200 rounded w-8"></div>
@@ -156,19 +182,22 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div class="text-sm text-gray-700" id="paginationInfo">
-                    Showing <span class="font-medium">0</span> to <span class="font-medium">0</span> of <span class="font-medium">0</span> results
+                    Showing <span class="font-medium">0</span> to <span class="font-medium">0</span> of <span
+                        class="font-medium">0</span> results
                 </div>
                 <div class="flex space-x-2">
-                    <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-600 text-sm font-medium cursor-not-allowed">
+                    <button
+                        class="px-3 py-1 rounded-md bg-gray-100 text-gray-600 text-sm font-medium cursor-not-allowed">
                         Previous
                     </button>
                     <button class="px-3 py-1 rounded-md bg-primary-600 text-white text-sm font-medium">
                         1
                     </button>
-                    <button class="px-3 py-1 rounded-md bg-gray-100 text-gray-600 text-sm font-medium cursor-not-allowed">
+                    <button
+                        class="px-3 py-1 rounded-md bg-gray-100 text-gray-600 text-sm font-medium cursor-not-allowed">
                         Next
                     </button>
                 </div>
@@ -184,22 +213,27 @@
             <h3 class="text-lg font-semibold text-gray-900">Add New Paper</h3>
             <button onclick="closeAddPaperModal()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
         <form id="addPaperForm" class="p-6 space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Paper Name *</label>
                 <input type="text" id="paperName" name="name" required
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                       placeholder="Enter paper name">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter paper name">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Weight (%) *</label>
+                <input type="number" id="paperWeight" name="weight" required min="1" max="100" value="100"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter weight percentage">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Paper Type *</label>
                 <select id="paperType" name="is_compulsory" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <option value="true">Compulsory</option>
                     <option value="false">Optional</option>
                 </select>
@@ -209,24 +243,26 @@
                 <input type="hidden" id="subjectId" name="subjectId" required>
                 <div class="flex items-center">
                     <button type="button" onclick="openSubjectSelector()" id="subjectButton"
-                            class="w-full text-left px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
+                        class="w-full text-left px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white">
                         <span id="subjectButtonText">Select Subject</span>
                     </button>
-                    <button type="button" onclick="clearSubjectSelection()" id="clearSubjectButton" class="ml-2 hidden text-gray-500 hover:text-gray-700">
+                    <button type="button" onclick="clearSubjectSelection()" id="clearSubjectButton"
+                        class="ml-2 hidden text-gray-500 hover:text-gray-700">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-4">
-                <button type="button" onclick="closeAddPaperModal()" 
-                        class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+                <button type="button" onclick="closeAddPaperModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                     Cancel
                 </button>
-                <button type="submit" 
-                        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
+                <button type="submit"
+                    class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors duration-200">
                     Create Paper
                 </button>
             </div>
@@ -235,23 +271,26 @@
 </div>
 
 <!-- Subject Selector Modal -->
-<div id="subjectSelectorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div id="subjectSelectorModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
             <h3 class="text-lg font-semibold text-gray-900">Select Subject</h3>
             <button onclick="closeSubjectSelector()" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
         <div class="p-6 flex-1 overflow-y-auto">
             <div class="relative mb-4">
-                <input type="text" id="subjectSearch" placeholder="Search subjects..." 
-                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <input type="text" id="subjectSearch" placeholder="Search subjects..."
+                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
 
@@ -261,8 +300,8 @@
         </div>
 
         <div class="p-6 border-t border-gray-200 flex justify-end">
-            <button onclick="closeSubjectSelector()" 
-                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
+            <button onclick="closeSubjectSelector()"
+                class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
                 Cancel
             </button>
         </div>
@@ -312,7 +351,7 @@
         const buttonText = document.getElementById('subjectButtonText');
         const clearButton = document.getElementById('clearSubjectButton');
         const hiddenInput = document.getElementById('subjectId');
-        
+
         if (selectedSubject) {
             buttonText.textContent = selectedSubject.name;
             clearButton.classList.remove('hidden');
@@ -326,18 +365,18 @@
 
     async function loadSubjectsForSelector() {
         const subjectList = document.getElementById('subjectList');
-        
+
         subjectList.innerHTML = '<div class="text-center text-gray-500 py-4">Loading subjects...</div>';
-        
+
         try {
             const response = await fetch('/api/papers/stats', {
                 method: 'GET',
                 credentials: 'include'
             });
             const data = await response.json();
-            
+
             subjectList.innerHTML = '';
-            
+
             if (data && data.subjects) {
                 data.subjects.forEach(subject => {
                     const subjectElement = document.createElement('div');
@@ -349,7 +388,7 @@
                     subjectElement.onclick = () => selectSubject({ id: subject.id, name: subject.name });
                     subjectList.appendChild(subjectElement);
                 });
-                
+
                 if (data.subjects.length === 0) {
                     subjectList.innerHTML = '<div class="text-center text-gray-500 py-4">No subjects available</div>';
                 }
@@ -371,13 +410,13 @@
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             // Replace skeleton with actual stats cards
             const statsCards = document.getElementById('statsCards');
             statsCards.innerHTML = `
@@ -434,7 +473,7 @@
                     </div>
                 </div>
             `;
-            
+
             if (data.subjects) {
                 const subjectFilter = document.getElementById('subjectFilter');
                 subjectFilter.innerHTML = '<option value="">All Subjects</option>';
@@ -507,7 +546,7 @@
 
     async function loadPapersTable() {
         const tableBody = document.getElementById('papersTableBody');
-        
+
         // Show skeleton loading
         tableBody.innerHTML = `
             <tr class="animate-pulse">
@@ -562,7 +601,7 @@
                 </td>
             </tr>
         `;
-        
+
         try {
             const response = await fetch('/api/papers/table', {
                 method: 'GET',
@@ -571,13 +610,13 @@
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             if (data.papers && data.papers.length > 0) {
                 tableBody.innerHTML = data.papers.map(paper => {
                     return `
@@ -598,17 +637,18 @@
                         <td class="px-4 py-3 text-sm text-gray-900">
                             ${paper.subject ? paper.subject.name : '<span class="text-gray-400">Not assigned</span>'}
                         </td>
+                        <td class="px-4 py-3 text-sm text-gray-900 font-medium">${paper.weight || 100}%</td>
                         <td class="px-4 py-3">
-                            ${paper.is_compulsory ? 
-                                '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Compulsory</span>' : 
-                                '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Optional</span>'
-                            }
+                            ${paper.is_compulsory ?
+                            '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Compulsory</span>' :
+                            '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Optional</span>'
+                        }
                         </td>
                         <td class="px-4 py-3">
-                            ${paper.is_active ? 
-                                '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>' : 
-                                '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>'
-                            }
+                            ${paper.is_active ?
+                            '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>' :
+                            '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>'
+                        }
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">
@@ -619,7 +659,7 @@
                     </tr>
                 `;
                 }).join('');
-                
+
                 document.getElementById('paginationInfo').innerHTML = `
                     Showing <span class="font-medium">1</span> to <span class="font-medium">${data.papers.length}</span> of <span class="font-medium">${data.papers.length}</span> results
                 `;
@@ -638,7 +678,7 @@
                     </tr>
                 `;
             }
-            
+
             setupSearchAndFilter();
         } catch (error) {
             console.error('Error loading papers:', error);
@@ -715,11 +755,12 @@
         }
     }
 
-    document.getElementById('addPaperForm').addEventListener('submit', async function(e) {
+    document.getElementById('addPaperForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const data = {
             name: document.getElementById('paperName').value,
+            weight: parseInt(document.getElementById('paperWeight').value),
             subject_id: document.getElementById('subjectId').value,
             is_compulsory: document.getElementById('paperType').value === 'true'
         };
@@ -748,7 +789,7 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         loadPapersStats();
         loadPapersTable();
     });

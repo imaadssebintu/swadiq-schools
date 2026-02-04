@@ -163,6 +163,11 @@ func main() {
 	// Setup papers routes
 	papers.SetupPapersRoutes(app)
 
+	// Terms API shortcut (actual routes in settings)
+	app.Get("/api/terms", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		return academic.GetAllTerms(c, config.GetDB())
+	})
+
 	// Setup academic routes
 	academic.RegisterRoutes(app, config.GetDB())
 
