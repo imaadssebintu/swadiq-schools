@@ -13,5 +13,5 @@ RUN go mod download
 # Copy the rest of the application
 COPY . .
 
-# Run air for hot reloading
-CMD ["air", "-c", ".air.toml"]
+# Run the application using go run
+CMD ["go", "run", "main.go"]

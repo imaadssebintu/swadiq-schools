@@ -16,22 +16,25 @@ func GenerateDailyAllowances(db *sql.DB) error {
 	today := time.Now().Format("2006-01-02")
 
 	query := `
-		SELECT DISTINCT
+		SELECT
 			u.id, 
 			u.first_name || ' ' || u.last_name as name,
 			ta.amount
-		FROM conducted_lessons cl
-		JOIN teacher_allowances ta ON cl.teacher_id = ta.user_id
-		JOIN users u ON u.id = cl.teacher_id
-		WHERE cl.date = $1 
-		AND ta.is_active = true
+		FROM teacher_allowances ta
+		JOIN users u ON u.id = ta.user_id
+		LEFT JOIN teacher_attendances att ON u.id = att.teacher_id AND att.date = $1 AND att.status = 'present'
+		LEFT JOIN conducted_lessons cl ON u.id = cl.teacher_id AND cl.date = $1
+		WHERE ta.is_active = true
 		AND ta.period = 'day'
 		AND ta.amount > 0
+		AND u.is_active = true
+		AND (att.id IS NOT NULL OR cl.id IS NOT NULL)
 		AND NOT EXISTS (
 			SELECT 1 FROM teacher_allowance_accruals taa 
 			WHERE taa.teacher_id = u.id 
 			AND taa.date = $1
 		)
+		GROUP BY u.id, name, ta.amount
 	`
 
 	// Diagnostic: Log total count of active daily allowances
@@ -57,22 +60,15 @@ func GenerateDailyAllowances(db *sql.DB) error {
 	defer rows.Close()
 
 	if !rows.Next() {
-		log.Printf("Diagnostic: No teachers found for date %s with period='day'.", today)
+		log.Printf("Diagnostic: No teachers found for date %s with period='day' who were present or taught.", today)
+
+		var attCount int
+		db.QueryRow("SELECT COUNT(*) FROM teacher_attendances WHERE date = $1 AND status = 'present'", today).Scan(&attCount)
+		log.Printf("Diagnostic: Total teachers marked 'present' today: %d", attCount)
+
 		var clCount int
 		db.QueryRow("SELECT COUNT(*) FROM conducted_lessons WHERE date = $1", today).Scan(&clCount)
-		log.Printf("Diagnostic: Total conducted lessons found for today (%s): %d", today, clCount)
-
-		if clCount > 0 {
-			// List teachers who conducted lessons
-			clRows, _ := db.Query("SELECT DISTINCT teacher_id FROM conducted_lessons WHERE date = $1", today)
-			log.Println("Diagnostic: Teachers who conducted lessons today:")
-			for clRows.Next() {
-				var tid string
-				clRows.Scan(&tid)
-				log.Printf("  - Teacher ID: %s", tid)
-			}
-			clRows.Close()
-		}
+		log.Printf("Diagnostic: Total conducted lessons found for today: %d", clCount)
 	} else {
 		// Reset rows for the loop
 		rows.Close()
@@ -90,7 +86,7 @@ func GenerateDailyAllowances(db *sql.DB) error {
 		}
 
 		// 2. Create Accrual Record
-		notes := fmt.Sprintf("Auto-generated allowance for lessons conducted on %s", today)
+		notes := fmt.Sprintf("Auto-generated allowance based on attendance/lessons for %s", today)
 
 		_, err := db.Exec(`
 			INSERT INTO teacher_allowance_accruals (

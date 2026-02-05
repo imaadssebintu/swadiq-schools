@@ -445,3 +445,63 @@ func GetClassTermAttendanceSummaryAPI(c *fiber.Ctx) error {
 		"summary": summary,
 	})
 }
+
+func GetTeacherAttendanceByDateAPI(c *fiber.Ctx) error {
+	dateStr := c.Params("date")
+	if dateStr == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Date is required"})
+	}
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
+	}
+
+	records, err := database.GetTeacherAttendanceByDate(config.GetDB(), date)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch teacher attendance"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success":    true,
+		"date":       dateStr,
+		"attendance": records,
+		"count":      len(records),
+	})
+}
+
+func CreateOrUpdateTeacherAttendanceAPI(c *fiber.Ctx) error {
+	type TeacherAttendanceRequest struct {
+		TeacherID string `json:"teacher_id" validate:"required"`
+		Date      string `json:"date" validate:"required"`
+		Status    string `json:"status" validate:"required,oneof=present absent late leave"`
+		Remarks   string `json:"remarks"`
+	}
+
+	var req TeacherAttendanceRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+	}
+
+	date, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
+	}
+
+	attendance := &models.TeacherAttendance{
+		TeacherID: req.TeacherID,
+		Date:      date,
+		Status:    req.Status,
+		Remarks:   req.Remarks,
+	}
+
+	if err := database.CreateOrUpdateTeacherAttendance(config.GetDB(), attendance); err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to save teacher attendance"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Teacher attendance saved successfully",
+		"data":    attendance,
+	})
+}
