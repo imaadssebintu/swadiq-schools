@@ -34,11 +34,51 @@ func GenerateDailyAllowances(db *sql.DB) error {
 		)
 	`
 
+	// Diagnostic: Log total count of active daily allowances
+	var activeCount int
+	db.QueryRow("SELECT COUNT(*) FROM teacher_allowances WHERE is_active = true AND period = 'day'").Scan(&activeCount)
+	log.Printf("Diagnostic: Found %d teachers with active daily allowances", activeCount)
+
+	// Diagnostic: Log ALL active allowances
+	diagRows, _ := db.Query("SELECT user_id, amount, period FROM teacher_allowances WHERE is_active = true")
+	log.Println("Diagnostic: All active allowances:")
+	for diagRows.Next() {
+		var uid, prd string
+		var amt int64
+		diagRows.Scan(&uid, &amt, &prd)
+		log.Printf("  - Teacher: %s, Amount: %d, Period: %s", uid, amt, prd)
+	}
+	diagRows.Close()
+
 	rows, err := db.Query(query, today)
 	if err != nil {
 		return fmt.Errorf("failed to query eligible teachers: %v", err)
 	}
 	defer rows.Close()
+
+	if !rows.Next() {
+		log.Printf("Diagnostic: No teachers found for date %s with period='day'.", today)
+		var clCount int
+		db.QueryRow("SELECT COUNT(*) FROM conducted_lessons WHERE date = $1", today).Scan(&clCount)
+		log.Printf("Diagnostic: Total conducted lessons found for today (%s): %d", today, clCount)
+
+		if clCount > 0 {
+			// List teachers who conducted lessons
+			clRows, _ := db.Query("SELECT DISTINCT teacher_id FROM conducted_lessons WHERE date = $1", today)
+			log.Println("Diagnostic: Teachers who conducted lessons today:")
+			for clRows.Next() {
+				var tid string
+				clRows.Scan(&tid)
+				log.Printf("  - Teacher ID: %s", tid)
+			}
+			clRows.Close()
+		}
+	} else {
+		// Reset rows for the loop
+		rows.Close()
+		rows, _ = db.Query(query, today)
+		defer rows.Close()
+	}
 
 	count := 0
 	for rows.Next() {
