@@ -20,6 +20,7 @@ func SetupPapersRoutes(app *fiber.App) {
 	api.Get("/table", GetPapersTableAPI)
 	api.Get("/stats", GetPapersStatsAPI)
 	api.Get("/subject/:subjectId", GetPapersBySubjectAPI)
+	api.Get("/by-subject/:subjectId", GetPapersBySubjectAPI)
 	api.Get("/:id", GetPaperAPI)
 	api.Post("/", CreatePaperAPI)
 	api.Put("/:id", UpdatePaperAPI)

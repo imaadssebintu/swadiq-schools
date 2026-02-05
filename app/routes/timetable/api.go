@@ -9,8 +9,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-
-
 func CreateTimetableEntryAPI(c *fiber.Ctx) error {
 	type CreateEntryRequest struct {
 		ClassID   string `json:"class_id"`
@@ -32,20 +30,20 @@ func CreateTimetableEntryAPI(c *fiber.Ctx) error {
 	}
 
 	db := config.GetDB()
-	
+
 	// Check for teacher conflicts
 	conflictQuery := `SELECT COUNT(*) FROM timetable_entries 
 					 WHERE teacher_id = $1 AND day_of_week = $2 AND is_active = true
 					 AND class_id != $3
 					 AND (($4 >= start_time AND $4 < end_time) OR ($5 > start_time AND $5 <= end_time) OR ($4 <= start_time AND $5 >= end_time))`
-	
+
 	var conflictCount int
 	var err error
 	err = db.QueryRow(conflictQuery, req.TeacherID, req.DayOfWeek, req.ClassID, req.StartTime, req.EndTime).Scan(&conflictCount)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to check teacher availability"})
 	}
-	
+
 	if conflictCount > 0 {
 		// Get teacher name for error message
 		var teacherName string
@@ -88,20 +86,20 @@ func UpdateTimetableEntryAPI(c *fiber.Ctx) error {
 	}
 
 	db := config.GetDB()
-	
+
 	// Check for teacher conflicts (excluding current entry)
 	conflictQuery := `SELECT COUNT(*) FROM timetable_entries 
 					 WHERE teacher_id = $1 AND day_of_week = $2 AND is_active = true
 					 AND class_id != $3 AND id != $4
 					 AND (($5 >= start_time AND $5 < end_time) OR ($6 > start_time AND $6 <= end_time) OR ($5 <= start_time AND $6 >= end_time))`
-	
+
 	var conflictCount int
 	var err error
 	err = db.QueryRow(conflictQuery, req.TeacherID, req.DayOfWeek, req.ClassID, entryID, req.StartTime, req.EndTime).Scan(&conflictCount)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to check teacher availability"})
 	}
-	
+
 	if conflictCount > 0 {
 		// Get teacher name for error message
 		var teacherName string
@@ -141,8 +139,6 @@ func DeleteTimetableEntryAPI(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "Timetable entry deleted successfully"})
 }
 
-
-
 func SaveTimetableAPI(c *fiber.Ctx) error {
 	classID := c.Params("id")
 	if classID == "" {
@@ -176,9 +172,9 @@ func SaveTimetableAPI(c *fiber.Ctx) error {
 	}
 	defer tx.Rollback()
 
-	// Delete existing timetable for the class
-	if _, err := tx.Exec("DELETE FROM timetable_entries WHERE class_id = $1", classID); err != nil {
-		log.Printf("Error clearing existing timetable: %v", err)
+	// Soft-delete existing timetable for the class (set is_active = false)
+	if _, err := tx.Exec("UPDATE timetable_entries SET is_active = false, updated_at = NOW() WHERE class_id = $1", classID); err != nil {
+		log.Printf("Error deactivating existing timetable: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to clear existing timetable"})
 	}
 
@@ -203,19 +199,19 @@ func SaveTimetableAPI(c *fiber.Ctx) error {
 			continue
 		}
 
-		// Check for teacher conflicts
+		// Check for teacher conflicts (only with active entries from OTHER classes)
 		conflictQuery := `SELECT COUNT(*) FROM timetable_entries 
 						 WHERE teacher_id = $1 AND day_of_week = $2 AND is_active = true
 						 AND class_id != $3
 						 AND (($4 >= start_time AND $4 < end_time) OR ($5 > start_time AND $5 <= end_time) OR ($4 <= start_time AND $5 >= end_time))`
-		
+
 		var conflictCount int
 		err = tx.QueryRow(conflictQuery, entry.TeacherID, entry.Day, classID, startTime, endTime).Scan(&conflictCount)
 		if err != nil {
 			log.Printf("Error checking teacher conflicts: %v", err)
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to check teacher availability"})
 		}
-		
+
 		if conflictCount > 0 {
 			// Get teacher name for error message
 			var teacherName string
@@ -225,13 +221,30 @@ func SaveTimetableAPI(c *fiber.Ctx) error {
 			})
 		}
 
-		query := `INSERT INTO timetable_entries (class_id, subject_id, paper_id, teacher_id, day_of_week, start_time, end_time, is_active, created_at, updated_at)
-				  VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW(), NOW())`
+		// Try to reactivate an existing entry first
+		updateRes, err := tx.Exec(`
+			UPDATE timetable_entries 
+			SET is_active = true, updated_at = NOW() 
+			WHERE class_id = $1 AND subject_id = $2 AND paper_id = $3 AND teacher_id = $4 
+			AND day_of_week = $5 AND start_time = $6 AND end_time = $7`,
+			classID, subjectID, entry.PaperID, entry.TeacherID, entry.Day, startTime, endTime)
 
-		_, err = tx.Exec(query, classID, subjectID, entry.PaperID, entry.TeacherID, entry.Day, startTime, endTime)
 		if err != nil {
-			log.Printf("Error inserting timetable entry %d: %v", i, err)
-			return c.Status(500).JSON(fiber.Map{"error": "Failed to create timetable entry", "details": err.Error()})
+			log.Printf("Error reactivating timetable entry %d: %v", i, err)
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to update timetable entry"})
+		}
+
+		rowsAffected, _ := updateRes.RowsAffected()
+		if rowsAffected == 0 {
+			// If no existing entry matched, insert a new one
+			query := `INSERT INTO timetable_entries (class_id, subject_id, paper_id, teacher_id, day_of_week, start_time, end_time, is_active, created_at, updated_at)
+					  VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW(), NOW())`
+
+			_, err = tx.Exec(query, classID, subjectID, entry.PaperID, entry.TeacherID, entry.Day, startTime, endTime)
+			if err != nil {
+				log.Printf("Error inserting timetable entry %d: %v", i, err)
+				return c.Status(500).JSON(fiber.Map{"error": "Failed to create timetable entry", "details": err.Error()})
+			}
 		}
 	}
 
@@ -283,12 +296,12 @@ func GetTimetableDataAPI(c *fiber.Ctx) error {
 			log.Printf("Error scanning timetable row: %v", err)
 			continue
 		}
-		
+
 		paperIDStr := ""
 		if paperID != nil {
 			paperIDStr = *paperID
 		}
-		
+
 		// Format time properly
 		formatTime := func(timeStr string) string {
 			if timeStr == "" {
@@ -312,7 +325,7 @@ func GetTimetableDataAPI(c *fiber.Ctx) error {
 			}
 			return timeStr
 		}
-		
+
 		timetable = append(timetable, fiber.Map{
 			"id":           id,
 			"day":          day,
@@ -395,7 +408,7 @@ func GetTimetableDataAPI(c *fiber.Ctx) error {
 		LessonDuration int
 		Breaks         string
 	}
-	
+
 	err = db.QueryRow(settingsQuery, classID).Scan(&settings.Days, &settings.StartTime, &settings.EndTime, &settings.LessonDuration, &settings.Breaks)
 	if err != nil {
 		// Use default settings
@@ -445,7 +458,7 @@ func generateCompleteSchedule(timetable []fiber.Map, settings struct {
 	// Add break entries to the timetable
 	for _, breakItem := range breaks {
 		timeSlot := fmt.Sprintf("%s - %s", breakItem.StartTime, breakItem.EndTime)
-		
+
 		// Create break entry for each day
 		days := []string{"monday", "tuesday", "wednesday", "thursday", "friday", "saturday"}
 		for _, day := range days {
