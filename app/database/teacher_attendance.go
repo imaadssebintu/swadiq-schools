@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"strings"
 	"swadiq-schools/app/models"
@@ -73,33 +74,40 @@ func GetTeacherAttendanceByTeacherAndDate(db *sql.DB, teacherID string, date tim
 
 // DailyStaffSummary represents a teacher's daily status including lesson counts
 type DailyStaffSummary struct {
-	TeacherID      string `json:"teacher_id"`
-	FirstName      string `json:"first_name"`
-	LastName       string `json:"last_name"`
-	AttendanceID   string `json:"attendance_id,omitempty"`
-	Status         string `json:"status"` // present, absent, etc., or "unmarked"
-	Remarks        string `json:"remarks"`
-	ScheduledCount int    `json:"scheduled_count"`
-	ConductedCount int    `json:"conducted_count"`
+	TeacherID      string              `json:"teacher_id"`
+	FirstName      string              `json:"first_name"`
+	LastName       string              `json:"last_name"`
+	AttendanceID   string              `json:"attendance_id,omitempty"`
+	Status         string              `json:"status"` // present, absent, etc., or "unmarked"
+	Remarks        string              `json:"remarks"`
+	ScheduledCount int                 `json:"scheduled_count"`
+	ConductedCount int                 `json:"conducted_count"`
+	Lessons        []StaffLessonDetail `json:"lessons"`
+}
+
+type StaffLessonDetail struct {
+	SubjectName string `json:"subject_name"`
+	ClassName   string `json:"class_name"`
+	IsConducted bool   `json:"is_conducted"`
 }
 
 // GetDailyStaffAttendanceSummary retrieves a summary of all teachers for a specific date
-// GetDailyStaffAttendanceSummary retrieves a summary of all teachers for a specific date
-func GetDailyStaffAttendanceSummary(db *sql.DB, date time.Time) ([]*DailyStaffSummary, error) {
+func GetDailyStaffAttendanceSummary(db *sql.DB, date time.Time, limit, offset int) ([]*DailyStaffSummary, error) {
 	weekday := strings.ToLower(date.Weekday().String())
 
 	query := `
 		WITH scheduled_counts AS (
 			SELECT teacher_id, COUNT(*) as scheduled_count
 			FROM timetable_entries
-			WHERE day_of_week = $2
+			WHERE day_of_week = $2 AND is_active = true
 			GROUP BY teacher_id
 		),
 		conducted_counts AS (
-			SELECT teacher_id, COUNT(*) as conducted_count
-			FROM conducted_lessons
-			WHERE date = $1
-			GROUP BY teacher_id
+			SELECT te.teacher_id, COUNT(DISTINCT cl.timetable_entry_id) as conducted_count
+			FROM conducted_lessons cl
+			JOIN timetable_entries te ON cl.timetable_entry_id = te.id
+			WHERE cl.date = $1 AND te.day_of_week = $2
+			GROUP BY te.teacher_id
 		)
 		SELECT DISTINCT ON (u.id)
 			u.id, 
@@ -118,17 +126,19 @@ func GetDailyStaffAttendanceSummary(db *sql.DB, date time.Time) ([]*DailyStaffSu
 		LEFT JOIN conducted_counts cc ON u.id = cc.teacher_id
 		WHERE u.is_active = true 
 		AND r.name IN ('admin', 'head_teacher', 'class_teacher', 'subject_teacher')
+		AND (COALESCE(sc.scheduled_count, 0) > 0 OR COALESCE(cc.conducted_count, 0) > 0)
 		ORDER BY u.id, u.first_name, u.last_name
+		LIMIT $3 OFFSET $4
 	`
 
-	rows, err := db.Query(query, date, weekday)
+	rows, err := db.Query(query, date, weekday, limit, offset)
 	if err != nil {
 		log.Printf("GetDailyStaffAttendanceSummary Query Error: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
 
-	var summaries []*DailyStaffSummary
+	summaries := make([]*DailyStaffSummary, 0)
 	for rows.Next() {
 		s := &DailyStaffSummary{}
 		err := rows.Scan(
@@ -142,5 +152,66 @@ func GetDailyStaffAttendanceSummary(db *sql.DB, date time.Time) ([]*DailyStaffSu
 		}
 		summaries = append(summaries, s)
 	}
+
+	if len(summaries) == 0 {
+		return summaries, nil
+	}
+
+	// Fetch lesson details for the fetched teachers
+	// We need to fetch details only for the teacher IDs we just retrieved
+	teacherIDs := make([]string, len(summaries))
+	for i, s := range summaries {
+		teacherIDs[i] = s.TeacherID
+	}
+
+	// Create placeholder string for IN clause (e.g., "$3, $4, $5...")
+	// Start from $3 because $1 is date, $2 is weekday
+	placeholders := make([]string, len(teacherIDs))
+	args := make([]interface{}, len(teacherIDs)+2)
+	args[0] = date
+	args[1] = weekday
+	for i, id := range teacherIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+3)
+		args[i+2] = id
+	}
+
+	lessonQuery := fmt.Sprintf(`
+		SELECT 
+			te.teacher_id,
+			COALESCE(s.name, 'Unknown Subject'),
+			COALESCE(c.name, 'Unknown Class'),
+			CASE WHEN cl.id IS NOT NULL THEN true ELSE false END as is_conducted
+		FROM timetable_entries te
+		LEFT JOIN subjects s ON te.subject_id = s.id
+		LEFT JOIN classes c ON te.class_id = c.id
+		LEFT JOIN conducted_lessons cl ON te.id = cl.timetable_entry_id AND cl.date = $1
+		WHERE te.day_of_week = $2 AND te.is_active = true
+		AND te.teacher_id IN (%s)
+	`, strings.Join(placeholders, ","))
+
+	lRows, err := db.Query(lessonQuery, args...)
+	if err != nil {
+		log.Printf("GetDailyStaffAttendanceSummary Lesson Query Error: %v", err)
+	} else {
+		defer lRows.Close()
+
+		teacherLessons := make(map[string][]StaffLessonDetail)
+		for lRows.Next() {
+			var tID string
+			var l StaffLessonDetail
+			if err := lRows.Scan(&tID, &l.SubjectName, &l.ClassName, &l.IsConducted); err == nil {
+				teacherLessons[tID] = append(teacherLessons[tID], l)
+			}
+		}
+
+		for _, s := range summaries {
+			if lessons, ok := teacherLessons[s.TeacherID]; ok {
+				s.Lessons = lessons
+			} else {
+				s.Lessons = []StaffLessonDetail{}
+			}
+		}
+	}
+
 	return summaries, nil
 }

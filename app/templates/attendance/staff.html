@@ -67,50 +67,123 @@
                 </tbody>
             </table>
         </div>
+        <!-- Load More Button -->
+        <div id="loadMoreContainer" class="p-4 border-t border-slate-100 flex justify-center hidden">
+            <button onclick="loadMoreStaff()"
+                class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                Load More
+            </button>
+        </div>
+        </table>
     </div>
+</div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        loadStaffAttendance();
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let isLoading = false;
+    let hasMore = true;
 
-        document.getElementById('attendanceDate').addEventListener('change', loadStaffAttendance);
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStaffAttendance(true); // Initial load (reset)
+
+        document.getElementById('attendanceDate').addEventListener('change', () => loadStaffAttendance(true));
     });
 
-    async function loadStaffAttendance() {
+    async function loadStaffAttendance(reset = false) {
+        if (isLoading) return;
+        isLoading = true;
+
         const date = document.getElementById('attendanceDate').value;
         const tbody = document.getElementById('staffTableBody');
+        const loadMoreBtn = document.getElementById('loadMoreContainer');
 
-        tbody.innerHTML = `
-        <tr>
-            <td colspan="5" class="px-6 py-12 text-center">
-                <div class="flex flex-col items-center justify-center">
-                    <i class="fas fa-circle-notch fa-spin text-indigo-500 text-2xl mb-3"></i>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading staff data...</span>
-                </div>
-            </td>
-        </tr>
-    `;
+        if (reset) {
+            currentPage = 1;
+            hasMore = true;
+            tbody.innerHTML = ''; // Clear table
+            renderSkeleton(5); // Show skeleton
+            loadMoreBtn.classList.add('hidden');
+        }
 
         try {
-            const response = await fetch(`/api/attendance/teacher-attendance/summary/${date}`);
+            const response = await fetch(`/api/attendance/teacher-attendance/summary/${date}?page=${currentPage}&limit=${itemsPerPage}`);
             const data = await response.json();
 
+            // Remove skeleton rows if any (simplistic approach: remove all matching skeleton class)
+            const skeletons = tbody.querySelectorAll('.skeleton-row');
+            skeletons.forEach(el => el.remove());
+
             if (data.success) {
-                renderTable(data.summary);
-                updateStats(data.summary);
+                if (reset) {
+                    // Update stats only on fresh load or accumulation? 
+                    // Usually stats are total, so maybe we need a separate stats endpoint or just acknowledge stats might be partial
+                    updateStats(data.summary); // This will only show stats for loaded items, might need backend fix for TOTAL status
+                }
+
+                if (data.summary && data.summary.length > 0) {
+                    renderTable(data.summary, reset);
+                    currentPage++;
+                    hasMore = data.has_more;
+                } else if (reset) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found with scheduled classes</td></tr>`;
+                }
+
+                // Show/Hide Load More
+                if (hasMore) {
+                    loadMoreBtn.classList.remove('hidden');
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+
             } else {
                 showError("Failed to load data");
             }
         } catch (error) {
             console.error(error);
             showError("Network error occurred");
+        } finally {
+            isLoading = false;
         }
     }
 
-    function renderTable(staffList) {
+    function loadMoreStaff() {
+        if (hasMore && !isLoading) {
+            loadStaffAttendance(false);
+        }
+    }
+
+    function renderSkeleton(count) {
         const tbody = document.getElementById('staffTableBody');
-        tbody.innerHTML = '';
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+            <tr class="skeleton-row animate-pulse border-b border-slate-50 last:border-0">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200"></div>
+                        <div class="flex flex-col gap-1">
+                            <div class="h-3 w-24 bg-slate-200 rounded"></div>
+                            <div class="h-2 w-16 bg-slate-100 rounded"></div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-center"><div class="h-6 w-16 bg-slate-200 rounded-full mx-auto"></div></td>
+                <td class="px-6 py-4 text-center"><div class="h-4 w-12 bg-slate-200 rounded mx-auto"></div></td>
+                <td class="px-6 py-4 text-center"><div class="h-2 w-24 bg-slate-200 rounded-full mx-auto"></div></td>
+                <td class="px-6 py-4 text-right"><div class="flex gap-2 justify-end"><div class="w-8 h-8 bg-slate-200 rounded-lg"></div><div class="w-8 h-8 bg-slate-200 rounded-lg"></div></div></td>
+            </tr>`;
+        }
+        tbody.insertAdjacentHTML('beforeend', html);
+    }
+
+    function renderTable(staffList, reset) {
+        const tbody = document.getElementById('staffTableBody');
+        // If not reset, we append. If reset, we already cleared in load function.
+        if (reset) tbody.innerHTML = '';
+
+        if (!staffList) return;
 
         if (!staffList || staffList.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found</td></tr>`;
@@ -149,8 +222,31 @@
                 ${statusBadge}
             </td>
             <td class="px-6 py-4 text-center">
-                <div class="flex flex-col items-center">
+                <div class="relative group flex flex-col items-center cursor-help">
                     <span class="text-sm font-black text-slate-800">${staff.conducted_count} <span class="text-slate-400 text-xs font-bold">/ ${staff.scheduled_count}</span></span>
+                    
+                    ${staff.lessons && staff.lessons.length > 0 ? `
+                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-[10px] rounded-xl py-3 px-4 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl border border-slate-700">
+                        <div class="font-bold mb-2 border-b border-slate-700 pb-2 flex justify-between items-center text-slate-300 uppercase tracking-widest">
+                            <span>Schedule</span>
+                            <span>Status</span>
+                        </div>
+                        <div class="space-y-2">
+                           ${staff.lessons.map(l => `
+                               <div class="flex items-center justify-between">
+                                   <div class="flex flex-col text-left">
+                                      <span class="text-white font-bold">${l.subject_name}</span>
+                                      <span class="text-slate-400 font-medium">${l.class_name}</span>
+                                   </div>
+                                   ${l.is_conducted
+                    ? '<span class="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">Done</span>'
+                    : '<span class="text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">Pending</span>'}
+                               </div>
+                           `).join('')}
+                        </div>
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-slate-700"></div>
+                    </div>
+                    ` : ''}
                 </div>
             </td>
             <td class="px-6 py-4 text-center align-middle">
@@ -164,10 +260,17 @@
                            class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all ${staff.status === 'present' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'text-slate-400'}">
                         <i class="fas fa-check"></i>
                     </button>
-                    <button onclick="markStatus('${staff.teacher_id}', 'absent')" 
+                    
+                    ${staff.conducted_count > 0 ?
+                    `<button disabled class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-100 text-slate-300 cursor-not-allowed" title="Cannot mark absent: lessons conducted">
+                            <i class="fas fa-times"></i>
+                         </button>`
+                    :
+                    `<button onclick="markStatus('${staff.teacher_id}', 'absent')" 
                            class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all ${staff.status === 'absent' ? 'bg-rose-50 text-rose-600 border-rose-200' : 'text-slate-400'}">
-                        <i class="fas fa-times"></i>
-                    </button>
+                            <i class="fas fa-times"></i>
+                         </button>`
+                }
                 </div>
             </td>
         `;

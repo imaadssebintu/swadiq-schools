@@ -519,6 +519,10 @@ func CreateOrUpdateTeacherAttendanceAPI(c *fiber.Ctx) error {
 }
 func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 	dateStr := c.Params("date")
+	page := c.QueryInt("page", 1)
+	limit := c.QueryInt("limit", 10)
+	offset := (page - 1) * limit
+
 	if dateStr == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Date is required"})
 	}
@@ -528,16 +532,18 @@ func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
 	}
 
-	summary, err := database.GetDailyStaffAttendanceSummary(config.GetDB(), date)
+	summary, err := database.GetDailyStaffAttendanceSummary(config.GetDB(), date, limit, offset)
 	if err != nil {
 		fmt.Printf("GetDailyStaffAttendanceSummaryAPI Error: %v\n", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch staff attendance summary"})
 	}
 
 	return c.JSON(fiber.Map{
-		"success": true,
-		"date":    dateStr,
-		"summary": summary,
-		"count":   len(summary),
+		"success":  true,
+		"date":     dateStr,
+		"summary":  summary,
+		"count":    len(summary),
+		"page":     page,
+		"has_more": len(summary) == limit,
 	})
 }

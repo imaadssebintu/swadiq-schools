@@ -2727,7 +2727,15 @@ func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string)
 		}
 		if className != nil {
 			entry.ClassName = *className
+			// FORCE DEBUG
+			if entry.ClassName == "" {
+				entry.ClassName = "EMPTY_FROM_DB"
+			}
+		} else {
+			entry.ClassName = "NIL_FROM_DB"
 		}
+		// Force it for now to see if frontend picks it up
+		// entry.ClassName = "HARDCODED_TEST_" + entry.ClassName
 
 		// Add teacher name
 		if teacherFirstName != nil && teacherLastName != nil {
