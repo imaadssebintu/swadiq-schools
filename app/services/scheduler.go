@@ -16,8 +16,8 @@ func StartScheduler(db *sql.DB) {
 		for range ticker.C {
 			now := time.Now()
 
-			// Trigger at 7:20 PM (19:20)
-			if now.Hour() == 19 && now.Minute() == 20 {
+			// Trigger at 7:20 PM (19:30)
+			if now.Hour() == 19 && now.Minute() == 30 {
 				log.Println("Triggering scheduled tasks [19:20]...")
 
 				// Generate Allowances
