@@ -215,3 +215,56 @@ func GetDailyStaffAttendanceSummary(db *sql.DB, date time.Time, limit, offset in
 
 	return summaries, nil
 }
+
+// StaffAttendanceStats holds global statistics for the day
+type StaffAttendanceStats struct {
+	TotalStaff       int `json:"total_staff"`
+	PresentStaff     int `json:"present_staff"`
+	CompletedLessons int `json:"completed_lessons"`
+	PendingAllowance int `json:"pending_allowance"`
+}
+
+// GetDailyStaffStats calculates global stats for the day
+func GetDailyStaffStats(db *sql.DB, date time.Time) (*StaffAttendanceStats, error) {
+	weekday := strings.ToLower(date.Weekday().String())
+
+	query := `
+		WITH relevant_staff AS (
+			SELECT DISTINCT ON (u.id)
+				u.id,
+				COALESCE(ta.status, 'unmarked') as status,
+				(SELECT COUNT(*) FROM timetable_entries WHERE teacher_id = u.id AND day_of_week = $2 AND is_active = true) as scheduled_count,
+				(SELECT COUNT(DISTINCT cl.timetable_entry_id) 
+				 FROM conducted_lessons cl 
+				 JOIN timetable_entries te ON cl.timetable_entry_id = te.id 
+				 WHERE cl.date = $1 AND te.teacher_id = u.id) as conducted_count
+			FROM users u
+			JOIN user_roles ur ON u.id = ur.user_id
+			JOIN roles r ON ur.role_id = r.id
+			LEFT JOIN teacher_attendances ta ON u.id = ta.teacher_id AND ta.date = $1
+			WHERE u.is_active = true 
+			AND r.name IN ('admin', 'head_teacher', 'class_teacher', 'subject_teacher')
+			ORDER BY u.id
+		)
+		SELECT
+			COUNT(*) as total_staff,
+			COUNT(CASE WHEN status = 'present' THEN 1 END) as present_staff,
+			SUM(conducted_count) as completed_lessons,
+			COUNT(CASE WHEN (status = 'present' OR (conducted_count >= scheduled_count AND scheduled_count > 0)) THEN 1 END) as pending_allowance
+		FROM relevant_staff
+		WHERE scheduled_count > 0 OR conducted_count > 0
+	`
+
+	stats := &StaffAttendanceStats{}
+	err := db.QueryRow(query, date, weekday).Scan(
+		&stats.TotalStaff,
+		&stats.PresentStaff,
+		&stats.CompletedLessons,
+		&stats.PendingAllowance,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return stats, nil
+}

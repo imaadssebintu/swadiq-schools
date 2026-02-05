@@ -116,7 +116,7 @@
                 if (reset) {
                     // Update stats only on fresh load or accumulation?
                     // Usually stats are total, so maybe we need a separate stats endpoint or just acknowledge stats might be partial
-                    updateStats(data.summary); // This will only show stats for loaded items, might need backend fix for TOTAL status
+                    updateStats(data.stats); // Use server-side stats
                 }
 
                 if (data.summary && data.summary.length > 0) {
@@ -255,16 +255,12 @@
         });
     }
 
-    function updateStats(staffList) {
-        const total = staffList.length;
-        const present = staffList.filter(s => s.status === 'present').length;
-        const completed = staffList.filter(s => s.conducted_count == s.scheduled_count && s.scheduled_count > 0).length;
-        const eligible = staffList.filter(s => s.status === 'present' || (s.conducted_count >= s.scheduled_count && s.scheduled_count > 0)).length;
-
-        document.getElementById('totalStaff').textContent = total;
-        document.getElementById('presentStaff').textContent = present;
-        document.getElementById('completedLessons').textContent = completed;
-        document.getElementById('eligibleStaff').textContent = eligible;
+    function updateStats(stats) {
+        if (!stats) return;
+        document.getElementById('totalStaff').textContent = stats.total_staff || 0;
+        document.getElementById('presentStaff').textContent = stats.present_staff || 0;
+        document.getElementById('completedLessons').textContent = stats.completed_lessons || 0;
+        document.getElementById('eligibleStaff').textContent = stats.pending_allowance || 0;
     }
 
 

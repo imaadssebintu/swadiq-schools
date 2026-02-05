@@ -503,6 +503,13 @@ func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch staff attendance summary"})
 	}
 
+	stats, err := database.GetDailyStaffStats(config.GetDB(), date)
+	if err != nil {
+		fmt.Printf("GetDailyStaffStats Error: %v\n", err)
+		// Don't fail entire request if stats fail, just return empty stats
+		stats = &database.StaffAttendanceStats{}
+	}
+
 	return c.JSON(fiber.Map{
 		"success":  true,
 		"date":     dateStr,
@@ -510,5 +517,6 @@ func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 		"count":    len(summary),
 		"page":     page,
 		"has_more": len(summary) == limit,
+		"stats":    stats,
 	})
 }
