@@ -114,9 +114,7 @@
 
             if (data.success) {
                 if (reset) {
-                    // Update stats only on fresh load or accumulation?
-                    // Usually stats are total, so maybe we need a separate stats endpoint or just acknowledge stats might be partial
-                    updateStats(data.stats); // Use server-side stats
+                    // Stats are now fetched separately
                 }
 
                 if (data.summary && data.summary.length > 0) {
@@ -142,6 +140,22 @@
             showError("Network error occurred");
         } finally {
             isLoading = false;
+        }
+
+        if (reset) {
+            fetchStats(date); // Fetch stats separately on reset/initial load
+        }
+    }
+
+    async function fetchStats(date) {
+        try {
+            const response = await fetch(`/api/attendance/teacher-attendance/stats/${date}`);
+            const data = await response.json();
+            if (data.success && data.stats) {
+                updateStats(data.stats);
+            }
+        } catch (error) {
+            console.error("Failed to fetch stats:", error);
         }
     }
 

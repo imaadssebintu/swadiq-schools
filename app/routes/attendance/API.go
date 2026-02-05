@@ -482,6 +482,30 @@ func GetTeacherAttendanceByDateAPI(c *fiber.Ctx) error {
 	})
 }
 
+func GetDailyStaffStatsAPI(c *fiber.Ctx) error {
+	dateStr := c.Params("date")
+	if dateStr == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Date is required"})
+	}
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
+	}
+
+	stats, err := database.GetDailyStaffStats(config.GetDB(), date)
+	if err != nil {
+		fmt.Printf("GetDailyStaffStats Error: %v\n", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch staff attendance stats"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"date":    dateStr,
+		"stats":   stats,
+	})
+}
+
 func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 	dateStr := c.Params("date")
 	page := c.QueryInt("page", 1)
@@ -503,13 +527,6 @@ func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch staff attendance summary"})
 	}
 
-	stats, err := database.GetDailyStaffStats(config.GetDB(), date)
-	if err != nil {
-		fmt.Printf("GetDailyStaffStats Error: %v\n", err)
-		// Don't fail entire request if stats fail, just return empty stats
-		stats = &database.StaffAttendanceStats{}
-	}
-
 	return c.JSON(fiber.Map{
 		"success":  true,
 		"date":     dateStr,
@@ -517,6 +534,5 @@ func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
 		"count":    len(summary),
 		"page":     page,
 		"has_more": len(summary) == limit,
-		"stats":    stats,
 	})
 }
