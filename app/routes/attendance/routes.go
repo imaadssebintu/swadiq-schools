@@ -18,6 +18,7 @@ func SetupAttendanceRoutes(app *fiber.App) {
 
 	// Routes
 	attendance.Get("/", AttendancePage)
+	attendance.Get("/staff", AttendanceStaffPage)
 	attendance.Get("/class/:classId", AttendanceByClassPage)
 	attendance.Get("/class/:classId/date/:date", AttendanceByClassAndDatePage)
 	attendance.Get("/lesson", LessonAttendancePage)
@@ -38,6 +39,7 @@ func SetupAttendanceRoutes(app *fiber.App) {
 	api.Get("/teacher-lessons/:dayOfWeek", GetCurrentUserLessonsAPI)
 	api.Get("/all-lessons/:dayOfWeek", GetAllLessonsAPI)
 
+	api.Get("/teacher-attendance/summary/:date", GetDailyStaffAttendanceSummaryAPI)
 	api.Get("/teacher-attendance/:date", GetTeacherAttendanceByDateAPI)
 	api.Post("/teacher-attendance", CreateOrUpdateTeacherAttendanceAPI)
 
@@ -75,6 +77,20 @@ func AttendancePage(c *fiber.Ctx) error {
 		"Email":       user.Email,
 		"stats":       stats,
 		"classes":     classes,
+		"Today":       time.Now().Format("2006-01-02"),
+	})
+}
+
+func AttendanceStaffPage(c *fiber.Ctx) error {
+	user := c.Locals("user").(*models.User)
+	return c.Render("attendance/staff", fiber.Map{
+		"Title":       "Staff Attendance - Swadiq Schools",
+		"CurrentPage": "attendance",
+		"user":        user,
+		"FirstName":   user.FirstName,
+		"LastName":    user.LastName,
+		"Email":       user.Email,
+		"Date":        time.Now().Format("2006-01-02"),
 	})
 }
 

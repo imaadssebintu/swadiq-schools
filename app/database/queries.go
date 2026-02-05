@@ -2690,7 +2690,7 @@ func GetTimetableEntriesByTeacherAndDay(db *sql.DB, teacherID, dayOfWeek string)
 	query := `SELECT te.id, te.class_id, te.subject_id, te.teacher_id, te.day_of_week, 
 			  CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
 			  te.created_at, te.updated_at, te.paper_id,
-			  s.name as subject_name, c.name as class_name, u.first_name, u.last_name,
+			  COALESCE(s.name, 'Unknown Subject') as subject_name, COALESCE(c.name, 'Unknown Class') as class_name, u.first_name, u.last_name,
 			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count,
 			  COALESCE(p.code, '') as paper_code
 			  FROM timetable_entries te
@@ -2745,7 +2745,7 @@ func GetAllTimetableEntriesByDay(db *sql.DB, dayOfWeek string) ([]*models.Timeta
 	query := `SELECT te.id, te.class_id, te.subject_id, te.teacher_id, te.day_of_week, 
 			  CONCAT(to_char(te.start_time, 'HH24:MI'), ' - ', to_char(te.end_time, 'HH24:MI')) as time_slot,
 			  te.created_at, te.updated_at,
-			  s.name as subject_name, c.name as class_name, u.first_name, u.last_name,
+			  COALESCE(s.name, 'Unknown Subject') as subject_name, COALESCE(c.name, 'Unknown Class') as class_name, u.first_name, u.last_name,
 			  (SELECT COUNT(*) FROM students WHERE class_id = te.class_id AND is_active = true) as student_count
 			  FROM timetable_entries te
 			  LEFT JOIN subjects s ON te.subject_id = s.id

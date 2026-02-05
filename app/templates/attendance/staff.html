@@ -1,0 +1,220 @@
+<div class="p-6 max-w-7xl mx-auto space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase">Staff Attendance</h1>
+            <p class="text-sm font-bold text-slate-500 mt-1">Manage teacher attendance and daily allowances</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center gap-2">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date</span>
+                <input type="date" id="attendanceDate"
+                    class="text-sm font-bold text-slate-700 bg-transparent border-none focus:ring-0 p-0"
+                    value="{{.Date}}">
+            </div>
+            <button onclick="loadStaffAttendance()"
+                class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                <i class="fas fa-sync-alt mr-2"></i>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Staff</p>
+            <p id="totalStaff" class="text-2xl font-black text-slate-800">-</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Present</p>
+            <p id="presentStaff" class="text-2xl font-black text-emerald-600">-</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Completed Lessons</p>
+            <p id="completedLessons" class="text-2xl font-black text-blue-600">-</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending Allowance</p>
+            <p id="eligibleStaff" class="text-2xl font-black text-indigo-600">-</p>
+        </div>
+    </div>
+
+    <!-- Staff Table -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-slate-100 bg-slate-50/50">
+                        <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Teacher
+                        </th>
+                        <th
+                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                            Status</th>
+                        <th
+                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                            Lessons</th>
+                        <th
+                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                            Progress</th>
+                        <th
+                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody" class="divide-y divide-slate-50">
+                    <!-- Rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadStaffAttendance();
+
+        document.getElementById('attendanceDate').addEventListener('change', loadStaffAttendance);
+    });
+
+    async function loadStaffAttendance() {
+        const date = document.getElementById('attendanceDate').value;
+        const tbody = document.getElementById('staffTableBody');
+
+        tbody.innerHTML = `
+        <tr>
+            <td colspan="5" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <i class="fas fa-circle-notch fa-spin text-indigo-500 text-2xl mb-3"></i>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading staff data...</span>
+                </div>
+            </td>
+        </tr>
+    `;
+
+        try {
+            const response = await fetch(`/api/attendance/teacher-attendance/summary/${date}`);
+            const data = await response.json();
+
+            if (data.success) {
+                renderTable(data.summary);
+                updateStats(data.summary);
+            } else {
+                showError("Failed to load data");
+            }
+        } catch (error) {
+            console.error(error);
+            showError("Network error occurred");
+        }
+    }
+
+    function renderTable(staffList) {
+        const tbody = document.getElementById('staffTableBody');
+        tbody.innerHTML = '';
+
+        if (!staffList || staffList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found</td></tr>`;
+            return;
+        }
+
+        staffList.forEach(staff => {
+            const isEligible = staff.conducted_count >= staff.scheduled_count && staff.scheduled_count > 0;
+            const progress = staff.scheduled_count > 0 ? Math.min((staff.conducted_count / staff.scheduled_count) * 100, 100) : 0;
+
+            // Determine row status style
+            let statusBadge = '';
+            if (staff.status === 'present') {
+                statusBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-wide">Present</span>`;
+            } else if (staff.status === 'absent') {
+                statusBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700 uppercase tracking-wide">Absent</span>`;
+            } else {
+                statusBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-500 uppercase tracking-wide">Unmarked</span>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/50 transition-colors';
+            tr.innerHTML = `
+            <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                        ${staff.first_name[0]}${staff.last_name[0]}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-900">${staff.first_name} ${staff.last_name}</p>
+                        ${isEligible ? '<span class="text-[9px] text-emerald-600 font-bold uppercase">Eligible for Allowance</span>' : ''}
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4 text-center">
+                ${statusBadge}
+            </td>
+            <td class="px-6 py-4 text-center">
+                <div class="flex flex-col items-center">
+                    <span class="text-sm font-black text-slate-800">${staff.conducted_count} <span class="text-slate-400 text-xs font-bold">/ ${staff.scheduled_count}</span></span>
+                </div>
+            </td>
+            <td class="px-6 py-4 text-center align-middle">
+                 <div class="w-24 h-2 bg-slate-100 rounded-full overflow-hidden mx-auto">
+                    <div class="h-full ${isEligible ? 'bg-emerald-500' : 'bg-indigo-500'} transition-all duration-500" style="width: ${progress}%"></div>
+                </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="markStatus('${staff.teacher_id}', 'present')" 
+                           class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all ${staff.status === 'present' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'text-slate-400'}">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button onclick="markStatus('${staff.teacher_id}', 'absent')" 
+                           class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all ${staff.status === 'absent' ? 'bg-rose-50 text-rose-600 border-rose-200' : 'text-slate-400'}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateStats(staffList) {
+        const total = staffList.length;
+        const present = staffList.filter(s => s.status === 'present').length;
+        const completed = staffList.filter(s => s.conducted_count == s.scheduled_count && s.scheduled_count > 0).length;
+        const eligible = staffList.filter(s => s.status === 'present' || (s.conducted_count >= s.scheduled_count && s.scheduled_count > 0)).length;
+
+        document.getElementById('totalStaff').textContent = total;
+        document.getElementById('presentStaff').textContent = present;
+        document.getElementById('completedLessons').textContent = completed;
+        document.getElementById('eligibleStaff').textContent = eligible;
+    }
+
+    async function markStatus(teacherId, status) {
+        const date = document.getElementById('attendanceDate').value;
+
+        try {
+            const response = await fetch('/api/attendance/teacher-attendance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    teacher_id: teacherId,
+                    date: date,
+                    status: status
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                loadStaffAttendance(); // Reload table
+            } else {
+                alert('Failed to update status');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Network error');
+        }
+    }
+
+    function showError(msg) {
+        const tbody = document.getElementById('staffTableBody');
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-rose-500 text-xs font-bold uppercase">${msg}</td></tr>`;
+    }
+</script>

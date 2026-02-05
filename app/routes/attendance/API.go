@@ -310,13 +310,25 @@ func MarkLessonConductedAPI(c *fiber.Ctx) error {
 	}
 
 	user := c.Locals("user").(*models.User)
-	teacherID := user.ID
+	conductorID := user.ID
+
+	// If user is admin/head teacher, check if they are entering data for someone else
+	if user.CanAccessAllClasses() {
+		// Get the timetable entry to find the scheduled teacher
+		entry, err := database.GetTimetableEntryByID(config.GetDB(), req.TimetableEntryID)
+		if err == nil && entry != nil && entry.TeacherID != "" {
+			// If the scheduled teacher is different from the admin, assume admin is doing data entry
+			if entry.TeacherID != user.ID {
+				conductorID = entry.TeacherID
+			}
+		}
+	}
 
 	logRec := &models.ConductedLesson{
 		TimetableEntryID: req.TimetableEntryID,
 		TermID:           req.TermID,
 		Date:             date,
-		TeacherID:        teacherID,
+		TeacherID:        conductorID,
 		Topic:            req.Topic,
 		Notes:            req.Notes,
 	}
@@ -503,5 +515,29 @@ func CreateOrUpdateTeacherAttendanceAPI(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Teacher attendance saved successfully",
 		"data":    attendance,
+	})
+}
+func GetDailyStaffAttendanceSummaryAPI(c *fiber.Ctx) error {
+	dateStr := c.Params("date")
+	if dateStr == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Date is required"})
+	}
+
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid date format. Use YYYY-MM-DD"})
+	}
+
+	summary, err := database.GetDailyStaffAttendanceSummary(config.GetDB(), date)
+	if err != nil {
+		fmt.Printf("GetDailyStaffAttendanceSummaryAPI Error: %v\n", err)
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch staff attendance summary"})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"date":    dateStr,
+		"summary": summary,
+		"count":   len(summary),
 	})
 }

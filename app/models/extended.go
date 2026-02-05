@@ -8,8 +8,6 @@ type TimetableEntryResponse struct {
 	TimetableEntry
 	TeacherName  string `json:"teacher_name"`
 	StudentCount int    `json:"student_count"`
-	ClassName    string `json:"class_name"`
-	SubjectName  string `json:"subject_name"`
 	PaperCode    string `json:"paper_code"`
 }
 
