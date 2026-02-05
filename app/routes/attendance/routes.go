@@ -41,7 +41,6 @@ func SetupAttendanceRoutes(app *fiber.App) {
 
 	api.Get("/teacher-attendance/summary/:date", GetDailyStaffAttendanceSummaryAPI)
 	api.Get("/teacher-attendance/:date", GetTeacherAttendanceByDateAPI)
-	api.Post("/teacher-attendance", CreateOrUpdateTeacherAttendanceAPI)
 
 	// Lesson conduction tracking
 	api.Post("/conduct", MarkLessonConductedAPI)

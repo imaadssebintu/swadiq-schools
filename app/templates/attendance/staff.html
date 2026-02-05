@@ -57,9 +57,6 @@
                         <th
                             class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
                             Progress</th>
-                        <th
-                            class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
-                            Actions</th>
                     </tr>
                 </thead>
                 <tbody id="staffTableBody" class="divide-y divide-slate-50">
@@ -117,7 +114,7 @@
 
             if (data.success) {
                 if (reset) {
-                    // Update stats only on fresh load or accumulation? 
+                    // Update stats only on fresh load or accumulation?
                     // Usually stats are total, so maybe we need a separate stats endpoint or just acknowledge stats might be partial
                     updateStats(data.summary); // This will only show stats for loaded items, might need backend fix for TOTAL status
                 }
@@ -127,7 +124,7 @@
                     currentPage++;
                     hasMore = data.has_more;
                 } else if (reset) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found with scheduled classes</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found with scheduled classes</td></tr>`;
                 }
 
                 // Show/Hide Load More
@@ -172,7 +169,6 @@
                 <td class="px-6 py-4 text-center"><div class="h-6 w-16 bg-slate-200 rounded-full mx-auto"></div></td>
                 <td class="px-6 py-4 text-center"><div class="h-4 w-12 bg-slate-200 rounded mx-auto"></div></td>
                 <td class="px-6 py-4 text-center"><div class="h-2 w-24 bg-slate-200 rounded-full mx-auto"></div></td>
-                <td class="px-6 py-4 text-right"><div class="flex gap-2 justify-end"><div class="w-8 h-8 bg-slate-200 rounded-lg"></div><div class="w-8 h-8 bg-slate-200 rounded-lg"></div></div></td>
             </tr>`;
         }
         tbody.insertAdjacentHTML('beforeend', html);
@@ -186,7 +182,7 @@
         if (!staffList) return;
 
         if (!staffList || staffList.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs font-bold uppercase">No staff members found</td></tr>`;
             return;
         }
 
@@ -224,7 +220,7 @@
             <td class="px-6 py-4 text-center">
                 <div class="relative group flex flex-col items-center cursor-help">
                     <span class="text-sm font-black text-slate-800">${staff.conducted_count} <span class="text-slate-400 text-xs font-bold">/ ${staff.scheduled_count}</span></span>
-                    
+
                     ${staff.lessons && staff.lessons.length > 0 ? `
                     <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-[10px] rounded-xl py-3 px-4 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl border border-slate-700">
                         <div class="font-bold mb-2 border-b border-slate-700 pb-2 flex justify-between items-center text-slate-300 uppercase tracking-widest">
@@ -254,25 +250,6 @@
                     <div class="h-full ${isEligible ? 'bg-emerald-500' : 'bg-indigo-500'} transition-all duration-500" style="width: ${progress}%"></div>
                 </div>
             </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="markStatus('${staff.teacher_id}', 'present')" 
-                           class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-all ${staff.status === 'present' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'text-slate-400'}">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    
-                    ${staff.conducted_count > 0 ?
-                    `<button disabled class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-100 text-slate-300 cursor-not-allowed" title="Cannot mark absent: lessons conducted">
-                            <i class="fas fa-times"></i>
-                         </button>`
-                    :
-                    `<button onclick="markStatus('${staff.teacher_id}', 'absent')" 
-                           class="w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all ${staff.status === 'absent' ? 'bg-rose-50 text-rose-600 border-rose-200' : 'text-slate-400'}">
-                            <i class="fas fa-times"></i>
-                         </button>`
-                }
-                </div>
-            </td>
         `;
             tbody.appendChild(tr);
         });
@@ -290,31 +267,7 @@
         document.getElementById('eligibleStaff').textContent = eligible;
     }
 
-    async function markStatus(teacherId, status) {
-        const date = document.getElementById('attendanceDate').value;
 
-        try {
-            const response = await fetch('/api/attendance/teacher-attendance', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    teacher_id: teacherId,
-                    date: date,
-                    status: status
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                loadStaffAttendance(); // Reload table
-            } else {
-                alert('Failed to update status');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Network error');
-        }
-    }
 
     function showError(msg) {
         const tbody = document.getElementById('staffTableBody');
