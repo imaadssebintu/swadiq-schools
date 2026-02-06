@@ -699,6 +699,58 @@
     </div>
 </div>
 
+<!-- Disbursement Modal -->
+<div id="disbursementModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[120] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+    onclick="if(event.target === this) closeDisbursementModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300 animate-scale-up">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-emerald-50">
+            <h3 class="text-sm font-black text-emerald-900 uppercase tracking-wide">Confirm Disbursement</h3>
+            <button onclick="closeDisbursementModal()"
+                class="text-emerald-400 hover:text-emerald-600 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="disbursementForm" class="p-6 space-y-4">
+            <input type="hidden" id="disburseType">
+            <input type="hidden" id="disbursePeriodStart">
+            <input type="hidden" id="disbursePeriodEnd">
+
+            <div class="bg-emerald-50/30 p-4 rounded-xl border border-emerald-100/50 mb-4">
+                <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-1">Target Period</p>
+                <p id="disbursePeriodDisplay" class="text-xs font-bold text-emerald-900">-</p>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Payment Amount (UGX)</label>
+                <input type="number" id="disburseAmount" required
+                    class="w-full text-xs font-black px-3 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Reference (Cheque / Trans
+                    ID)</label>
+                <input type="text" id="disburseReference" placeholder="e.g. CHQ-001"
+                    class="w-full text-xs font-semibold px-3 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Notes</label>
+                <textarea id="disburseNotes" rows="2"
+                    class="w-full text-xs font-semibold px-3 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"></textarea>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" id="disburseSubmitBtn"
+                    class="w-full bg-emerald-600 text-white py-3 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 flex items-center justify-center gap-2">
+                    <i class="fas fa-check-circle"></i> Confirm Disbursement
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     const teacherID = '{{.teacherID}}';
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -709,6 +761,7 @@
         document.getElementById('editTeacherForm').addEventListener('submit', handleEditTeacher);
         document.getElementById('saveAvailabilityBtn').addEventListener('click', handleSaveAvailability);
         document.getElementById('saveSalaryBtn').addEventListener('click', handleSaveSalary);
+        document.getElementById('disbursementForm').addEventListener('submit', handleDisbursement);
 
         loadProfileData();
         loadTeacherAvailability();
@@ -926,9 +979,9 @@
         email: '{{.teacher.Email}}',
         phone: '{{.teacher.Phone}}',
         roles: [
-            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
+            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{ $r.Name }}'{{ end }}
         ],
-        id: '{{.teacher.ID}}'
+    id: '{{.teacher.ID}}'
     };
 
     async function loadAllSystemRoles() {
@@ -1437,58 +1490,7 @@
     if (editPhoneInput) {
         editPhoneInput.addEventListener('input', debounce(() => validatePhone(editPhoneInput), 500));
     }
-    // Complex Allowance Constraints
-    function updateAllowanceConstraints() {
-        const salaryPeriod = document.querySelector('input[name="salaryPeriod"]:checked')?.value;
-        const toggle = document.getElementById('hasAllowanceToggle');
-        const container = document.getElementById('allowanceInputContainer');
-        const allowanceRadios = document.querySelectorAll('input[name="allowancePeriod"]');
-        const dayRadio = document.querySelector('input[name="allowancePeriod"][value="day"]');
-        const weekRadio = document.querySelector('input[name="allowancePeriod"][value="week"]');
 
-        if (!salaryPeriod) return;
-
-        // Reset states first
-        toggle.disabled = false;
-        toggle.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
-
-        allowanceRadios.forEach(r => {
-            r.disabled = false;
-            // Target the radio's container/label which has the styling
-            const label = r.closest('label');
-            if (label) {
-                label.classList.remove('opacity-50', 'pointer-events-none');
-            }
-        });
-
-        if (salaryPeriod === 'day') {
-            // Daily Salary: No Allowance Allowed
-            toggle.disabled = true;
-            toggle.checked = false;
-            container.classList.add('hidden');
-            toggle.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
-
-        } else if (salaryPeriod === 'week') {
-            // Weekly Salary: Daily Allowance ONLY
-            // Disable Weekly Allowance Option
-            if (weekRadio) {
-                weekRadio.disabled = true;
-                const weekLabel = weekRadio.closest('label');
-                if (weekLabel) weekLabel.classList.add('opacity-50', 'pointer-events-none');
-
-                if (weekRadio.checked) {
-                    if (dayRadio) dayRadio.checked = true; // Force switch to day
-                }
-            }
-        }
-        // Month: All allowed (default)
-    }
-
-    function attachConstraintListeners() {
-        document.querySelectorAll('input[name="salaryPeriod"]').forEach(r => {
-            r.addEventListener('change', updateAllowanceConstraints);
-        });
-    }
     async function loadTeacherLedger() {
         const baseBody = document.getElementById('baseSalaryLedgerBody');
         const allowanceBody = document.getElementById('allowanceLedgerBody');
@@ -1529,7 +1531,7 @@
                                 </span>
                             </td>
                             <td class="px-4 py-4 text-center align-middle">
-                                ${actionHTML || '<span class="text-slate-200">-</span>'}
+                                ${actionHTML || '<span class="text-slate-300 font-black text-[8px] uppercase tracking-widest leading-none block">Settled</span>'}
                             </td>
                         </tr>
                     `;
@@ -1538,7 +1540,7 @@
             const processLedgerType = (typeTitle, typeKey, specificLedger) => {
                 let timeline = [];
 
-                // Add Accruals from the specific ledger
+                // 1. Initial Requirements Map
                 specificLedger.forEach(entry => {
                     if (entry.accrued > 0) {
                         timeline.push({
@@ -1554,13 +1556,32 @@
                     }
                 });
 
-                // Add Individual Payouts
+                // 2. Add Payments: Link to Requirements or Add as Standalone
                 payments.forEach(p => {
-                    // Include combined payments in Base Salary history
                     const isMatch = (typeKey === 'base' && (p.type === 'base_salary' || p.type === 'combined')) ||
                         (typeKey === 'allowance' && p.type === 'allowance');
 
-                    if (isMatch) {
+                    if (!isMatch) return;
+
+                    // Try to finding matching Requirement
+                    const payStart = new Date(p.period_start).toISOString().split('T')[0];
+                    const payEnd = new Date(p.period_end).toISOString().split('T')[0];
+
+                    const matchedReq = timeline.find(req =>
+                        req.type === 'Requirement' &&
+                        req.entry.start_date === payStart &&
+                        req.entry.end_date === payEnd
+                    );
+
+                    if (matchedReq) {
+                        // Link reference if it's currently generic
+                        if (matchedReq.reference === 'ACCRUAL') {
+                            matchedReq.reference = p.reference || 'PAID';
+                        } else if (p.reference && !matchedReq.reference.includes(p.reference)) {
+                            matchedReq.reference += `, ${p.reference}`;
+                        }
+                    } else {
+                        // Standalone payment
                         timeline.push({
                             sortDate: new Date(p.paid_at),
                             type: 'Payout Save',
@@ -1598,6 +1619,17 @@
                         } else {
                             status = 'Settled';
                             statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                            actionHTML = '';
+                        }
+
+                        if (status === 'Unpaid' || status === 'Partial') {
+                            actionHTML = `
+                                <button onclick="openDisbursementModal('${typeKey}', ${item.balance}, '${item.entry.start_date}', '${item.entry.end_date}', '${item.label}')"
+                                    class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm transition-all group overflow-hidden relative">
+                                    <span class="relative z-10">Pay</span>
+                                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                </button>
+                            `;
                         }
                     } else {
                         status = 'Disbursed';
@@ -1634,6 +1666,62 @@
 
 
 
+    // Disbursement Logic
+    function openDisbursementModal(type, amount, start, end, label) {
+        document.getElementById('disburseType').value = type === 'base' ? 'base_salary' : 'allowance';
+        document.getElementById('disburseAmount').value = amount;
+        document.getElementById('disbursePeriodStart').value = start;
+        document.getElementById('disbursePeriodEnd').value = end;
+        document.getElementById('disbursePeriodDisplay').textContent = label;
+        document.getElementById('disburseReference').value = '';
+        document.getElementById('disburseNotes').value = '';
+
+        document.getElementById('disbursementModal').classList.remove('hidden');
+    }
+
+    function closeDisbursementModal() {
+        document.getElementById('disbursementModal').classList.add('hidden');
+    }
+
+    async function handleDisbursement(e) {
+        e.preventDefault();
+        const btn = document.getElementById('disburseSubmitBtn');
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+
+        const payload = {
+            amount: parseInt(document.getElementById('disburseAmount').value),
+            type: document.getElementById('disburseType').value,
+            period_start: new Date(document.getElementById('disbursePeriodStart').value).toISOString(),
+            period_end: new Date(document.getElementById('disbursePeriodEnd').value).toISOString(),
+            reference: document.getElementById('disburseReference').value,
+            notes: document.getElementById('disburseNotes').value,
+            status: 'completed'
+        };
+
+        try {
+            const res = await fetch('/api/teachers/' + teacherID + '/pay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showNotification('Disbursement successful');
+                closeDisbursementModal();
+                loadTeacherLedger();
+            } else {
+                const data = await res.json();
+                showNotification(data.details || data.error || 'Payment failed', 'error');
+            }
+        } catch (err) {
+            showNotification('Connection error', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = original;
+        }
+    }
 </script>
 </div>
 </div>

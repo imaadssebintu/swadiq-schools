@@ -16,8 +16,17 @@ func CreateTeacherPayment(db *sql.DB, payment *models.TeacherPayment, teacherNam
 	defer tx.Rollback()
 
 	// 1. Insert Payment Record
-	queryPayment := `INSERT INTO teacher_payments (teacher_id, amount, type, period_start, period_end, reference, notes, paid_at) 
-	                 VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+	if payment.Status == "" {
+		payment.Status = models.PaymentCompleted
+	}
+	paidAt := payment.PaidAt
+	if paidAt == nil {
+		now := time.Now()
+		paidAt = &now
+	}
+
+	queryPayment := `INSERT INTO teacher_payments (teacher_id, amount, type, period_start, period_end, reference, notes, status, paid_at) 
+	                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 					 RETURNING id, paid_at`
 	err = tx.QueryRow(queryPayment,
 		payment.TeacherID,
@@ -27,6 +36,8 @@ func CreateTeacherPayment(db *sql.DB, payment *models.TeacherPayment, teacherNam
 		payment.PeriodEnd,
 		payment.Reference,
 		payment.Notes,
+		string(payment.Status),
+		paidAt,
 	).Scan(&payment.ID, &payment.PaidAt)
 	if err != nil {
 		return fmt.Errorf("failed to insert payment: %v", err)
