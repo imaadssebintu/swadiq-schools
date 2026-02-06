@@ -1,28 +1,113 @@
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Fee Types</h1>
-                    <p class="mt-1 text-sm text-gray-500">Manage different types of fees</p>
+<style>
+    .animate-pulse-slow {
+        animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #cbd5e1;
+    }
+</style>
+
+<div class="min-h-screen bg-slate-50/50 pb-12">
+    <!-- Header Section -->
+    <div class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                    <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Fee <span
+                            class="text-indigo-600">Configurations</span></h1>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Define and manage
+                        institutional fee structures</p>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex items-center gap-3">
                     <a href="/fees"
-                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        Back to Fees
+                        class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fas fa-chevron-left mr-1"></i>
+                        <span>Register Ledger</span>
                     </a>
                     <button id="addFeeTypeBtn"
-                        class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Add Fee Type
+                        class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        <span>New Fee Type</span>
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Registry</span>
+                    <i class="fas fa-tags text-slate-200 text-xs"></i>
+                </div>
+                <p id="totalFeeTypesCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
+                <div
+                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Types</span>
+                    <i class="fas fa-check-double text-slate-200 text-xs"></i>
+                </div>
+                <p id="activeFeeTypesCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
+                <div
+                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per Term Cycles</span>
+                    <i class="fas fa-clock text-slate-200 text-xs"></i>
+                </div>
+                <p id="perTermFeeCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
+                <div
+                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mandatory Fees</span>
+                    <i class="fas fa-shield-halved text-slate-200 text-xs"></i>
+                </div>
+                <p id="requiredFeeCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
+                <div
+                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
                 </div>
             </div>
         </div>
@@ -30,32 +115,44 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Fee Types Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">All Fee Types</h2>
+        <!-- Fee Types Table Container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span
+                        class="text-[10px] font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md uppercase tracking-widest">Fee
+                        Registry</span>
+                    <div class="h-px bg-slate-100 w-12"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <i
+                            class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                        <input type="text" id="tableSearch" placeholder="Filter registry..."
+                            class="w-full bg-slate-50 border-none text-[11px] font-bold py-2 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 min-w-[200px]">
+                    </div>
+                </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Code</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Assigned To</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Payment Frequency</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions</th>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50 border-b border-slate-100">
+                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                Identifier</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                Financials</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                Assignment Logic</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                Schedule</th>
+                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Status
+                            </th>
+                            <th
+                                class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
+                                Operations</th>
                         </tr>
                     </thead>
-                    <tbody id="feeTypesTableBody" class="bg-white divide-y divide-gray-200">
+                    <tbody id="feeTypesTableBody" class="bg-white divide-y divide-slate-50">
                         <tr>
                             <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                 <div class="flex flex-col items-center">
@@ -77,248 +174,269 @@
 
 <!-- Edit Fee Type Modal -->
 <div id="editFeeTypeModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Edit Fee Type</h2>
-            <button id="closeEditFeeTypeModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Modify Configuration</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Adjust Institutional
+                    Parameters</span>
+            </div>
+            <button id="closeEditFeeTypeModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-
-        <form id="editFeeTypeForm" class="p-6 space-y-6">
-            <input type="hidden" id="editFeeTypeId" name="id">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                    <input type="text" id="editFeeTypeName" name="name" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter fee type name">
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar">
+            <form id="editFeeTypeForm" class="space-y-5">
+                <input type="hidden" id="editFeeTypeId" name="id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Reference
+                            Name</label>
+                        <input type="text" id="editFeeTypeName" name="name" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Short Code</label>
+                        <input type="text" id="editFeeTypeCode" name="code" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg uppercase focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
-                    <input type="text" id="editFeeTypeCode" name="code" required maxlength="20"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter fee code">
-                </div>
-            </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea id="editFeeTypeDescription" name="description" rows="3"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter description (optional)"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
-                <input type="number" id="editFeeTypeAmount" name="amount" required min="0" step="1"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter amount">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency *</label>
-                    <select id="editFeeTypeFrequency" name="payment_frequency" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="per_term">Per term</option>
-                        <option value="once">One-time payment</option>
-                        <option value="per_year">Per year</option>
-                        <option value="on_demand">On demand</option>
-                    </select>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">System
+                        Description</label>
+                    <textarea id="editFeeTypeDescription" name="description" rows="2"
+                        class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all"></textarea>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Fee Type *</label>
-                    <select id="editFeeTypeRequired" name="is_required" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="true">Must (Required)</option>
-                        <option value="false">Optional</option>
-                    </select>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Base Amount
+                            (UGX)</label>
+                        <input type="number" id="editFeeTypeAmount" name="amount" required min="0"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Billing
+                            Frequency</label>
+                        <select id="editFeeTypeFrequency" name="payment_frequency" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="once">Single Occurrence</option>
+                            <option value="per_term">Per Academic Term</option>
+                            <option value="per_year">Per Academic Year</option>
+                            <option value="monthly">Monthly Subscription</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Targeting
+                            Scope</label>
+                        <select id="editFeeTypeScope" name="scope" required onchange="handleEditScopeChange()"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="all_students">Universal (All)</option>
+                            <option value="per_class">Class-Based</option>
+                            <option value="manual">Student-Specific</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Requirement
+                            Level</label>
+                        <select id="editFeeTypeRequired" name="is_required" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="true">Mandatory</option>
+                            <option value="false">Optional</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Active Status</label>
                     <select id="editFeeTypeStatus" name="is_active" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
                 </div>
-            </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Apply To *</label>
-                <select id="editFeeTypeScope" name="scope" required onchange="handleEditScopeChange()"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <option value="manual">Manual assignment</option>
-                    <option value="all_students">All students</option>
-                    <option value="all_classes">All classes</option>
-                    <option value="class">Specific classes</option>
-                    <option value="student">Specific students</option>
-                    <option value="class_and_student">Classes + Specific students</option>
-                </select>
-            </div>
-
-            <div id="editClassSelector" class="hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Classes</label>
-                <div class="flex gap-2">
-                    <div id="editSelectedClassNames"
-                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
-                        No classes selected
+                <!-- Targeting Selectors -->
+                <div id="editClassSelector" class="hidden space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Target Classes</h3>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectAllClassesEdit()"
+                                class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Select
+                                All</button>
+                            <button type="button" onclick="openEditClassModal()"
+                                class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Modify
+                                Catalog</button>
+                        </div>
                     </div>
-                    <button type="button" onclick="openEditClassModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        Select
+                    <p id="editSelectedClassNames"
+                        class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">No classes
+                        selected</p>
+                    <input type="hidden" id="editFeeTypeClasses" name="target_class_id">
+                </div>
+
+                <div id="editStudentSelector"
+                    class="hidden space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Target Students</h3>
+                        <button type="button" onclick="openEditStudentModal()"
+                            class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Registry
+                            Search</button>
+                    </div>
+                    <p id="editSelectedStudentNames"
+                        class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">No
+                        students selected</p>
+                    <input type="hidden" id="editFeeTypeStudents" name="target_student_id">
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" id="cancelEditFeeType"
+                        class="flex-1 py-2.5 rounded-xl text-xs font-black text-slate-500 bg-slate-50 hover:bg-slate-100 uppercase transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit" id="editFeeTypeSubmitBtn"
+                        class="flex-[2] py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-save" id="editFeeTypeIcon"></i>
+                        <span id="editFeeTypeText">Sync Configuration</span>
                     </button>
                 </div>
-                <input type="hidden" id="editFeeTypeClasses" name="target_class_id">
-            </div>
-            <div id="editStudentSelector" class="hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Students</label>
-                <div class="flex gap-2">
-                    <div id="editSelectedStudentNames"
-                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
-                        No students selected
-                    </div>
-                    <button type="button" onclick="openEditStudentModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        Select
-                    </button>
-                </div>
-                <input type="hidden" id="editFeeTypeStudents" name="target_student_id">
-            </div>
-
-            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelEditFeeType"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    Cancel
-                </button>
-                <button type="submit" id="editFeeTypeSubmitBtn"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                    <i id="editFeeTypeIcon" class="fas fa-save mr-2"></i>
-                    <span id="editFeeTypeText">Update Fee Type</span>
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
 <!-- Add Fee Type Modal -->
 <div id="addFeeTypeModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Add Fee Type</h2>
-            <button id="closeAddFeeTypeModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Configure New Fee</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Institutional Revenue
+                    Stream</span>
+            </div>
+            <button id="closeAddFeeTypeModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-
-        <form id="addFeeTypeForm" class="p-6 space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                    <input type="text" id="feeTypeName" name="name" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter fee type name">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
-                    <input type="text" id="feeTypeCode" name="code" required maxlength="20"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                        placeholder="Enter fee code">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea id="feeTypeDescription" name="description" rows="3"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter description (optional)"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Amount *</label>
-                <input type="number" id="feeTypeAmount" name="amount" required min="0" step="1"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter amount">
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Frequency *</label>
-                    <select id="feeTypeFrequency" name="payment_frequency" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="per_term" selected>Per term</option>
-                        <option value="once">One-time payment</option>
-                        <option value="per_year">Per year</option>
-                        <option value="on_demand">On demand</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Fee Type *</label>
-                    <select id="feeTypeRequired" name="is_required" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="true">Must (Required)</option>
-                        <option value="false">Optional</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply To *</label>
-                    <select id="feeTypeScope" name="scope" required onchange="handleScopeChange()"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                        <option value="manual">Manual assignment</option>
-                        <option value="all_students">All students</option>
-                        <option value="all_classes">All classes</option>
-                        <option value="class">Specific classes</option>
-                        <option value="student">Specific students</option>
-                        <option value="class_and_student">Classes + Specific students</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="classSelector" class="hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Classes</label>
-                <div class="flex gap-2">
-                    <div id="selectedClassNames"
-                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
-                        No classes selected
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar">
+            <form id="addFeeTypeForm" class="space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Reference
+                            Name</label>
+                        <input type="text" id="feeTypeName" name="name" required placeholder="e.g. Tuition Fee"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
                     </div>
-                    <button type="button" onclick="openClassModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        Select
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Short Code</label>
+                        <input type="text" id="feeTypeCode" name="code" required placeholder="e.g. TUI-T1"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg uppercase focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">System
+                        Description</label>
+                    <textarea id="feeTypeDescription" name="description" rows="2" placeholder="Fee purpose..."
+                        class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Base Amount
+                            (UGX)</label>
+                        <input type="number" id="feeTypeAmount" name="amount" required min="0" placeholder="0.00"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Billing
+                            Frequency</label>
+                        <select id="feeTypeFrequency" name="payment_frequency" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="once">Single Occurrence</option>
+                            <option value="per_term">Per Academic Term</option>
+                            <option value="per_year">Per Academic Year</option>
+                            <option value="monthly">Monthly Subscription</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Targeting
+                            Scope</label>
+                        <select id="feeTypeScope" name="scope" required onchange="handleScopeChange()"
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="all_students">Universal (All)</option>
+                            <option value="per_class">Class-Based</option>
+                            <option value="manual">Student-Specific</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Requirement
+                            Level</label>
+                        <select id="feeTypeRequired" name="is_required" required
+                            class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-400 outline-none transition-all">
+                            <option value="true">Mandatory</option>
+                            <option value="false">Optional</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Targeting Selectors -->
+                <div id="classSelector" class="hidden space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Selected Classes
+                        </h3>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectAllClasses()"
+                                class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Select
+                                All</button>
+                            <button type="button" onclick="openClassModal()"
+                                class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Browse</button>
+                        </div>
+                    </div>
+                    <p id="selectedClassNames"
+                        class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">No classes
+                        selected</p>
+                    <input type="hidden" id="feeTypeClasses" name="target_class_id">
+                </div>
+
+                <div id="studentSelector" class="hidden space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Selected Students
+                        </h3>
+                        <button type="button" onclick="openStudentModal()"
+                            class="text-[9px] font-black text-indigo-600 uppercase hover:underline">Registry
+                            Search</button>
+                    </div>
+                    <p id="selectedStudentNames"
+                        class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">No
+                        students selected</p>
+                    <input type="hidden" id="feeTypeStudents" name="target_student_id">
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" id="cancelAddFeeType"
+                        class="flex-1 py-2.5 rounded-xl text-xs font-black text-slate-500 bg-slate-50 hover:bg-slate-100 uppercase transition-all">
+                        Discard
+                    </button>
+                    <button type="submit" id="addFeeTypeSubmitBtn"
+                        class="flex-[2] py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-plus" id="addFeeTypeIcon"></i>
+                        <span id="addFeeTypeText">Initialize Configuration</span>
                     </button>
                 </div>
-                <input type="hidden" id="feeTypeClasses" name="target_class_id">
-            </div>
-            <div id="studentSelector" class="hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Students</label>
-                <div class="flex gap-2">
-                    <div id="selectedStudentNames"
-                        class="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 min-h-[40px] text-sm">
-                        No students selected
-                    </div>
-                    <button type="button" id="selectStudentsBtn" onclick="openStudentModal()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                        Select
-                    </button>
-                </div>
-                <input type="hidden" id="feeTypeStudents" name="target_student_id">
-            </div>
-
-            <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button type="button" id="cancelAddFeeType"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    Cancel
-                </button>
-                <button type="submit" id="addFeeTypeSubmitBtn"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                    <i id="addFeeTypeIcon" class="fas fa-plus mr-2"></i>
-                    <span id="addFeeTypeText">Add Fee Type</span>
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -563,17 +681,17 @@
         function displayFeeTypes(feeTypes) {
             const tbody = document.getElementById('feeTypesTableBody');
 
+            // Update stats cards
+            document.getElementById('totalFeeTypesCount').textContent = feeTypes.length;
+            document.getElementById('activeFeeTypesCount').textContent = feeTypes.filter(f => f.is_active).length;
+            document.getElementById('perTermFeeCount').textContent = feeTypes.filter(f => f.payment_frequency === 'per_term').length;
+            document.getElementById('requiredFeeCount').textContent = feeTypes.filter(f => f.is_required).length;
+
             if (feeTypes.length === 0) {
                 tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                        <div class="flex flex-col items-center">
-                            <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                            </svg>
-                            <p class="text-lg font-medium text-gray-900 mb-2">No fee types found</p>
-                            <p class="text-gray-500">Add your first fee type to get started</p>
-                        </div>
+                    <td colspan="6" class="px-6 py-12 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        No fee configurations found
                     </td>
                 </tr>
             `;
@@ -583,50 +701,64 @@
             tbody.innerHTML = feeTypes.map(feeType => {
                 let assignedTo = '';
                 if (feeType.classes && feeType.classes.length > 0) {
-                    assignedTo += `Classes: ${feeType.classes.slice(0, 2).join(', ')}`;
-                    if (feeType.classes.length > 2) assignedTo += ` +${feeType.classes.length - 2} more`;
+                    assignedTo += `<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-900 border border-slate-200 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest">Classes: ${feeType.classes.length}</span>`;
                 }
                 if (feeType.students && feeType.students.length > 0) {
-                    if (assignedTo) assignedTo += '<br>';
-                    assignedTo += `Students: ${feeType.students.slice(0, 2).join(', ')}`;
-                    if (feeType.students.length > 2) assignedTo += ` +${feeType.students.length - 2} more`;
+                    assignedTo += `<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-900 border border-slate-200 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest ml-1">Students: ${feeType.students.length}</span>`;
                 }
-                if (!assignedTo) assignedTo = 'Manual assignment';
+                if (!assignedTo) assignedTo = '<span class="text-[9px] font-black text-slate-300 uppercase tracking-widest italic">Manual Assignment</span>';
 
                 const escapedName = feeType.name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                 const escapedId = feeType.id.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
                 return `
-            <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${escapedName}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        ${feeType.code}
-                    </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</div>
+            <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors group cursor-pointer">
+                <td class="px-6 py-4">
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-xs font-black text-slate-800 uppercase tracking-tight">${escapedName}</span>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${feeType.code}</span>
+                    </div>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="text-sm text-gray-900">${assignedTo}</div>
+                    <div class="flex flex-col gap-0.5">
+                        <span class="text-xs font-black text-slate-900 leading-none">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</span>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${feeType.is_required ? 'Mandatory' : 'Optional'}</span>
+                    </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1">${assignedTo}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="text-[9px] font-black text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded uppercase tracking-widest">
+                        <i class="fas fa-calendar-alt mr-1 opacity-50"></i>
                         ${getFrequencyLabel(feeType.payment_frequency)}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${feeType.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                        ${feeType.is_active ? 'Active' : 'Inactive'}
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${feeType.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}">
+                        <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${feeType.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
+                        ${feeType.is_active ? 'Active' : 'Offline'}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button data-action="view" data-id="${escapedId}" data-name="${escapedName}" class="text-blue-600 hover:text-blue-900 mr-3">View</button>
-                    <button data-action="activate" data-id="${escapedId}" data-name="${escapedName}" class="text-green-600 hover:text-green-900 mr-3">Activate</button>
-                    <button data-action="edit" data-id="${escapedId}" class="text-primary-600 hover:text-primary-900 mr-3">Edit</button>
-                    <button data-action="delete" data-id="${escapedId}" data-name="${escapedName}" class="text-red-600 hover:text-red-900">Delete</button>
+                <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <button data-action="view" data-id="${escapedId}" data-name="${escapedName}" 
+                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="View">
+                            <i class="fas fa-eye text-[10px]"></i>
+                        </button>
+                        <button data-action="activate" data-id="${escapedId}" data-name="${escapedName}" 
+                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Activate">
+                            <i class="fas fa-rocket text-[10px]"></i>
+                        </button>
+                        <button data-action="edit" data-id="${escapedId}" 
+                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="Edit">
+                            <i class="fas fa-pen text-[10px]"></i>
+                        </button>
+                        <button data-action="delete" data-id="${escapedId}" data-name="${escapedName}" 
+                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Delete">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
             `;
@@ -870,14 +1002,15 @@
     function displayClasses(classes) {
         const container = document.getElementById('classListContainer');
         container.innerHTML = classes.map(cls => `
-        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+        <div class="bg-white border border-slate-100 hover:border-slate-900 hover:bg-slate-50 rounded-xl p-4 transition-all duration-300 group cursor-pointer relative" onclick="const cb = this.querySelector('input'); cb.checked = !cb.checked; toggleClassSelection('${cls.id}', '${cls.name}')">
             <label class="flex items-center cursor-pointer">
-                <input type="checkbox" class="mr-3" value="${cls.id}" 
-                       onchange="toggleClassSelection('${cls.id}', '${cls.name}')"
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-200 text-slate-900 focus:ring-0 transition-all cursor-pointer mr-3" 
+                       value="${cls.id}" 
+                       onclick="event.stopPropagation(); toggleClassSelection('${cls.id}', '${cls.name}')"
                        ${selectedClasses.has(cls.id) ? 'checked' : ''}>
                 <div class="flex-1">
-                    <div class="font-medium text-gray-900">${cls.name}</div>
-                    <div class="text-sm text-gray-500">${cls.code || ''}</div>
+                    <div class="text-[10px] font-black text-slate-900 uppercase tracking-widest">${cls.name}</div>
+                    <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${cls.code || 'UNCODED'}</div>
                 </div>
             </label>
         </div>
@@ -887,20 +1020,20 @@
 
     function displayStudents(students) {
         const container = document.getElementById('studentListContainer');
-        // Remove duplicates by ID
         const uniqueStudents = students.filter((student, index, self) =>
             index === self.findIndex(s => s.id === student.id)
         );
 
         container.innerHTML = uniqueStudents.map(student => `
-        <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+        <div class="bg-white border border-slate-100 hover:border-slate-900 hover:bg-slate-50 rounded-xl p-4 transition-all duration-300 group cursor-pointer relative" onclick="const cb = this.querySelector('input'); cb.checked = !cb.checked; toggleStudentSelection('${student.id}', '${student.first_name} ${student.last_name}')">
             <label class="flex items-center cursor-pointer">
-                <input type="checkbox" class="mr-3" value="${student.id}" 
-                       onchange="toggleStudentSelection('${student.id}', '${student.first_name} ${student.last_name}')"
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-200 text-slate-900 focus:ring-0 transition-all cursor-pointer mr-3" 
+                       value="${student.id}" 
+                       onclick="event.stopPropagation(); toggleStudentSelection('${student.id}', '${student.first_name} ${student.last_name}')"
                        ${selectedStudents.has(student.id) ? 'checked' : ''}>
                 <div class="flex-1">
-                    <div class="font-medium text-gray-900">${student.first_name} ${student.last_name}</div>
-                    <div class="text-sm text-gray-500">ID: ${student.student_id}</div>
+                    <div class="text-[10px] font-black text-slate-900 uppercase tracking-widest">${student.first_name} ${student.last_name}</div>
+                    <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${student.student_id}</div>
                 </div>
             </label>
         </div>
@@ -960,14 +1093,14 @@
         if (window.editMode) {
             document.getElementById('editFeeTypeClasses').value = selectedClassIds.join(',');
             document.getElementById('editSelectedClassNames').innerHTML = selectedClassNames.length > 0
-                ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-                : 'No classes selected';
+                ? selectedClassNames.map(name => `<span class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-tight mr-1.5 mb-1.5 shadow-sm shadow-indigo-50">${name}</span>`).join('')
+                : '<span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No classes selected</span>';
             window.editMode = false;
         } else {
             document.getElementById('feeTypeClasses').value = selectedClassIds.join(',');
             document.getElementById('selectedClassNames').innerHTML = selectedClassNames.length > 0
-                ? selectedClassNames.map(name => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-                : 'No classes selected';
+                ? selectedClassNames.map(name => `<span class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-tight mr-1.5 mb-1.5 shadow-sm shadow-indigo-50">${name}</span>`).join('')
+                : '<span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No classes selected</span>';
         }
 
         closeClassModal();
@@ -983,14 +1116,14 @@
         if (window.editMode) {
             document.getElementById('editFeeTypeStudents').value = selectedStudentIds.join(',');
             document.getElementById('editSelectedStudentNames').innerHTML = selectedStudentNames.length > 0
-                ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-                : 'No students selected';
+                ? selectedStudentNames.map(name => `<span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase tracking-tight mr-1.5 mb-1.5 shadow-sm shadow-emerald-50">${name}</span>`).join('')
+                : '<span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No students selected</span>';
             window.editMode = false;
         } else {
             document.getElementById('feeTypeStudents').value = selectedStudentIds.join(',');
             document.getElementById('selectedStudentNames').innerHTML = selectedStudentNames.length > 0
-                ? selectedStudentNames.map(name => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-1 mb-1">${name}</span>`).join('')
-                : 'No students selected';
+                ? selectedStudentNames.map(name => `<span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase tracking-tight mr-1.5 mb-1.5 shadow-sm shadow-emerald-50">${name}</span>`).join('')
+                : '<span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No students selected</span>';
         }
 
         closeStudentModal();
@@ -1140,55 +1273,59 @@
                 title.textContent = `${feeTypeName} - Details & Assignments`;
 
                 let contentHTML = `
-                <!-- Fee Type Details -->
-                <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h4 class="font-semibold text-gray-900 mb-3">Fee Type Details</h4>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+                <!-- Fee Type Specification -->
+                <div class="bg-indigo-50/50 rounded-3xl p-8 border border-indigo-100 mb-8">
+                    <h4 class="text-[10px] font-black text-indigo-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <i class="fas fa-file-invoice-dollar text-[12px]"></i>
+                        Core Configuration
+                    </h4>
+                    <div class="grid grid-cols-2 gap-x-12 gap-y-6">
                         <div>
-                            <span class="text-gray-500">Code:</span>
-                            <span class="ml-2 font-medium">${feeType.code}</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Fee Reference</span>
+                            <span class="text-[11px] font-black text-slate-900 uppercase tracking-tight">${feeType.code}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Amount:</span>
-                            <span class="ml-2 font-medium text-green-600">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Standard Rate</span>
+                            <span class="text-[11px] font-black text-indigo-600">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Frequency:</span>
-                            <span class="ml-2 font-medium">${window.getFrequencyLabel(feeType.payment_frequency)}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500">Status:</span>
-                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${feeType.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${feeType.is_active ? 'Active' : 'Inactive'}
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Billing cycle</span>
+                            <span class="text-[10px] font-black text-slate-900 uppercase tracking-tight flex items-center gap-1.5">
+                                <i class="far fa-calendar-alt text-slate-400"></i>
+                                ${window.getFrequencyLabel(feeType.payment_frequency)}
                             </span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Required:</span>
-                            <span class="ml-2 font-medium">${feeType.is_required ? 'Yes' : 'No'}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-500">Scope:</span>
-                            <span class="ml-2 font-medium capitalize">${feeType.scope.replace('_', ' ')}</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Compliance</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${feeType.is_required ? 'bg-indigo-100 text-indigo-800 shadow-sm shadow-indigo-50' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
+                                ${feeType.is_required ? 'Mandatory' : 'Optional Choice'}
+                            </span>
                         </div>
                     </div>
                     ${feeType.description ? `
-                        <div class="mt-3 pt-3 border-t border-gray-200">
-                            <span class="text-gray-500 text-sm">Description:</span>
-                            <p class="mt-1 text-sm text-gray-700">${feeType.description}</p>
+                        <div class="mt-8 pt-6 border-t border-indigo-100/50">
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-2">Scope Narrative</span>
+                            <p class="text-[11px] font-bold text-slate-600 leading-relaxed">${feeType.description}</p>
                         </div>
                     ` : ''}
                 </div>
             `;
 
-                // Add assignments section
-                contentHTML += '<div><h4 class="font-semibold text-gray-900 mb-3">Assignments</h4>';
+                // Targeted Entities Section
+                contentHTML += `
+                    <div class="space-y-6">
+                        <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2 px-1">
+                            <i class="fas fa-bullseye text-[12px] text-rose-500"></i>
+                            Precision Targeting
+                        </h4>
+                `;
 
                 if (assignmentsData.classes && assignmentsData.classes.length > 0) {
                     contentHTML += `
-                    <div class="mb-4">
-                        <h5 class="text-sm font-medium text-gray-700 mb-2">Classes (${assignmentsData.classes.length})</h5>
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm shadow-indigo-100/20">
+                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Academic Classes (${assignmentsData.classes.length})</h5>
                         <div class="flex flex-wrap gap-2">
-                            ${assignmentsData.classes.map(cls => `<span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">${cls}</span>`).join('')}
+                            ${assignmentsData.classes.map(cls => `<span class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-tight shadow-sm shadow-indigo-50">${cls}</span>`).join('')}
                         </div>
                     </div>
                 `;
@@ -1196,10 +1333,10 @@
 
                 if (assignmentsData.students && assignmentsData.students.length > 0) {
                     contentHTML += `
-                    <div class="mb-4">
-                        <h5 class="text-sm font-medium text-gray-700 mb-2">Students (${assignmentsData.students.length})</h5>
+                    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm shadow-emerald-100/20">
+                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Targeted Students (${assignmentsData.students.length})</h5>
                         <div class="flex flex-wrap gap-2">
-                            ${assignmentsData.students.map(student => `<span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm">${student}</span>`).join('')}
+                            ${assignmentsData.students.map(student => `<span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase tracking-tight shadow-sm shadow-emerald-50">${student}</span>`).join('')}
                         </div>
                     </div>
                 `;
@@ -1207,12 +1344,12 @@
 
                 if ((!assignmentsData.classes || assignmentsData.classes.length === 0) && (!assignmentsData.students || assignmentsData.students.length === 0)) {
                     contentHTML += `
-                    <div class="text-center py-6 bg-gray-50 rounded-lg">
-                        <div class="text-gray-400 mb-2">
-                            <i class="fas fa-users text-2xl"></i>
+                    <div class="text-center py-10 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
+                            <i class="fas fa-users-slash text-slate-300"></i>
                         </div>
-                        <p class="text-gray-600 text-sm">No specific assignments found.</p>
-                        <p class="text-xs text-gray-500">This fee type uses manual assignment.</p>
+                        <p class="text-[11px] font-black text-slate-900 uppercase tracking-tight mb-1">No Custom Assignments</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Global billing scope applied by default</p>
                     </div>
                 `;
                 }
@@ -1287,11 +1424,13 @@
         const textEl = document.getElementById('messageText');
         const button = document.getElementById('messageButton');
 
-        icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-green-100';
-        icon.innerHTML = '<i class="fas fa-check text-green-600 text-xl"></i>';
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-emerald-100 shadow-emerald-100 shadow-lg';
+        icon.innerHTML = '<i class="fas fa-check-circle text-emerald-600 text-2xl"></i>';
         titleEl.textContent = title;
+        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
         textEl.textContent = message;
-        button.className = 'px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors duration-200';
+        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
+        button.className = 'w-full px-8 py-4 text-[11px] font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-2xl shadow-xl shadow-emerald-100 transition-all duration-300 uppercase tracking-widest hover:-translate-y-1';
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -1304,11 +1443,13 @@
         const textEl = document.getElementById('messageText');
         const button = document.getElementById('messageButton');
 
-        icon.className = 'mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-red-100';
-        icon.innerHTML = '<i class="fas fa-times text-red-600 text-xl"></i>';
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-rose-100 shadow-rose-100 shadow-lg';
+        icon.innerHTML = '<i class="fas fa-exclamation-triangle text-rose-600 text-2xl"></i>';
         titleEl.textContent = title;
+        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
         textEl.textContent = message;
-        button.className = 'px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors duration-200';
+        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
+        button.className = 'w-full px-8 py-4 text-[11px] font-black text-white bg-rose-500 hover:bg-rose-600 rounded-2xl shadow-xl shadow-rose-100 transition-all duration-300 uppercase tracking-widest hover:-translate-y-1';
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -1382,71 +1523,80 @@
 
     // Activate fee type function
     async function activateFeeType(feeTypeId, feeTypeName) {
-        if (!confirm(`Activate "${feeTypeName}" for student payments?`)) {
-            return;
-        }
+        const modal = document.getElementById('messageModal');
+        const icon = document.getElementById('messageIcon');
+        const titleEl = document.getElementById('messageTitle');
+        const textEl = document.getElementById('messageText');
+        const button = document.getElementById('messageButton');
 
-        // Show loading in button
-        let activateBtn = null;
-        let originalText = '';
-        if (window.event && window.event.target) {
-            activateBtn = window.event.target.closest('button');
-            originalText = activateBtn.textContent;
-            activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            activateBtn.disabled = true;
-        }
+        // Reuse message modal as a confirmation modal
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-indigo-100 shadow-indigo-100 shadow-lg';
+        icon.innerHTML = '<i class="fas fa-rocket text-indigo-600 text-2xl"></i>';
+        titleEl.textContent = 'Confirm Activation';
+        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
+        textEl.textContent = `Are you sure you want to activate "${feeTypeName}" for student billing? This action will generate ledger entries.`;
+        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
 
-        try {
-            const response = await fetch('/api/fees/activate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    fee_type_id: feeTypeId
-                })
-            });
+        button.className = 'w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all';
+        button.textContent = 'Proceed with Activation';
 
-            if (response.ok) {
-                loadFeeTypes();
-                showSuccessMessage('Success', 'Fee type activated successfully!');
-            } else {
-                const error = await response.json();
-                showErrorMessage('Error', error.error || 'Failed to activate fee type');
+        const originalAction = button.onclick;
+        button.onclick = async () => {
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Initializing...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/fees/activate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fee_type_id: feeTypeId })
+                });
+
+                if (response.ok) {
+                    loadFeeTypes();
+                    showSuccessMessage('Success', 'Fee structure activated and synced successfully!');
+                } else {
+                    const error = await response.json();
+                    showErrorMessage('Sync Failed', error.error || 'Failed to activate structure');
+                }
+            } catch (error) {
+                showErrorMessage('System Error', 'Error communicating with revenue API');
+            } finally {
+                button.disabled = false;
+                button.onclick = originalAction;
+                button.textContent = 'Acknowledge';
             }
-        } catch (error) {
-            console.error('Activation Error:', error);
-            showErrorMessage('Error', 'Error activating fee type: ' + error.message);
-        } finally {
-            // Reset button state
-            if (activateBtn) {
-                activateBtn.innerHTML = originalText;
-                activateBtn.disabled = false;
-            }
-        }
+        };
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 </script>
 
 <!-- View Assignments Modal -->
 <div id="viewAssignmentsModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 id="viewAssignmentsTitle" class="text-xl font-semibold text-gray-900">Fee Type Assignments</h2>
-            <button onclick="closeViewAssignmentsModal()"
-                class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <i class="fas fa-times text-xl"></i>
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex flex-col gap-0.5">
+                <h3 id="viewAssignmentsTitle" class="text-sm font-black text-slate-900 uppercase tracking-widest">Active
+                    Assignments</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Distribution Map
+                    Information</span>
+            </div>
+            <button onclick="closeViewAssignmentsModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="p-6">
-            <div id="viewAssignmentsContent" class="space-y-4">
-                <!-- Content will be populated here -->
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
+            <div id="viewAssignmentsContent" class="space-y-6">
+                <!-- Content populated via JS -->
             </div>
         </div>
-        <div class="flex justify-end p-6 border-t border-gray-200">
+        <div class="p-6 border-t border-slate-50 bg-slate-50/30">
             <button onclick="closeViewAssignmentsModal()"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                Close
+                class="w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">
+                Close Inspector
             </button>
         </div>
     </div>
@@ -1454,17 +1604,22 @@
 
 <!-- Success/Error Modal -->
 <div id="messageModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
-        <div class="p-6 text-center">
-            <div id="messageIcon" class="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center">
-                <!-- Icon will be set dynamically -->
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div
+        class="bg-white rounded-2xl shadow-2xl max-w-sm w-full border border-slate-100 animate-slide-in overflow-hidden">
+        <div class="p-8 text-center">
+            <div id="messageIcon"
+                class="mx-auto mb-4 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500">
+                <!-- Icon via JS -->
             </div>
-            <h3 id="messageTitle" class="text-lg font-semibold mb-2">Message</h3>
-            <p id="messageText" class="text-gray-600 mb-6">Message content</p>
+            <h3 id="messageTitle" class="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Notification
+            </h3>
+            <p id="messageText"
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-6">Detailed
+                feedback message</p>
             <button onclick="closeMessageModal()" id="messageButton"
-                class="px-6 py-2 rounded-lg font-medium transition-colors duration-200">
-                OK
+                class="w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">
+                Acknowledge
             </button>
         </div>
     </div>
@@ -1472,61 +1627,42 @@
 
 <!-- Class Selection Modal -->
 <div id="classSelectionModal"
-    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
-            <h3 class="text-lg font-semibold text-gray-900">Select Classes</h3>
-            <button onclick="closeClassModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+    class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Academic Catalog</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select Target
+                    Classes</span>
+            </div>
+            <button onclick="closeClassModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="mb-4">
-                <div class="relative">
-                    <input type="text" id="classSearchInput" placeholder="Search classes..."
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
+            <div class="mb-6 relative group">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                <input type="text" id="classSearchInput" placeholder="Filter classes..."
+                    class="w-full bg-slate-50 border-none text-[11px] font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none">
             </div>
-            <div id="classLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-24 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-16"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-20"></div>
-                        </div>
-                    </div>
-                </div>
+            <div id="classLoadingSkeleton" class="grid grid-cols-2 gap-3">
+                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden" id="classListContainer">
-                <!-- Class items will be populated here -->
+            <div class="grid grid-cols-2 gap-3 hidden" id="classListContainer">
+                <!-- Class items via JS -->
             </div>
         </div>
-        <div class="flex justify-between p-6 border-t border-gray-200 flex-shrink-0">
-            <div>
-                <span id="selectedClassCount" class="text-sm text-gray-600">0 classes selected</span>
-            </div>
+        <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
+            <span id="selectedClassCount"
+                class="text-[10px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1.5 rounded-lg">0
+                selected</span>
             <div class="flex gap-2">
                 <button onclick="closeClassModal()"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                    Cancel
-                </button>
+                    class="px-5 py-2 rounded-xl text-xs font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
                 <button onclick="confirmClassSelection()"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
-                    Confirm Selection
-                </button>
+                    class="px-5 py-2 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
+                    Selection</button>
             </div>
         </div>
     </div>
@@ -1534,91 +1670,62 @@
 
 <!-- Student Selection Modal -->
 <div id="studentSelectionModal"
-    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200 flex-shrink-0">
-            <h3 class="text-lg font-semibold text-gray-900">Select Students</h3>
-            <button onclick="closeStudentModal()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+    class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+            <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Student Registry</h3>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Target Specific
+                    Individuals</span>
+            </div>
+            <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto">
-            <div class="mb-4">
-                <div class="relative">
-                    <input type="text" id="studentSearchInput" placeholder="Search students..."
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
+            <div class="mb-6 space-y-3">
+                <div class="relative group">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                    <input type="text" id="studentSearchInput" placeholder="Search registry..."
+                        class="w-full bg-slate-50 border-none text-[11px] font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none"
                         oninput="handleStudentSearch()">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
-                <div class="mt-2">
-                    <span id="studentCount" class="text-sm text-gray-500">Loading students...</span>
-                </div>
-            </div>
-            <div id="studentLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-32 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-24"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-20"></div>
-                        </div>
-                    </div>
+                <div class="px-1 flex items-center justify-between">
+                    <span id="studentCount"
+                        class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Awaiting query...</span>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden" id="studentListContainer">
-                <!-- Student items will be populated here -->
+
+            <div id="studentLoadingSkeleton" class="grid grid-cols-2 gap-3">
+                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
             </div>
-            <div id="studentInfiniteLoadingSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-32 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-24"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="animate-pulse border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-                        <div class="flex-1">
-                            <div class="h-4 bg-gray-200 rounded w-28 mb-1"></div>
-                            <div class="h-3 bg-gray-200 rounded w-20"></div>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="grid grid-cols-2 gap-3 hidden" id="studentListContainer">
+                <!-- Student items via JS -->
             </div>
-            <div id="loadMoreStudents" class="text-center mt-4 hidden">
+
+            <div id="studentInfiniteLoadingSkeleton" class="grid grid-cols-2 gap-3 mt-4 hidden">
+                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+            </div>
+
+            <div id="loadMoreStudents" class="text-center mt-6 hidden">
                 <button onclick="loadMoreStudents()"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
-                    Load More Students
+                    class="px-6 py-2 rounded-xl text-xs font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 uppercase transition-all border border-indigo-100">
+                    Load More Results
                 </button>
             </div>
         </div>
-        <div class="flex justify-between p-6 border-t border-gray-200 flex-shrink-0">
-            <div>
-                <span id="selectedStudentCount" class="text-sm text-gray-600">0 students selected</span>
-            </div>
+        <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
+            <span id="selectedStudentCount"
+                class="text-[10px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1.5 rounded-lg">0
+                selected</span>
             <div class="flex gap-2">
                 <button onclick="closeStudentModal()"
-                    class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200">
-                    Cancel
-                </button>
+                    class="px-5 py-2 rounded-xl text-xs font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
                 <button onclick="confirmStudentSelection()"
-                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition-colors duration-200">
-                    Confirm Selection
-                </button>
+                    class="px-5 py-2 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
+                    Selection</button>
             </div>
         </div>
     </div>
