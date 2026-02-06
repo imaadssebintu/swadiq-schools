@@ -1,29 +1,29 @@
-<div class="px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+<div class="px-4 py-3 lg:px-6 lg:py-4 space-y-4">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex flex-col gap-1">
-            <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Fees Management</h1>
-            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Track and manage student fees</p>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-col">
+            <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">Fees Management</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Track and manage student fees</p>
         </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
             <a href="/fees/active"
-                class="bg-emerald-50 text-emerald-600 px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-emerald-100 transition-colors shadow-sm flex items-center gap-2 border border-emerald-100">
-                <i class="fas fa-check-circle"></i>
+                class="bg-emerald-50 text-emerald-600 px-3 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide hover:bg-emerald-100 transition-colors shadow-sm flex items-center gap-1.5 border border-emerald-100">
+                <i class="fas fa-check-circle text-[10px]"></i>
                 <span class="hidden sm:inline">Active Fees</span>
             </a>
             <a href="/fee-types"
-                class="bg-slate-100 text-slate-600 px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
-                <i class="fas fa-tags"></i>
+                class="bg-slate-100 text-slate-600 px-3 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-1.5">
+                <i class="fas fa-tags text-[10px]"></i>
                 <span class="hidden sm:inline">Fee Types</span>
             </a>
             <button id="addFeeBtn"
-                class="bg-indigo-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
-                <i class="fas fa-plus"></i>
+                class="bg-indigo-600 text-white px-3 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-1.5">
+                <i class="fas fa-plus text-[10px]"></i>
                 <span class="hidden sm:inline">Add Fee</span>
             </button>
             <button id="applyFeesBtn"
-                class="bg-slate-900 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
-                <i class="fas fa-layer-group"></i>
+                class="bg-slate-900 text-white px-3 py-1.5 sm:px-3 sm:py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-1.5">
+                <i class="fas fa-layer-group text-[10px]"></i>
                 <span class="hidden sm:inline">Apply Fees</span>
             </button>
         </div>
@@ -31,56 +31,56 @@
 
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Total Payable -->
         <div
-            class="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl p-4 shadow-sm relative overflow-hidden group">
+            class="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl p-3 shadow-sm relative overflow-hidden group">
             <div
-                class="absolute right-0 top-0 opacity-10 transform translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-coins text-8xl text-white"></i>
+                class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-coins text-4xl text-white"></i>
             </div>
-            <p class="text-[10px] font-black text-indigo-200 uppercase tracking-widest relative z-10">Total Payable</p>
-            <h3 id="totalAmount" class="text-2xl font-black text-white mt-1 relative z-10 tracking-tight">
-                <div class="h-8 w-24 bg-white/20 rounded animate-pulse"></div>
+            <p class="text-[9px] font-black text-indigo-200 uppercase tracking-widest relative z-10">Total Payable</p>
+            <h3 id="totalAmount" class="text-lg font-black text-white mt-0.5 relative z-10 tracking-tight">
+                <div class="h-6 w-20 bg-white/20 rounded animate-pulse"></div>
             </h3>
         </div>
 
         <!-- Total Paid -->
         <div
-            class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-4 shadow-sm relative overflow-hidden group">
+            class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-3 shadow-sm relative overflow-hidden group">
             <div
-                class="absolute right-0 top-0 opacity-10 transform translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-check-circle text-8xl text-white"></i>
+                class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-check-circle text-4xl text-white"></i>
             </div>
-            <p class="text-[10px] font-black text-emerald-100 uppercase tracking-widest relative z-10">Total Paid</p>
-            <h3 id="totalPaid" class="text-2xl font-black text-white mt-1 relative z-10 tracking-tight">
-                <div class="h-8 w-24 bg-white/20 rounded animate-pulse"></div>
+            <p class="text-[9px] font-black text-emerald-100 uppercase tracking-widest relative z-10">Total Paid</p>
+            <h3 id="totalPaid" class="text-lg font-black text-white mt-0.5 relative z-10 tracking-tight">
+                <div class="h-6 w-20 bg-white/20 rounded animate-pulse"></div>
             </h3>
         </div>
 
         <!-- Total Balance -->
         <div
-            class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-4 shadow-sm relative overflow-hidden group">
+            class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl p-3 shadow-sm relative overflow-hidden group">
             <div
-                class="absolute right-0 top-0 opacity-10 transform translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-exclamation-circle text-8xl text-white"></i>
+                class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-exclamation-circle text-4xl text-white"></i>
             </div>
-            <p class="text-[10px] font-black text-rose-100 uppercase tracking-widest relative z-10">Total Balance</p>
-            <h3 id="totalBalance" class="text-2xl font-black text-white mt-1 relative z-10 tracking-tight">
-                <div class="h-8 w-24 bg-white/20 rounded animate-pulse"></div>
+            <p class="text-[9px] font-black text-rose-100 uppercase tracking-widest relative z-10">Total Balance</p>
+            <h3 id="totalBalance" class="text-lg font-black text-white mt-0.5 relative z-10 tracking-tight">
+                <div class="h-6 w-20 bg-white/20 rounded animate-pulse"></div>
             </h3>
         </div>
 
         <!-- Students with Fees -->
         <div
-            class="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-4 shadow-sm relative overflow-hidden group">
+            class="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-3 shadow-sm relative overflow-hidden group">
             <div
-                class="absolute right-0 top-0 opacity-10 transform translate-x-1/2 -translate-y-1/2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-users text-8xl text-white"></i>
+                class="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-users text-4xl text-white"></i>
             </div>
-            <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest relative z-10">Active Students</p>
-            <h3 id="studentsWithFees" class="text-2xl font-black text-white mt-1 relative z-10 tracking-tight">
-                <div class="h-8 w-12 bg-white/20 rounded animate-pulse"></div>
+            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest relative z-10">Active Students</p>
+            <h3 id="studentsWithFees" class="text-lg font-black text-white mt-0.5 relative z-10 tracking-tight">
+                <div class="h-6 w-10 bg-white/20 rounded animate-pulse"></div>
             </h3>
         </div>
     </div>
