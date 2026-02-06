@@ -30,7 +30,7 @@ func InitDB() {
 
 	// Check if LOCAL_DB environment variable is set
 	if os.Getenv("LOCAL_DB") == "true" {
-		psqlInfo = "host=localhost port=5432 user=postgres dbname=swadiq sslmode=disable timezone=Africa/Nairobi"
+		psqlInfo = "host=localhost port=5432 user=postgres dbname=swadiq sslmode=disable timezone=Africa/Kampala"
 		log.Println("Using local PostgreSQL database")
 	} else {
 		host := "129.80.85.203"
@@ -39,7 +39,7 @@ func InitDB() {
 		password := "Ertdfgxc"
 		dbname := "swadiq"
 
-		psqlInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable timezone=Africa/Nairobi connect_timeout=60",
+		psqlInfo = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable timezone=Africa/Kampala connect_timeout=60",
 			host, port, user, password, dbname)
 		log.Printf("Attempting to connect to remote database at %s:%d", host, port)
 	}

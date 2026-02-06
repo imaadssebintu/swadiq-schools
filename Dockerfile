@@ -1,6 +1,6 @@
 FROM golang:1.25-alpine
 RUN apk add --no-cache tzdata
-ENV TZ=Africa/Nairobi
+ENV TZ=Africa/Kampala
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
