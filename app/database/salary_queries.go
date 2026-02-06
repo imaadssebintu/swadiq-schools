@@ -9,7 +9,7 @@ import (
 // GetTeacherBaseSalary returns the base salary configuration for a given teacher
 func GetTeacherBaseSalary(db *sql.DB, userID string) (*models.TeacherBaseSalary, error) {
 	query := `
-		SELECT id, user_id, amount, period, created_at, updated_at
+		SELECT id, user_id, amount, period, effective_date, created_at, updated_at
 		FROM teacher_base_salaries
 		WHERE user_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
@@ -21,6 +21,7 @@ func GetTeacherBaseSalary(db *sql.DB, userID string) (*models.TeacherBaseSalary,
 		&salary.UserID,
 		&salary.Amount,
 		&salary.Period,
+		&salary.EffectiveDate,
 		&salary.CreatedAt,
 		&salary.UpdatedAt,
 	)
@@ -33,7 +34,7 @@ func GetTeacherBaseSalary(db *sql.DB, userID string) (*models.TeacherBaseSalary,
 // GetTeacherAllowance returns the allowance configuration for a given teacher
 func GetTeacherAllowance(db *sql.DB, userID string) (*models.TeacherAllowance, error) {
 	query := `
-		SELECT id, user_id, amount, period, is_active, created_at, updated_at
+		SELECT id, user_id, amount, period, is_active, effective_date, created_at, updated_at
 		FROM teacher_allowances
 		WHERE user_id = $1 AND deleted_at IS NULL
 		ORDER BY created_at DESC
@@ -46,6 +47,7 @@ func GetTeacherAllowance(db *sql.DB, userID string) (*models.TeacherAllowance, e
 		&allowance.Amount,
 		&allowance.Period,
 		&allowance.IsActive,
+		&allowance.EffectiveDate,
 		&allowance.CreatedAt,
 		&allowance.UpdatedAt,
 	)
@@ -62,7 +64,7 @@ func GetTeacherAllowance(db *sql.DB, userID string) (*models.TeacherAllowance, e
 func UpsertTeacherBaseSalary(db *sql.DB, salary *models.TeacherBaseSalary) error {
 	query := `
 		INSERT INTO teacher_base_salaries (user_id, amount, period, effective_date, created_at, updated_at)
-		VALUES ($1, $2, $3, NOW(), NOW(), NOW())
+		VALUES ($1, $2, $3, $4, NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(
@@ -70,6 +72,7 @@ func UpsertTeacherBaseSalary(db *sql.DB, salary *models.TeacherBaseSalary) error
 		salary.UserID,
 		salary.Amount,
 		salary.Period,
+		salary.EffectiveDate,
 	).Scan(&salary.ID, &salary.CreatedAt, &salary.UpdatedAt)
 }
 
@@ -77,7 +80,7 @@ func UpsertTeacherBaseSalary(db *sql.DB, salary *models.TeacherBaseSalary) error
 func UpsertTeacherAllowance(db *sql.DB, allowance *models.TeacherAllowance) error {
 	query := `
 		INSERT INTO teacher_allowances (user_id, amount, period, is_active, effective_date, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, NOW(), NOW(), NOW())
+		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(
@@ -86,6 +89,7 @@ func UpsertTeacherAllowance(db *sql.DB, allowance *models.TeacherAllowance) erro
 		allowance.Amount,
 		allowance.Period,
 		allowance.IsActive,
+		allowance.EffectiveDate,
 	).Scan(&allowance.ID, &allowance.CreatedAt, &allowance.UpdatedAt)
 }
 
@@ -99,11 +103,12 @@ func GetTeacherSalary(db *sql.DB, userID string) (*models.TeacherSalary, error) 
 	allow, _ := GetTeacherAllowance(db, userID)
 
 	salary := &models.TeacherSalary{
-		ID:        base.ID,
-		UserID:    userID,
-		Amount:    base.Amount,
-		Period:    base.Period,
-		CreatedAt: base.CreatedAt,
+		ID:            base.ID,
+		UserID:        userID,
+		Amount:        base.Amount,
+		Period:        base.Period,
+		EffectiveDate: base.EffectiveDate,
+		CreatedAt:     base.CreatedAt,
 	}
 
 	if allow != nil && allow.IsActive {

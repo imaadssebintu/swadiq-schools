@@ -498,6 +498,14 @@
                                 <input type="number" id="allowanceAmount" placeholder="Allowance Amount (UGX)"
                                     class="w-full bg-slate-50 border border-slate-100 text-xs font-black py-4 px-4 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-slate-900">
 
+                                <div class="space-y-2">
+                                    <label
+                                        class="text-[8px] font-black text-slate-400 uppercase tracking-widest pl-1">Effective
+                                        Date</label>
+                                    <input type="date" id="allowance-effective-date"
+                                        class="w-full bg-slate-50 border border-slate-100 text-xs font-black py-4 px-4 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-slate-900">
+                                </div>
+
                                 <div class="flex p-0.5 bg-slate-100 rounded-xl border border-slate-200/50">
                                     <label class="flex-1 cursor-pointer">
                                         <input type="radio" name="allowancePeriod" value="day" class="peer sr-only">
@@ -811,7 +819,7 @@
         const hasAllowance = document.getElementById('hasAllowanceToggle').checked;
         const period = document.querySelector('input[name="salaryPeriod"]:checked').value;
         const allowancePeriod = document.querySelector('input[name="allowancePeriod"]:checked').value;
-        const effectiveDate = new Date().toISOString();
+        const effectiveDate = document.getElementById('allowance-effective-date')?.value || new Date().toISOString().split('T')[0];
 
         if (!amount || amount <= 0) {
             showNotification('Please enter a valid amount', 'error');
@@ -829,7 +837,8 @@
                     allowance: parseInt(allowance || 0),
                     has_allowance: hasAllowance,
                     period: period,
-                    allowance_period: allowancePeriod
+                    allowance_period: allowancePeriod,
+                    effective_date: effectiveDate
                 })
             });
 
@@ -917,10 +926,10 @@
         email: '{{.teacher.Email}}',
         phone: '{{.teacher.Phone}}',
         roles: [
-            {{ range $i, $r := .roles }}{{if $i}},{{end}}'{{$r.Name}}'{{end}}
-            ],
-    id: '{{.teacher.ID}}'
-        };
+            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
+        ],
+        id: '{{.teacher.ID}}'
+    };
 
     async function loadAllSystemRoles() {
         try {

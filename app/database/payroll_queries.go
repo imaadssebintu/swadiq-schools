@@ -288,7 +288,7 @@ func GetTeacherLedger(db *sql.DB, teacherID string, monthsToLookBack int) ([]map
 		}
 
 		entry := map[string]interface{}{
-			"period_name": startOfMonth.Format("January 2006"),
+			"period_name": startOfMonth.Format("02-01-2006"),
 			"start_date":  startOfMonth.Format("2006-01-02"),
 			"end_date":    endOfMonth.Format("2006-01-02"),
 			"due_date":    endOfMonth.Format("2006-01-02"), // Payday = Last day
@@ -362,7 +362,7 @@ func GetTeacherBaseSalaryLedger(db *sql.DB, teacherID string, monthsToLookBack i
 		basePaid, _, _, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
 
 		entry := map[string]interface{}{
-			"period_name": startOfMonth.Format("January 2006"),
+			"period_name": startOfMonth.Format("02-01-2006"),
 			"start_date":  startOfMonth.Format("2006-01-02"),
 			"end_date":    endOfMonth.Format("2006-01-02"),
 			"accrued":     baseAccrued,
@@ -430,7 +430,7 @@ func GetTeacherAllowanceLedger(db *sql.DB, teacherID string, monthsToLookBack in
 		_, allowPaid, _, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
 
 		entry := map[string]interface{}{
-			"period_name": startOfMonth.Format("January 2006"),
+			"period_name": startOfMonth.Format("02-01-2006"),
 			"start_date":  startOfMonth.Format("2006-01-02"),
 			"end_date":    endOfMonth.Format("2006-01-02"),
 			"accrued":     allowAccrued,

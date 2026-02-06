@@ -936,11 +936,18 @@ func SetTeacherSalaryAPI(c *fiber.Ctx) error {
 		}
 	}
 
+	// Handle Effective Date (Default to NOW if not provided)
+	effectiveDate := req.EffectiveDate
+	if effectiveDate.IsZero() {
+		effectiveDate = time.Now()
+	}
+
 	// Save Base Salary
 	baseSalary := &models.TeacherBaseSalary{
-		UserID: teacherID,
-		Amount: req.Amount,
-		Period: req.Period,
+		UserID:        teacherID,
+		Amount:        req.Amount,
+		Period:        req.Period,
+		EffectiveDate: effectiveDate,
 	}
 
 	if err := database.UpsertTeacherBaseSalary(config.GetDB(), baseSalary); err != nil {
@@ -950,13 +957,25 @@ func SetTeacherSalaryAPI(c *fiber.Ctx) error {
 	// Save/Update Allowance if requested
 	if req.HasAllowance {
 		allowance := &models.TeacherAllowance{
-			UserID:   teacherID,
-			Amount:   req.Allowance,
-			Period:   req.AllowancePeriod,
-			IsActive: true,
+			UserID:        teacherID,
+			Amount:        req.Allowance,
+			Period:        req.AllowancePeriod,
+			IsActive:      true,
+			EffectiveDate: effectiveDate,
 		}
 		if err := database.UpsertTeacherAllowance(config.GetDB(), allowance); err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to set allowance", "details": err.Error()})
+		}
+
+		// Provision Unpaid Expense/Payment
+		teacher, _ := database.GetTeacherByID(config.GetDB(), teacherID)
+		teacherName := "Unknown Teacher"
+		if teacher != nil {
+			teacherName = fmt.Sprintf("%s %s", teacher.FirstName, teacher.LastName)
+		}
+
+		if err := database.ProvisionUnpaidAllowance(config.GetDB(), teacherID, req.Allowance, req.AllowancePeriod, effectiveDate, teacherName); err != nil {
+			log.Printf("Warning: Failed to provision unpaid allowance for %s: %v", teacherID, err)
 		}
 	} else {
 		// Insert an inactive record to stop accruals
