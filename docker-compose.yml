@@ -13,4 +13,5 @@ services:
     environment:
       # Set to 'true' to use local DB config, 'false' for hardcoded remote IP
       - LOCAL_DB=false
+      - TZ=Africa/Nairobi
     restart: always

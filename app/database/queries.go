@@ -527,8 +527,14 @@ func IsPhoneTaken(db *sql.DB, phone string, excludeUserID string) (bool, error) 
 	}
 
 	var exists bool
-	query := `SELECT EXISTS(SELECT 1 FROM users WHERE phone = $1 AND id != $2 AND is_active = true)`
-	err := db.QueryRow(query, phone, excludeUserID).Scan(&exists)
+	var err error
+	if excludeUserID != "" {
+		query := `SELECT EXISTS(SELECT 1 FROM users WHERE phone = $1 AND id != $2 AND is_active = true)`
+		err = db.QueryRow(query, phone, excludeUserID).Scan(&exists)
+	} else {
+		query := `SELECT EXISTS(SELECT 1 FROM users WHERE phone = $1 AND is_active = true)`
+		err = db.QueryRow(query, phone).Scan(&exists)
+	}
 	return exists, err
 }
 

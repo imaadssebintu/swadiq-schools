@@ -23,6 +23,7 @@ import (
 	"swadiq-schools/app/routes/teachers"
 	"swadiq-schools/app/routes/timetable"
 	"swadiq-schools/app/services"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -93,6 +94,16 @@ func customErrorHandler(c *fiber.Ctx, err error) error {
 }
 
 func main() {
+	// Set global time zone to East Africa Time
+	loc, err := time.LoadLocation("Africa/Nairobi")
+	if err != nil {
+		log.Printf("Warning: Failed to load Africa/Nairobi location, falling back to UTC+3: %v", err)
+		time.Local = time.FixedZone("EAT", 3*60*60)
+	} else {
+		time.Local = loc
+	}
+	log.Printf("Application time zone set to: %s", time.Local.String())
+
 	// Initialize database
 	config.InitDB()
 	defer config.GetDB().Close()
