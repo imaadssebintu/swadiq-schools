@@ -1408,6 +1408,26 @@
         fetchAndRenderSubjects(query);
     }, 400);
 
+    // Interactive Selection Logic
+    document.getElementById('subjectsList').addEventListener('change', function (e) {
+        if (e.target.name === 'subjects') {
+            const subjectId = e.target.value;
+            const papers = document.querySelectorAll(`input[name="papers_${subjectId}"]`);
+            papers.forEach(p => p.checked = e.target.checked);
+        } else if (e.target.name && e.target.name.startsWith('papers_')) {
+            const subjectId = e.target.name.replace('papers_', '');
+            const subjectCheck = document.querySelector(`input[name="subjects"][value="${subjectId}"]`);
+            const paperChecks = document.querySelectorAll(`input[name="papers_${subjectId}"]`);
+            const anyChecked = Array.from(paperChecks).some(p => p.checked);
+
+            if (e.target.checked) {
+                subjectCheck.checked = true;
+            } else if (!anyChecked) {
+                subjectCheck.checked = false;
+            }
+        }
+    });
+
     async function handleAssignSubjects(e) {
         e.preventDefault();
         const btn = e.submitter || document.querySelector('button[form="assignSubjectsForm"][type="submit"]');
@@ -1420,7 +1440,24 @@
         const form = new FormData(e.target);
         const subjects = form.getAll('subjects');
         const papers = {};
-        subjects.forEach(sid => papers[sid] = form.getAll('papers_' + sid));
+
+        // Validation: Every selected subject must have at least one paper
+        let validationError = false;
+        subjects.forEach(sid => {
+            const paperSelection = form.getAll('papers_' + sid);
+            if (paperSelection.length === 0) {
+                validationError = true;
+                // Highlight or focus? For now just notify
+            }
+            papers[sid] = paperSelection;
+        });
+
+        if (validationError) {
+            showNotification('Every selected module must have at least one paper assigned', 'error');
+            btn.disabled = false;
+            btn.innerHTML = orig;
+            return;
+        }
 
         try {
             const res = await fetch('/api/teachers/' + teacherID + '/subjects', {
