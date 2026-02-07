@@ -986,7 +986,7 @@
         email: '{{.teacher.Email}}',
         phone: '{{.teacher.Phone}}',
         roles: [
-            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
+            {{ range .roles }}'{{.Name}}', {{ end }}
         ],
     id: '{{.teacher.ID}}'
     };
@@ -1580,6 +1580,19 @@
             // Helper to render a consistent row
             const renderRow = (data) => {
                 const { period, type, reference, accrued, paid, balance, status, statusClass, actionHTML } = data;
+
+                // Format Amount / Balance
+                let amountDisplay = '-';
+                if (accrued > 0) {
+                    amountDisplay = `
+                        <div class="flex flex-col items-end leading-tight">
+                            <span class="text-[10px] text-slate-400 font-medium">${new Intl.NumberFormat('en-UG').format(accrued)}</span>
+                            <span class="text-[11px] text-slate-700 font-bold">${new Intl.NumberFormat('en-UG').format(balance)}</span>
+                        </div>`;
+                } else {
+                    amountDisplay = `<span class="text-[11px] text-slate-700 font-bold">${new Intl.NumberFormat('en-UG').format(balance)}</span>`;
+                }
+
                 return `
                         <tr class="border-b border-slate-50 last:border-none hover:bg-slate-50/50 transition-colors">
                             <td class="px-4 py-4 font-bold text-slate-700 whitespace-nowrap">${period}</td>
@@ -1587,8 +1600,10 @@
                             <td class="px-4 py-4 text-center">
                                 <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-widest border border-slate-200 truncate inline-block max-w-[80px]" title="${reference}">${reference || '-'}</span>
                             </td>
-                            <td class="px-4 py-4 font-bold text-emerald-600 text-right whitespace-nowrap">${paid > 0 ? '+' + new Intl.NumberFormat('en-UG').format(paid) : '-'}</td>
-                            <td class="px-4 py-4 font-bold text-slate-700 text-right whitespace-nowrap text-[11px]">${new Intl.NumberFormat('en-UG').format(balance)}</td>
+                            <td class="px-4 py-4 font-bold text-emerald-600 text-right whitespace-nowrap text-[11px]">${paid > 0 ? '+' + new Intl.NumberFormat('en-UG').format(paid) : '-'}</td>
+                            <td class="px-4 py-4 text-right whitespace-nowrap align-middle">
+                                ${amountDisplay}
+                            </td>
                             <td class="px-4 py-4 text-center">
                                 <span class="px-2 py-1 rounded-md border text-[9px] font-black uppercase tracking-widest ${statusClass}">
                                     ${status}

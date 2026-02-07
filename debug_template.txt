@@ -1,0 +1,15 @@
+﻿Openers:
+20: class="px-2 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded text-[10px] font-black uppercase tracking-widest">{{if
+375: class="px-2 py-0.5 {{if .teacher.IsActive}}bg-emerald-50 text-emerald-600 border-emerald-100{{else}}bg-rose-50 text-rose-600 border-rose-100{{end}} border rounded text-[8px] font-black uppercase tracking-widest">
+376: {{if .teacher.IsActive}}Commissioned{{else}}Decommissioned{{end}}
+384: {{range .roles}}
+551: {{if .teacher.UpdatedAt}}
+989: {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
+
+Closers:
+21: .teacher.IsActive}}Active{{else}}Inactive{{end}}</span>
+375: class="px-2 py-0.5 {{if .teacher.IsActive}}bg-emerald-50 text-emerald-600 border-emerald-100{{else}}bg-rose-50 text-rose-600 border-rose-100{{end}} border rounded text-[8px] font-black uppercase tracking-widest">
+376: {{if .teacher.IsActive}}Commissioned{{else}}Decommissioned{{end}}
+388: {{end}}
+561: {{end}}
+989: {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
