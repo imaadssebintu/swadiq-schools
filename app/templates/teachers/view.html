@@ -1711,7 +1711,7 @@
 
                     return renderRow({
                         period: item.label,
-                        type: item.type,
+                        type: typeTitle,
                         reference: item.reference,
                         accrued: item.accrued,
                         paid: item.paid,
@@ -1723,7 +1723,7 @@
                 }).join('');
             };
 
-            const baseHTML = processLedgerType('Base Salary', 'base', baseLedger);
+            const baseHTML = processLedgerType('Salary', 'base', baseLedger);
             const allowanceHTML = processLedgerType('Allowance', 'allowance', allowLedger);
 
             baseBody.innerHTML = baseHTML || '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400 italic">No salary history recorded</td></tr>';
