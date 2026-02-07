@@ -1,6 +1,7 @@
 package subjects
 
 import (
+	"database/sql"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
@@ -119,6 +120,7 @@ func DeleteSubjectAPI(c *fiber.Ctx) error {
 
 func GetSubjectsWithPapersAPI(c *fiber.Ctx) error {
 	db := config.GetDB()
+	searchTerm := c.Query("q")
 
 	query := `
 		SELECT 
@@ -135,11 +137,19 @@ func GetSubjectsWithPapersAPI(c *fiber.Ctx) error {
 			papers p ON s.id = p.subject_id AND p.deleted_at IS NULL
 		WHERE 
 			s.deleted_at IS NULL
-		ORDER BY 
-			s.name, p.name;
 	`
 
-	rows, err := db.Query(query)
+	var rows *sql.Rows
+	var err error
+
+	if searchTerm != "" {
+		query += ` AND (s.name ILIKE $1 OR s.code ILIKE $1 OR p.name ILIKE $1 OR p.code ILIKE $1)`
+		searchPattern := "%" + searchTerm + "%"
+		rows, err = db.Query(query+" ORDER BY s.name, p.name", searchPattern)
+	} else {
+		rows, err = db.Query(query + " ORDER BY s.name, p.name")
+	}
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch subjects with papers"})
 	}
