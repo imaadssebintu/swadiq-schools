@@ -121,98 +121,87 @@
 
 <!-- Add/Edit Assessment Modal -->
 <div id="examModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 transition-all duration-300">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all">
-        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
-            <div class="flex flex-col gap-0.5">
-                <h2 id="examModalTitle" class="text-lg font-black text-slate-900 uppercase tracking-widest">Create
-                    Assessment</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fill in the details for the new
-                    assessment</p>
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+    onclick="if(event.target === this) hideExamModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300 flex flex-col max-h-[90vh]">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+            <div>
+                <h3 id="examModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-wide">Create
+                    Assessment</h3>
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mt-0.5">Fill in the details for
+                    the new assessment</p>
             </div>
-            <button type="button" onclick="hideExamModal()"
-                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
-                <i class="fas fa-times text-sm"></i>
+            <button onclick="hideExamModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="examForm" class="p-8 space-y-6">
+        <form id="examForm" class="p-6 space-y-4 overflow-y-auto custom-scrollbar">
             <input type="hidden" id="examId" name="id">
             <input type="hidden" id="examClass" name="class_id" required>
             <input type="hidden" id="examType" name="type">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label for="examName"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assessment
-                        Name</label>
-                    <input type="text" id="examName" name="name" required placeholder="e.g. Mid-Term Test"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all placeholder:text-slate-300">
-                </div>
-                <div class="space-y-2">
-                    <label for="examTypeDisplay"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assessment
-                        Type</label>
-                    <div class="relative group">
-                        <input type="hidden" id="assessmentTypeId" name="assessment_type_id" required>
-                        <input type="text" id="examTypeDisplay" placeholder="Select Type" readonly
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
-                        <i
-                            class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
-                    </div>
+
+
+            <div class="space-y-1">
+                <label for="examTypeDisplay"
+                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Assessment Type</label>
+                <div class="relative group">
+                    <input type="hidden" id="assessmentTypeId" name="assessment_type_id" required>
+                    <input type="text" id="examTypeDisplay" placeholder="Select Type" readonly
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer bg-white group-hover:border-indigo-300">
+                    <i
+                        class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 text-[9px] pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label for="examSubjectDisplay"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                    <div class="relative group">
-                        <input type="hidden" id="examSubject" name="subject_id" required>
-                        <input type="text" id="examSubjectDisplay" placeholder="Select Subject" readonly
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
-                        <i
-                            class="fas fa-book absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <label for="examPaperDisplay"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Paper</label>
-                    <div class="relative group">
-                        <input type="hidden" id="examPaper" name="paper_id" required>
-                        <input type="text" id="examPaperDisplay" placeholder="Select Paper" readonly
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all cursor-pointer group-hover:border-slate-300">
-                        <i
-                            class="fas fa-file-alt absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] pointer-events-none group-hover:text-slate-600 transition-colors"></i>
-                    </div>
+            <div class="space-y-1">
+                <label for="examSubjectDisplay"
+                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Subject</label>
+                <div class="relative group">
+                    <input type="hidden" id="examSubject" name="subject_id" required>
+                    <input type="text" id="examSubjectDisplay" placeholder="Select Subject" readonly
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer bg-white group-hover:border-indigo-300">
+                    <i
+                        class="fas fa-book absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 text-[9px] pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
+            <div class="space-y-1">
+                <label for="examPaperDisplay"
+                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Paper</label>
+                <div class="relative group">
+                    <input type="hidden" id="examPaper" name="paper_id" required>
+                    <input type="text" id="examPaperDisplay" placeholder="Select Paper" readonly
+                        class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer bg-white group-hover:border-indigo-300">
+                    <i
+                        class="fas fa-file-alt absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 text-[9px] pointer-events-none group-hover:text-indigo-500 transition-colors"></i>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
                     <label for="examStartTime"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Start
-                        Time</label>
-                    <div class="relative group">
-                        <input type="datetime-local" id="examStartTime" name="start_time" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
-                    </div>
+                        class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Start Time</label>
+                    <input type="datetime-local" id="examStartTime" name="start_time" required
+                        class="w-full text-[11px] font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all [color-scheme:light]">
                 </div>
-                <div class="space-y-2">
-                    <label for="examEndTime"
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">End
+                <div class="space-y-1">
+                    <label for="examEndTime" class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">End
                         Time</label>
-                    <div class="relative group">
-                        <input type="datetime-local" id="examEndTime" name="end_time" required
-                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all">
-                    </div>
+                    <input type="datetime-local" id="examEndTime" name="end_time" required
+                        class="w-full text-[11px] font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all [color-scheme:light]">
                 </div>
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4">
+            <div class="pt-2 flex flex-row gap-3">
                 <button type="button" id="cancelExamBtn" onclick="hideExamModal()"
-                    class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-2xl transition-all">Cancel</button>
+                    class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all order-1">
+                    Cancel
+                </button>
                 <button type="submit"
-                    class="px-8 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
-                    Save Assessment
+                    class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2 order-2">
+                    <i class="fas fa-check-circle text-[9px]"></i>
+                    <span>Save</span>
                 </button>
             </div>
         </form>
@@ -221,104 +210,113 @@
 
 <!-- Subject Selection Modal -->
 <div id="subjectSelectionModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[110] transition-all duration-300">
     <div
         class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
-        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Select Subject</h3>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Choose a subject for this
-                    assessment</p>
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest">Select Subject</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Choose a subject for
+                    this assessment</p>
             </div>
             <button type="button" id="closeSubjectModalBtn"
-                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                class="w-8 h-8 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100 hover:bg-rose-50 transition-all flex items-center justify-center shadow-sm">
                 <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="subjectListContainer">
+        <div class="p-4 overflow-y-auto flex-1 custom-scrollbar" id="subjectListContainer">
             <!-- Subjects will be loaded here -->
-            <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
+            <div class="text-center py-12 text-slate-400">
+                <i class="fas fa-circle-notch fa-spin text-xl mb-3 text-indigo-400"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest animate-pulse">Scanning Subjects...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Paper Selection Modal -->
 <div id="paperSelectionModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[110] transition-all duration-300">
     <div
         class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
-        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Select Paper</h3>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Choose a paper for this subject
-                </p>
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest">Select Paper</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Choose a paper for this
+                    subject</p>
             </div>
             <button type="button" id="closePaperModalBtn"
-                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                class="w-8 h-8 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100 hover:bg-rose-50 transition-all flex items-center justify-center shadow-sm">
                 <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="paperListContainer">
+        <div class="p-4 overflow-y-auto flex-1 custom-scrollbar" id="paperListContainer">
             <!-- Papers will be loaded here -->
-            <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
+            <div class="text-center py-12 text-slate-400">
+                <i class="fas fa-circle-notch fa-spin text-xl mb-3 text-indigo-400"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest animate-pulse">Scanning Papers...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Assessment Type Selection Modal -->
 <div id="assessmentTypeSelectionModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[60] transition-all duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-[110] transition-all duration-300">
     <div
         class="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[80vh] transform scale-100">
-        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
             <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Assessment Type</h3>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Select the type of assessment
-                </p>
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest">Assessment Type</h3>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Select the type of
+                    assessment</p>
             </div>
             <button type="button" id="closeAssessmentTypeModalBtn"
-                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
+                class="w-8 h-8 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100 hover:bg-rose-50 transition-all flex items-center justify-center shadow-sm">
                 <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-3 overflow-y-auto flex-1 custom-scrollbar" id="assessmentTypeListContainer">
+        <div class="p-4 overflow-y-auto flex-1 custom-scrollbar" id="assessmentTypeListContainer">
             <!-- Assessment Types will be loaded here -->
-            <div class="text-center py-8 text-slate-400 text-sm">Loading...</div>
+            <div class="text-center py-12 text-slate-400">
+                <i class="fas fa-circle-notch fa-spin text-xl mb-3 text-indigo-400"></i>
+                <p class="text-[10px] font-bold uppercase tracking-widest animate-pulse">Scanning Types...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Weight Configuration Modal -->
 <div id="weightsModal"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 transition-all duration-300">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all">
-        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
-            <div class="flex flex-col gap-0.5">
-                <h2 class="text-lg font-black text-slate-900 uppercase tracking-widest">Configure Paper Weights</h2>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Set how papers contribute to
-                    subject total</p>
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-[100] transition-all duration-300"
+    onclick="if(event.target === this) hideWeightsModal()">
+    <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+            <div>
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Configure Paper Weights</h3>
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mt-0.5">Set how papers
+                    contribute to subject total</p>
             </div>
             <button type="button" onclick="hideWeightsModal()"
-                class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center">
-                <i class="fas fa-times text-sm"></i>
+                class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times text-xs"></i>
             </button>
         </div>
-        <div class="p-8 space-y-6">
+        <div class="p-6 space-y-5 overflow-y-auto custom-scrollbar">
             <!-- Selectors -->
             <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide ml-1">Subject</label>
                     <select id="weightSubject"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all">
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
                         <option value="">Select Subject</option>
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label
-                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Term</label>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide ml-1">Term</label>
                     <select id="weightTerm"
-                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all">
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all appearance-none cursor-pointer">
                         <option value="">Select Term</option>
                     </select>
                 </div>
@@ -327,27 +325,36 @@
             <!-- Papers List -->
             <div id="weightPapersList" class="space-y-3 hidden">
                 <div
-                    class="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
+                    class="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">
                     <span>Paper</span>
                     <span>Weight (%)</span>
                 </div>
                 <div id="papersWeightContainer" class="space-y-2">
                     <!-- Dynamic Rows -->
                 </div>
-                <div class="flex justify-between items-center pt-2 border-t border-slate-100">
-                    <span class="text-xs font-bold text-slate-500">Total:</span>
-                    <span id="totalWeightDisplay" class="text-xs font-black text-slate-900">0%</span>
+                <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total
+                        Contribution</span>
+                    <span id="totalWeightDisplay"
+                        class="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 shadow-sm">0%</span>
                 </div>
             </div>
 
-            <div id="weightLoading" class="hidden text-center py-4 text-xs text-slate-400">Loading...</div>
+            <div id="weightLoading" class="hidden text-center py-8">
+                <i class="fas fa-circle-notch fa-spin text-indigo-400 text-lg mb-2"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Calculating...
+                </p>
+            </div>
 
-            <div class="flex items-center justify-end gap-3 pt-4">
+            <div class="pt-2 flex flex-row gap-3">
                 <button type="button" onclick="hideWeightsModal()"
-                    class="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-2xl transition-all">Cancel</button>
+                    class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all order-1">
+                    Cancel
+                </button>
                 <button type="button" onclick="saveWeights()"
-                    class="px-8 py-3 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
-                    Save Weights
+                    class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2 order-2">
+                    <i class="fas fa-save text-[9px]"></i>
+                    <span>Save Changes</span>
                 </button>
             </div>
         </div>
@@ -375,19 +382,30 @@
     function showWeightsModal() {
         document.getElementById('weightsModal').classList.remove('hidden');
 
-        // Populate Subject Dropdown from already loaded subjects
         const subjectSelect = document.getElementById('weightSubject');
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
-            subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        const termSelect = document.getElementById('weightTerm');
 
-        if (terms.length === 0) loadTerms();
+        // Only populate if empty (avoid losing selection on every open)
+        if (subjectSelect.options.length <= 1) {
+            console.log('Populating weight subjects select');
+            subjectSelect.innerHTML = '<option value="">Select Subject</option>' +
+                subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        }
+
+        if (terms.length === 0) {
+            loadTerms();
+        }
+
+        // If both are selected (from previous session), trigger loadWeightPapers to refresh the configs
+        if (subjectSelect.value && termSelect.value) {
+            console.log('Reopening modal with existing selection, loading papers...');
+            loadWeightPapers();
+        }
     }
 
     function hideWeightsModal() {
         document.getElementById('weightsModal').classList.add('hidden');
-        document.getElementById('weightPapersList').classList.add('hidden');
-        document.getElementById('weightSubject').value = '';
-        document.getElementById('weightTerm').value = '';
+        // Do not clear the selections so they persist when reopening
     }
 
     document.getElementById('weightSubject').addEventListener('change', loadWeightPapers);
@@ -407,16 +425,23 @@
         document.getElementById('weightPapersList').classList.add('hidden');
 
         try {
-            // 1. Get Papers
+            // 1. Get Papers for this subject
+            console.log(`Fetching papers for subject: ${subjectId}`);
             const paperRes = await fetch(`/api/subjects/papers?class_id=${classId}&subject_id=${subjectId}`);
             const paperData = await paperRes.json();
             const papersList = Array.isArray(paperData) ? paperData : (paperData.data || []);
+            console.log(`Found ${papersList.length} papers`);
 
             // 2. Get Existing Weights
+            console.log(`Fetching existing weights for subject: ${subjectId}, term: ${termId}`);
             const weightRes = await fetch(`/api/subjects/papers/weights?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}`);
             let weights = [];
             if (weightRes.ok) {
-                weights = await weightRes.json();
+                const weightData = await weightRes.json();
+                weights = Array.isArray(weightData) ? weightData : (weightData.data || []);
+                console.log(`Found ${weights.length} existing weight records`);
+            } else {
+                console.warn('Failed to fetch existing weights or none found');
             }
 
             const container = document.getElementById('papersWeightContainer');
@@ -429,12 +454,15 @@
                 const row = document.createElement('div');
                 row.className = 'flex items-center justify-between gap-4';
                 row.innerHTML = `
-                    <span class="text-xs font-bold text-slate-700 w-1/2">${p.name}</span>
-                    <div class="relative w-1/2">
+                    <div class="flex-1">
+                        <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${p.name}</div>
+                        <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${p.code}</div>
+                    </div>
+                    <div class="relative w-28">
                         <input type="number" min="0" max="100" data-paper-id="${p.id}" value="${val}"
-                            class="weight-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 text-right pr-8"
+                            class="weight-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-right pr-7"
                             placeholder="0">
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black text-slate-400">%</span>
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">%</span>
                     </div>
                 `;
                 container.appendChild(row);
@@ -744,18 +772,25 @@
             if (!type.is_active) return;
 
             const item = document.createElement('div');
-            item.className = 'p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors flex items-center justify-between group';
+            item.className = 'group p-3 mb-2 rounded-xl border border-slate-100 bg-white hover:border-indigo-100 hover:bg-indigo-50/30 cursor-pointer transition-all duration-300 flex items-center justify-between';
 
             const badgeStyle = getBadgeStyle(type.code);
 
             item.innerHTML = `
-                <div>
-                    <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${type.name}</div>
-                    <span class="px-2 py-0.5 inline-flex text-[9px] font-black uppercase tracking-widest rounded-md border ${badgeStyle} mt-1">
-                        ${type.code}
-                    </span>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform shadow-sm border border-indigo-100/50">
+                        <i class="fas fa-tag text-[10px]"></i>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">${type.name}</div>
+                        <span class="px-1.5 py-0.5 inline-flex text-[7px] font-black uppercase tracking-widest rounded-md border ${badgeStyle} mt-1 shadow-sm">
+                            ${type.code}
+                        </span>
+                    </div>
                 </div>
-                <i class="fas fa-check text-emerald-500 transition-all text-xs"></i>
+                <div class="w-5 h-5 rounded-full border-2 border-slate-100 group-hover:border-indigo-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-check text-[8px] text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
             `;
             item.onclick = () => {
                 document.getElementById('examType').value = type.code.toLowerCase();
@@ -1048,13 +1083,20 @@
 
         subjectsToShow.forEach(subject => {
             const item = document.createElement('div');
-            item.className = 'p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors flex items-center justify-between group';
+            item.className = 'group p-3 mb-2 rounded-xl border border-slate-100 bg-white hover:border-indigo-100 hover:bg-indigo-50/30 cursor-pointer transition-all duration-300 flex items-center justify-between';
             item.innerHTML = `
-                <div>
-                    <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${subject.name}</div>
-                    <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${subject.code}</div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100/50 group-hover:text-indigo-500 group-hover:scale-110 transition-all shadow-sm border border-slate-100">
+                        <i class="fas fa-book text-[10px]"></i>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">${subject.name}</div>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${subject.code}</div>
+                    </div>
                 </div>
-                <i class="fas fa-arrow-right text-slate-300 group-hover:text-primary-500 transition-all text-xs"></i>
+                <div class="w-6 h-6 rounded-lg bg-slate-50 border border-slate-100 text-slate-300 flex items-center justify-center group-hover:border-indigo-100 group-hover:bg-white group-hover:text-indigo-500 transition-all shadow-sm">
+                    <i class="fas fa-chevron-right text-[8px]"></i>
+                </div>
             `;
             item.onclick = () => {
                 document.getElementById('examSubject').value = subject.id;
@@ -1086,13 +1128,20 @@
 
         papersToShow.forEach(paper => {
             const item = document.createElement('div');
-            item.className = 'p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors flex items-center justify-between group';
+            item.className = 'group p-3 mb-2 rounded-xl border border-slate-100 bg-white hover:border-emerald-100 hover:bg-emerald-50/30 cursor-pointer transition-all duration-300 flex items-center justify-between';
             item.innerHTML = `
-                <div>
-                    <div class="text-sm font-semibold text-slate-900 group-hover:text-primary-600">${paper.name}</div>
-                    <div class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">${paper.code}</div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-100/50 group-hover:text-emerald-500 group-hover:scale-110 transition-all shadow-sm border border-slate-100">
+                        <i class="fas fa-file-alt text-[10px]"></i>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">${paper.name}</div>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${paper.code}</div>
+                    </div>
                 </div>
-                <i class="fas fa-check text-emerald-500 transition-all text-xs"></i>
+                <div class="w-5 h-5 rounded-full border-2 border-slate-100 group-hover:border-emerald-200 flex items-center justify-center transition-all">
+                    <i class="fas fa-check text-[8px] text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
             `;
             item.onclick = () => {
                 document.getElementById('examPaper').value = paper.id;

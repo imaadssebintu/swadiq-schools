@@ -625,14 +625,14 @@
     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
     onclick="if(event.target === this) closeEditModal()">
     <div
-        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all duration-300 flex flex-col max-h-[90vh]">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Edit Personnel</h3>
             <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="editTeacherForm" class="p-6 space-y-4">
+        <form id="editTeacherForm" class="p-6 space-y-4 overflow-y-auto custom-scrollbar">
             <div class="space-y-1">
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">First Name</label>
                 <input type="text" name="firstName" id="editFirstName" required
@@ -980,7 +980,7 @@
         email: '{{.teacher.Email}}',
         phone: '{{.teacher.Phone}}',
         roles: [
-            {{ range .roles }}'{{.Name}}', {{ end }}
+            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
         ],
     id: '{{.teacher.ID}}'
     };

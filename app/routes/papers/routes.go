@@ -15,18 +15,18 @@ func SetupPapersRoutes(app *fiber.App) {
 	papers.Get("/", PapersPage)
 
 	// API Routes
-	api := app.Group("/api/subjects/papers")
-	api.Get("/", GetPapersAPI)
-	api.Get("/table", GetPapersTableAPI)
-	api.Get("/stats", GetPapersStatsAPI)
-	api.Get("/subject/:subjectId", GetPapersBySubjectAPI)
-	api.Get("/by-subject/:subjectId", GetPapersBySubjectAPI)
-	api.Get("/:id", GetPaperAPI)
-	api.Post("/", CreatePaperAPI)
-	api.Put("/:id", UpdatePaperAPI)
-	api.Delete("/:id", DeletePaperAPI)
-	api.Get("/weights", GetPaperWeightsAPI)
-	api.Post("/weights", SavePaperWeightsAPI)
+	papi := app.Group("/api/subjects/papers", auth.AuthMiddleware)
+	papi.Get("/", GetPapersAPI)
+	papi.Get("/table", GetPapersTableAPI)
+	papi.Get("/stats", GetPapersStatsAPI)
+	papi.Get("/subject/:subjectId", GetPapersBySubjectAPI)
+	papi.Get("/by-subject/:subjectId", GetPapersBySubjectAPI)
+	papi.Get("/weights", GetPaperWeightsAPI)
+	papi.Post("/weights", SavePaperWeightsAPI)
+	papi.Get("/:id", GetPaperAPI)
+	papi.Post("/", CreatePaperAPI)
+	papi.Put("/:id", UpdatePaperAPI)
+	papi.Delete("/:id", DeletePaperAPI)
 }
 
 func PapersPage(c *fiber.Ctx) error {

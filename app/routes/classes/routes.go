@@ -25,8 +25,20 @@ func SetupClassesRoutes(app *fiber.App) {
 	api.Get("/stats", GetClassesStatsAPI) // Get classes statistics
 	api.Get("/table", GetClassesTableAPI) // Get classes formatted for table
 	api.Post("/", CreateClassAPI)
-	api.Post("/:id/students", AddStudentToClassAPI) // Add student to class
+	api.Post("/:id/students", AddStudentToClassAPI)                   // Add student to class
 	api.Post("/:id/papers/:paperId/teacher", AssignTeacherToPaperAPI) // Assign teacher to specific paper
+	api.Get("/:id/subjects", GetClassSubjectsAPI)
+	api.Post("/:id/subjects", AddClassSubjectsAPI)
+	api.Delete("/:id/subjects/:subjectId", RemoveClassSubjectAPI)
+	api.Get("/:id/papers", GetClassPapersAPI)
+	api.Post("/:id/papers", AssignPapersToClassAPI)
+	api.Get("/:id/subjects/:subjectId/papers", GetSubjectPapersForClassAPI)
+	api.Get("/:id", GetClassAPI)
+	api.Get("/:id/details", GetClassDetailsAPI)
+	api.Get("/:id/statistics", GetClassStatisticsAPI)
+	api.Get("/:id/students", GetClassStudentsAPI)
+	api.Put("/:id", UpdateClassAPI)
+	api.Delete("/:id", DeleteClassAPI)
 }
 
 func ClassesPage(c *fiber.Ctx) error {
@@ -80,5 +92,3 @@ func ClassDetailPage(c *fiber.Ctx) error {
 		"Email":       user.Email,
 	})
 }
-
-
