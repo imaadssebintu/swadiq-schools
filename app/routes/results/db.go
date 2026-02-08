@@ -888,7 +888,6 @@ func GetFullClassPerformanceMatrix(db *sql.DB, classID, termID, search, assessme
 		}
 		matrix.Papers = append(matrix.Papers, p)
 	}
-	fmt.Printf("[DEBUG] Papers Found for Class subjects: %d\n", len(matrix.Papers))
 
 	// 3. Fetch Students (Paginated)
 	students, total, err := GetStudentsByClassID(db, classID, search, limit, offset)
@@ -960,9 +959,6 @@ func GetFullClassPerformanceMatrix(db *sql.DB, classID, termID, search, assessme
 		params = append(params, assessmentTypeID)
 	}
 
-	fmt.Printf("[DEBUG] Results Query: %s\n", queryResults)
-	fmt.Printf("[DEBUG] Params: Students=%d, Papers=%d, Term=%s, Type=%s\n", len(studentIDs), len(paperIDs), termID, assessmentTypeID)
-
 	rowsRes, err := db.Query(queryResults, params...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch results: %w", err)
@@ -973,16 +969,10 @@ func GetFullClassPerformanceMatrix(db *sql.DB, classID, termID, search, assessme
 		res := &models.Result{}
 		var examID string
 		if err := rowsRes.Scan(&res.ID, &res.StudentID, &res.PaperID, &res.Marks, &res.GradeID, &examID); err != nil {
-			fmt.Printf("[DEBUG] Scan Error: %v\n", err)
 			continue
 		}
 		res.ExamID = examID
 		matrix.Results = append(matrix.Results, res)
-	}
-
-	fmt.Printf("[DEBUG] Results Found: %d\n", len(matrix.Results))
-	if len(matrix.Results) > 0 {
-		fmt.Printf("[DEBUG] Sample Result: Student=%s, Paper=%s, Marks=%.2f\n", matrix.Results[0].StudentID, matrix.Results[0].PaperID, matrix.Results[0].Marks)
 	}
 
 	// 6. Fetch Grades

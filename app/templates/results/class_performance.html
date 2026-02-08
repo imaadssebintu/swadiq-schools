@@ -187,7 +187,7 @@
     let currentData = null;
     let loadedCount = 0;
     let totalStudents = 0;
-    const itemsPerPage = 15;
+    const itemsPerPage = 10;
     let isLoadingMore = false;
     let scrollObserver = null;
 
@@ -308,14 +308,6 @@
 
             if (!response.ok) throw new Error(data.error || 'Failed to load report');
 
-            console.log('--- CLASS MATRIX DEBUG ---');
-            console.log('Students:', data.students?.length || 0);
-            console.log('Papers:', data.papers?.length || 0);
-            console.log('Results:', data.results?.length || 0);
-            if (data.results && data.results.length > 0) {
-                console.log('Sample Result:', data.results[0]);
-            }
-
             // Remove skeletons
             const tbody = document.getElementById('matrixBody');
             const skeletons = tbody.querySelectorAll('.skeleton-row');
@@ -378,6 +370,12 @@
                         </th>
                     `;
                 });
+                // Add Total column for the subject
+                html += `
+                    <th class="px-5 py-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center border-l border-slate-200 bg-slate-100/30 min-w-[100px]">
+                        ${subject.code} Total
+                    </th>
+                `;
             } else {
                 // Fallback for subjects with no papers? (Shouldn't happen with updated query)
                 html += `
@@ -441,25 +439,31 @@
                         }
 
                         subjectTds += `
-                            <td class="px-5 py-3 border-l border-slate-50 text-center">
-                                <span class="text-[11px] font-black ${paperDisplay === '-' ? 'text-slate-300' : 'text-slate-700'}">${paperDisplay}</span>
+                                <td class="px-5 py-3 border-l border-slate-50 text-center">
+                                    <span class="text-[11px] font-black ${paperDisplay === '-' ? 'text-slate-300' : 'text-slate-700'}">${paperDisplay}</span>
+                                </td>
+                            `;
+                    });
+
+                    // Append the weighted total for this subject
+                    const finalSubjectMark = subjectWeightTotal > 0 ? subjectWeightedSum : (subjectRawSum / (subjectPapers.length || 1));
+                    const displayTotal = hasSubjectResults ? Math.round(finalSubjectMark) : '-';
+                    subjectTds += `
+                            <td class="px-5 py-3 border-l border-slate-200 text-center bg-slate-100/10">
+                                <span class="text-[11px] font-black ${displayTotal === '-' ? 'text-slate-400' : 'text-slate-900'}">${displayTotal}${displayTotal !== '-' ? '%' : ''}</span>
                             </td>
                         `;
-                    });
+
+                    if (hasSubjectResults) {
+                        totalWeightedSum += finalSubjectMark;
+                        subjectsWithResults++;
+                    }
                 } else {
-                    // Fallback column if subject has no assigned papers
                     subjectTds += `
                         <td class="px-5 py-3 border-l border-slate-50 text-center">
                             <span class="text-[10px] font-bold text-slate-300">-</span>
                         </td>
                     `;
-                }
-
-                // Calculate final subject mark for the end-of-row average
-                if (hasSubjectResults) {
-                    const finalSubjectMark = subjectWeightTotal > 0 ? subjectWeightedSum : (subjectRawSum / (subjectPapers.length || 1));
-                    totalWeightedSum += finalSubjectMark;
-                    subjectsWithResults++;
                 }
             });
 
@@ -490,13 +494,15 @@
 
     function renderSkeleton(isAppend = false) {
         const tbody = document.getElementById('matrixBody');
-        const itemCount = currentData?.papers?.length || currentData?.subjects?.length || 5;
+        // Roughly estimate column count: SubCount * (AvgPaperPerSub + 1) + Identity + FinalAvg
+        const subCount = currentData?.subjects?.length || 5;
+        const totalCols = (subCount * 3) + 2;
 
         let skeletonHtml = '';
         for (let i = 0; i < 5; i++) {
-            let subjectSkeletons = '';
-            for (let j = 0; j < itemCount; j++) {
-                subjectSkeletons += `
+            let cells = '';
+            for (let j = 0; j < totalCols - 1; j++) {
+                cells += `
                     <td class="px-5 py-3 border-l border-slate-50 text-center">
                         <div class="h-6 w-10 bg-slate-100 rounded-lg animate-pulse mx-auto"></div>
                     </td>
@@ -514,10 +520,7 @@
                             </div>
                         </div>
                     </td>
-                    ${subjectSkeletons}
-                    <td class="px-5 py-3 border-l border-slate-50 text-center bg-slate-50/30">
-                        <div class="h-6 w-12 bg-slate-100 rounded-lg animate-pulse mx-auto"></div>
-                    </td>
+                    ${cells}
                 </tr>
             `;
         }
