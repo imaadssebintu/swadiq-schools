@@ -84,6 +84,32 @@ func GetSubjectResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
 	return c.JSON(matrix)
 }
 
+// GetClassResultMatrixAPI returns aggregate data for a whole class performance sheet
+func GetClassResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
+	classID := c.Query("class_id")
+	termID := c.Query("term_id")
+	assessmentTypeID := c.Query("assessment_type_id")
+	search := c.Query("q")
+
+	limit, _ := strconv.Atoi(c.Query("limit", "10"))
+	offset, _ := strconv.Atoi(c.Query("offset", "0"))
+
+	if classID == "" || termID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "class_id and term_id are required",
+		})
+	}
+
+	matrix, err := GetFullClassPerformanceMatrix(db, classID, termID, search, assessmentTypeID, limit, offset)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch class result matrix: " + err.Error(),
+		})
+	}
+
+	return c.JSON(matrix)
+}
+
 // BatchSaveResults handles batch create/update of results
 func BatchSaveResults(c *fiber.Ctx, db *sql.DB) error {
 	var request struct {

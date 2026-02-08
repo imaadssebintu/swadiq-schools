@@ -15,6 +15,7 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", func(c *fiber.Ctx) error { return GetResultsByExam(c, db) })
 	api.Get("/subject-matrix", func(c *fiber.Ctx) error { return GetSubjectResultMatrixAPI(c, db) })
+	api.Get("/class-matrix", func(c *fiber.Ctx) error { return GetClassResultMatrixAPI(c, db) })
 	api.Post("/batch", func(c *fiber.Ctx) error { return BatchSaveResults(c, db) })
 	api.Put("/:id", func(c *fiber.Ctx) error { return UpdateSingleResult(c, db) })
 	api.Get("/student/:id", func(c *fiber.Ctx) error { return GetStudentResults(c, db) })
@@ -25,6 +26,19 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 		user := c.Locals("user").(*models.User)
 		return c.Render("results/subject_performance", fiber.Map{
 			"Title":       "Subject Performance Report",
+			"CurrentPage": "exams",
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
+			"user":        user,
+		})
+	})
+
+	// Page route for class performance report (all subjects)
+	app.Get("/results/class-performance", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+		return c.Render("results/class_performance", fiber.Map{
+			"Title":       "Class Performance Report",
 			"CurrentPage": "exams",
 			"FirstName":   user.FirstName,
 			"LastName":    user.LastName,

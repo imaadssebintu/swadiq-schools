@@ -172,9 +172,14 @@
                             Manage <i class="fas fa-cog text-[8px] opacity-50"></i>
                         </a>
                         <button onclick="window.location.href='/results/subject-performance?class_id=${cls.id}'" 
-                            class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-sm flex items-center gap-1.5 relative overflow-hidden group/btn">
+                            class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-1.5 group/btn">
+                            <i class="fas fa-book text-[8px]"></i>
+                            <span>Subject</span>
+                        </button>
+                        <button onclick="window.location.href='/results/class-performance?class_id=${cls.id}'" 
+                            class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-sm flex items-center gap-1.5 relative overflow-hidden group/btn">
                             <i class="fas fa-chart-line text-[8px]"></i>
-                            <span>Performance</span>
+                            <span>Matrix</span>
                         </button>
                     </div>
                 </td>

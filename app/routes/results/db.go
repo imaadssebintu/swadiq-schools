@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
+
+	"github.com/lib/pq"
 )
 
 // GetResultsByExamID fetches all results for a specific exam
@@ -407,11 +409,16 @@ func GetStudentsWithResultsByExam(db *sql.DB, examID, classID string) ([]*Studen
 	return studentsWithResults, nil
 }
 
-// ClassResultsMatrix represents data for the grid view
-type ClassResultsMatrix struct {
-	Students []*models.Student `json:"students"`
-	Papers   []*models.Paper   `json:"papers"`
-	Results  []*models.Result  `json:"results"`
+// FullClassPerformanceMatrix contains performance data for all subjects in a class
+type FullClassPerformanceMatrix struct {
+	Class         *models.Class         `json:"class"`
+	Subjects      []*models.Subject     `json:"subjects"`
+	Papers        []*models.Paper       `json:"papers"`
+	Students      []*models.Student     `json:"students"`
+	Weights       []*models.PaperWeight `json:"weights"`
+	Results       []*models.Result      `json:"results"`
+	Grades        []*models.Grade       `json:"grades"`
+	TotalStudents int                   `json:"total_students"`
 }
 
 // SubjectResultMatrix contains all data needed for the subject-level mark sheet
@@ -813,4 +820,176 @@ func DeleteGrade(db *sql.DB, id string) error {
 	query := `UPDATE grades SET deleted_at = NOW() WHERE id = $1`
 	_, err := db.Exec(query, id)
 	return err
+}
+
+// GetFullClassPerformanceMatrix fetches aggregated performance data for all subjects in a class
+func GetFullClassPerformanceMatrix(db *sql.DB, classID, termID, search, assessmentTypeID string, limit, offset int) (*FullClassPerformanceMatrix, error) {
+	matrix := &FullClassPerformanceMatrix{
+		Subjects: []*models.Subject{},
+		Students: []*models.Student{},
+		Weights:  []*models.PaperWeight{},
+		Results:  []*models.Result{},
+		Grades:   []*models.Grade{},
+	}
+
+	// 1. Fetch Class Info
+	queryClass := `SELECT id, name, code FROM classes WHERE id = $1 AND is_active = true`
+	class := &models.Class{}
+	err := db.QueryRow(queryClass, classID).Scan(&class.ID, &class.Name, &class.Code)
+	if err != nil {
+		return nil, fmt.Errorf("class not found: %w", err)
+	}
+	matrix.Class = class
+
+	// 2. Fetch Subjects Assigned to Class
+	querySubjects := `
+		SELECT s.id, s.name, s.code 
+		FROM subjects s
+		JOIN class_subjects cs ON s.id = cs.subject_id
+		WHERE cs.class_id = $1 AND s.is_active = true AND cs.deleted_at IS NULL
+		ORDER BY s.name
+	`
+	rowsSub, err := db.Query(querySubjects, classID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch subjects: %w", err)
+	}
+	defer rowsSub.Close()
+
+	var subjectIDs []string
+	for rowsSub.Next() {
+		s := &models.Subject{}
+		if err := rowsSub.Scan(&s.ID, &s.Name, &s.Code); err != nil {
+			continue
+		}
+		matrix.Subjects = append(matrix.Subjects, s)
+		subjectIDs = append(subjectIDs, s.ID)
+	}
+
+	if len(matrix.Subjects) == 0 {
+		return matrix, nil
+	}
+
+	// 2.5 Fetch All Papers for these subjects
+	queryPapers := `
+		SELECT id, name, code, subject_id
+		FROM papers
+		WHERE subject_id = ANY($1) AND deleted_at IS NULL
+	`
+	rowsP, err := db.Query(queryPapers, pq.Array(subjectIDs))
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch papers: %w", err)
+	}
+	defer rowsP.Close()
+
+	for rowsP.Next() {
+		p := &models.Paper{}
+		if err := rowsP.Scan(&p.ID, &p.Name, &p.Code, &p.SubjectID); err != nil {
+			continue
+		}
+		matrix.Papers = append(matrix.Papers, p)
+	}
+	fmt.Printf("[DEBUG] Papers Found for Class subjects: %d\n", len(matrix.Papers))
+
+	// 3. Fetch Students (Paginated)
+	students, total, err := GetStudentsByClassID(db, classID, search, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	matrix.Students = students
+	matrix.TotalStudents = total
+
+	if len(students) == 0 {
+		return matrix, nil
+	}
+
+	var studentIDs []string
+	for _, s := range students {
+		studentIDs = append(studentIDs, s.ID)
+	}
+
+	// 4. Fetch Paper Weights for all subjects in this class/term
+	queryWeights := `
+		SELECT id, paper_id, weight, subject_id, class_id, term_id
+		FROM paper_weights
+		WHERE class_id = $1 AND term_id = $2 AND subject_id = ANY($3)
+	`
+	rowsW, err := db.Query(queryWeights, classID, termID, pq.Array(subjectIDs))
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch paper weights: %w", err)
+	}
+	defer rowsW.Close()
+
+	for rowsW.Next() {
+		w := &models.PaperWeight{}
+		if err := rowsW.Scan(&w.ID, &w.PaperID, &w.Weight, &w.SubjectID, &w.ClassID, &w.TermID); err != nil {
+			continue
+		}
+		matrix.Weights = append(matrix.Weights, w)
+	}
+
+	// Collect all paper IDs for filtering
+	var paperIDs []string
+	for _, p := range matrix.Papers {
+		paperIDs = append(paperIDs, p.ID)
+	}
+
+	// 5. Fetch All Results for these students and papers in this term/type
+	// We use the same paper-based filtering approach as GetSubjectResultMatrix
+	queryResults := `
+		SELECT r.id, r.student_id, r.paper_id, r.marks, r.grade_id, COALESCE(r.exam_id::text, '')
+		FROM results r
+		LEFT JOIN exams e ON r.exam_id = e.id AND e.deleted_at IS NULL
+		WHERE r.student_id = ANY($1) 
+		AND (r.paper_id = ANY($2) OR e.paper_id = ANY($2))
+		AND r.deleted_at IS NULL
+	`
+	params := []interface{}{pq.Array(studentIDs), pq.Array(paperIDs)}
+
+	argCount := 2
+	// For Class Performance, we still want to be term-aware if possible,
+	// but we'll try to be more inclusive like the subject report
+	if termID != "" {
+		argCount++
+		queryResults += fmt.Sprintf(" AND (r.term_id = $%d OR e.term_id = $%d OR r.term_id IS NULL)", argCount, argCount)
+		params = append(params, termID)
+	}
+
+	if assessmentTypeID != "" && assessmentTypeID != "all" {
+		argCount++
+		queryResults += fmt.Sprintf(" AND (e.assessment_type_id = $%d OR r.exam_id IS NULL)", argCount)
+		params = append(params, assessmentTypeID)
+	}
+
+	fmt.Printf("[DEBUG] Results Query: %s\n", queryResults)
+	fmt.Printf("[DEBUG] Params: Students=%d, Papers=%d, Term=%s, Type=%s\n", len(studentIDs), len(paperIDs), termID, assessmentTypeID)
+
+	rowsRes, err := db.Query(queryResults, params...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch results: %w", err)
+	}
+	defer rowsRes.Close()
+
+	for rowsRes.Next() {
+		res := &models.Result{}
+		var examID string
+		if err := rowsRes.Scan(&res.ID, &res.StudentID, &res.PaperID, &res.Marks, &res.GradeID, &examID); err != nil {
+			fmt.Printf("[DEBUG] Scan Error: %v\n", err)
+			continue
+		}
+		res.ExamID = examID
+		matrix.Results = append(matrix.Results, res)
+	}
+
+	fmt.Printf("[DEBUG] Results Found: %d\n", len(matrix.Results))
+	if len(matrix.Results) > 0 {
+		fmt.Printf("[DEBUG] Sample Result: Student=%s, Paper=%s, Marks=%.2f\n", matrix.Results[0].StudentID, matrix.Results[0].PaperID, matrix.Results[0].Marks)
+	}
+
+	// 6. Fetch Grades
+	grades, err := GetAllGrades(db)
+	if err == nil {
+		matrix.Grades = grades
+	}
+
+	return matrix, nil
 }
