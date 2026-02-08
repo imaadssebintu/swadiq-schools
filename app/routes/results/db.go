@@ -483,26 +483,20 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 		}
 	}
 
-	// 4. Fetch Results (Broad fetching mode)
-	var resultsQuery string
+	// 4. Fetch Results (Targeted fetching mode)
+	if len(matrix.Papers) == 0 {
+		return matrix, nil // No papers, no results to fetch
+	}
+
+	paperIDs := make([]string, len(matrix.Papers))
+	for i, p := range matrix.Papers {
+		paperIDs[i] = p.ID
+	}
+
 	var resultsRows *sql.Rows
 	if assessmentTypeID == "all" || assessmentTypeID == "" {
-		// Fetch all results for these students/papers in this class, without strict term check on result itself
-		// since paper_weights already defines the term scope.
-		resultsQuery = `
-			JOIN students s ON r.student_id = s.id
-			LEFT JOIN papers p ON r.paper_id = p.id
-			LEFT JOIN exams e ON r.exam_id = e.id
-			LEFT JOIN papers pe ON e.paper_id = pe.id -- Fallback: Paper via Exam
-			WHERE s.class_id = $1 
-			AND (p.subject_id = $2 OR pe.subject_id = $2) -- Robust Subject Filter
-			AND r.deleted_at IS NULL
-			ORDER BY r.created_at DESC
-		`
-		resultsRows, err = db.Query(resultsQuery, classID, subjectID)
-	} else {
-		// Still filter by type if explicitly requested
-		resultsQuery = `
+		// Optimized targeted query: only fetch results for the papers we actually care about in this subject context
+		resultsQuery := `
 			SELECT r.id, COALESCE(r.exam_id::text, ''), r.student_id, r.paper_id, r.marks, 
 				COALESCE(p.name, pe.name, 'Unknown Paper'), 
 				COALESCE(p.code, pe.code, '')
@@ -510,14 +504,31 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 			JOIN students s ON r.student_id = s.id
 			LEFT JOIN papers p ON r.paper_id = p.id
 			LEFT JOIN exams e ON r.exam_id = e.id
-			LEFT JOIN papers pe ON e.paper_id = pe.id -- Fallback
+			LEFT JOIN papers pe ON e.paper_id = pe.id 
 			WHERE s.class_id = $1 
-			AND e.assessment_type_id = $2
-			AND (p.subject_id = $3 OR pe.subject_id = $3) -- Robust Subject Filter
+			AND (r.paper_id = ANY($2) OR e.paper_id = ANY($2))
 			AND r.deleted_at IS NULL
 			ORDER BY r.created_at DESC
 		`
-		resultsRows, err = db.Query(resultsQuery, classID, assessmentTypeID, subjectID)
+		resultsRows, err = db.Query(resultsQuery, classID, database.ToPostgresArray(paperIDs))
+	} else {
+		// Still filter by assessment type if explicitly requested
+		resultsQuery := `
+			SELECT r.id, COALESCE(r.exam_id::text, ''), r.student_id, r.paper_id, r.marks, 
+				COALESCE(p.name, pe.name, 'Unknown Paper'), 
+				COALESCE(p.code, pe.code, '')
+			FROM results r
+			JOIN students s ON r.student_id = s.id
+			LEFT JOIN papers p ON r.paper_id = p.id
+			LEFT JOIN exams e ON r.exam_id = e.id
+			LEFT JOIN papers pe ON e.paper_id = pe.id
+			WHERE s.class_id = $1 
+			AND e.assessment_type_id = $2
+			AND (r.paper_id = ANY($3) OR e.paper_id = ANY($3))
+			AND r.deleted_at IS NULL
+			ORDER BY r.created_at DESC
+		`
+		resultsRows, err = db.Query(resultsQuery, classID, assessmentTypeID, database.ToPostgresArray(paperIDs))
 	}
 
 	if err != nil {

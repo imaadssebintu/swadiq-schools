@@ -69,7 +69,37 @@ func RunMigrations(db *sql.DB) error {
 		return err
 	}
 
+	// 11. Add performance indexes for results and exams
+	err = addSubjectPerformanceIndexes(db)
+	if err != nil {
+		return err
+	}
+
 	log.Println("Database migrations completed successfully")
+	return nil
+}
+
+func addSubjectPerformanceIndexes(db *sql.DB) error {
+	log.Println("Applying performance indexes for Subject Performance Report...")
+	queries := []string{
+		// Indexes for results table
+		"CREATE INDEX IF NOT EXISTS idx_results_student_id ON results(student_id)",
+		"CREATE INDEX IF NOT EXISTS idx_results_paper_id ON results(paper_id)",
+		"CREATE INDEX IF NOT EXISTS idx_results_exam_id ON results(exam_id)",
+		"CREATE INDEX IF NOT EXISTS idx_results_deleted_at ON results(deleted_at)",
+
+		// Indexes for exams table
+		"CREATE INDEX IF NOT EXISTS idx_exams_assessment_type_id ON exams(assessment_type_id)",
+		"CREATE INDEX IF NOT EXISTS idx_exams_paper_id ON exams(paper_id)",
+		"CREATE INDEX IF NOT EXISTS idx_exams_deleted_at ON exams(deleted_at)",
+	}
+
+	for _, q := range queries {
+		if _, err := db.Exec(q); err != nil {
+			log.Printf("Warning: Failed to create index: %v", err)
+			// Don't return error, as indexes are non-critical optimizations
+		}
+	}
 	return nil
 }
 

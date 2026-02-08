@@ -8,8 +8,14 @@ import (
 	"swadiq-schools/app/models"
 	"time"
 
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// ToPostgresArray converts a string slice to a format PostgreSQL ANY() or lib/pq can understand
+func ToPostgresArray(arr []string) interface{} {
+	return pq.Array(arr)
+}
 
 // StudentFilters represents filtering options for students
 type StudentFilters struct {
