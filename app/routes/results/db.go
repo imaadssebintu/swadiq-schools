@@ -3,6 +3,7 @@ package results
 import (
 	"database/sql"
 	"fmt"
+	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 )
 
@@ -388,69 +389,159 @@ type ClassResultsMatrix struct {
 	Results  []*models.Result  `json:"results"`
 }
 
-// GetClassResultsMatrix fetches all data needed for the class result grid
-func GetClassResultsMatrix(db *sql.DB, classID, termID, assessmentTypeID string) (*ClassResultsMatrix, error) {
-	matrix := &ClassResultsMatrix{
+// SubjectResultMatrix contains all data needed for the subject-level mark sheet
+type SubjectResultMatrix struct {
+	Subject  *models.Subject       `json:"subject"`
+	Students []*models.Student     `json:"students"`
+	Papers   []*models.Paper       `json:"papers"`
+	Weights  []*models.PaperWeight `json:"weights"`
+	Results  []*models.Result      `json:"results"`
+	Grades   []*models.Grade       `json:"grades"`
+	TermID   string                `json:"term_id"`
+}
+
+// GetSubjectResultMatrix fetches data for the subject mark sheet
+func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTypeID string) (*SubjectResultMatrix, error) {
+	matrix := &SubjectResultMatrix{
 		Students: []*models.Student{},
 		Papers:   []*models.Paper{},
+		Weights:  []*models.PaperWeight{},
 		Results:  []*models.Result{},
+		Grades:   []*models.Grade{},
+		TermID:   termID,
 	}
 
-	// 1. Fetch Students
+	// 1. Fetch Subject Info
+	subject, err := database.GetSubjectByID(db, subjectID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch subject: %v", err)
+	}
+	matrix.Subject = subject
+
+	// 2. Fetch Students in Class
 	students, err := GetStudentsByClassID(db, classID)
 	if err != nil {
 		return nil, err
 	}
-	if students != nil {
-		matrix.Students = students
-	}
+	matrix.Students = students
 
-	// 2. Fetch Papers for the class
-	// We need a helper for this similar to GetPapersByClass in queries.go but in this package or shared
-	papersQuery := `
-		SELECT p.id, p.subject_id, p.name, p.code
-		FROM papers p
-		JOIN class_subjects cs ON p.subject_id = cs.subject_id
-		WHERE cs.class_id = $1 AND p.deleted_at IS NULL AND cs.deleted_at IS NULL
-		ORDER BY p.name
+	// 3. Fetch Weights (and papers via weights)
+	weightsQuery := `
+		SELECT pw.id, pw.paper_id, pw.weight, p.name, p.code
+		FROM paper_weights pw
+		JOIN papers p ON pw.paper_id = p.id
+		WHERE pw.class_id = $1 AND pw.subject_id = $2 AND pw.term_id = $3
+		ORDER BY p.code
 	`
-	rows, err := db.Query(papersQuery, classID)
+	var pRows *sql.Rows
+	pRows, err = db.Query(weightsQuery, classID, subjectID, termID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch papers: %w", err)
+		return nil, fmt.Errorf("failed to fetch weights and papers: %v", err)
 	}
-	defer rows.Close()
+	defer pRows.Close()
 
-	for rows.Next() {
-		var paper models.Paper
-		if err := rows.Scan(&paper.ID, &paper.SubjectID, &paper.Name, &paper.Code); err != nil {
+	for pRows.Next() {
+		w := models.PaperWeight{}
+		p := models.Paper{}
+		if err := pRows.Scan(&w.ID, &w.PaperID, &w.Weight, &p.Name, &p.Code); err != nil {
 			return nil, err
 		}
-		matrix.Papers = append(matrix.Papers, &paper)
+		p.ID = w.PaperID
+		matrix.Weights = append(matrix.Weights, &w)
+		matrix.Papers = append(matrix.Papers, &p)
 	}
 
-	// 3. Fetch Existing Results for this Class, Term, and Assessment Type
-	// This joins results with exams to filter by term and type
-	resultsQuery := `
-		SELECT 
-			r.id, r.exam_id, r.student_id, r.paper_id, r.marks
-		FROM results r
-		JOIN exams e ON r.exam_id = e.id
-		WHERE e.class_id = $1 AND e.term_id = $2 
-		AND e.assessment_type_id = $3 AND r.deleted_at IS NULL
-	`
-	rows, err = db.Query(resultsQuery, classID, termID, assessmentTypeID)
+	// Fallback: If no weights defined, fetch ALL papers for this subject to ensure columns appear
+	if len(matrix.Papers) == 0 {
+		papersQuery := `
+			SELECT id, name, code 
+			FROM papers 
+			WHERE subject_id = $1 AND deleted_at IS NULL
+			ORDER BY code
+		`
+		paperRows, err := db.Query(papersQuery, subjectID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch fallback papers: %v", err)
+		}
+		defer paperRows.Close()
+
+		for paperRows.Next() {
+			p := models.Paper{}
+			if err := paperRows.Scan(&p.ID, &p.Name, &p.Code); err != nil {
+				return nil, err
+			}
+			// Create dummy weight for matrix logic
+			w := models.PaperWeight{
+				PaperID:   p.ID,
+				Weight:    0, // Default to 0
+				ClassID:   classID,
+				SubjectID: subjectID,
+				TermID:    termID,
+			}
+			matrix.Papers = append(matrix.Papers, &p)
+			matrix.Weights = append(matrix.Weights, &w)
+		}
+	}
+
+	// 4. Fetch Results (Broad fetching mode)
+	var resultsQuery string
+	var resultsRows *sql.Rows
+	if assessmentTypeID == "all" || assessmentTypeID == "" {
+		// Fetch all results for these students/papers in this class, without strict term check on result itself
+		// since paper_weights already defines the term scope.
+		resultsQuery = `
+			JOIN students s ON r.student_id = s.id
+			LEFT JOIN papers p ON r.paper_id = p.id
+			LEFT JOIN exams e ON r.exam_id = e.id
+			LEFT JOIN papers pe ON e.paper_id = pe.id -- Fallback: Paper via Exam
+			WHERE s.class_id = $1 
+			AND (p.subject_id = $2 OR pe.subject_id = $2) -- Robust Subject Filter
+			AND r.deleted_at IS NULL
+			ORDER BY r.created_at DESC
+		`
+		resultsRows, err = db.Query(resultsQuery, classID, subjectID)
+	} else {
+		// Still filter by type if explicitly requested
+		resultsQuery = `
+			SELECT r.id, COALESCE(r.exam_id::text, ''), r.student_id, r.paper_id, r.marks, 
+				COALESCE(p.name, pe.name, 'Unknown Paper'), 
+				COALESCE(p.code, pe.code, '')
+			FROM results r
+			JOIN students s ON r.student_id = s.id
+			LEFT JOIN papers p ON r.paper_id = p.id
+			LEFT JOIN exams e ON r.exam_id = e.id
+			LEFT JOIN papers pe ON e.paper_id = pe.id -- Fallback
+			WHERE s.class_id = $1 
+			AND e.assessment_type_id = $2
+			AND (p.subject_id = $3 OR pe.subject_id = $3) -- Robust Subject Filter
+			AND r.deleted_at IS NULL
+			ORDER BY r.created_at DESC
+		`
+		resultsRows, err = db.Query(resultsQuery, classID, assessmentTypeID, subjectID)
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch results matrix: %w", err)
+		return nil, fmt.Errorf("failed to fetch results: %v", err)
 	}
-	defer rows.Close()
+	defer resultsRows.Close()
 
-	for rows.Next() {
-		var result models.Result
-		if err := rows.Scan(&result.ID, &result.ExamID, &result.StudentID, &result.PaperID, &result.Marks); err != nil {
+	for resultsRows.Next() {
+		var r models.Result
+		var p models.Paper
+		if err := resultsRows.Scan(&r.ID, &r.ExamID, &r.StudentID, &r.PaperID, &r.Marks, &p.Name, &p.Code); err != nil {
 			return nil, err
 		}
-		matrix.Results = append(matrix.Results, &result)
+		p.ID = r.PaperID
+		r.Paper = &p
+		matrix.Results = append(matrix.Results, &r)
 	}
+
+	// 5. Fetch Grades
+	grades, err := GetAllGrades(db)
+	if err != nil {
+		return nil, err
+	}
+	matrix.Grades = grades
 
 	return matrix, nil
 }

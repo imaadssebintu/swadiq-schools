@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"swadiq-schools/app/models"
@@ -971,10 +972,16 @@ func GetAttendanceStats(db *sql.DB, classID string, startDate, endDate time.Time
 }
 
 func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
-	// Query with student count
+	// Query with student count and subjects
 	query := `SELECT c.id, c.name, c.code, c.teacher_id, c.is_active, c.created_at, c.updated_at,
 			  u.first_name, u.last_name, u.email,
-			  COALESCE(s.student_count, 0) as student_count
+			  COALESCE(s.student_count, 0) as student_count,
+			  COALESCE((
+				  SELECT json_agg(json_build_object('id', sub.id, 'name', sub.name, 'code', sub.code))
+				  FROM class_subjects cs
+				  JOIN subjects sub ON cs.subject_id = sub.id
+				  WHERE cs.class_id = c.id AND cs.deleted_at IS NULL AND sub.deleted_at IS NULL
+			  ), '[]') as subjects_json
 			  FROM classes c
 			  LEFT JOIN users u ON c.teacher_id = u.id
 			  LEFT JOIN (
@@ -996,10 +1003,11 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 	for rows.Next() {
 		class := &models.Class{}
 		var teacherFirstName, teacherLastName, teacherEmail *string
-		var studentCount int
+		var subjectsJSON string
 		err := rows.Scan(
 			&class.ID, &class.Name, &class.Code, &class.TeacherID, &class.IsActive, &class.CreatedAt, &class.UpdatedAt,
-			&teacherFirstName, &teacherLastName, &teacherEmail, &studentCount,
+			&teacherFirstName, &teacherLastName, &teacherEmail,
+			&class.StudentCount, &subjectsJSON,
 		)
 		if err != nil {
 			continue
@@ -1015,8 +1023,17 @@ func GetAllClasses(db *sql.DB) ([]*models.Class, error) {
 			}
 		}
 
-		// Set student count
-		class.StudentCount = studentCount
+		// Parse subjects from JSON
+		var subjects []*models.Subject
+		if subjectsJSON != "[]" { // Only unmarshal if there's actual data
+			err = json.Unmarshal([]byte(subjectsJSON), &subjects)
+			if err != nil {
+				// Log the error but continue processing other classes
+				fmt.Printf("Error unmarshaling subjects for class %s: %v\n", class.ID, err)
+				subjects = []*models.Subject{} // Ensure it's an empty slice on error
+			}
+		}
+		class.Subjects = subjects
 
 		classes = append(classes, class)
 	}

@@ -34,6 +34,8 @@
                                 <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                     Code</th>
                                 <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                    Subjects</th>
+                                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                     Students</th>
                                 <th
                                     class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
@@ -129,8 +131,24 @@
 
         filteredClasses.forEach(cls => {
             const row = document.createElement('tr');
-            row.className = 'border-b border-slate-50 last:border-0 hover:bg-slate-50/50 cursor-pointer transition-all duration-200 group';
-            row.onclick = () => window.location.href = `/assessments/${cls.id}`;
+            row.className = 'border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-all duration-200 group';
+            // Click on row (non-button area) navigates to manage
+            row.onclick = (e) => {
+                if (!e.target.closest('button')) {
+                    window.location.href = `/assessments/${cls.id}`;
+                }
+            };
+
+            const subjectsHtml = cls.subjects && cls.subjects.length > 0
+                ? `<div class="flex flex-wrap gap-1">
+                    ${cls.subjects.slice(0, 3).map(s => `
+                        <span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded text-[8px] font-black uppercase tracking-widest border border-slate-200">
+                            ${s.code || s.name}
+                        </span>
+                    `).join('')}
+                    ${cls.subjects.length > 3 ? `<span class="text-[8px] font-black text-slate-400 pl-1">+${cls.subjects.length - 3} MORE</span>` : ''}
+                   </div>`
+                : '<span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest italic">No subjects</span>';
 
             row.innerHTML = `
                 <td class="px-5 py-4">
@@ -140,15 +158,25 @@
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${cls.code || '-'}</div>
                 </td>
                 <td class="px-5 py-4">
+                    ${subjectsHtml}
+                </td>
+                <td class="px-5 py-4">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                         <i class="fas fa-users text-[8px]"></i>
                         ${cls.student_count || 0} Students
                     </span>
                 </td>
                 <td class="px-5 py-4 text-right">
-                    <button class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all hover:bg-indigo-600 shadow-sm">
-                        Manage <i class="fas fa-arrow-right ml-1 text-[8px]"></i>
-                    </button>
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="/assessments/${cls.id}" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center gap-1.5">
+                            Manage <i class="fas fa-cog text-[8px] opacity-50"></i>
+                        </a>
+                        <button onclick="window.location.href='/results/subject-performance?class_id=${cls.id}'" 
+                            class="px-3 py-1.5 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-sm flex items-center gap-1.5 relative overflow-hidden group/btn">
+                            <i class="fas fa-chart-line text-[8px]"></i>
+                            <span>Performance</span>
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(row);

@@ -1,0 +1,660 @@
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 lg:px-6 lg:py-5 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col gap-1">
+                <h1 id="pageTitle" class="text-xl font-black text-slate-900 tracking-tight uppercase tracking-tighter">
+                    Subject Performance
+                </h1>
+                <p id="pageDescription" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Detailed
+                    weighted results mark sheet</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="history.back()"
+                    class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-arrow-left text-[8px]"></i>
+                    <span>Back</span>
+                </button>
+                <button onclick="showWeightsModal()"
+                    class="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-balance-scale text-[8px]"></i>
+                    <span>Weights</span>
+                </button>
+                <button onclick="window.print()"
+                    class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-print text-[8px]"></i>
+                    <span>Print Sheet</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="flex flex-wrap items-center gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+            <!-- Term Filter -->
+            <div class="relative min-w-[140px]">
+                <label
+                    class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-black text-slate-400 uppercase tracking-widest">Term</label>
+                <select id="filterTerm" onchange="updateFilters()"
+                    class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
+                    <option value="">Select Term</option>
+                </select>
+                <i
+                    class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+            </div>
+
+            <!-- Subject Filter -->
+            <div class="relative min-w-[160px]">
+                <label
+                    class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-black text-slate-400 uppercase tracking-widest">Subject</label>
+                <select id="filterSubject" onchange="updateFilters()"
+                    class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
+                    <option value="">Select Subject</option>
+                </select>
+                <i
+                    class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+            </div>
+
+            <!-- Type Filter -->
+            <div class="relative min-w-[140px]">
+                <label
+                    class="absolute -top-2 left-3 bg-white px-1 text-[8px] font-black text-slate-400 uppercase tracking-widest">Type</label>
+                <select id="filterType" onchange="updateFilters()"
+                    class="w-full pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all appearance-none cursor-pointer hover:border-slate-300">
+                    <option value="">Select Type</option>
+                </select>
+                <i
+                    class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] pointer-events-none"></i>
+            </div>
+
+            <div class="h-8 w-px bg-slate-100 hidden sm:block"></div>
+
+            <button onclick="loadPerformanceMatrix()"
+                class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-sm flex items-center gap-2 ml-auto group/btn">
+                <i class="fas fa-sync-alt text-[8px] group-hover/btn:rotate-180 transition-transform duration-500"></i>
+                <span>Load Results</span>
+            </button>
+        </div>
+
+        <!-- Matrix Container -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <thead>
+                            <tr id="matrixHeaderRow" class="bg-slate-50 border-b border-slate-100">
+                                <!-- Headers injected via JS -->
+                            </tr>
+                        </thead>
+                    </thead>
+                    <tbody id="matrixBody" class="divide-y divide-slate-50">
+                        <!-- Student rows injected here -->
+                        <tr>
+                            <td colspan="10"
+                                class="px-6 py-12 text-center text-slate-400 text-xs font-medium animate-pulse">Loading
+                                performance data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weight Configuration Modal -->
+<div id="weightsModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-[100] transition-all duration-300"
+    onclick="if(event.target === this) hideWeightsModal()">
+    <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden transform transition-all flex flex-col max-h-[90vh]">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+            <div>
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Configure Paper Weights</h3>
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest mt-0.5">Set how papers
+                    contribute to subject total</p>
+            </div>
+            <button type="button" onclick="hideWeightsModal()"
+                class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-5 overflow-y-auto custom-scrollbar">
+            <!-- Hidden Inputs for context -->
+            <input type="hidden" id="weightClassId">
+
+            <!-- Selectors -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide ml-1">Subject</label>
+                    <div id="weightSubjectDisplay"
+                        class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-slate-700 uppercase tracking-tight">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide ml-1">Term</label>
+                    <div id="weightTermDisplay"
+                        class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-slate-700 uppercase tracking-tight">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Papers List -->
+            <div id="weightPapersList" class="space-y-3 hidden">
+                <div
+                    class="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">
+                    <span>Paper</span>
+                    <span>Weight (%)</span>
+                </div>
+                <div id="papersWeightContainer" class="space-y-2">
+                    <!-- Dynamic Rows -->
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total
+                        Contribution</span>
+                    <span id="totalWeightDisplay"
+                        class="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100 shadow-sm">0%</span>
+                </div>
+            </div>
+
+            <div id="weightLoading" class="hidden text-center py-8">
+                <i class="fas fa-circle-notch fa-spin text-indigo-400 text-lg mb-2"></i>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Calculating...
+                </p>
+            </div>
+
+            <div class="pt-2 flex flex-row gap-3">
+                <button type="button" onclick="hideWeightsModal()"
+                    class="flex-1 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all order-1">
+                    Cancel
+                </button>
+                <button type="button" onclick="saveWeights()"
+                    class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2 order-2">
+                    <i class="fas fa-save text-[9px]"></i>
+                    <span>Save Changes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Weights Modal Logic ---
+    async function showWeightsModal() {
+        // Get context from main filters
+        const classId = new URLSearchParams(window.location.search).get('class_id');
+        const subjectSelect = document.getElementById('filterSubject');
+        const termSelect = document.getElementById('filterTerm');
+
+        const subjectId = subjectSelect.value;
+        const subjectName = subjectSelect.options[subjectSelect.selectedIndex].text;
+        const termId = termSelect.value;
+        const termName = termSelect.options[termSelect.selectedIndex].text;
+
+        if (!classId || !subjectId || !termId) {
+            alert("Please select a Subject and Term first.");
+            return;
+        }
+
+        // Populate Modal context
+        document.getElementById('weightClassId').value = classId;
+        document.getElementById('weightSubjectDisplay').textContent = subjectName;
+        document.getElementById('weightSubjectDisplay').dataset.value = subjectId;
+        document.getElementById('weightTermDisplay').textContent = termName;
+        document.getElementById('weightTermDisplay').dataset.value = termId;
+
+        document.getElementById('weightsModal').classList.remove('hidden');
+        await loadWeightPapers();
+    }
+
+    function hideWeightsModal() {
+        document.getElementById('weightsModal').classList.add('hidden');
+    }
+
+    async function loadWeightPapers() {
+        const classId = document.getElementById('weightClassId').value;
+        const subjectId = document.getElementById('weightSubjectDisplay').dataset.value;
+        const termId = document.getElementById('weightTermDisplay').dataset.value;
+
+        document.getElementById('weightLoading').classList.remove('hidden');
+        document.getElementById('weightPapersList').classList.add('hidden');
+
+        try {
+            // 1. Get Papers
+            let papersList = [];
+            const paperRes = await fetch(`/api/subjects/papers?class_id=${classId}&subject_id=${subjectId}`);
+            if (paperRes.ok) {
+                const paperData = await paperRes.json();
+                papersList = Array.isArray(paperData) ? paperData : (paperData.data || []);
+            } else {
+                // Warn but don't fail hard
+                console.warn("Papers fetch failed or empty:", paperRes.status);
+            }
+
+            // 2. Get Existing Weights
+            let weights = [];
+            const weightRes = await fetch(`/api/subjects/papers/weights?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}`);
+            if (weightRes.ok) {
+                const weightData = await weightRes.json();
+                weights = Array.isArray(weightData) ? weightData : (weightData.data || []);
+            }
+
+            const container = document.getElementById('papersWeightContainer');
+            container.innerHTML = '';
+
+            if (papersList.length === 0) {
+                container.innerHTML = '<div class="text-center text-xs text-slate-400 py-4">No papers found for this subject.</div>';
+            } else {
+                papersList.forEach(p => {
+                    const existing = weights.find(w => w.paper_id === p.id);
+                    const val = existing ? existing.weight : 0;
+
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between gap-4';
+                    row.innerHTML = `
+                        <div class="flex-1">
+                            <div class="text-[11px] font-black text-slate-700 uppercase tracking-tight">${p.name}</div>
+                            <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${p.code}</div>
+                        </div>
+                        <div class="relative w-28">
+                            <input type="number" min="0" max="100" data-paper-id="${p.id}" value="${val}"
+                                class="weight-input w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-black text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-right pr-7"
+                                placeholder="0">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">%</span>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+
+            document.getElementById('weightLoading').classList.add('hidden');
+            document.getElementById('weightPapersList').classList.remove('hidden');
+
+            document.querySelectorAll('.weight-input').forEach(input => {
+                input.addEventListener('input', updateTotalWeight);
+            });
+            updateTotalWeight();
+
+        } catch (error) {
+            console.error(error);
+            // Hide the list but don't disrupt the modal completely
+            document.getElementById('weightLoading').classList.add('hidden');
+            document.getElementById('papersWeightContainer').innerHTML = '<div class="text-center text-xs text-red-400 py-4">Failed to load data. Please retry.</div>';
+            document.getElementById('weightPapersList').classList.remove('hidden');
+        }
+    }
+
+    function updateTotalWeight() {
+        let total = 0;
+        document.querySelectorAll('.weight-input').forEach(input => {
+            total += parseInt(input.value || 0);
+        });
+        const display = document.getElementById('totalWeightDisplay');
+        display.textContent = total + '%';
+        display.className = total === 100
+            ? 'text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 shadow-sm'
+            : 'text-xs font-black text-rose-500 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100 shadow-sm';
+    }
+
+    async function saveWeights() {
+        let total = 0;
+        const weights = [];
+        const inputs = document.querySelectorAll('.weight-input');
+
+        inputs.forEach(input => {
+            const val = parseInt(input.value || 0);
+            total += val;
+            weights.push({
+                paper_id: input.dataset.paperId,
+                weight: val
+            });
+        });
+
+        if (total !== 100 && weights.length > 0) {
+            alert('Total weight must sum up to 100%');
+            return;
+        }
+
+        const payload = {
+            class_id: document.getElementById('weightClassId').value,
+            subject_id: document.getElementById('weightSubjectDisplay').dataset.value,
+            term_id: document.getElementById('weightTermDisplay').dataset.value,
+            weights: weights
+        };
+
+        try {
+            const res = await fetch('/api/subjects/papers/weights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                // strict success
+                hideWeightsModal();
+                loadPerformanceMatrix(); // Reload the report!
+            } else {
+                const err = await res.json();
+                alert(err.error || 'Failed to save');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Error saving weights');
+        }
+    }
+    let currentData = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await initializeFilters();
+        // loadPerformanceMatrix(); // disabled auto-load per user request
+
+        // Clear data when filters change
+        ['filterTerm', 'filterSubject', 'filterType'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-sm">Select options and click Load Results</td></tr>`;
+                document.getElementById('matrixHeaderRow').innerHTML = ''; // Clear headers
+                document.getElementById('pageTitle').innerText = 'Subject Performance';
+                document.getElementById('pageDescription').innerText = 'Select criteria to view performance';
+
+                // Remove debug sections
+                document.querySelectorAll('.debug-data-audit, .debug-unmatched-results').forEach(el => el.remove());
+            });
+        });
+
+        // Initial State: Empty
+        document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-sm">Select criteria and click Load Results</td></tr>`;
+
+        // Only load when button is clicked
+        document.getElementById('loadBtn').addEventListener('click', loadPerformanceMatrix);
+    });
+
+    async function initializeFilters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const classId = urlParams.get('class_id');
+
+        try {
+            // 1. Load Terms
+            const termRes = await fetch('/api/terms');
+            const termData = await termRes.json();
+            const terms = Array.isArray(termData) ? termData : (termData.terms || []);
+            const termSelect = document.getElementById('filterTerm');
+            termSelect.innerHTML = terms.map(t => `<option value="${t.id}" ${t.is_current ? 'selected' : ''}>${t.name}</option>`).join('');
+            if (urlParams.get('term_id')) termSelect.value = urlParams.get('term_id');
+
+            // 2. Load Subjects for Class
+            const subRes = await fetch(`/api/classes/${classId}/subjects`);
+            const subData = await subRes.json();
+            const subjects = subData.subjects || [];
+            const subSelect = document.getElementById('filterSubject');
+            subSelect.innerHTML = subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            if (urlParams.get('subject_id')) subSelect.value = urlParams.get('subject_id');
+
+            // 3. Load Assessment Types
+            const typeRes = await fetch('/api/settings/assessment-types');
+            const typeData = await typeRes.json();
+            const types = Array.isArray(typeData) ? typeData : (typeData.types || []);
+            const typeSelect = document.getElementById('filterType');
+            typeSelect.innerHTML = `<option value="all">All Assessment Types</option>` +
+                types.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            if (urlParams.get('assessment_type_id')) typeSelect.value = urlParams.get('assessment_type_id');
+            else typeSelect.value = "all";
+
+        } catch (error) {
+            console.error('Filter init error:', error);
+        }
+    }
+
+    function updateFilters() {
+        const classId = new URLSearchParams(window.location.search).get('class_id');
+        const termId = document.getElementById('filterTerm').value;
+        const subjectId = document.getElementById('filterSubject').value;
+        const typeId = document.getElementById('filterType').value;
+
+        // Update URL without refreshing
+        const newUrl = `${window.location.pathname}?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}&assessment_type_id=${typeId}`;
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        // loadPerformanceMatrix(); // disabled auto-load on filter change per user request
+    }
+
+    async function loadPerformanceMatrix() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const classId = urlParams.get('class_id');
+        const subjectId = document.getElementById('filterSubject').value;
+        const termId = document.getElementById('filterTerm').value;
+        const typeId = document.getElementById('filterType').value;
+
+        if (!classId || !subjectId || !termId) {
+            document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
+                <i class="fas fa-filter text-lg opacity-20"></i>
+                <span>Please select a Subject and Term to view performance</span>
+            </td></tr>`;
+            return;
+        }
+
+        document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-xs font-medium animate-pulse">Loading performance data...</td></tr>`;
+
+        try {
+            const response = await fetch(`/api/results/subject-matrix?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}&assessment_type_id=${typeId}`);
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || 'Failed to load matrix');
+
+            currentData = data;
+
+            // Critical Debug Logging
+            console.group('Subject Matrix Debug');
+            console.log('API Response:', data);
+            console.log('Students:', data.students);
+            console.log('Papers:', data.papers);
+            console.log('Results (Raw):', data.results);
+            console.groupEnd();
+
+            renderMatrix(data);
+        } catch (error) {
+            console.error('Matrix error:', error);
+            document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-red-500 text-xs font-bold uppercase tracking-widest">${error.message}</td></tr>`;
+        }
+    }
+
+    function renderMatrix(data) {
+        const { students, papers, weights, results, subject, grades } = data;
+
+        // Update Page Header Info
+        document.getElementById('pageTitle').innerText = `${subject.name} Performance`;
+        document.getElementById('pageDescription').innerText = `Weighted mark sheet for ${papers.length} papers`;
+
+        // WEIGHT VALIDATION: Check if total weight is 100%
+        // We need to sum the weights *for the papers present*.
+        // Actually, existing weights might cover papers not currently in this specific view if we had strict filtering,
+        // but here 'papers' contains all papers for the subject (or fallback).
+        // Let's sum the weights found in the 'weights' array that match 'papers' IDs.
+
+        let totalWeight = 0;
+        papers.forEach(p => {
+            const w = weights.find(weight => weight.paper_id === p.id);
+            if (w) totalWeight += w.weight;
+        });
+
+        // Clear existing warning
+        const existingWarning = document.getElementById('weightWarningBanner');
+        if (existingWarning) existingWarning.remove();
+
+        if (totalWeight !== 100) {
+            const matrixContainer = document.getElementById('matrixBody').closest('.bg-white');
+            const warningCallback = document.createElement('div');
+            warningCallback.id = 'weightWarningBanner';
+            warningCallback.className = 'mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm animate-fade-in-down';
+            warningCallback.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="h-10 w-10 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-600">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-tight">Configuration Alert</h4>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">
+                            Total paper weight is <span class="text-amber-600 font-black">${totalWeight}%</span>. It should be <span class="text-emerald-600 font-black">100%</span>.
+                        </p>
+                    </div>
+                </div>
+                <button onclick="showWeightsModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-cog text-[8px]"></i>
+                    <span>Configure</span>
+                </button>
+            `;
+            matrixContainer.parentNode.insertBefore(warningCallback, matrixContainer);
+        }
+
+        // 1. Render Paper Headers (Rebuild entire row to ensure valid HTML)
+        const headerRow = document.getElementById('matrixHeaderRow');
+        const paperHeaders = papers.map((p, idx) => {
+            const weight = weights.find(w => w.paper_id === p.id)?.weight || 0;
+            return `
+            <th class="px-6 py-4 border-l border-slate-100 min-w-[120px]">
+                <div class="flex flex-col gap-0.5">
+                    <span class="text-[10px] font-black text-slate-900 uppercase tracking-tight">${p.name}</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Weight: ${weight}%</span>
+                </div>
+            </th>
+        `;
+        }).join('');
+
+        headerRow.innerHTML = `
+            <th class="sticky left-0 z-20 bg-slate-50 px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest min-w-[200px] border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+                Student Name
+            </th>
+            ${paperHeaders}
+            <th class="px-6 py-4 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center bg-slate-100/50">
+                Weighted Total (100%)
+            </th>
+            <th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                Grade
+            </th>
+        `;
+
+        // 2. Render Student Rows
+        const tbody = document.getElementById('matrixBody');
+        if (students.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-slate-400 text-xs">No active students found in this class</td></tr>`;
+            return;
+        }
+
+        // PERFORMANCE OPTIMIZATION: Index results for O(1) lookup
+        // Key 1: studentID_paperID (Exact Match)
+        // Key 2: studentID_paperNameNormalized (Fallback Match)
+        const resultMap = new Map();
+        const normalize = (str) => String(str || '').toLowerCase().trim().replace(/\s+/g, ' '); // remove extra spaces
+
+        results.forEach(r => {
+            if (!r.student_id) return;
+
+            // 1. ID Index
+            if (r.paper_id) {
+                resultMap.set(`${r.student_id}_${r.paper_id}`, r);
+            }
+
+            // 2. Name Index
+            if (r.paper && r.paper.name) {
+                const normName = normalize(r.paper.name);
+                // Use a composite key to avoid collisions if multiple papers normalize to same name (unlikely but safe)
+                resultMap.set(`${r.student_id}_NAME_${normName}`, r);
+            }
+        });
+
+        // Debug: Collect available paper names in results for audit
+        const availableResultPaperNames = new Set(results.map(r => r.paper ? normalize(r.paper.name) : 'unknown'));
+
+        tbody.innerHTML = students.map(student => {
+            let weightedTotal = 0;
+            const paperCells = papers.map(paper => {
+                const paperWeight = weights.find(w => w.paper_id === paper.id)?.weight || 0;
+
+                // Optimized Lookup
+                let result = resultMap.get(`${student.id}_${paper.id}`);
+
+                // Fallback: Name Lookup
+                if (!result) {
+                    const normPaperName = normalize(paper.name);
+                    result = resultMap.get(`${student.id}_NAME_${normPaperName}`);
+                }
+
+                if (result) {
+                    weightedTotal += (result.marks * paperWeight) / 100;
+                }
+
+                // Display '—' for missing, actual 0 for 0
+                const marksDisplay = (result && result.marks !== undefined && result.marks !== null) ? result.marks : '—';
+                const marksClass = (marksDisplay === '—') ? 'text-slate-300 font-normal' : 'text-slate-900 font-bold';
+
+                return `
+                <td class="px-6 py-4 border-l border-slate-50 text-xs text-center">
+                    <span class="${marksClass}">${marksDisplay}</span>
+                </td>
+            `;
+            }).join('');
+
+            // Helper function to get grade name or placeholder
+            const getGrade = (total) => {
+                const foundGrade = grades.find(g => total >= g.min_marks && total <= g.max_marks);
+                return foundGrade ?
+                    `<span class="px-2 py-1 bg-slate-100 text-slate-900 rounded text-[9px] font-black uppercase tracking-widest border border-slate-200">${foundGrade.name}</span>`
+                    : '<span class="text-slate-200 text-[10px] font-bold">—</span>';
+            };
+
+            return `
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0 group">
+                <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 transition-colors px-6 py-4 border-r border-slate-100 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
+                            ${student.first_name.charAt(0)}${student.last_name.charAt(0)}
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-700 text-sm group-hover:text-indigo-700 transition-colors">${student.first_name} ${student.last_name}</div>
+                            <div class="text-[10px] text-slate-400 font-mono mt-0.5">${student.student_id}</div>
+                        </div>
+                    </div>
+                </td>
+                ${paperCells}
+                <td class="px-6 py-4 border-l border-slate-50 text-xs font-bold text-slate-900 bg-slate-50/50">
+                    ${Math.round(weightedTotal)}%
+                </td>
+                <td class="px-6 py-4 border-l border-slate-50 text-xs font-bold">
+                    ${getGrade(weightedTotal)}
+                </td>
+            </tr>
+        `;
+        }).join('');
+
+        // Data Audit Section
+        const debugContainer = document.createElement('div');
+        debugContainer.className = 'mt-8 p-6 bg-slate-50 border border-slate-200 rounded-xl';
+
+        const expectedPapers = papers.map(p => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-mono text-slate-600">${p.name} (${normalize(p.name)})</span>`).join(' ');
+        const foundPapers = Array.from(availableResultPaperNames).map(n => `<span class="px-2 py-1 bg-indigo-50 border border-indigo-100 rounded text-xs font-mono text-indigo-700">${n}</span>`).join(' ');
+
+        debugContainer.innerHTML = `
+            <h4 class="font-bold text-slate-900 text-sm mb-4 uppercase tracking-wider flex items-center gap-2">
+                <i class="fas fa-search"></i> Data Audit
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Columns Expecting:</h5>
+                    <div class="flex flex-wrap gap-2">${expectedPapers}</div>
+                </div>
+                <div>
+                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Results Contained:</h5>
+                    <div class="flex flex-wrap gap-2">${foundPapers}</div>
+                </div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-4 italic">
+                * Names are normalized (lowercase, trimmed) for matching. matched ${results.length} total results.
+            </p>
+        `;
+
+        // Ensure the debug container is added only once and removed if data changes
+        const existingDebug = document.querySelector('.debug-data-audit');
+        if (existingDebug) existingDebug.remove();
+        debugContainer.classList.add('debug-data-audit');
+        document.getElementById('matrixBody').closest('.bg-white').after(debugContainer);
+    }
+</script>

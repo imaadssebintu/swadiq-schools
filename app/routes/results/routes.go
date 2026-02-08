@@ -14,10 +14,24 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 	api := app.Group("/api/results")
 	api.Use(auth.AuthMiddleware)
 	api.Get("/", func(c *fiber.Ctx) error { return GetResultsByExam(c, db) })
+	api.Get("/subject-matrix", func(c *fiber.Ctx) error { return GetSubjectResultMatrixAPI(c, db) })
 	api.Post("/batch", func(c *fiber.Ctx) error { return BatchSaveResults(c, db) })
 	api.Put("/:id", func(c *fiber.Ctx) error { return UpdateSingleResult(c, db) })
 	api.Get("/student/:id", func(c *fiber.Ctx) error { return GetStudentResults(c, db) })
 	api.Delete("/:id", func(c *fiber.Ctx) error { return DeleteSingleResult(c, db) })
+
+	// Page route for subject performance report
+	app.Get("/results/subject-performance", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+		return c.Render("results/subject_performance", fiber.Map{
+			"Title":       "Subject Performance Report",
+			"CurrentPage": "exams",
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
+			"user":        user,
+		})
+	})
 
 	// Exam-specific API route
 	examAPI := app.Group("/api/assessments")

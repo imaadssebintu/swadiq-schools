@@ -56,6 +56,29 @@ func GetStudentsWithResults(c *fiber.Ctx, db *sql.DB) error {
 	})
 }
 
+// GetSubjectResultMatrixAPI returns aggregate data for a subject mark sheet
+func GetSubjectResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
+	classID := c.Query("class_id")
+	subjectID := c.Query("subject_id")
+	termID := c.Query("term_id")
+	assessmentTypeID := c.Query("assessment_type_id")
+
+	if classID == "" || subjectID == "" || termID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "class_id, subject_id, and term_id are required",
+		})
+	}
+
+	matrix, err := GetSubjectResultMatrix(db, classID, subjectID, termID, assessmentTypeID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to fetch subject result matrix: " + err.Error(),
+		})
+	}
+
+	return c.JSON(matrix)
+}
+
 // BatchSaveResults handles batch create/update of results
 func BatchSaveResults(c *fiber.Ctx, db *sql.DB) error {
 	var request struct {

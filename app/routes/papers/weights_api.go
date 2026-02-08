@@ -25,7 +25,7 @@ func GetPaperWeightsAPI(c *fiber.Ctx) error {
 	}
 	defer rows.Close()
 
-	var weights []models.PaperWeight
+	weights := []models.PaperWeight{}
 	for rows.Next() {
 		var w models.PaperWeight
 		// We only populate fields we need for the UI
