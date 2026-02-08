@@ -63,6 +63,7 @@ func GetSubjectResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
 	subjectID := c.Query("subject_id")
 	termID := c.Query("term_id")
 	assessmentTypeID := c.Query("assessment_type_id")
+	search := c.Query("q")
 
 	limit, _ := strconv.Atoi(c.Query("limit", "10"))
 	offset, _ := strconv.Atoi(c.Query("offset", "0"))
@@ -73,7 +74,7 @@ func GetSubjectResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
-	matrix, err := GetSubjectResultMatrix(db, classID, subjectID, termID, assessmentTypeID, limit, offset)
+	matrix, err := GetSubjectResultMatrix(db, classID, subjectID, termID, assessmentTypeID, search, limit, offset)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to fetch subject result matrix: " + err.Error(),

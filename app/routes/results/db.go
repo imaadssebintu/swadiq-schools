@@ -233,11 +233,20 @@ func BatchCreateOrUpdateResults(db *sql.DB, results []*models.Result) error {
 	return nil
 }
 
-// GetStudentsByClassID fetches all active students in a class
-func GetStudentsByClassID(db *sql.DB, classID string, limit, offset int) ([]*models.Student, int, error) {
+// GetStudentsByClassID fetches all active students in a class with optional search
+func GetStudentsByClassID(db *sql.DB, classID, search string, limit, offset int) ([]*models.Student, int, error) {
 	// First get total count
 	var total int
-	err := db.QueryRow("SELECT COUNT(*) FROM students WHERE class_id = $1 AND is_active = true AND deleted_at IS NULL", classID).Scan(&total)
+	countQuery := "SELECT COUNT(*) FROM students WHERE class_id = $1 AND is_active = true AND deleted_at IS NULL"
+	var countParams []interface{}
+	countParams = append(countParams, classID)
+
+	if search != "" {
+		countQuery += " AND (first_name ILIKE $2 OR last_name ILIKE $2 OR student_id ILIKE $2)"
+		countParams = append(countParams, "%"+search+"%")
+	}
+
+	err := db.QueryRow(countQuery, countParams...).Scan(&total)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to fetch total students: %w", err)
 	}
@@ -248,11 +257,19 @@ func GetStudentsByClassID(db *sql.DB, classID string, limit, offset int) ([]*mod
 			gender, address, class_id, is_active, created_at, updated_at
 		FROM students
 		WHERE class_id = $1 AND is_active = true AND deleted_at IS NULL
-		ORDER BY first_name, last_name
-		LIMIT $2 OFFSET $3
 	`
+	var params []interface{}
+	params = append(params, classID)
 
-	rows, err := db.Query(query, classID, limit, offset)
+	if search != "" {
+		query += " AND (first_name ILIKE $2 OR last_name ILIKE $2 OR student_id ILIKE $2)"
+		params = append(params, "%"+search+"%")
+	}
+
+	query += fmt.Sprintf(" ORDER BY first_name, last_name LIMIT $%d OFFSET $%d", len(params)+1, len(params)+2)
+	params = append(params, limit, offset)
+
+	rows, err := db.Query(query, params...)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to fetch students: %w", err)
 	}
@@ -410,7 +427,7 @@ type SubjectResultMatrix struct {
 }
 
 // GetSubjectResultMatrix fetches data for the subject mark sheet
-func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTypeID string, limit, offset int) (*SubjectResultMatrix, error) {
+func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTypeID, search string, limit, offset int) (*SubjectResultMatrix, error) {
 	matrix := &SubjectResultMatrix{
 		Students: []*models.Student{},
 		Papers:   []*models.Paper{},
@@ -428,7 +445,7 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 	matrix.Subject = subject
 
 	// 2. Fetch Students in Class (Paginated)
-	students, total, err := GetStudentsByClassID(db, classID, limit, offset)
+	students, total, err := GetStudentsByClassID(db, classID, search, limit, offset)
 	if err != nil {
 		return nil, err
 	}
