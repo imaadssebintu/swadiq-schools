@@ -234,7 +234,14 @@ func BatchCreateOrUpdateResults(db *sql.DB, results []*models.Result) error {
 }
 
 // GetStudentsByClassID fetches all active students in a class
-func GetStudentsByClassID(db *sql.DB, classID string) ([]*models.Student, error) {
+func GetStudentsByClassID(db *sql.DB, classID string, limit, offset int) ([]*models.Student, int, error) {
+	// First get total count
+	var total int
+	err := db.QueryRow("SELECT COUNT(*) FROM students WHERE class_id = $1 AND is_active = true AND deleted_at IS NULL", classID).Scan(&total)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to fetch total students: %w", err)
+	}
+
 	query := `
 		SELECT 
 			id, student_id, first_name, last_name, date_of_birth, 
@@ -242,11 +249,12 @@ func GetStudentsByClassID(db *sql.DB, classID string) ([]*models.Student, error)
 		FROM students
 		WHERE class_id = $1 AND is_active = true AND deleted_at IS NULL
 		ORDER BY first_name, last_name
+		LIMIT $2 OFFSET $3
 	`
 
-	rows, err := db.Query(query, classID)
+	rows, err := db.Query(query, classID, limit, offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch students: %w", err)
+		return nil, 0, fmt.Errorf("failed to fetch students: %w", err)
 	}
 	defer rows.Close()
 
@@ -272,7 +280,7 @@ func GetStudentsByClassID(db *sql.DB, classID string) ([]*models.Student, error)
 			&student.UpdatedAt,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan student: %w", err)
+			return nil, 0, fmt.Errorf("failed to scan student: %w", err)
 		}
 
 		if dob.Valid {
@@ -292,7 +300,7 @@ func GetStudentsByClassID(db *sql.DB, classID string) ([]*models.Student, error)
 		students = append(students, &student)
 	}
 
-	return students, nil
+	return students, total, nil
 }
 
 // StudentWithResult represents a student with their result for an exam
@@ -391,17 +399,18 @@ type ClassResultsMatrix struct {
 
 // SubjectResultMatrix contains all data needed for the subject-level mark sheet
 type SubjectResultMatrix struct {
-	Subject  *models.Subject       `json:"subject"`
-	Students []*models.Student     `json:"students"`
-	Papers   []*models.Paper       `json:"papers"`
-	Weights  []*models.PaperWeight `json:"weights"`
-	Results  []*models.Result      `json:"results"`
-	Grades   []*models.Grade       `json:"grades"`
-	TermID   string                `json:"term_id"`
+	Subject       *models.Subject       `json:"subject"`
+	Students      []*models.Student     `json:"students"`
+	Papers        []*models.Paper       `json:"papers"`
+	Weights       []*models.PaperWeight `json:"weights"`
+	Results       []*models.Result      `json:"results"`
+	Grades        []*models.Grade       `json:"grades"`
+	TermID        string                `json:"term_id"`
+	TotalStudents int                   `json:"total_students"`
 }
 
 // GetSubjectResultMatrix fetches data for the subject mark sheet
-func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTypeID string) (*SubjectResultMatrix, error) {
+func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTypeID string, limit, offset int) (*SubjectResultMatrix, error) {
 	matrix := &SubjectResultMatrix{
 		Students: []*models.Student{},
 		Papers:   []*models.Paper{},
@@ -418,12 +427,13 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 	}
 	matrix.Subject = subject
 
-	// 2. Fetch Students in Class
-	students, err := GetStudentsByClassID(db, classID)
+	// 2. Fetch Students in Class (Paginated)
+	students, total, err := GetStudentsByClassID(db, classID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 	matrix.Students = students
+	matrix.TotalStudents = total
 
 	// 3. Fetch Weights (and papers via weights)
 	weightsQuery := `
@@ -484,8 +494,8 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 	}
 
 	// 4. Fetch Results (Targeted fetching mode)
-	if len(matrix.Papers) == 0 {
-		return matrix, nil // No papers, no results to fetch
+	if len(matrix.Papers) == 0 || len(matrix.Students) == 0 {
+		return matrix, nil // No papers or students, no results to fetch
 	}
 
 	paperIDs := make([]string, len(matrix.Papers))
@@ -493,9 +503,14 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 		paperIDs[i] = p.ID
 	}
 
+	studentIDs := make([]string, len(matrix.Students))
+	for i, s := range matrix.Students {
+		studentIDs[i] = s.ID
+	}
+
 	var resultsRows *sql.Rows
 	if assessmentTypeID == "all" || assessmentTypeID == "" {
-		// Optimized targeted query: only fetch results for the papers we actually care about in this subject context
+		// Optimized targeted query: only fetch results for the papers and students we actually care about in this page
 		resultsQuery := `
 			SELECT r.id, COALESCE(r.exam_id::text, ''), r.student_id, r.paper_id, r.marks, 
 				COALESCE(p.name, pe.name, 'Unknown Paper'), 
@@ -505,12 +520,12 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 			LEFT JOIN papers p ON r.paper_id = p.id
 			LEFT JOIN exams e ON r.exam_id = e.id
 			LEFT JOIN papers pe ON e.paper_id = pe.id 
-			WHERE s.class_id = $1 
+			WHERE r.student_id = ANY($1) 
 			AND (r.paper_id = ANY($2) OR e.paper_id = ANY($2))
 			AND r.deleted_at IS NULL
 			ORDER BY r.created_at DESC
 		`
-		resultsRows, err = db.Query(resultsQuery, classID, database.ToPostgresArray(paperIDs))
+		resultsRows, err = db.Query(resultsQuery, database.ToPostgresArray(studentIDs), database.ToPostgresArray(paperIDs))
 	} else {
 		// Still filter by assessment type if explicitly requested
 		resultsQuery := `
@@ -522,13 +537,13 @@ func GetSubjectResultMatrix(db *sql.DB, classID, subjectID, termID, assessmentTy
 			LEFT JOIN papers p ON r.paper_id = p.id
 			LEFT JOIN exams e ON r.exam_id = e.id
 			LEFT JOIN papers pe ON e.paper_id = pe.id
-			WHERE s.class_id = $1 
+			WHERE r.student_id = ANY($1) 
 			AND e.assessment_type_id = $2
 			AND (r.paper_id = ANY($3) OR e.paper_id = ANY($3))
 			AND r.deleted_at IS NULL
 			ORDER BY r.created_at DESC
 		`
-		resultsRows, err = db.Query(resultsQuery, classID, assessmentTypeID, database.ToPostgresArray(paperIDs))
+		resultsRows, err = db.Query(resultsQuery, database.ToPostgresArray(studentIDs), assessmentTypeID, database.ToPostgresArray(paperIDs))
 	}
 
 	if err != nil {

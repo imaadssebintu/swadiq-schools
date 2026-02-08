@@ -2,6 +2,7 @@ package results
 
 import (
 	"database/sql"
+	"strconv"
 	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -63,13 +64,16 @@ func GetSubjectResultMatrixAPI(c *fiber.Ctx, db *sql.DB) error {
 	termID := c.Query("term_id")
 	assessmentTypeID := c.Query("assessment_type_id")
 
+	limit, _ := strconv.Atoi(c.Query("limit", "10"))
+	offset, _ := strconv.Atoi(c.Query("offset", "0"))
+
 	if classID == "" || subjectID == "" || termID == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "class_id, subject_id, and term_id are required",
 		})
 	}
 
-	matrix, err := GetSubjectResultMatrix(db, classID, subjectID, termID, assessmentTypeID)
+	matrix, err := GetSubjectResultMatrix(db, classID, subjectID, termID, assessmentTypeID, limit, offset)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to fetch subject result matrix: " + err.Error(),

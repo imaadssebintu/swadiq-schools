@@ -133,7 +133,7 @@
 
             <div class="h-8 w-px bg-slate-100 hidden sm:block"></div>
 
-            <button onclick="loadPerformanceMatrix()"
+            <button id="loadBtn"
                 class="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-sm flex items-center gap-2 ml-auto group/btn">
                 <i class="fas fa-sync-alt text-[8px] group-hover/btn:rotate-180 transition-transform duration-500"></i>
                 <span>Load Results</span>
@@ -239,6 +239,21 @@
                     <span>Save Changes</span>
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Toast -->
+<div id="toast"
+    class="fixed top-6 right-6 bg-white border border-slate-200 rounded-2xl shadow-2xl px-5 py-4 hidden z-[110] transition-all transform scale-100 ring-1 ring-slate-900/5">
+    <div class="flex items-center gap-3">
+        <div id="toastIconBg" class="w-10 h-10 rounded-xl flex items-center justify-center">
+            <i id="toastIcon" class="text-lg"></i>
+        </div>
+        <div>
+            <div id="toastTitle" class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Notification
+            </div>
+            <div id="toastMessage" class="text-[10px] font-bold text-slate-500 uppercase tracking-tight">Message</div>
         </div>
     </div>
 </div>
@@ -408,6 +423,11 @@
         }
     }
     let currentData = null;
+    let loadedCount = 0;
+    let totalStudents = 0;
+    const itemsPerPage = 10;
+    let isLoadingMore = false;
+    let scrollObserver = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
         await initializeFilters();
@@ -429,9 +449,50 @@
         // Initial State: Empty
         document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-sm">Select criteria and click Load Results</td></tr>`;
 
-        // Only load when button is clicked
-        document.getElementById('loadBtn').addEventListener('click', loadPerformanceMatrix);
+        // Load when button is clicked (RESET pagination)
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            resetPagination();
+            loadPerformanceMatrix(true);
+        });
+
+        setupInfiniteScroll();
     });
+
+    function resetPagination() {
+        loadedCount = 0;
+        totalStudents = 0;
+        isLoadingMore = false;
+        // Keep scrollObserver alive; it guards itself with loadedCount/totalStudents
+    }
+
+    function setupInfiniteScroll() {
+        // Create a sentinel element after the table container
+        const container = document.getElementById('matrixBody').closest('.overflow-x-auto');
+        let sentinel = document.getElementById('infiniteScrollSentinel');
+        if (!sentinel) {
+            sentinel = document.createElement('div');
+            sentinel.id = 'infiniteScrollSentinel';
+            sentinel.className = 'h-4 w-full';
+            container.after(sentinel);
+        }
+
+        const options = {
+            root: null,
+            rootMargin: '200px',
+            threshold: 0.1
+        };
+
+        scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoadingMore && loadedCount > 0 && loadedCount < totalStudents) {
+                    console.log('Fetching more students...');
+                    loadPerformanceMatrix(false);
+                }
+            });
+        }, options);
+
+        scrollObserver.observe(sentinel);
+    }
 
     async function initializeFilters() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -482,7 +543,9 @@
         // loadPerformanceMatrix(); // disabled auto-load on filter change per user request
     }
 
-    async function loadPerformanceMatrix() {
+    async function loadPerformanceMatrix(isInitial = false) {
+        if (isLoadingMore) return;
+
         const urlParams = new URLSearchParams(window.location.search);
         const classId = urlParams.get('class_id');
         const subjectId = document.getElementById('filterSubject').value;
@@ -490,116 +553,207 @@
         const typeId = document.getElementById('filterType').value;
 
         if (!classId || !subjectId || !termId) {
-            document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
-                <i class="fas fa-filter text-lg opacity-20"></i>
-                <span>Please select a Subject and Term to view performance</span>
-            </td></tr>`;
+            if (isInitial) {
+                document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
+                    <i class="fas fa-filter text-lg opacity-20"></i>
+                    <span>Please select a Subject and Term to view performance</span>
+                </td></tr>`;
+            }
             return;
         }
 
-        document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-12 text-center text-slate-400 text-xs font-medium animate-pulse">Loading performance data...</td></tr>`;
+        isLoadingMore = true;
+        const offset = isInitial ? 0 : loadedCount;
+
+        if (isInitial) {
+            renderSkeleton(false);
+        } else {
+            renderSkeleton(true);
+        }
 
         try {
-            const response = await fetch(`/api/results/subject-matrix?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}&assessment_type_id=${typeId}`);
+            const response = await fetch(`/api/results/subject-matrix?class_id=${classId}&subject_id=${subjectId}&term_id=${termId}&assessment_type_id=${typeId}&limit=${itemsPerPage}&offset=${offset}`);
             const data = await response.json();
 
             if (!response.ok) throw new Error(data.error || 'Failed to load matrix');
 
-            currentData = data;
+            // Remove skeletons BEFORE rendering actual data
+            const skeletons = document.querySelectorAll('.skeleton-row');
+            skeletons.forEach(s => s.remove());
 
-            // Critical Debug Logging
-            console.group('Subject Matrix Debug');
-            console.log('API Response:', data);
-            console.log('Students:', data.students);
-            console.log('Papers:', data.papers);
-            console.log('Results (Raw):', data.results);
-            console.groupEnd();
+            if (isInitial) {
+                currentData = data;
+                totalStudents = data.total_students || 0;
+                loadedCount = data.students.length;
+                renderMatrix(data, false);
+            } else {
+                // Append data - Ensure currentData exists
+                if (!currentData) {
+                    currentData = data;
+                } else {
+                    currentData.students = [...(currentData.students || []), ...(data.students || [])];
+                    currentData.results = [...(currentData.results || []), ...(data.results || [])];
+                }
 
-            renderMatrix(data);
+                loadedCount += data.students.length;
+                renderMatrix(data, true);
+            }
+
+            // If we've reached the end
+            if (loadedCount >= totalStudents && !isInitial) {
+                const endRow = document.createElement('tr');
+                endRow.id = 'paginationEndIndicator';
+                endRow.innerHTML = `<td colspan="10" class="px-6 py-8 text-center text-slate-300 text-[9px] font-black uppercase tracking-widest">End of Student List</td>`;
+                document.getElementById('matrixBody').appendChild(endRow);
+            }
+
+            // After rendering, if we still have more, poke the observer 
+            // to handle cases where the sentinel is already visible
+            if (loadedCount < totalStudents && scrollObserver) {
+                const sentinel = document.getElementById('infiniteScrollSentinel');
+                if (sentinel) {
+                    scrollObserver.unobserve(sentinel);
+                    scrollObserver.observe(sentinel);
+                }
+            }
+
         } catch (error) {
             console.error('Matrix error:', error);
-            document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-red-500 text-xs font-bold uppercase tracking-widest">${error.message}</td></tr>`;
+            // Remove skeletons on error too
+            const skeletons = document.querySelectorAll('.skeleton-row');
+            skeletons.forEach(s => s.remove());
+
+            if (isInitial) {
+                document.getElementById('matrixBody').innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-red-500 text-xs font-bold uppercase tracking-widest">${error.message}</td></tr>`;
+            } else {
+                showToast(error.message, 'error');
+            }
+        } finally {
+            isLoadingMore = false;
         }
     }
 
-    function renderMatrix(data) {
-        const { students, papers, weights, results, subject, grades } = data;
+    function renderSkeleton(isAppend = false) {
+        const tbody = document.getElementById('matrixBody');
+        const paperCount = currentData?.papers?.length || 3;
 
-        // Update Page Header Info
-        document.getElementById('pageTitle').innerText = `${subject.name} Performance`;
-        document.getElementById('pageDescription').innerText = `Weighted mark sheet for ${papers.length} papers`;
+        let skeletonHtml = '';
+        for (let i = 0; i < 5; i++) {
+            let paperSkeletons = '';
+            for (let j = 0; j < paperCount; j++) {
+                paperSkeletons += `
+                    <td class="px-5 py-3 border-l border-slate-50 text-center">
+                        <div class="h-6 w-10 bg-slate-100 rounded-lg animate-pulse mx-auto"></div>
+                    </td>
+                `;
+            }
 
-        // WEIGHT VALIDATION: Check if total weight is 100%
-        // We need to sum the weights *for the papers present*.
-        // Actually, existing weights might cover papers not currently in this specific view if we had strict filtering,
-        // but here 'papers' contains all papers for the subject (or fallback).
-        // Let's sum the weights found in the 'weights' array that match 'papers' IDs.
-
-        let totalWeight = 0;
-        papers.forEach(p => {
-            const w = weights.find(weight => weight.paper_id === p.id);
-            if (w) totalWeight += w.weight;
-        });
-
-        // Clear existing warning
-        const existingWarning = document.getElementById('weightWarningBanner');
-        if (existingWarning) existingWarning.remove();
-
-        if (totalWeight !== 100) {
-            const matrixContainer = document.getElementById('matrixBody').closest('.bg-white');
-            const warningCallback = document.createElement('div');
-            warningCallback.id = 'weightWarningBanner';
-            warningCallback.className = 'mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm animate-fade-in-down';
-            warningCallback.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <div class="h-10 w-10 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-600">
-                        <i class="fas fa-balance-scale"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-tight">Configuration Alert</h4>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">
-                            Total paper weight is <span class="text-amber-600 font-black">${totalWeight}%</span>. It should be <span class="text-emerald-600 font-black">100%</span>.
-                        </p>
-                    </div>
-                </div>
-                <button onclick="showWeightsModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-2">
-                    <i class="fas fa-cog text-[8px]"></i>
-                    <span>Configure</span>
-                </button>
+            skeletonHtml += `
+                <tr class="skeleton-row border-b border-slate-50">
+                    <td class="sticky left-0 z-10 bg-white px-5 py-3 border-r border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-slate-100 animate-pulse"></div>
+                            <div class="space-y-2">
+                                <div class="h-3 w-24 bg-slate-100 rounded animate-pulse"></div>
+                                <div class="h-2 w-16 bg-slate-50 rounded animate-pulse"></div>
+                            </div>
+                        </div>
+                    </td>
+                    ${paperSkeletons}
+                    <td class="px-5 py-3 border-l border-slate-50 text-center bg-slate-50/30">
+                        <div class="h-6 w-12 bg-slate-100 rounded-lg animate-pulse mx-auto"></div>
+                    </td>
+                    <td class="px-5 py-3 border-l border-slate-50 text-center">
+                        <div class="h-6 w-16 bg-slate-100 rounded-lg animate-pulse mx-auto"></div>
+                    </td>
+                </tr>
             `;
-            matrixContainer.parentNode.insertBefore(warningCallback, matrixContainer);
         }
 
-        // 1. Render Paper Headers
-        const headerRow = document.getElementById('matrixHeaderRow');
-        const paperHeaders = papers.map((p, idx) => {
-            const weight = weights.find(w => w.paper_id === p.id)?.weight || 0;
-            return `
-            <th class="px-5 py-3 border-l border-slate-100 min-w-[120px]">
-                <div class="flex flex-col">
-                    <span class="text-[10px] font-black text-slate-800 uppercase tracking-tight">${p.name}</span>
-                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Weight: ${weight}%</span>
-                </div>
-            </th>
-        `;
-        }).join('');
+        if (isAppend) {
+            tbody.insertAdjacentHTML('beforeend', skeletonHtml);
+        } else {
+            tbody.innerHTML = skeletonHtml;
+        }
+    }
 
-        headerRow.innerHTML = `
-            <th class="sticky left-0 z-20 bg-slate-50 px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest min-w-[220px] border-r border-slate-100 shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
-                Student Name
-            </th>
-            ${paperHeaders}
-            <th class="px-5 py-3 text-[9px] font-black text-slate-600 uppercase tracking-widest text-center bg-slate-100/50">
-                Weighted Total (100%)
-            </th>
-            <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">
-                Grade
-            </th>
-        `;
+    function renderMatrix(data, isAppend = false) {
+        const { students, papers, weights, results, subject, grades } = data;
+
+        if (!isAppend) {
+            // Update Page Header Info
+            document.getElementById('pageTitle').innerText = `${subject.name} Performance`;
+            document.getElementById('pageDescription').innerText = `Weighted mark sheet for ${papers.length} papers`;
+
+            // WEIGHT VALIDATION: Check if total weight is 100%
+            let totalWeight = 0;
+            papers.forEach(p => {
+                const w = weights.find(weight => weight.paper_id === p.id);
+                if (w) totalWeight += w.weight;
+            });
+
+            // Clear existing warning
+            const existingWarning = document.getElementById('weightWarningBanner');
+            if (existingWarning) existingWarning.remove();
+
+            if (totalWeight !== 100) {
+                const matrixContainer = document.getElementById('matrixBody').closest('.bg-white');
+                const warningCallback = document.createElement('div');
+                warningCallback.id = 'weightWarningBanner';
+                warningCallback.className = 'mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm animate-fade-in-down';
+                warningCallback.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="h-10 w-10 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-600">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800 uppercase tracking-tight">Configuration Alert</h4>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">
+                                Total paper weight is <span class="text-amber-600 font-black">${totalWeight}%</span>. It should be <span class="text-emerald-600 font-black">100%</span>.
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="showWeightsModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fas fa-cog text-[8px]"></i>
+                        <span>Configure</span>
+                    </button>
+                `;
+                matrixContainer.parentNode.insertBefore(warningCallback, matrixContainer);
+            }
+
+            // 1. Render Paper Headers
+            const headerRow = document.getElementById('matrixHeaderRow');
+            const paperHeaders = papers.map((p, idx) => {
+                const weight = weights.find(w => w.paper_id === p.id)?.weight || 0;
+                return `
+                    <th class="px-5 py-3 border-l border-slate-100 min-w-[120px]">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-black text-slate-800 uppercase tracking-tight">${p.name}</span>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Weight: ${weight}%</span>
+                        </div>
+                    </th>
+                `;
+            }).join('');
+
+            headerRow.innerHTML = `
+                <th class="sticky left-0 z-20 bg-slate-50 px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest min-w-[220px] border-r border-slate-100 shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
+                    Student Name
+                </th>
+                ${paperHeaders}
+                <th class="px-5 py-3 text-[9px] font-black text-slate-600 uppercase tracking-widest text-center bg-slate-100/50">
+                    Weighted Total (100%)
+                </th>
+                <th class="px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">
+                    Grade
+                </th>
+            `;
+
+            document.getElementById('matrixBody').innerHTML = '';
+        }
 
         // 2. Render Student Rows
         const tbody = document.getElementById('matrixBody');
-        if (students.length === 0) {
+        if (students.length === 0 && !isAppend) {
             tbody.innerHTML = `<tr><td colspan="10" class="px-5 py-12 text-center text-slate-400 text-[11px] font-black uppercase tracking-widest">No active students found in this class</td></tr>`;
             return;
         }
@@ -620,7 +774,7 @@
         // Audit Data Collection
         const availableResultPaperNames = new Set(results.map(r => r.paper ? normalize(r.paper.name) : 'unknown'));
 
-        tbody.innerHTML = students.map(student => {
+        const rowsHtml = students.map(student => {
             let weightedTotal = 0;
             const paperCells = papers.map(paper => {
                 const paperWeight = weights.find(w => w.paper_id === paper.id)?.weight || 0;
@@ -633,8 +787,6 @@
                 if (result) weightedTotal += (result.marks * paperWeight) / 100;
 
                 const marksDisplay = (result && result.marks !== undefined && result.marks !== null) ? result.marks : '—';
-
-                // Style as a mini structure badge
                 const marksContent = marksDisplay === '—'
                     ? `<span class="text-slate-200 font-bold italic tracking-widest text-[11px]">EMPTY</span>`
                     : `<span class="text-[11px] font-black text-slate-700 uppercase tracking-widest">${marksDisplay}</span>`;
@@ -651,21 +803,18 @@
             const getGradePill = (total) => {
                 const g = grades.find(grade => total >= grade.min_marks && total <= grade.max_marks);
                 if (!g) return `<span class="text-slate-200 text-[10px] font-black tracking-widest">—</span>`;
-
-                // Determine color based on grade name
                 let colorClass = "bg-slate-50 text-slate-600 border-slate-100";
                 const gName = g.name.toUpperCase();
-
                 if (gName.startsWith('D') || gName.startsWith('C')) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-100";
                 if (gName.startsWith('P')) colorClass = "bg-amber-50 text-amber-600 border-amber-100";
                 if (gName.startsWith('F')) colorClass = "bg-rose-50 text-rose-600 border-rose-100";
 
                 return `
-                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${colorClass} text-[10px] font-black border uppercase tracking-wider">
-                        <span class="w-1 h-1 rounded-full ${colorClass.replace('bg-', 'bg-').split(' ')[1].replace('text-', 'bg-')}"></span>
-                        ${g.name}
-                    </span>
-                `;
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg ${colorClass} text-[10px] font-black border uppercase tracking-wider">
+                    <span class="w-1 h-1 rounded-full ${colorClass.split(' ')[1].replace('text-', 'bg-')}"></span>
+                    ${g.name}
+                </span>
+            `;
             };
 
             const total = Math.round(weightedTotal);
@@ -673,7 +822,7 @@
 
             return `
             <tr class="hover:bg-indigo-50/30 transition-colors border-b border-slate-50 last:border-0 group cursor-default">
-                <td class="sticky left-0 z-10 bg-white group-hover:bg-slate-50 transition-colors px-5 py-3 border-r border-slate-100 shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
+                <td class="sticky left-0 z-10 bg-white group-hover:bg-indigo-50/30 transition-colors px-5 py-3 border-r border-slate-100 shadow-[2px_0_8px_rgba(0,0,0,0.02)]">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
                             <i class="fas fa-user-graduate text-[10px]"></i>
@@ -701,36 +850,41 @@
         `;
         }).join('');
 
-        // Data Audit Section
-        const debugContainer = document.createElement('div');
-        debugContainer.className = 'mt-8 p-6 bg-slate-50 border border-slate-200 rounded-xl';
+        if (isAppend) {
+            tbody.insertAdjacentHTML('beforeend', rowsHtml);
+        } else {
+            tbody.innerHTML = rowsHtml;
+        }
+    }
 
-        const expectedPapers = papers.map(p => `<span class="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-mono text-slate-600">${p.name} (${normalize(p.name)})</span>`).join(' ');
-        const foundPapers = Array.from(availableResultPaperNames).map(n => `<span class="px-2 py-1 bg-indigo-50 border border-indigo-100 rounded text-xs font-mono text-indigo-700">${n}</span>`).join(' ');
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastIconBg = document.getElementById('toastIconBg');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
 
-        debugContainer.innerHTML = `
-            <h4 class="font-bold text-slate-900 text-sm mb-4 uppercase tracking-wider flex items-center gap-2">
-                <i class="fas fa-search"></i> Data Audit
-            </h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Columns Expecting:</h5>
-                    <div class="flex flex-wrap gap-2">${expectedPapers}</div>
-                </div>
-                <div>
-                    <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Results Contained:</h5>
-                    <div class="flex flex-wrap gap-2">${foundPapers}</div>
-                </div>
-            </div>
-            <p class="text-[10px] text-slate-400 mt-4 italic">
-                * Names are normalized (lowercase, trimmed) for matching. matched ${results.length} total results.
-            </p>
-        `;
+        if (!toast) return;
 
-        // Ensure the debug container is added only once and removed if data changes
-        const existingDebug = document.querySelector('.debug-data-audit');
-        if (existingDebug) existingDebug.remove();
-        debugContainer.classList.add('debug-data-audit');
-        document.getElementById('matrixBody').closest('.bg-white').after(debugContainer);
+        toast.classList.remove('hidden');
+
+        if (type === 'success') {
+            toastIconBg.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600';
+            toastIcon.className = 'fas fa-check-circle';
+            toastTitle.textContent = 'Success';
+        } else if (type === 'error') {
+            toastIconBg.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-rose-50 text-rose-600';
+            toastIcon.className = 'fas fa-exclamation-circle';
+            toastTitle.textContent = 'Error';
+        } else {
+            toastIconBg.className = 'w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600';
+            toastIcon.className = 'fas fa-info-circle';
+            toastTitle.textContent = 'Heads up';
+        }
+
+        toastMessage.textContent = message;
+
+        // Auto-hide
+        setTimeout(() => toast.classList.add('hidden'), 3500);
     }
 </script>
