@@ -309,7 +309,7 @@ func getExamByID(db *sql.DB, examID string) (*models.Exam, error) {
 	return &exam, nil
 }
 
-// GetStudentResults returns all results for a specific student
+// GetStudentResults returns all results for a specific student with weights and grades
 func GetStudentResults(c *fiber.Ctx, db *sql.DB) error {
 	studentID := c.Params("id")
 	if studentID == "" {
@@ -318,6 +318,16 @@ func GetStudentResults(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
+	// 1. Get Student for ClassID
+	var classID string
+	err := db.QueryRow("SELECT class_id FROM students WHERE id = $1", studentID).Scan(&classID)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Student not found",
+		})
+	}
+
+	// 2. Get Assessment History
 	results, err := GetStudentAssessmentHistory(db, studentID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -325,9 +335,36 @@ func GetStudentResults(c *fiber.Ctx, db *sql.DB) error {
 		})
 	}
 
+	// 3. Get Grades
+	grades, err := GetAllGrades(db)
+	if err != nil {
+		grades = []*models.Grade{} // Fallback to empty
+	}
+
+	// 4. Get Paper Weights for the class
+	var weights []fiber.Map
+	rows, err := db.Query("SELECT paper_id, weight, subject_id, term_id FROM paper_weights WHERE class_id = $1", classID)
+	if err == nil {
+		defer rows.Close()
+		for rows.Next() {
+			var pid, sid, tid string
+			var w int
+			if err := rows.Scan(&pid, &w, &sid, &tid); err == nil {
+				weights = append(weights, fiber.Map{
+					"paper_id":   pid,
+					"weight":     w,
+					"subject_id": sid,
+					"term_id":    tid,
+				})
+			}
+		}
+	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"results": results,
+		"grades":  grades,
+		"weights": weights,
 	})
 }
 

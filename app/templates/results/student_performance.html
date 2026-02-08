@@ -1,0 +1,353 @@
+<style>
+    @media print {
+
+        header,
+        .sidebar,
+        .no-print {
+            display: none !important;
+        }
+
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .bg-slate-50 {
+            background-color: white !important;
+        }
+
+        .shadow-sm,
+        .shadow-xl {
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+
+        .rounded-3xl,
+        .rounded-[2rem] {
+            border-radius: 0 !important;
+        }
+    }
+
+    .animate-in {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .compact-table td,
+    .compact-table th {
+        padding: 0.6rem 1rem !important;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<div class="min-h-screen bg-slate-50 p-3 lg:p-6 animate-in">
+    <div class="max-w-5xl mx-auto space-y-6">
+        <!-- Compact Header -->
+        <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-indigo-200 shadow-lg shrink-0">
+                    <span class="text-lg font-black text-white">
+                        {{slice .student.FirstName 0 1}}{{slice .student.LastName 0 1}}
+                    </span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase leading-none mb-1">
+                        {{.student.FirstName}} {{.student.LastName}}
+                    </h1>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            #{{slice .studentID 0 8}}
+                        </span>
+                        <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+                        <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                            {{if .student.Class}}{{.student.Class.Name}}{{else}}Unassigned{{end}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 no-print">
+                <button onclick="history.back()"
+                    class="h-9 px-4 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button onclick="window.print()"
+                    class="h-9 px-4 bg-slate-900 hover:bg-black text-white rounded-lg text-[9px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2">
+                    <i class="fas fa-print"></i> Print Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Analytics Strip -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Global Average</p>
+                <div class="flex items-end gap-2">
+                    <h3 id="overallAvg" class="text-xl font-black text-slate-900 leading-none">0%</h3>
+                    <div class="flex-1 h-1 bg-slate-100 rounded-full mb-1">
+                        <div id="avgProgress" class="h-full bg-indigo-500 rounded-full transition-all duration-1000"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Exams</p>
+                <h3 id="totalAssessments" class="text-xl font-black text-slate-900 leading-none">0</h3>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Subject Mastery</p>
+                <h3 id="subjectCount" class="text-xl font-black text-slate-900 leading-none">0</h3>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Performance Status</p>
+                <h3 id="statusBadge"
+                    class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none pt-1">
+                    Evaluating...</h3>
+            </div>
+        </div>
+
+        <!-- Results Architecture -->
+        <div id="termsContainer" class="space-y-6 pb-20">
+            <!-- Loading Grid -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 animate-pulse">
+                <div class="h-4 w-32 bg-slate-100 rounded mb-4"></div>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="h-8 bg-slate-50 rounded col-span-2"></div>
+                    <div class="h-8 bg-slate-50 rounded"></div>
+                    <div class="h-8 bg-slate-50 rounded"></div>
+                </div>
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="h-8 bg-slate-50 rounded col-span-2"></div>
+                    <div class="h-8 bg-slate-50 rounded"></div>
+                    <div class="h-8 bg-slate-50 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const studentID = "{{.studentID}}";
+    let globalGrades = [];
+    let globalWeights = [];
+
+    document.addEventListener('DOMContentLoaded', loadPerformanceData);
+
+    async function loadPerformanceData() {
+        try {
+            const res = await fetch(`/api/results/student/${studentID}`);
+            const data = await res.json();
+
+            if (data.success && data.results) {
+                globalGrades = data.grades || [];
+                globalWeights = data.weights || [];
+                renderPerformance(data.results);
+            } else {
+                showEmptyState();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showErrorState();
+        }
+    }
+
+    function renderPerformance(results) {
+        const container = document.getElementById('termsContainer');
+        container.innerHTML = '';
+
+        // Group by Term -> Subject -> Papers
+        const terms = {};
+        const subjectStats = new Set();
+        let totalMarks = 0;
+        let resultCount = 0;
+
+        results.forEach(r => {
+            const termID = r.exam?.term_id || 'General';
+            const subjectID = r.paper?.subject?.id || 'UnknownSubject';
+
+            if (!terms[termID]) terms[termID] = {};
+            if (!terms[termID][subjectID]) {
+                terms[termID][subjectID] = {
+                    name: r.paper?.subject?.name || 'Unknown Subject',
+                    code: r.paper?.subject?.code || '',
+                    papers: []
+                };
+            }
+
+            terms[termID][subjectID].papers.push(r);
+            subjectStats.add(subjectID);
+
+            if (r.id) {
+                totalMarks += r.marks;
+                resultCount++;
+            }
+        });
+
+        // Update Stats
+        const overallAvg = resultCount > 0 ? Math.round(totalMarks / resultCount) : 0;
+        document.getElementById('overallAvg').textContent = `${overallAvg}%`;
+        document.getElementById('avgProgress').style.width = `${overallAvg}%`;
+        document.getElementById('totalAssessments').textContent = resultCount;
+        document.getElementById('subjectCount').textContent = subjectStats.size;
+
+        const statusBadge = document.getElementById('statusBadge');
+        if (overallAvg >= 80) { statusBadge.textContent = 'Excellent'; statusBadge.className = 'text-[10px] font-black text-emerald-600 uppercase tracking-widest pt-1'; }
+        else if (overallAvg >= 60) { statusBadge.textContent = 'Good Standing'; statusBadge.className = 'text-[10px] font-black text-blue-600 uppercase tracking-widest pt-1'; }
+        else if (overallAvg > 0) { statusBadge.textContent = 'Improving'; statusBadge.className = 'text-[10px] font-black text-amber-600 uppercase tracking-widest pt-1'; }
+        else { statusBadge.textContent = 'Pending Data'; statusBadge.className = 'text-[10px] font-black text-slate-400 uppercase tracking-widest pt-1'; }
+
+        // Render Terms
+        Object.entries(terms).forEach(([termID, subjects]) => {
+            const termSection = document.createElement('div');
+            termSection.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in';
+
+            let termHtml = `
+                <div class="px-5 py-3 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-calendar-alt text-indigo-500 text-[10px]"></i>
+                        <h3 class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Term Session: ${termID}</h3>
+                    </div>
+                </div>
+                <div class="overflow-x-auto no-scrollbar">
+                    <table class="w-full compact-table">
+                        <thead class="bg-white border-b border-slate-100">
+                            <tr>
+                                <th class="text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Subject & Paper Details</th>
+                                <th class="text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">Category</th>
+                                <th class="text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">Score</th>
+                                <th class="text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+            `;
+
+            Object.entries(subjects).forEach(([subjectID, subData]) => {
+                // Calculate Weighted Total for Subject in this Term
+                const subjectWeights = globalWeights.filter(w => w.subject_id === subjectID && w.term_id === termID);
+                let subjectWeightedSum = 0;
+                let subjectTotalWeight = 0;
+                let hasSubResults = false;
+                let rawSum = 0;
+                let paperCountWithResults = 0;
+
+                subData.papers.forEach(p => {
+                    if (p.id) {
+                        hasSubResults = true;
+                        const weight = subjectWeights.find(w => w.paper_id === p.paper_id)?.weight;
+                        if (weight) {
+                            subjectWeightedSum += (p.marks * weight / 100);
+                            subjectTotalWeight += weight;
+                        }
+                        rawSum += p.marks;
+                        paperCountWithResults++;
+                    }
+
+                    // Render Paper Row
+                    const marksDisplay = p.id ? Math.round(p.marks) : '--';
+                    const gradeName = p.grade?.name || '--';
+                    const typeLabel = p.exam?.type || 'Test';
+                    const typeColor = p.exam?.type === 'Exam' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-500 bg-slate-50';
+
+                    termHtml += `
+                        <tr class="group hover:bg-slate-50/30 transition-colors">
+                            <td class="pl-8">
+                                <div class="flex flex-col">
+                                    <span class="text-[11px] font-bold text-slate-700">${p.paper?.name}</span>
+                                    <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${subData.name}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter ${typeColor}">${typeLabel}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-[11px] font-black text-slate-900">${marksDisplay}${p.id ? '%' : ''}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-[10px] font-black text-slate-500">${gradeName}</span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // Subject Total Row
+                if (hasSubResults) {
+                    const finalMark = subjectTotalWeight > 0 ? subjectWeightedSum : (rawSum / paperCountWithResults);
+                    const finalGrade = getGradeForMark(finalMark);
+
+                    termHtml += `
+                        <tr class="bg-indigo-50/20 border-b border-slate-100">
+                            <td class="pl-5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
+                                    <span class="text-[10px] font-black text-indigo-900 uppercase tracking-widest">${subData.name} Total</span>
+                                </div>
+                            </td>
+                            <td class="text-center uppercase text-[8px] font-black text-indigo-400 tracking-widest">Aggregate</td>
+                            <td class="text-center">
+                                <span class="text-[12px] font-black text-indigo-700">${Math.round(finalMark)}%</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="flex justify-center">
+                                    <span class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-[9px] font-black text-white shadow-sm shadow-indigo-200">
+                                        ${finalGrade}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+
+            termHtml += `</tbody></table></div>`;
+            termSection.innerHTML = termHtml;
+            container.appendChild(termSection);
+        });
+    }
+
+    function getGradeForMark(mark) {
+        if (!globalGrades.length) return '--';
+        const grade = globalGrades.find(g => mark >= g.min_marks && mark <= g.max_marks);
+        return grade ? grade.name : '--';
+    }
+
+    function showEmptyState() {
+        document.getElementById('termsContainer').innerHTML = `
+            <div class="py-12 text-center bg-white rounded-2xl border border-dashed border-slate-200 text-slate-400 uppercase tracking-widest font-black text-[10px]">
+                No assessment history found.
+            </div>
+        `;
+    }
+
+    function showErrorState() {
+        document.getElementById('termsContainer').innerHTML = `
+            <div class="py-12 text-center bg-rose-50 rounded-2xl border border-rose-100 text-rose-500 uppercase tracking-widest font-black text-[9px]">
+                System error while processing reports.
+            </div>
+        `;
+    }
+</script>

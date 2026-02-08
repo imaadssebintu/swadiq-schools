@@ -2,6 +2,7 @@ package results
 
 import (
 	"database/sql"
+	"swadiq-schools/app/database"
 	"swadiq-schools/app/models"
 	"swadiq-schools/app/routes/auth"
 
@@ -44,6 +45,30 @@ func SetupResultsRoutes(app *fiber.App, db *sql.DB) {
 			"LastName":    user.LastName,
 			"Email":       user.Email,
 			"user":        user,
+		})
+	})
+
+	// Page route for individual student performance report
+	app.Get("/results/student-performance/:id", auth.AuthMiddleware, func(c *fiber.Ctx) error {
+		user := c.Locals("user").(*models.User)
+		studentID := c.Params("id")
+
+		student, err := database.GetStudentByID(db, studentID)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).Render("errors/404", fiber.Map{
+				"Title": "Student Not Found",
+			})
+		}
+
+		return c.Render("results/student_performance", fiber.Map{
+			"Title":       "Student Performance Report",
+			"CurrentPage": "students",
+			"FirstName":   user.FirstName,
+			"LastName":    user.LastName,
+			"Email":       user.Email,
+			"user":        user,
+			"student":     student,
+			"studentID":   studentID,
 		})
 	})
 
