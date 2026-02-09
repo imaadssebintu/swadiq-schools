@@ -2,138 +2,117 @@
 <div class="px-4 py-4 lg:px-6 lg:py-5">
     <!-- Header Section -->
     <div class="mb-5">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-                <h1 class="text-lg font-black text-slate-900 tracking-tight uppercase">Teachers Management</h1>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Instructional Staff & Faculty
-                    Logistics</p>
+                <h1 class="text-xl lg:text-lg font-black text-slate-900 tracking-tight uppercase">Teachers Management
+                </h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">SYSTEM NODE: FACULTY
+                        REGISTRY</span>
+                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                    <span class="text-indigo-600 text-[10px] font-bold uppercase tracking-wider">INSTRUCTIONAL STAFF
+                        ACCESS</span>
+                </div>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="grid grid-cols-2 sm:flex items-center gap-2 flex-wrap">
                 <button id="runPayrollBtn"
-                    class="px-3 py-1.5 bg-emerald-600 border border-emerald-700 text-white rounded-xl hover:bg-emerald-700 transition-all duration-200 text-[11px] font-bold shadow-sm">
-                    <i class="fas fa-money-bill-wave mr-1.5"></i>Run Payroll
+                    class="px-3 py-2 bg-emerald-600 border border-emerald-700 text-white rounded-xl hover:bg-emerald-700 transition-all duration-200 text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-money-bill-wave"></i>Run Payroll
                 </button>
                 <button
-                    class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all duration-200 text-[11px] font-bold">
-                    <i class="fas fa-arrow-up-from-bracket mr-1.5 opacity-50"></i>Export
+                    class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all duration-200 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fas fa-arrow-up-from-bracket opacity-50"></i>Export
                 </button>
-                <button id="addTeacherBtn"
-                    class="px-4 py-1.5 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm ring-2 ring-indigo-50">
-                    <i class="fas fa-plus mr-1.5"></i>Add Faculty
-                </button>
-                <button id="manageDeptsBtn"
-                    class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm">
-                    <i class="fas fa-building mr-1.5 opacity-50"></i>Divisions
-                </button>
-                <button id="manageSubjectsBtn"
-                    class="px-4 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[11px] font-bold shadow-sm">
-                    <i class="fas fa-book-open mr-1.5 opacity-50"></i>Modules
-                </button>
-                <button id="manageRolesBtn"
-                    class="px-4 py-1.5 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all duration-200 text-[11px] font-bold shadow-sm">
-                    <i class="fas fa-users-cog mr-1.5 opacity-50"></i>Access Levels
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Departmental Architecture (Compact) -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-5 shadow-sm overflow-hidden relative">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h2 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Departmental Architecture
-                </h2>
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Faculty Concentration
-                    Matrix</p>
-            </div>
-        </div>
-        <div id="departmentOverview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Loading Skeletons -->
-            <div class="animate-pulse bg-slate-50 rounded-xl p-3 border border-slate-100">
-                <div class="h-3 bg-slate-200 rounded w-3/4 mb-3"></div>
-                <div class="h-6 bg-slate-200 rounded-lg w-full"></div>
-            </div>
-            <div class="animate-pulse bg-slate-50 rounded-xl p-3 border border-slate-100">
-                <div class="h-3 bg-slate-200 rounded w-3/4 mb-3"></div>
-                <div class="h-6 bg-slate-200 rounded-lg w-full"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Cards (Gradient Style) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5" id="statsCards">
-        <!-- Progress Skeletons -->
-        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
-                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
-                </div>
-                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
-            </div>
-        </div>
-        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
-                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
-                </div>
-                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
-            </div>
-        </div>
-        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
-                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
-                </div>
-                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
-            </div>
-        </div>
-        <div class="bg-slate-100 rounded-xl p-4 animate-pulse">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="h-2 bg-slate-200 rounded w-1/2 mb-2"></div>
-                    <div class="h-6 bg-slate-200 rounded w-1/3"></div>
-                </div>
-                <div class="w-10 h-10 bg-slate-200 rounded-lg"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filters and Search (Compact) -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-3 mb-5">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
-            <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                <!-- Search -->
                 <div class="relative group">
-                    <input id="searchInput" type="text" placeholder="Search faculty..."
-                        class="w-full sm:w-72 pl-9 pr-4 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 transition-all duration-300 group-hover:bg-white">
+                    <button
+                        class="px-4 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-200 transition-all duration-200 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i class="fas fa-cog opacity-50"></i>Configuration
+                    </button>
+                    <!-- Dropdown for configuration -->
+                    <div
+                        class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 hidden group-hover:block z-20 overflow-hidden">
+                        <button id="manageDeptsBtn"
+                            class="w-full text-left px-4 py-3 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-building w-4 text-center"></i>Divisions
+                        </button>
+                        <button id="manageSubjectsBtn"
+                            class="w-full text-left px-4 py-3 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-book-open w-4 text-center"></i>Modules
+                        </button>
+                        <button id="manageRolesBtn"
+                            class="w-full text-left px-4 py-3 text-[10px] font-bold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-users-cog w-4 text-center"></i>Access Levels
+                        </button>
+                    </div>
+                </div>
+                <button id="addTeacherBtn"
+                    class="px-4 py-2 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[10px] font-bold shadow-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fas fa-plus"></i>Add Faculty
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards (Premium White Style) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-5" id="statsCards">
+        <!-- Skeletons will be replaced by JS -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse">
+            <div class="h-2 bg-slate-100 rounded w-1/2 mb-2"></div>
+            <div class="h-6 bg-slate-100 rounded w-1/3"></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse">
+            <div class="h-2 bg-slate-100 rounded w-1/2 mb-2"></div>
+            <div class="h-6 bg-slate-100 rounded w-1/3"></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse">
+            <div class="h-2 bg-slate-100 rounded w-1/2 mb-2"></div>
+            <div class="h-6 bg-slate-100 rounded w-1/3"></div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse">
+            <div class="h-2 bg-slate-100 rounded w-1/2 mb-2"></div>
+            <div class="h-6 bg-slate-100 rounded w-1/3"></div>
+        </div>
+    </div>
+
+    <!-- Departmental Architecture (Hidden for now, maybe integrate into stats or sidebar) -->
+    <div class="hidden bg-white rounded-2xl border border-slate-200 p-4 mb-5 shadow-sm overflow-hidden relative">
+        <div id="departmentOverview"></div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-2 md:p-3 mb-5">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 md:gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-3 flex-1">
+                <!-- Search -->
+                <div class="relative group flex-1 md:max-w-md">
+                    <input id="searchInput" type="text" placeholder="Search Faculty Database..."
+                        class="w-full pl-9 pr-4 py-2 text-[10px] md:text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-slate-50 transition-all duration-300 group-hover:bg-white uppercase tracking-wider">
                     <i
                         class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-[10px] group-hover:text-indigo-500 transition-colors"></i>
                 </div>
 
-                <div class="flex items-center space-x-2">
-                    <select id="departmentFilter"
-                        class="px-3 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300">
-                        <option value="">All Departments</option>
-                    </select>
+                <!-- Filters -->
+                <select id="departmentFilter"
+                    class="w-full sm:w-auto px-3 md:px-4 py-2 text-[10px] md:text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300 uppercase tracking-wider">
+                    <option value="">All Divisions</option>
+                </select>
 
-                    <select id="roleFilter"
-                        class="px-3 py-1.5 text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300">
-                        <option value="">All Roles</option>
-                    </select>
-                </div>
+                <select id="roleFilter"
+                    class="w-full sm:w-auto px-3 md:px-4 py-2 text-[10px] md:text-[11px] font-bold border border-slate-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 bg-slate-50 hover:bg-white transition-all duration-300 uppercase tracking-wider">
+                    <option value="">All Clearances</option>
+                </select>
             </div>
 
-            <div class="flex items-center space-x-1.5">
+            <div class="flex items-center justify-between sm:justify-end gap-2">
                 <button
-                    class="px-3 py-1.5 text-[11px] font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200">
-                    <i class="fas fa-filter mr-1.5 opacity-50"></i>Filters
+                    class="px-3 md:px-4 py-2 text-[10px] md:text-[11px] font-black text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 uppercase tracking-wider flex items-center gap-2 border border-transparent hover:border-indigo-100">
+                    <i class="fas fa-sliders opacity-50 text-[9px] md:text-[10px]"></i><span
+                        class="hidden xs:inline">Advanced</span><span class="xs:hidden">Filter</span>
                 </button>
                 <button
-                    class="px-3 py-1.5 text-[11px] font-bold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200">
-                    <i class="fas fa-arrow-down-wide-short mr-1.5 opacity-50"></i>Sort
+                    class="px-3 md:px-4 py-2 text-[10px] md:text-[11px] font-black text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200 uppercase tracking-wider flex items-center gap-2 border border-transparent hover:border-indigo-100">
+                    <i class="fas fa-arrow-down-wide-short opacity-50 text-[9px] md:text-[10px]"></i><span
+                        class="hidden xs:inline">Sequence</span><span class="xs:hidden">Sort</span>
                 </button>
             </div>
         </div>
@@ -145,20 +124,19 @@
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="border-b border-slate-100 bg-slate-50/50">
-                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <th class="px-4 py-2 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">
                             Faculty Member</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            Specialization</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            Access Level</th>
-                        <th class="px-5 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            Active Deployments</th>
+                        <th class="px-4 py-2 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            Division</th>
+                        <th class="px-4 py-2 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            Clearance</th>
+                        <th class="px-4 py-2 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            Deployments</th>
                         <th
-                            class="px-5 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            class="px-4 py-2 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">
                             Status</th>
-                        <th
-                            class="px-5 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            Admin Controls</th>
+                        <th class="px-4 py-2 text-right text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody id="teachers-table-body" class="divide-y divide-slate-100">
@@ -331,82 +309,93 @@
 
 <!-- View Teacher Modal -->
 <div id="viewTeacherModal"
-    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300"
+    onclick="if(event.target === this) closeViewModal()">
     <div
-        class="bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200/60">
+        class="bg-white rounded-2xl w-full max-w-lg mx-4 overflow-hidden shadow-2xl transform transition-all duration-300">
         <!-- Modal Header -->
-        <div class="p-8 pb-0">
-            <div class="flex items-center justify-between mb-8">
-                <div class="flex items-center">
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg shadow-indigo-200 border-2 border-white">
-                        <span id="viewTeacherInitials" class="text-white text-2xl font-black uppercase"></span>
-                    </div>
-                    <div>
-                        <h3 id="viewTeacherName" class="text-2xl font-black text-slate-900 tracking-tight uppercase">
-                        </h3>
-                        <p id="viewTeacherID"
-                            class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-70"></p>
-                    </div>
-                </div>
-                <button id="closeViewModalBtn"
-                    class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all">
-                    <i class="fas fa-times text-lg"></i>
-                </button>
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div>
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Personnel Overview</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Faculty Profile</p>
             </div>
+            <button id="closeViewModalBtn" class="text-slate-400 hover:text-slate-900 transition-colors">
+                <i class="fas fa-times text-lg"></i>
+            </button>
         </div>
 
-        <div class="p-8 pt-0 space-y-6 overflow-y-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Digital
-                        Identity</label>
-                    <p id="viewTeacherEmail" class="text-[14px] font-black text-slate-800 break-all"></p>
+        <!-- Modal Body -->
+        <div class="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
+            <!-- Identity Section -->
+            <div class="flex items-center gap-4 pb-4 border-b border-slate-100">
+                <div id="viewTeacherInitials"
+                    class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                    <span class="text-white text-xl font-black uppercase"></span>
                 </div>
-                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Comms
-                        Line</label>
-                    <p id="viewTeacherPhone" class="text-[14px] font-black text-slate-800"></p>
-                </div>
-                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Assigned
-                        Division</label>
-                    <p id="viewTeacherDepartment"
-                        class="text-[14px] font-black text-slate-800 uppercase tracking-tight"></p>
-                </div>
-                <div class="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-70">Service
-                        Status</label>
-                    <div id="viewTeacherStatusContainer" class="mt-1">
-                        <span id="viewTeacherStatus"
-                            class="inline-flex items-center px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm"></span>
-                    </div>
-                </div>
-                <div class="md:col-span-2 bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 opacity-70">Hierarchy
-                        Clearances</label>
-                    <div id="viewTeacherRoles" class="flex flex-wrap gap-2"></div>
-                </div>
-                <div class="md:col-span-2 bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
-                    <label
-                        class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 opacity-70">Active
-                        Deployments</label>
-                    <div id="viewTeacherClasses" class="space-y-2"></div>
+                <div class="flex-1">
+                    <h3 id="viewTeacherName" class="text-lg font-black text-slate-900 tracking-tight uppercase"></h3>
+                    <p id="viewTeacherID" class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                    </p>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-4">
+            <!-- Information Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Digital
+                        Identity</label>
+                    <div class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                        <p id="viewTeacherEmail" class="text-xs font-semibold text-slate-800 break-all"></p>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Comms Line</label>
+                    <div class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                        <p id="viewTeacherPhone" class="text-xs font-semibold text-slate-800"></p>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Assigned
+                        Division</label>
+                    <div class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                        <p id="viewTeacherDepartment"
+                            class="text-xs font-semibold text-slate-800 uppercase tracking-tight"></p>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Service
+                        Status</label>
+                    <div class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg">
+                        <span id="viewTeacherStatus"
+                            class="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-full shadow-sm"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roles Section -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Hierarchy
+                    Clearances</label>
+                <div id="viewTeacherRoles"
+                    class="flex flex-wrap gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl min-h-[42px]"></div>
+            </div>
+
+            <!-- Classes Section -->
+            <div class="space-y-2">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide px-1">Active
+                    Deployments</label>
+                <div id="viewTeacherClasses"
+                    class="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl min-h-[42px]"></div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="pt-4 border-t border-slate-50 flex justify-end gap-3">
                 <button id="closeViewModalBtn2"
-                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+                    class="px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all">
                     Dismiss
                 </button>
                 <a id="fullProfileBtn" href="#"
-                    class="px-8 py-3 text-[11px] font-black uppercase tracking-widest text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all">
+                    class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
                     Full Personnel Record
                 </a>
             </div>
@@ -867,14 +856,14 @@
 
         let html = visibleClasses.map(cls =>
             '<span class="inline-flex items-center px-2 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100/50 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm">' +
-            '<i class="fas fa-school mr-1.5 opacity-50 scale-75"></i>' + cls.name +
+            '<i class="fas fa-building mr-1.5 text-[8px] opacity-60"></i>' + cls.name +
             '</span>'
         ).join('');
 
         if (hiddenCount > 0) {
-            html += '<button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-black transition-all shadow-md active:scale-95" ' +
+            html += '<button class="ml-2 inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-200 transition-all shadow-sm active:scale-95" ' +
                 'onclick="showClassesModal(this, \'' + teacherName + '\', event)" data-classes=\'' + JSON.stringify(classes) + '\'>' +
-                '<i class="fas fa-plus mr-1 scale-75"></i>' + hiddenCount + ' MORE' +
+                '<i class="fas fa-plus mr-1 text-[7px]"></i>' + hiddenCount + ' MORE' +
                 '</button>';
         } else {
             // For single item, let's still make it clickable for details
@@ -902,7 +891,11 @@
         document.getElementById('viewTeacherDepartment').textContent = deptDisplay;
 
         // Initials
-        document.getElementById('viewTeacherInitials').textContent = teacher.first_name[0] + teacher.last_name[0];
+        const initialsContainer = document.getElementById('viewTeacherInitials');
+        const initialsSpan = initialsContainer.querySelector('span');
+        if (initialsSpan) {
+            initialsSpan.textContent = teacher.first_name[0] + teacher.last_name[0];
+        }
 
         // Status
         const statusSpan = document.getElementById('viewTeacherStatus');
@@ -1094,56 +1087,60 @@
             if (!statsCards) return;
 
             statsCards.innerHTML =
-                '<!-- Total Force -->' +
-                '<div class="group bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
-                '<div class="flex items-center justify-between">' +
-                '<div class="flex-1">' +
-                '<p class="text-[10px] font-semibold text-indigo-100 uppercase tracking-wide mb-1">Total Force</p>' +
-                '<p class="text-2xl font-black text-white leading-none">' + (data.total_teachers || 0) + '</p>' +
-                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
+                '<!-- Total Faculty -->' +
+                '<div class="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-4 overflow-hidden hover:-translate-y-0.5 cursor-pointer">' +
+                '<div class="absolute -right-3 -top-3 w-20 h-20 bg-indigo-500/10 rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>' +
+                '<div class="relative z-10">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total Faculty</span>' +
+                '<div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">' +
+                '<i class="fas fa-chalkboard-teacher text-white text-xs"></i>' +
                 '</div>' +
-                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
-                '<i class="fas fa-chalkboard-teacher text-white text-lg"></i>' +
                 '</div>' +
+                '<p class="text-2xl font-black text-slate-900 leading-none mb-1">' + (data.total_teachers || 0) + '</p>' +
+                '<div class="h-1 w-12 bg-indigo-500/20 rounded-full group-hover:w-16 transition-all duration-300"></div>' +
                 '</div>' +
                 '</div>' +
                 '<!-- Active Duty -->' +
-                '<div class="group bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
-                '<div class="flex items-center justify-between">' +
-                '<div class="flex-1">' +
-                '<p class="text-[10px] font-semibold text-emerald-100 uppercase tracking-wide mb-1">Active Duty</p>' +
-                '<p class="text-2xl font-black text-white leading-none">' + (data.active_teachers || 0) + '</p>' +
-                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
-                '</div>' +
-                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
-                '<i class="fas fa-check-circle text-white text-lg"></i>' +
+                '<div class="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-4 overflow-hidden hover:-translate-y-0.5 cursor-pointer">' +
+                '<div class="absolute -right-3 -top-3 w-20 h-20 bg-emerald-500/10 rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>' +
+                '<div class="relative z-10">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Active Duty</span>' +
+                '<div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">' +
+                '<i class="fas fa-check-circle text-white text-xs"></i>' +
                 '</div>' +
                 '</div>' +
-                '</div>' +
-                '<!-- Commanders -->' +
-                '<div class="group bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
-                '<div class="flex items-center justify-between">' +
-                '<div class="flex-1">' +
-                '<p class="text-[10px] font-semibold text-purple-100 uppercase tracking-wide mb-1">Commanders</p>' +
-                '<p class="text-2xl font-black text-white leading-none">' + (data.class_teachers || 0) + '</p>' +
-                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
-                '</div>' +
-                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
-                '<i class="fas fa-school text-white text-lg"></i>' +
+                '<p class="text-2xl font-black text-slate-900 leading-none mb-1">' + (data.active_teachers || 0) + '</p>' +
+                '<div class="h-1 w-12 bg-emerald-500/20 rounded-full group-hover:w-16 transition-all duration-300"></div>' +
                 '</div>' +
                 '</div>' +
+                '<!-- Class Commanders -->' +
+                '<div class="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-4 overflow-hidden hover:-translate-y-0.5 cursor-pointer">' +
+                '<div class="absolute -right-3 -top-3 w-20 h-20 bg-purple-500/10 rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>' +
+                '<div class="relative z-10">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Commanders</span>' +
+                '<div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">' +
+                '<i class="fas fa-school text-white text-xs"></i>' +
                 '</div>' +
-                '<!-- Specialists -->' +
-                '<div class="group bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-3 transform hover:-translate-y-1 cursor-pointer">' +
-                '<div class="flex items-center justify-between">' +
-                '<div class="flex-1">' +
-                '<p class="text-[10px] font-semibold text-orange-100 uppercase tracking-wide mb-1">Specialists</p>' +
-                '<p class="text-2xl font-black text-white leading-none">' + (data.subject_teachers || 0) + '</p>' +
-                '<div class="h-1 w-16 bg-white/30 rounded-full group-hover:w-24 transition-all duration-300 mt-2"></div>' +
                 '</div>' +
-                '<div class="bg-white/20 backdrop-blur-sm p-2 rounded-lg group-hover:scale-110 transition-transform duration-300">' +
-                '<i class="fas fa-book text-white text-lg"></i>' +
+                '<p class="text-2xl font-black text-slate-900 leading-none mb-1">' + (data.class_teachers || 0) + '</p>' +
+                '<div class="h-1 w-12 bg-purple-500/20 rounded-full group-hover:w-16 transition-all duration-300"></div>' +
                 '</div>' +
+                '</div>' +
+                '<!-- Subject Specialists -->' +
+                '<div class="group relative bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 p-4 overflow-hidden hover:-translate-y-0.5 cursor-pointer">' +
+                '<div class="absolute -right-3 -top-3 w-20 h-20 bg-amber-500/10 rounded-full opacity-50 group-hover:opacity-100 transition-opacity"></div>' +
+                '<div class="relative z-10">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Specialists</span>' +
+                '<div class="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">' +
+                '<i class="fas fa-book text-white text-xs"></i>' +
+                '</div>' +
+                '</div>' +
+                '<p class="text-2xl font-black text-slate-900 leading-none mb-1">' + (data.subject_teachers || 0) + '</p>' +
+                '<div class="h-1 w-12 bg-amber-500/20 rounded-full group-hover:w-16 transition-all duration-300"></div>' +
                 '</div>' +
                 '</div>';
         } catch (error) {
@@ -1194,14 +1191,15 @@
         const tbody = document.getElementById('teachers-table-body');
         if (!tbody) return;
 
+        // Premium Skeleton Loader
         tbody.innerHTML = Array(5).fill().map(() =>
-            '<tr class="animate-pulse">' +
-            '<td class="px-5 py-4"><div class="flex items-center"><div class="w-10 h-10 bg-slate-100 rounded-xl mr-3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded w-24"></div><div class="h-2 bg-slate-50 rounded w-32"></div></div></div></td>' +
-            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-20"></div></td>' +
-            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-24"></div></td>' +
-            '<td class="px-5 py-4"><div class="h-6 bg-slate-50 rounded-lg w-16"></div></td>' +
-            '<td class="px-5 py-4 text-center"><div class="h-4 bg-slate-50 rounded-lg w-12 mx-auto"></div></td>' +
-            '<td class="px-5 py-4 text-right"><div class="flex justify-end gap-2"><div class="w-8 h-8 bg-slate-50 rounded-lg"></div><div class="w-8 h-8 bg-slate-50 rounded-lg"></div></div></td>' +
+            '<tr class="animate-pulse border-b border-slate-50">' +
+            '<td class="px-4 py-2.5"><div class="flex items-center"><div class="w-8 h-8 bg-slate-100 rounded-full mr-3"></div><div class="space-y-1"><div class="h-2.5 bg-slate-100 rounded w-24"></div><div class="h-2 bg-slate-50 rounded w-32"></div></div></div></td>' +
+            '<td class="px-4 py-2.5"><div class="h-5 bg-slate-50 rounded w-20"></div></td>' +
+            '<td class="px-4 py-2.5"><div class="h-5 bg-slate-50 rounded w-24"></div></td>' +
+            '<td class="px-4 py-2.5"><div class="h-5 bg-slate-50 rounded w-16"></div></td>' +
+            '<td class="px-4 py-2.5 text-center"><div class="h-4 bg-slate-50 rounded w-12 mx-auto"></div></td>' +
+            '<td class="px-4 py-2.5 text-right"><div class="flex justify-end gap-2"><div class="w-6 h-6 bg-slate-50 rounded"></div><div class="w-6 h-6 bg-slate-50 rounded"></div></div></td>' +
             '</tr>'
         ).join('');
 
@@ -1212,38 +1210,81 @@
 
             if (allTeachers.length > 0) {
                 tbody.innerHTML = allTeachers.map(teacher => {
-                    const initials = teacher.first_name[0] + teacher.last_name[0];
+                    const initials = (teacher.first_name[0] || '') + (teacher.last_name[0] || '');
                     const fullName = teacher.first_name + ' ' + teacher.last_name;
-                    const statusClass = teacher.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100';
-                    const indicatorClass = teacher.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500';
-                    const statusText = teacher.is_active ? 'Live' : 'Standby';
 
-                    let html = '<tr class="group hover:bg-slate-50 transition-all duration-300">';
-                    html += '<td class="px-5 py-4"><div class="flex items-center">';
-                    html += '<div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">';
-                    html += '<span class="text-indigo-600 font-black text-[11px] uppercase">' + initials + '</span></div>';
-                    html += '<div class="flex flex-col"><a href="/teachers/' + teacher.id + '" class="text-[13px] font-black text-slate-800 hover:text-indigo-600 transition-colors tracking-tight uppercase">' + fullName + '</a>';
-                    html += '<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 opacity-70">' + teacher.email + (teacher.phone ? ' • ' + teacher.phone : '') + '</span></div></div></td>';
-                    html += '<td class="px-5 py-4">' + generateBadgesHtml(teacher.departments, 'department', teacher.id) + '</td>';
-                    html += '<td class="px-5 py-4">' + generateBadgesHtml(teacher.roles, 'role', teacher.id) + '</td>';
-                    html += '<td class="px-5 py-4">' + generateDeploymentsHtml(teacher.classes, fullName, teacher.id) + '</td>';
-                    html += '<td class="px-5 py-4 text-center"><span class="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-lg shadow-sm ' + statusClass + '">';
-                    html += '<span class="w-1 h-1 rounded-full mr-1.5 ' + indicatorClass + '"></span>' + statusText + '</span></td>';
-                    html += '<td class="px-5 py-4 text-right"><div class="flex items-center justify-end space-x-2">';
-                    html += '<button class="view-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-lg shadow-sm transition-all" title="Review Profile" data-teacher-idx="' + allTeachers.indexOf(teacher) + '"><i class="fas fa-eye text-[11px]"></i></button>';
-                    html += '<button class="edit-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-100 rounded-lg shadow-sm transition-all" title="Modify Record" data-teacher-idx="' + allTeachers.indexOf(teacher) + '"><i class="fas fa-edit text-[11px]"></i></button>';
-                    html += '<button class="delete-teacher-btn w-8 h-8 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-100 rounded-lg shadow-sm transition-all" title="Purge Record" data-teacher-id="' + teacher.id + '" data-teacher-name="' + fullName + '"><i class="fas fa-trash text-[11px]"></i></button>';
+                    // Status Styling
+                    const isLive = teacher.is_active;
+                    const statusClass = isLive
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                        : 'bg-slate-50 text-slate-500 border border-slate-100';
+                    const indicatorClass = isLive
+                        ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse'
+                        : 'bg-slate-400';
+                    const statusText = isLive ? 'ACTIVE DUTY' : 'STATIONARY';
+
+                    // Avatar Background (deterministically based on id)
+                    const colors = ['bg-indigo-500', 'bg-blue-500', 'bg-violet-500', 'bg-purple-500', 'bg-fuchsia-500', 'bg-pink-500', 'bg-rose-500'];
+                    const bgClass = colors[teacher.id % colors.length];
+
+                    let html = '<tr class="group hover:bg-slate-50/80 transition-all duration-200 border-b border-slate-50 last:border-0">';
+
+                    // Column 1: Identity
+                    html += '<td class="px-4 py-2.5 align-middle">';
+                    html += '<div class="flex items-center">';
+                    html += `<div class="w-8 h-8 rounded-full ${bgClass} text-white flex items-center justify-center mr-3 shadow-sm border-2 border-white ring-1 ring-slate-100 group-hover:scale-105 transition-transform duration-200">`;
+                    html += `<span class="text-[10px] font-black uppercase tracking-wider">${initials}</span></div>`;
+                    html += '<div class="flex flex-col">';
+                    html += `<a href="/teachers/${teacher.id}" class="text-[11px] font-black text-slate-700 hover:text-indigo-600 transition-colors uppercase tracking-tight leading-tight mb-0.5">${fullName}</a>`;
+                    html += '<div class="flex items-center gap-1.5">';
+                    html += `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${teacher.email}</span>`;
+                    if (teacher.phone) {
+                        html += `<span class="w-0.5 h-0.5 rounded-full bg-slate-300"></span><span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${teacher.phone}</span>`;
+                    }
+                    html += '</div></div></div></td>';
+
+                    // Column 2: Division (Department)
+                    html += '<td class="px-4 py-2.5 align-middle">' + generateBadgesHtml(teacher.departments, 'department', teacher.id) + '</td>';
+
+                    // Column 3: Clearance (Roles)
+                    html += '<td class="px-4 py-2.5 align-middle">' + generateBadgesHtml(teacher.roles, 'role', teacher.id) + '</td>';
+
+                    // Column 4: Deployments (Classes)
+                    html += '<td class="px-4 py-2.5 align-middle">' + generateDeploymentsHtml(teacher.classes, fullName, teacher.id) + '</td>';
+
+                    // Column 5: Status
+                    html += '<td class="px-4 py-2.5 align-middle text-center">';
+                    html += `<span class="inline-flex items-center pl-1.5 pr-2 py-0.5 rounded-full ${statusClass} shadow-sm group-hover:shadow transition-all">`;
+                    html += `<span class="w-1.5 h-1.5 rounded-full mr-1.5 ${indicatorClass}"></span>`;
+                    html += `<span class="text-[9px] font-black uppercase tracking-widest">${statusText}</span></span></td>`;
+
+                    // Column 6: Actions
+                    html += '<td class="px-4 py-2.5 align-middle text-right">';
+                    html += '<div class="flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">';
+
+                    // View Button
+                    html += `<button class="view-teacher-btn w-6 h-6 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 rounded shadow-sm transition-all active:scale-95" title="Review Profile" data-teacher-idx="${allTeachers.indexOf(teacher)}">`;
+                    html += '<i class="fas fa-eye text-[10px]"></i></button>';
+
+                    // Edit Button
+                    html += `<button class="edit-teacher-btn w-6 h-6 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-emerald-600 hover:border-emerald-200 hover:bg-emerald-50 rounded shadow-sm transition-all active:scale-95" title="Modify Record" data-teacher-idx="${allTeachers.indexOf(teacher)}">`;
+                    html += '<i class="fas fa-pen text-[10px]"></i></button>';
+
+                    // Delete Button
+                    html += `<button class="delete-teacher-btn w-6 h-6 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 rounded shadow-sm transition-all active:scale-95" title="Purge Record" data-teacher-id="${teacher.id}" data-teacher-name="${fullName}">`;
+                    html += '<i class="fas fa-trash text-[10px]"></i></button>';
+
                     html += '</div></td></tr>';
                     return html;
                 }).join('');
 
                 attachTeacherActionListeners();
             } else {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center"><i class="fas fa-chalkboard-teacher text-3xl mb-4 text-slate-200"></i><p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">No faculty records found</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-12 text-center"><div class="flex flex-col items-center justify-center"><div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3"><i class="fas fa-chalkboard-teacher text-slate-300 text-xl"></i></div><p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">No faculty records found</p><p class="text-[10px] text-slate-300 font-bold uppercase tracking-wider mt-1">Initiate a new record to begin</p></div></td></tr>';
             }
         } catch (error) {
             console.error('Error loading teachers:', error);
-            tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center text-rose-500"><i class="fas fa-exclamation-triangle text-3xl mb-4"></i><p class="text-[11px] font-black uppercase tracking-widest">System Liaison Failed</p></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-12 text-center"><div class="flex flex-col items-center justify-center"><div class="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center mb-3"><i class="fas fa-exclamation-triangle text-rose-300 text-xl"></i></div><p class="text-[11px] font-black text-rose-400 uppercase tracking-widest">System Liaison Failed</p><p class="text-[10px] text-rose-300 font-bold uppercase tracking-wider mt-1">Check node connectivity</p></div></td></tr>';
         }
     }
 
