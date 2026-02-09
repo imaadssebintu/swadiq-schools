@@ -979,9 +979,7 @@
         lastName: '{{.teacher.LastName}}',
         email: '{{.teacher.Email}}',
         phone: '{{.teacher.Phone}}',
-        roles: [
-            {{ range $i, $r := .roles }}{{ if $i }},{{ end }}'{{$r.Name}}'{{ end }}
-        ],
+        roles: [{{range $i, $r := .roles}}{{if $i}}, {{end}}'{{$r.Name}}'{{end}}],
     id: '{{.teacher.ID}}'
     };
 
@@ -1595,20 +1593,17 @@
         const allowanceSection = document.getElementById('allowanceLedgerSection');
 
         try {
-            // 1. Fetch separate ledgers and individual payments
-            const [baseRes, allowRes, paymentsRes] = await Promise.all([
+            // 1. Fetch separate ledgers
+            const [baseRes, allowRes] = await Promise.all([
                 fetch('/api/teachers/' + teacherID + '/ledger/base-salary'),
-                fetch('/api/teachers/' + teacherID + '/ledger/allowance'),
-                fetch('/api/teachers/' + teacherID + '/payments')
+                fetch('/api/teachers/' + teacherID + '/ledger/allowance')
             ]);
 
             const baseData = await baseRes.json();
             const allowData = await allowRes.json();
-            const paymentData = await paymentsRes.json();
 
             const baseLedger = baseData.ledger || [];
             const allowLedger = allowData.ledger || [];
-            const payments = paymentData.payments || [];
 
             // Helper to render a consistent row
             const renderRow = (data) => {
@@ -1650,111 +1645,39 @@
             };
 
             const processLedgerType = (typeTitle, typeKey, specificLedger) => {
-                let timeline = [];
+                if (!specificLedger || specificLedger.length === 0) return '';
 
-                // 1. Initial Requirements Map
-                specificLedger.forEach(entry => {
-                    if (entry.accrued > 0) {
-                        timeline.push({
-                            sortDate: new Date(entry.start_date),
-                            type: 'Requirement',
-                            label: entry.period_name,
-                            accrued: entry.accrued,
-                            paid: entry.paid,
-                            balance: entry.accrued - entry.paid,
-                            reference: 'ACCRUAL',
-                            entry: entry
-                        });
-                    }
-                });
-
-                // 2. Add Payments: Link to Requirements or Add as Standalone
-                payments.forEach(p => {
-                    const isMatch = (typeKey === 'base' && (p.type === 'base_salary' || p.type === 'combined')) ||
-                        (typeKey === 'allowance' && p.type === 'allowance');
-
-                    if (!isMatch) return;
-
-                    // Try to finding matching Requirement
-                    const payStart = new Date(p.period_start).toISOString().split('T')[0];
-                    const payEnd = new Date(p.period_end).toISOString().split('T')[0];
-
-                    const matchedReq = timeline.find(req =>
-                        req.type === 'Requirement' &&
-                        req.entry.start_date === payStart &&
-                        req.entry.end_date === payEnd
-                    );
-
-                    if (matchedReq) {
-                        // Link reference if it's currently generic
-                        if (matchedReq.reference === 'ACCRUAL') {
-                            matchedReq.reference = p.reference || 'PAID';
-                        } else if (p.reference && !matchedReq.reference.includes(p.reference)) {
-                            matchedReq.reference += `, ${p.reference}`;
-                        }
-                    } else {
-                        // Standalone payment
-                        timeline.push({
-                            sortDate: new Date(p.paid_at),
-                            type: 'Payout Save',
-                            label: new Date(p.paid_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-                            accrued: 0,
-                            paid: p.amount,
-                            balance: 0,
-                            reference: p.reference || 'Ref ID',
-                            isPayment: true,
-                            payment: p
-                        });
-                    }
-                });
-
-                // Sort: Newest First
-                timeline.sort((a, b) => b.sortDate - a.sortDate);
-
-                if (timeline.length === 0) return '';
-
-                return timeline.map(item => {
-                    let status = 'Processed';
+                return specificLedger.map(item => {
+                    let status = item.status;
                     let statusClass = 'bg-slate-50 text-slate-400 border-slate-100';
                     let actionHTML = '';
 
-                    if (item.type === 'Requirement') {
-                        const b = item.balance;
-                        if (b > 0) {
-                            status = item.entry.paid > 0 ? 'Partial' : 'Unpaid';
-                            statusClass = status === 'Partial' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-rose-50 text-rose-600 border-rose-100';
-
-
-                        } else if (b < 0) {
-                            status = 'Overpaid';
-                            statusClass = 'bg-indigo-50 text-indigo-600 border-indigo-100';
-                        } else {
-                            status = 'Settled';
-                            statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
-                            actionHTML = '';
-                        }
-
-                        if (status === 'Unpaid' || status === 'Partial') {
-                            actionHTML = `
-                                <button onclick="openDisbursementModal('${typeKey}', ${item.balance}, '${item.entry.start_date}', '${item.entry.end_date}', '${item.label}')"
-                                    class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm transition-all group overflow-hidden relative">
-                                    <span class="relative z-10">Pay</span>
-                                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                                </button>
-                            `;
-                        }
-                    } else {
-                        status = 'Disbursed';
+                    // Map status to UI
+                    if (status === 'pending') {
+                        status = 'Unpaid';
+                        statusClass = 'bg-rose-50 text-rose-600 border-rose-100';
+                        actionHTML = `
+                            <button onclick="openDisbursementModal('${typeKey}', ${item.accrued}, '${item.start_date}', '${item.end_date}', '${item.period_name}')"
+                                class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm transition-all group overflow-hidden relative">
+                                <span class="relative z-10">Pay</span>
+                                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                            </button>
+                        `;
+                    } else if (status === 'completed') {
+                        status = 'Settled';
                         statusClass = 'bg-emerald-50 text-emerald-600 border-emerald-100';
+                    } else if (status === 'partial') {
+                        status = 'Partial';
+                        statusClass = 'bg-amber-50 text-amber-600 border-amber-100';
                     }
 
                     return renderRow({
-                        period: item.label,
+                        period: item.period_name,
                         type: typeTitle,
-                        reference: item.reference,
+                        reference: item.reference || (item.status === 'pending' ? 'PROVISION' : 'PAID'),
                         accrued: item.accrued,
                         paid: item.paid,
-                        balance: item.type === 'Requirement' ? item.balance : 0,
+                        balance: item.accrued - item.paid,
                         status: status,
                         statusClass: statusClass,
                         actionHTML: actionHTML
@@ -1835,8 +1758,6 @@
         }
     }
 </script>
-</div>
-</div>
 <style>
     @keyframes scaleUp {
         from {
@@ -1922,4 +1843,3 @@
         animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 </style>
-</div>

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"math"
 	"swadiq-schools/app/models"
@@ -313,130 +314,96 @@ func GetTeacherLedger(db *sql.DB, teacherID string, monthsToLookBack int) ([]map
 	return ledger, nil
 }
 
-// GetTeacherBaseSalaryLedger returns only base salary ledger entries
+// GetTeacherBaseSalaryLedger returns only base salary ledger entries from transaction records
 func GetTeacherBaseSalaryLedger(db *sql.DB, teacherID string, monthsToLookBack int) ([]map[string]interface{}, error) {
 	var ledger []map[string]interface{}
 
-	baseSalary, err := GetTeacherBaseSalary(db, teacherID)
+	query := `SELECT id, amount, period_start, period_end, status, reference, COALESCE(notes, '') 
+	          FROM teacher_payments 
+	          WHERE teacher_id = $1 AND (type = 'base_salary' OR type = 'combined')
+	          ORDER BY period_start DESC, paid_at DESC NULLS FIRST LIMIT 50`
+
+	rows, err := db.Query(query, teacherID)
 	if err != nil {
-		// No salary configured yet - return empty ledger
-		return ledger, nil
+		return nil, err
 	}
+	defer rows.Close()
 
-	now := time.Now()
-	currentYear, currentMonth, _ := now.Date()
-	currentLocation := now.Location()
+	for rows.Next() {
+		var id string
+		var amount int64
+		var periodStart, periodEnd time.Time
+		var status, reference, notes string
 
-	for i := 0; i < monthsToLookBack; i++ {
-		targetTime := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation).AddDate(0, -i, 0)
-		startOfMonth := targetTime
-		endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Nanosecond)
-
-		// Cutoff Check
-		configStart := time.Date(baseSalary.CreatedAt.Year(), baseSalary.CreatedAt.Month(), 1, 0, 0, 0, 0, baseSalary.CreatedAt.Location())
-		if startOfMonth.Before(configStart) {
-			_, _, pTotal, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
-			if pTotal == 0 {
-				continue
-			}
-		}
-
-		dutyDays, err := GetTeacherDutyDays(db, teacherID, startOfMonth, endOfMonth)
-		if err != nil {
+		if err := rows.Scan(&id, &amount, &periodStart, &periodEnd, &status, &reference, &notes); err != nil {
+			log.Printf("Error scanning base salary ledger row: %v", err)
 			continue
 		}
 
-		days := endOfMonth.Sub(startOfMonth).Hours() / 24
-		weeks := days / 7.0
-
-		// Calculate base salary accrual
-		var baseAccrued int64
-		if baseSalary.Period == "day" {
-			baseAccrued = baseSalary.Amount * int64(dutyDays)
-		} else if baseSalary.Period == "week" {
-			baseAccrued = int64(float64(baseSalary.Amount) * weeks)
-		} else {
-			baseAccrued = baseSalary.Amount
+		paid := int64(0)
+		if status == string(models.PaymentCompleted) {
+			paid = amount
 		}
-
-		basePaid, _, _, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
 
 		entry := map[string]interface{}{
-			"period_name": startOfMonth.Format("02-01-2006"),
-			"start_date":  startOfMonth.Format("2006-01-02"),
-			"end_date":    endOfMonth.Format("2006-01-02"),
-			"accrued":     baseAccrued,
-			"paid":        basePaid,
+			"id":          id,
+			"period_name": fmt.Sprintf("%s - %s", periodStart.Format("02/01/2006"), periodEnd.Format("02/01/2006")),
+			"start_date":  periodStart.Format("2006-01-02"),
+			"end_date":    periodEnd.Format("2006-01-02"),
+			"accrued":     amount,
+			"paid":        paid,
+			"status":      status,
+			"reference":   reference,
+			"notes":       notes,
 		}
-
 		ledger = append(ledger, entry)
 	}
 
 	return ledger, nil
 }
 
-// GetTeacherAllowanceLedger returns only allowance ledger entries
+// GetTeacherAllowanceLedger returns only allowance ledger entries from transaction records
 func GetTeacherAllowanceLedger(db *sql.DB, teacherID string, monthsToLookBack int) ([]map[string]interface{}, error) {
 	var ledger []map[string]interface{}
 
-	allowance, err := GetTeacherAllowance(db, teacherID)
-	if err != nil || allowance == nil || !allowance.IsActive {
-		return ledger, nil // Return empty if no active allowance
+	query := `SELECT id, amount, period_start, period_end, status, COALESCE(reference, ''), COALESCE(notes, '') 
+	          FROM teacher_payments 
+	          WHERE teacher_id = $1 AND type = 'allowance'
+	          ORDER BY period_start DESC, paid_at DESC NULLS FIRST LIMIT 50`
+
+	rows, err := db.Query(query, teacherID)
+	if err != nil {
+		return nil, err
 	}
+	defer rows.Close()
 
-	now := time.Now()
-	currentYear, currentMonth, _ := now.Date()
-	currentLocation := now.Location()
+	for rows.Next() {
+		var id string
+		var amount int64
+		var periodStart, periodEnd time.Time
+		var status, reference, notes string
 
-	for i := 0; i < monthsToLookBack; i++ {
-		targetTime := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation).AddDate(0, -i, 0)
-		startOfMonth := targetTime
-		endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Nanosecond)
-
-		// Cutoff Check
-		configStart := time.Date(allowance.CreatedAt.Year(), allowance.CreatedAt.Month(), 1, 0, 0, 0, 0, allowance.CreatedAt.Location())
-		if startOfMonth.Before(configStart) {
-			_, allowPaid, _, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
-			if allowPaid == 0 {
-				continue
-			}
-		}
-
-		_, err = GetTeacherDutyDays(db, teacherID, startOfMonth, endOfMonth)
-		if err != nil {
+		if err := rows.Scan(&id, &amount, &periodStart, &periodEnd, &status, &reference, &notes); err != nil {
+			log.Printf("Error scanning allowance ledger row: %v", err)
 			continue
 		}
 
-		days := endOfMonth.Sub(startOfMonth).Hours() / 24
-		weeks := days / 7.0
-
-		// Calculate allowance accrual
-		var allowAccrued int64
-		if allowance.Period == "day" {
-			// Sum from the persistent accruals table
-			query := `SELECT COALESCE(SUM(amount), 0) FROM teacher_allowance_accruals 
-					  WHERE teacher_id = $1 AND date >= $2 AND date <= $3`
-			err = db.QueryRow(query, teacherID, startOfMonth, endOfMonth).Scan(&allowAccrued)
-			if err != nil {
-				log.Printf("Error fetching accrued allowance: %v", err)
-				allowAccrued = 0
-			}
-		} else if allowance.Period == "week" {
-			allowAccrued = int64(float64(allowance.Amount) * weeks)
-		} else {
-			allowAccrued = allowance.Amount
+		paid := int64(0)
+		if status == string(models.PaymentCompleted) {
+			paid = amount
 		}
-
-		_, allowPaid, _, _ := GetTotalPaid(db, teacherID, startOfMonth, endOfMonth)
 
 		entry := map[string]interface{}{
-			"period_name": startOfMonth.Format("02-01-2006"),
-			"start_date":  startOfMonth.Format("2006-01-02"),
-			"end_date":    endOfMonth.Format("2006-01-02"),
-			"accrued":     allowAccrued,
-			"paid":        allowPaid,
+			"id":          id,
+			"period_name": fmt.Sprintf("%s - %s", periodStart.Format("02/01/2006"), periodEnd.Format("02/01/2006")),
+			"start_date":  periodStart.Format("2006-01-02"),
+			"end_date":    periodEnd.Format("2006-01-02"),
+			"accrued":     amount,
+			"paid":        paid,
+			"status":      status,
+			"reference":   reference,
+			"notes":       notes,
 		}
-
 		ledger = append(ledger, entry)
 	}
 
