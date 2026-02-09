@@ -1472,15 +1472,22 @@
         const icon = document.getElementById('messageIcon');
         const titleEl = document.getElementById('messageTitle');
         const textEl = document.getElementById('messageText');
-        const button = document.getElementById('messageButton');
+        const primaryBtn = document.getElementById('messageButton');
+        const secondaryBtn = document.getElementById('messageSecondaryButton');
 
-        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-emerald-100 shadow-emerald-100 shadow-lg';
+        secondaryBtn.classList.add('hidden');
+
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-emerald-50 shadow-emerald-100 shadow-lg';
         icon.innerHTML = '<i class="fas fa-check-circle text-emerald-600 text-2xl"></i>';
+
         titleEl.textContent = title;
-        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
+        titleEl.className = 'text-sm font-black text-slate-900 uppercase tracking-widest mb-1';
+
         textEl.textContent = message;
-        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
-        button.className = 'w-full px-8 py-4 text-[11px] font-black text-white bg-emerald-500 hover:bg-emerald-600 rounded-2xl shadow-xl shadow-emerald-100 transition-all duration-300 uppercase tracking-widest hover:-translate-y-1';
+        textEl.className = 'text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
+
+        primaryBtn.className = 'w-full py-3 rounded-xl text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all tracking-widest';
+        primaryBtn.textContent = 'Acknowledge';
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -1491,15 +1498,22 @@
         const icon = document.getElementById('messageIcon');
         const titleEl = document.getElementById('messageTitle');
         const textEl = document.getElementById('messageText');
-        const button = document.getElementById('messageButton');
+        const primaryBtn = document.getElementById('messageButton');
+        const secondaryBtn = document.getElementById('messageSecondaryButton');
 
-        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-rose-100 shadow-rose-100 shadow-lg';
+        secondaryBtn.classList.add('hidden');
+
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-rose-50 shadow-rose-100 shadow-lg';
         icon.innerHTML = '<i class="fas fa-exclamation-triangle text-rose-600 text-2xl"></i>';
+
         titleEl.textContent = title;
-        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
+        titleEl.className = 'text-sm font-black text-slate-900 uppercase tracking-widest mb-1';
+
         textEl.textContent = message;
-        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
-        button.className = 'w-full px-8 py-4 text-[11px] font-black text-white bg-rose-500 hover:bg-rose-600 rounded-2xl shadow-xl shadow-rose-100 transition-all duration-300 uppercase tracking-widest hover:-translate-y-1';
+        textEl.className = 'text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
+
+        primaryBtn.className = 'w-full py-3 rounded-xl text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all tracking-widest';
+        primaryBtn.textContent = 'Acknowledge';
 
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
@@ -1577,23 +1591,30 @@
         const icon = document.getElementById('messageIcon');
         const titleEl = document.getElementById('messageTitle');
         const textEl = document.getElementById('messageText');
-        const button = document.getElementById('messageButton');
+        const primaryBtn = document.getElementById('messageButton');
+        const secondaryBtn = document.getElementById('messageSecondaryButton');
 
-        // Reuse message modal as a confirmation modal
-        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-indigo-100 shadow-indigo-100 shadow-lg';
-        icon.innerHTML = '<i class="fas fa-rocket text-indigo-600 text-2xl"></i>';
+        // Reset modal state
+        secondaryBtn.classList.remove('hidden');
+        secondaryBtn.textContent = 'Dismiss';
+
+        icon.className = 'mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center bg-sky-50 shadow-sky-100 shadow-lg';
+        icon.innerHTML = '<i class="fas fa-rocket text-sky-600 text-2xl"></i>';
+
         titleEl.textContent = 'Confirm Activation';
-        titleEl.className = 'text-lg font-black text-slate-900 uppercase tracking-tight mb-2';
+        titleEl.className = 'text-sm font-black text-slate-900 uppercase tracking-widest mb-1';
+
         textEl.textContent = `Are you sure you want to activate "${feeTypeName}" for student billing? This action will generate ledger entries.`;
-        textEl.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
+        textEl.className = 'text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8';
 
-        button.className = 'w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all';
-        button.textContent = 'Proceed with Activation';
+        primaryBtn.className = 'flex-1 py-3 rounded-xl text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all tracking-widest';
+        primaryBtn.textContent = 'Commit Activation';
 
-        const originalAction = button.onclick;
-        button.onclick = async () => {
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Initializing...';
-            button.disabled = true;
+        const originalAction = primaryBtn.onclick;
+        primaryBtn.onclick = async () => {
+            primaryBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Initializing...';
+            primaryBtn.disabled = true;
+            secondaryBtn.disabled = true;
 
             try {
                 const response = await fetch('/api/fees/activate', {
@@ -1612,9 +1633,10 @@
             } catch (error) {
                 showErrorMessage('System Error', 'Error communicating with revenue API');
             } finally {
-                button.disabled = false;
-                button.onclick = originalAction;
-                button.textContent = 'Acknowledge';
+                primaryBtn.disabled = false;
+                secondaryBtn.disabled = false;
+                primaryBtn.onclick = originalAction;
+                primaryBtn.textContent = 'Acknowledge';
             }
         };
 
@@ -1658,21 +1680,31 @@
 <div id="messageModal"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
     <div
-        class="bg-white rounded-2xl shadow-2xl max-w-sm w-full border border-slate-100 animate-slide-in overflow-hidden">
+        class="bg-white rounded-3xl shadow-2xl max-w-sm w-full border border-slate-100 animate-slide-in overflow-hidden relative">
+        <button onclick="closeMessageModal()"
+            class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+            <i class="fas fa-times text-sm"></i>
+        </button>
         <div class="p-8 text-center">
             <div id="messageIcon"
-                class="mx-auto mb-4 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500">
+                class="mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500">
                 <!-- Icon via JS -->
             </div>
             <h3 id="messageTitle" class="text-sm font-black text-slate-900 uppercase tracking-widest mb-1">Notification
             </h3>
             <p id="messageText"
-                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-6">Detailed
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-8">Detailed
                 feedback message</p>
-            <button onclick="closeMessageModal()" id="messageButton"
-                class="w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">
-                Acknowledge
-            </button>
+            <div class="flex gap-3" id="messageButtonContainer">
+                <button onclick="closeMessageModal()" id="messageSecondaryButton"
+                    class="hidden flex-1 py-3 rounded-xl text-[10px] font-black text-slate-500 bg-slate-50 hover:bg-slate-100 uppercase transition-all tracking-widest">
+                    Cancel
+                </button>
+                <button onclick="closeMessageModal()" id="messageButton"
+                    class="flex-1 py-3 rounded-xl text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all tracking-widest">
+                    Acknowledge
+                </button>
+            </div>
         </div>
     </div>
 </div>
