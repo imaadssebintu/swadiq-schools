@@ -37,145 +37,184 @@
     }
 </style>
 
-<div class="min-h-screen bg-slate-50/50 pb-12">
+<div class="px-4 py-4 lg:px-6 lg:py-5">
     <!-- Header Section -->
-    <div class="bg-white border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex flex-col gap-1">
-                    <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">Fee <span
-                            class="text-indigo-600">Configurations</span></h1>
-                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Define and manage
-                        institutional fee structures</p>
+    <div class="mb-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-xl lg:text-lg font-black text-slate-900 tracking-tight uppercase">Fee Configurations
+                </h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">SYSTEM NODE: FEE
+                        REGISTRY</span>
+                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                    <span class="text-emerald-600 text-[10px] font-bold uppercase tracking-wider">SECURE DATABASE
+                        ACCESS</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <a href="/fees"
-                        class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-200 transition-colors shadow-sm flex items-center gap-2">
-                        <i class="fas fa-chevron-left mr-1"></i>
-                        <span>Register Ledger</span>
-                    </a>
-                    <button id="addFeeTypeBtn"
-                        class="bg-slate-900 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wide hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2">
-                        <i class="fas fa-plus"></i>
-                        <span>New Fee Type</span>
-                    </button>
-                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:flex items-center gap-2">
+                <a href="/fees"
+                    class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition-all duration-200 text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fas fa-chevron-left opacity-50"></i>Register Ledger
+                </a>
+                <button id="addFeeTypeBtn"
+                    class="px-4 py-2 premium-gradient text-white rounded-xl hover:opacity-90 transition-all duration-200 text-[11px] font-bold shadow-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fas fa-plus"></i>New Fee Type
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Stats Overview -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Registry</span>
-                    <i class="fas fa-tags text-slate-200 text-xs"></i>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-5">
+        <!-- Total Registry -->
+        <div
+            class="group bg-white rounded-2xl border border-slate-200 p-3 md:p-4 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+            <div
+                class="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-indigo-50 rounded-full -mr-8 -mt-8 md:-mr-12 md:-mt-12 transition-transform group-hover:scale-110">
+            </div>
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total
+                        Registry</p>
+                    <p id="totalFeeTypesCount" class="text-xl md:text-2xl font-black text-slate-900 leading-none">0</p>
                 </div>
-                <p id="totalFeeTypesCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
                 <div
-                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                    class="w-8 h-8 md:w-10 md:h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                    <i class="fas fa-tags text-xs md:text-sm"></i>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Types</span>
-                    <i class="fas fa-check-double text-slate-200 text-xs"></i>
+        <!-- Active Types -->
+        <div
+            class="group bg-white rounded-2xl border border-slate-200 p-3 md:p-4 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+            <div
+                class="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-emerald-50 rounded-full -mr-8 -mt-8 md:-mr-12 md:-mt-12 transition-transform group-hover:scale-110">
+            </div>
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active
+                        Types</p>
+                    <p id="activeFeeTypesCount" class="text-xl md:text-2xl font-black text-slate-900 leading-none">0</p>
                 </div>
-                <p id="activeFeeTypesCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
                 <div
-                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                    class="w-8 h-8 md:w-10 md:h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                    <i class="fas fa-check-double text-xs md:text-sm"></i>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Per Term Cycles</span>
-                    <i class="fas fa-clock text-slate-200 text-xs"></i>
+        <!-- Per Term Cycles -->
+        <div
+            class="group bg-white rounded-2xl border border-slate-200 p-3 md:p-4 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+            <div
+                class="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-purple-50 rounded-full -mr-8 -mt-8 md:-mr-12 md:-mt-12 transition-transform group-hover:scale-110">
+            </div>
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Per
+                        Term Cycles</p>
+                    <p id="perTermFeeCount" class="text-xl md:text-2xl font-black text-slate-900 leading-none">0</p>
                 </div>
-                <p id="perTermFeeCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
                 <div
-                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                    class="w-8 h-8 md:w-10 md:h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                    <i class="fas fa-clock text-xs md:text-sm"></i>
                 </div>
             </div>
+        </div>
 
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mandatory Fees</span>
-                    <i class="fas fa-shield-halved text-slate-200 text-xs"></i>
+        <!-- Mandatory Fees -->
+        <div
+            class="group bg-white rounded-2xl border border-slate-200 p-3 md:p-4 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 relative overflow-hidden cursor-pointer">
+            <div
+                class="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-orange-50 rounded-full -mr-8 -mt-8 md:-mr-12 md:-mt-12 transition-transform group-hover:scale-110">
+            </div>
+            <div class="flex items-center justify-between relative z-10">
+                <div>
+                    <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                        Mandatory Fees</p>
+                    <p id="requiredFeeCount" class="text-xl md:text-2xl font-black text-slate-900 leading-none">0</p>
                 </div>
-                <p id="requiredFeeCount" class="text-2xl font-black text-slate-900 leading-none relative z-10">0</p>
                 <div
-                    class="absolute -right-2 -bottom-2 w-12 h-12 bg-slate-50 rounded-full group-hover:scale-110 transition-transform">
+                    class="w-8 h-8 md:w-10 md:h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-sm">
+                    <i class="fas fa-shield-halved text-xs md:text-sm"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Fee Types Table Container -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span
-                        class="text-[10px] font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md uppercase tracking-widest">Fee
-                        Registry</span>
-                    <div class="h-px bg-slate-100 w-12"></div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <i
-                            class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
-                        <input type="text" id="tableSearch" placeholder="Filter registry..."
-                            class="w-full bg-slate-50 border-none text-[11px] font-bold py-2 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 min-w-[200px]">
-                    </div>
-                </div>
+    <!-- Registry Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 mt-8 px-1">
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-[10px] font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-md uppercase tracking-widest">Fee
+                    Registry</span>
+                <div class="h-px bg-slate-100 w-8 md:w-12"></div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100">
-                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Identifier</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Financials</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Assignment Logic</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                Schedule</th>
-                            <th class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Status
-                            </th>
-                            <th
-                                class="px-6 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">
-                                Operations</th>
-                        </tr>
-                    </thead>
-                    <tbody id="feeTypesTableBody" class="bg-white divide-y divide-slate-50">
-                        <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    </svg>
-                                    <p class="text-lg font-medium text-gray-900 mb-2">Loading fee types...</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Master Ledger</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="relative w-full md:w-auto">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                <input type="text" id="tableSearch" placeholder="Filter registry..."
+                    class="w-full md:min-w-[240px] bg-white border border-slate-200 text-[11px] font-bold py-2 pl-9 pr-4 rounded-xl focus:ring-4 focus:ring-slate-900/5 focus:border-slate-400 placeholder:text-slate-300 transition-all outline-none">
             </div>
         </div>
     </div>
+
+    <!-- Main Content Table -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                            Identifier</th>
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                            Financials</th>
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                            Assignment Logic</th>
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                            Schedule</th>
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
+                            Status</th>
+                        <th
+                            class="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
+                            Operations</th>
+                    </tr>
+                </thead>
+                <tbody id="feeTypesTableBody" class="bg-white divide-y divide-slate-50">
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                <p class="text-lg font-medium text-gray-900 mb-2">Loading fee types...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </div>
 
 <!-- Edit Fee Type Modal -->
 <div id="editFeeTypeModal"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+    <div
+        class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-slide-in">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="flex flex-col gap-0.5">
                 <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Modify Configuration</h3>
@@ -313,7 +352,8 @@
 <!-- Add Fee Type Modal -->
 <div id="addFeeTypeModal"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+    <div
+        class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-slide-in">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="flex flex-col gap-0.5">
                 <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Configure New Fee</h3>
@@ -453,8 +493,22 @@
         const editFeeTypeForm = document.getElementById('editFeeTypeForm');
 
         // Load fee types on page load
-        window.loadFeeTypes = loadFeeTypes;
+        window.loadFeeTypes = (search) => loadFeeTypes(search);
         loadFeeTypes();
+
+        // Search functionality with debounce
+        const tableSearch = document.getElementById('tableSearch');
+        let searchTimeout;
+        if (tableSearch) {
+            tableSearch.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    loadFeeTypes(searchTerm);
+                }, 300);
+            });
+        }
 
         // Event delegation for action buttons
         document.getElementById('feeTypesTableBody').addEventListener('click', function (e) {
@@ -631,7 +685,7 @@
             return labels[frequency] || frequency;
         }
 
-        async function loadFeeTypes() {
+        async function loadFeeTypes(searchTerm = '') {
             // Show loading skeleton
             const tbody = document.getElementById('feeTypesTableBody');
             tbody.innerHTML = Array(5).fill().map(() => `
@@ -665,7 +719,12 @@
         `).join('');
 
             try {
-                const response = await fetch('/api/fee-types');
+                const url = new URL('/api/fee-types', window.location.origin);
+                if (searchTerm) {
+                    url.searchParams.append('search', searchTerm);
+                }
+
+                const response = await fetch(url);
                 const result = await response.json();
 
                 if (result.success) {
@@ -689,8 +748,8 @@
 
             if (feeTypes.length === 0) {
                 tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <tr id="emptyRow">
+                    <td colspan="7" class="px-6 py-12 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         No fee configurations found
                     </td>
                 </tr>
@@ -712,50 +771,50 @@
                 const escapedId = feeType.id.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
                 return `
-            <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors group cursor-pointer">
-                <td class="px-6 py-4">
+            <tr class="border-b border-slate-50 hover:bg-slate-50 transition-all duration-300 group cursor-pointer">
+                <td class="px-4 py-3">
                     <div class="flex flex-col gap-0.5">
                         <span class="text-xs font-black text-slate-800 uppercase tracking-tight">${escapedName}</span>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${feeType.code}</span>
                     </div>
                 </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-3">
                     <div class="flex flex-col gap-0.5">
                         <span class="text-xs font-black text-slate-900 leading-none">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</span>
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">${feeType.is_required ? 'Mandatory' : 'Optional'}</span>
                     </div>
                 </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-3">
                     <div class="flex flex-wrap gap-1">${assignedTo}</div>
                 </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-3">
                     <span class="text-[9px] font-black text-slate-600 bg-slate-50 border border-slate-100 px-2 py-1 rounded uppercase tracking-widest">
                         <i class="fas fa-calendar-alt mr-1 opacity-50"></i>
                         ${getFrequencyLabel(feeType.payment_frequency)}
                     </span>
                 </td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-3">
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${feeType.is_active ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'}">
                         <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${feeType.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
                         ${feeType.is_active ? 'Active' : 'Offline'}
                     </span>
                 </td>
-                <td class="px-6 py-4 text-right">
-                    <div class="flex items-center justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                <td class="px-4 py-3 text-right">
+                    <div class="flex items-center justify-end gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
                         <button data-action="view" data-id="${escapedId}" data-name="${escapedName}" 
-                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="View">
+                                class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm flex items-center justify-center" title="View Details">
                             <i class="fas fa-eye text-[10px]"></i>
                         </button>
                         <button data-action="activate" data-id="${escapedId}" data-name="${escapedName}" 
-                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Activate">
+                                class="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 border border-sky-100 hover:bg-sky-600 hover:text-white transition-all shadow-sm flex items-center justify-center" title="Activate Structure">
                             <i class="fas fa-rocket text-[10px]"></i>
                         </button>
                         <button data-action="edit" data-id="${escapedId}" 
-                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="Edit">
+                                class="w-7 h-7 rounded-lg bg-slate-50 text-emerald-600 border border-slate-200 hover:bg-emerald-600 hover:text-white transition-all shadow-sm flex items-center justify-center" title="Edit Configuration">
                             <i class="fas fa-pen text-[10px]"></i>
                         </button>
                         <button data-action="delete" data-id="${escapedId}" data-name="${escapedName}" 
-                                class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Delete">
+                                class="w-7 h-7 rounded-lg bg-slate-50 text-rose-500 border border-slate-200 hover:bg-rose-600 hover:text-white transition-all shadow-sm flex items-center justify-center" title="Delete Configuration">
                             <i class="fas fa-trash-alt text-[10px]"></i>
                         </button>
                     </div>
@@ -768,14 +827,12 @@
         function showError(message) {
             const tbody = document.getElementById('feeTypesTableBody');
             tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="px-6 py-8 text-center text-red-500">
-                    <div class="flex flex-col items-center">
-                        <svg class="w-12 h-12 text-red-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="text-lg font-medium text-red-900 mb-2">${message}</p>
-                        <p class="text-red-500">Please try refreshing the page</p>
+            <tr id="errorRow">
+                <td colspan="7" class="px-6 py-8 text-center text-rose-500">
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fas fa-exclamation-circle text-xl"></i>
+                        <p class="text-[11px] font-bold uppercase tracking-widest">${message}</p>
+                        <button onclick="loadFeeTypes()" class="mt-2 text-[10px] font-black text-indigo-600 hover:underline uppercase tracking-widest">Retry Request</button>
                     </div>
                 </td>
             </tr>
@@ -792,9 +849,9 @@
         classSelector.classList.add('hidden');
         studentSelector.classList.add('hidden');
 
-        if (scope === 'class') {
+        if (scope === 'per_class') {
             classSelector.classList.remove('hidden');
-        } else if (scope === 'student') {
+        } else if (scope === 'manual') {
             studentSelector.classList.remove('hidden');
         } else if (scope === 'class_and_student') {
             classSelector.classList.remove('hidden');
@@ -815,9 +872,9 @@
         classSelector.classList.add('hidden');
         studentSelector.classList.add('hidden');
 
-        if (scope === 'class') {
+        if (scope === 'per_class') {
             classSelector.classList.remove('hidden');
-        } else if (scope === 'student') {
+        } else if (scope === 'manual') {
             studentSelector.classList.remove('hidden');
         } else if (scope === 'class_and_student') {
             classSelector.classList.remove('hidden');
@@ -1242,14 +1299,12 @@
     async function viewAssignments(feeTypeId, feeTypeName) {
         // Show modal with loading state
         const modal = document.getElementById('viewAssignmentsModal');
-        const title = document.getElementById('viewAssignmentsTitle');
         const content = document.getElementById('viewAssignmentsContent');
 
-        title.textContent = `${feeTypeName} - Loading...`;
         content.innerHTML = `
         <div class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div>
-            <span class="text-gray-600">Loading fee type details...</span>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mr-3"></div>
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Initialising Inspector...</span>
         </div>
     `;
         modal.classList.remove('hidden');
@@ -1267,36 +1322,33 @@
 
             if (feeTypeResponse.ok && assignmentsResponse.ok && feeTypeData.success && assignmentsData.success) {
                 const feeType = feeTypeData.data;
-                const title = document.getElementById('viewAssignmentsTitle');
                 const content = document.getElementById('viewAssignmentsContent');
-
-                title.textContent = `${feeTypeName} - Details & Assignments`;
 
                 let contentHTML = `
                 <!-- Fee Type Specification -->
-                <div class="bg-indigo-50/50 rounded-3xl p-8 border border-indigo-100 mb-8">
-                    <h4 class="text-[10px] font-black text-indigo-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <div class="bg-indigo-50/50 rounded-3xl p-6 md:p-8 border border-indigo-100/50 mb-8">
+                    <h4 class="text-[10px] font-black text-indigo-900 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <i class="fas fa-file-invoice-dollar text-[12px]"></i>
                         Core Configuration
                     </h4>
-                    <div class="grid grid-cols-2 gap-x-12 gap-y-6">
+                    <div class="grid grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Fee Reference</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1.5">Fee Reference</span>
                             <span class="text-[11px] font-black text-slate-900 uppercase tracking-tight">${feeType.code}</span>
                         </div>
                         <div>
-                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Standard Rate</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1.5">Standard Rate</span>
                             <span class="text-[11px] font-black text-indigo-600">UGX ${parseInt(feeType.amount || 0).toLocaleString()}</span>
                         </div>
                         <div>
-                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Billing cycle</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1.5">Billing cycle</span>
                             <span class="text-[10px] font-black text-slate-900 uppercase tracking-tight flex items-center gap-1.5">
                                 <i class="far fa-calendar-alt text-slate-400"></i>
                                 ${window.getFrequencyLabel(feeType.payment_frequency)}
                             </span>
                         </div>
                         <div>
-                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">Compliance</span>
+                            <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1.5">Compliance</span>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${feeType.is_required ? 'bg-indigo-100 text-indigo-800 shadow-sm shadow-indigo-50' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
                                 ${feeType.is_required ? 'Mandatory' : 'Optional Choice'}
                             </span>
@@ -1323,7 +1375,7 @@
                 if (assignmentsData.classes && assignmentsData.classes.length > 0) {
                     contentHTML += `
                     <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm shadow-indigo-100/20">
-                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Academic Classes (${assignmentsData.classes.length})</h5>
+                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">Academic Classes (${assignmentsData.classes.length})</h5>
                         <div class="flex flex-wrap gap-2">
                             ${assignmentsData.classes.map(cls => `<span class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full text-[9px] font-black uppercase tracking-tight shadow-sm shadow-indigo-50">${cls}</span>`).join('')}
                         </div>
@@ -1334,7 +1386,7 @@
                 if (assignmentsData.students && assignmentsData.students.length > 0) {
                     contentHTML += `
                     <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm shadow-emerald-100/20">
-                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">Targeted Students (${assignmentsData.students.length})</h5>
+                        <h5 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-4">Targeted Students (${assignmentsData.students.length})</h5>
                         <div class="flex flex-wrap gap-2">
                             ${assignmentsData.students.map(student => `<span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-full text-[9px] font-black uppercase tracking-tight shadow-sm shadow-emerald-50">${student}</span>`).join('')}
                         </div>
@@ -1344,7 +1396,7 @@
 
                 if ((!assignmentsData.classes || assignmentsData.classes.length === 0) && (!assignmentsData.students || assignmentsData.students.length === 0)) {
                     contentHTML += `
-                    <div class="text-center py-10 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                    <div class="text-center py-10 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200">
                         <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-100">
                             <i class="fas fa-users-slash text-slate-300"></i>
                         </div>
@@ -1357,8 +1409,6 @@
                 contentHTML += '</div>';
 
                 content.innerHTML = contentHTML;
-                document.getElementById('viewAssignmentsModal').classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
             } else {
                 console.error('API Error:', { feeTypeData, assignmentsData });
                 showErrorMessage('Error', 'Failed to load fee type details');
@@ -1576,26 +1626,28 @@
 <!-- View Assignments Modal -->
 <div id="viewAssignmentsModal"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+    <div
+        class="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] shadow-2xl overflow-hidden flex flex-col animate-slide-in">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="flex flex-col gap-0.5">
-                <h3 id="viewAssignmentsTitle" class="text-sm font-black text-slate-900 uppercase tracking-widest">Active
-                    Assignments</h3>
+                <h3 id="viewAssignmentsTitle" class="text-sm font-black text-slate-900 uppercase tracking-widest">
+                    Academic -
+                    Details & Assignments</h3>
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Distribution Map
                     Information</span>
             </div>
             <button onclick="closeViewAssignmentsModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times text-sm"></i>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
+        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar">
             <div id="viewAssignmentsContent" class="space-y-6">
                 <!-- Content populated via JS -->
             </div>
         </div>
         <div class="p-6 border-t border-slate-50 bg-slate-50/30">
             <button onclick="closeViewAssignmentsModal()"
-                class="w-full py-2.5 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">
+                class="w-full px-8 py-4 text-[11px] font-black text-white bg-slate-900 hover:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200 transition-all duration-300 uppercase tracking-widest hover:-translate-y-1">
                 Close Inspector
             </button>
         </div>
@@ -1628,40 +1680,41 @@
 <!-- Class Selection Modal -->
 <div id="classSelectionModal"
     class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col animate-slide-in">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md max-h-[85vh] shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Academic Catalog</h3>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select Target
+                <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Academic Catalog</h3>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Select Target
                     Classes</span>
             </div>
             <button onclick="closeClassModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times text-sm"></i>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
-            <div class="mb-6 relative group">
+        <div class="px-5 py-4 flex-1 overflow-y-auto sidebar-scrollbar">
+            <div class="mb-4 relative group">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
                 <input type="text" id="classSearchInput" placeholder="Filter classes..."
-                    class="w-full bg-slate-50 border-none text-[11px] font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none">
+                    class="w-full bg-slate-50 border-none text-[11px] font-bold py-2 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none">
             </div>
-            <div id="classLoadingSkeleton" class="grid grid-cols-2 gap-3">
-                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
-                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+            <div id="classLoadingSkeleton" class="space-y-2">
+                <div class="animate-pulse bg-slate-50 rounded-lg p-3 border border-slate-100 h-16"></div>
+                <div class="animate-pulse bg-slate-50 rounded-lg p-3 border border-slate-100 h-16"></div>
             </div>
-            <div class="grid grid-cols-2 gap-3 hidden" id="classListContainer">
+            <div class="space-y-2 hidden" id="classListContainer">
                 <!-- Class items via JS -->
             </div>
         </div>
-        <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
+        <div class="px-5 py-4 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
             <span id="selectedClassCount"
-                class="text-[10px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1.5 rounded-lg">0
+                class="text-[9px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-2.5 py-1 rounded-lg">0
                 selected</span>
             <div class="flex gap-2">
                 <button onclick="closeClassModal()"
-                    class="px-5 py-2 rounded-xl text-xs font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
+                    class="px-4 py-1.5 rounded-lg text-[10px] font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
                 <button onclick="confirmClassSelection()"
-                    class="px-5 py-2 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
+                    class="px-4 py-1.5 rounded-lg text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
                     Selection</button>
             </div>
         </div>
@@ -1671,23 +1724,24 @@
 <!-- Student Selection Modal -->
 <div id="studentSelectionModal"
     class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col animate-slide-in">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md max-h-[85vh] shadow-2xl overflow-hidden flex flex-col animate-slide-in">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
             <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Student Registry</h3>
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Target Specific
+                <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-widest">Student Registry</h3>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Target Specific
                     Individuals</span>
             </div>
             <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times text-sm"></i>
             </button>
         </div>
-        <div class="p-6 flex-1 overflow-y-auto sidebar-scrollbar max-h-[60vh]">
-            <div class="mb-6 space-y-3">
+        <div class="px-5 py-4 flex-1 overflow-y-auto sidebar-scrollbar">
+            <div class="mb-4 space-y-2">
                 <div class="relative group">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
                     <input type="text" id="studentSearchInput" placeholder="Search registry..."
-                        class="w-full bg-slate-50 border-none text-[11px] font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none"
+                        class="w-full bg-slate-50 border-none text-[11px] font-bold py-2 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 transition-all outline-none"
                         oninput="handleStudentSearch()">
                 </div>
                 <div class="px-1 flex items-center justify-between">
@@ -1696,35 +1750,35 @@
                 </div>
             </div>
 
-            <div id="studentLoadingSkeleton" class="grid grid-cols-2 gap-3">
-                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
-                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+            <div id="studentLoadingSkeleton" class="space-y-2">
+                <div class="animate-pulse bg-slate-50 rounded-lg p-3 border border-slate-100 h-16"></div>
+                <div class="animate-pulse bg-slate-50 rounded-lg p-3 border border-slate-100 h-16"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 hidden" id="studentListContainer">
+            <div class="space-y-2 hidden" id="studentListContainer">
                 <!-- Student items via JS -->
             </div>
 
-            <div id="studentInfiniteLoadingSkeleton" class="grid grid-cols-2 gap-3 mt-4 hidden">
-                <div class="animate-pulse bg-slate-50 rounded-xl p-4 border border-slate-100 h-20"></div>
+            <div id="studentInfiniteLoadingSkeleton" class="space-y-2 mt-3 hidden">
+                <div class="animate-pulse bg-slate-50 rounded-lg p-3 border border-slate-100 h-16"></div>
             </div>
 
-            <div id="loadMoreStudents" class="text-center mt-6 hidden">
+            <div id="loadMoreStudents" class="text-center mt-4 hidden">
                 <button onclick="loadMoreStudents()"
-                    class="px-6 py-2 rounded-xl text-xs font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 uppercase transition-all border border-indigo-100">
+                    class="px-5 py-1.5 rounded-lg text-[10px] font-black text-indigo-600 bg-indigo-50 hover:bg-indigo-100 uppercase transition-all border border-indigo-100">
                     Load More Results
                 </button>
             </div>
         </div>
-        <div class="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
+        <div class="px-5 py-4 border-t border-slate-50 flex items-center justify-between bg-slate-50/30">
             <span id="selectedStudentCount"
-                class="text-[10px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-3 py-1.5 rounded-lg">0
-                selected</span>
+                class="text-[9px] font-black text-slate-900 uppercase tracking-widest bg-white border border-slate-100 px-2.5 py-1 rounded-lg">0
+                students selected</span>
             <div class="flex gap-2">
                 <button onclick="closeStudentModal()"
-                    class="px-5 py-2 rounded-xl text-xs font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
+                    class="px-4 py-1.5 rounded-lg text-[10px] font-black text-slate-500 bg-white border border-slate-100 hover:bg-slate-50 uppercase transition-all">Discard</button>
                 <button onclick="confirmStudentSelection()"
-                    class="px-5 py-2 rounded-xl text-xs font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
+                    class="px-4 py-1.5 rounded-lg text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 uppercase shadow-lg transition-all">Commit
                     Selection</button>
             </div>
         </div>

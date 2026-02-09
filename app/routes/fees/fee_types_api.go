@@ -36,6 +36,7 @@ type CreateFeeTypeRequest struct {
 	Amount           string `json:"amount"`
 	PaymentFrequency string `json:"payment_frequency"`
 	Scope            string `json:"scope"`
+	IsRequired       string `json:"is_required"`
 	TargetClassID    string `json:"target_class_id"`
 	TargetStudentID  string `json:"target_student_id"`
 }
@@ -66,7 +67,7 @@ func autoApplyFees(db *sql.DB, feeTypeID, scope, targetClassID, targetStudentID 
 			studentIDs = append(studentIDs, studentID)
 		}
 
-	case "class":
+	case "per_class":
 		if targetClassID != "" {
 			classIDs := strings.Split(targetClassID, ",")
 			for _, classID := range classIDs {
@@ -85,7 +86,7 @@ func autoApplyFees(db *sql.DB, feeTypeID, scope, targetClassID, targetStudentID 
 			}
 		}
 
-	case "student":
+	case "manual":
 		if targetStudentID != "" {
 			studentIDList := strings.Split(targetStudentID, ",")
 			for _, studentID := range studentIDList {
@@ -126,11 +127,12 @@ func autoApplyFees(db *sql.DB, feeTypeID, scope, targetClassID, targetStudentID 
 func GetFeeTypesAPI(c *fiber.Ctx, db *sql.DB) error {
 	classID := c.Query("class_id")
 	studentID := c.Query("student_id")
+	searchTerm := c.Query("search")
 
 	query := `SELECT 
 		ft.id, ft.name, ft.code, ft.description, COALESCE(ft.amount, 0) as amount,
 		COALESCE(ft.payment_frequency, 'per_term') as payment_frequency,
-		ft.is_active, COALESCE(ft.scope, 'manual') as scope,
+		ft.is_active, COALESCE(ft.scope, 'manual') as scope, ft.is_required,
 		ft.created_at, ft.updated_at,
 		COALESCE(array_agg(DISTINCT c.name) FILTER (WHERE c.name IS NOT NULL), '{}') as classes,
 		COALESCE(array_agg(DISTINCT s.first_name || ' ' || s.last_name) FILTER (WHERE s.first_name IS NOT NULL), '{}') as students
@@ -141,23 +143,30 @@ func GetFeeTypesAPI(c *fiber.Ctx, db *sql.DB) error {
 		WHERE ft.deleted_at IS NULL`
 
 	var args []interface{}
+	argIdx := 1
+
 	if classID != "" || studentID != "" {
 		query += ` AND (ft.scope IN ('all_students', 'all_classes', 'manual')`
-		argIdx := 1
 		if classID != "" {
-			query += fmt.Sprintf(` OR (ft.scope = 'class' AND fta.class_id = $%d)`, argIdx)
+			query += fmt.Sprintf(` OR (ft.scope = 'per_class' AND fta.class_id = $%d)`, argIdx)
 			args = append(args, classID)
 			argIdx++
 		}
 		if studentID != "" {
-			query += fmt.Sprintf(` OR (ft.scope = 'student' AND fta.student_id = $%d)`, argIdx)
+			query += fmt.Sprintf(` OR (ft.scope = 'manual' AND fta.student_id = $%d)`, argIdx)
 			args = append(args, studentID)
 			argIdx++
 		}
 		query += `)`
 	}
 
-	query += ` GROUP BY ft.id, ft.name, ft.code, ft.description, ft.amount, ft.payment_frequency, ft.is_active, ft.scope, ft.created_at, ft.updated_at
+	if searchTerm != "" {
+		query += fmt.Sprintf(` AND (ft.name ILIKE $%d OR ft.code ILIKE $%d)`, argIdx, argIdx)
+		args = append(args, "%"+searchTerm+"%")
+		argIdx++
+	}
+
+	query += ` GROUP BY ft.id, ft.name, ft.code, ft.description, ft.amount, ft.payment_frequency, ft.is_active, ft.scope, ft.is_required, ft.created_at, ft.updated_at
 		ORDER BY ft.name`
 
 	rows, err := db.Query(query, args...)
@@ -175,7 +184,7 @@ func GetFeeTypesAPI(c *fiber.Ctx, db *sql.DB) error {
 		var classesArray, studentsArray string
 		err := rows.Scan(
 			&feeType.ID, &feeType.Name, &feeType.Code, &feeType.Description, &feeType.Amount,
-			&feeType.PaymentFrequency, &feeType.IsActive, &feeType.Scope,
+			&feeType.PaymentFrequency, &feeType.IsActive, &feeType.Scope, &feeType.IsRequired,
 			&feeType.CreatedAt, &feeType.UpdatedAt, &classesArray, &studentsArray,
 		)
 		if err != nil {
@@ -248,7 +257,10 @@ func CreateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Determine if this is a required fee (must pay)
-	isRequired := scope != "manual"
+	isRequired := req.IsRequired == "true"
+	if req.IsRequired == "" {
+		isRequired = scope != "manual"
+	}
 
 	// Log the query parameters for debugging
 	log.Printf("Inserting fee type with params: name=%s, code=%s, description=%s, payment_frequency=%s, scope=%s, is_required=%t, target_class_id=%s, target_student_id=%s",
@@ -273,7 +285,7 @@ func CreateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 	feeType.IsActive = true
 
 	// Save assignments based on scope
-	if scope == "class" && req.TargetClassID != "" {
+	if scope == "per_class" && req.TargetClassID != "" {
 		classIDs := strings.Split(req.TargetClassID, ",")
 		for _, classID := range classIDs {
 			if strings.TrimSpace(classID) != "" {
@@ -292,7 +304,7 @@ func CreateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 				}
 			}
 		}
-	} else if scope == "student" && req.TargetStudentID != "" {
+	} else if scope == "manual" && req.TargetStudentID != "" {
 		studentIDs := strings.Split(req.TargetStudentID, ",")
 		for _, studentID := range studentIDs {
 			if strings.TrimSpace(studentID) != "" {
@@ -437,7 +449,7 @@ func UpdateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 	// Update assignments
 	db.Exec(`DELETE FROM fee_type_assignments WHERE fee_type_id = $1`, feeTypeID)
 
-	if scope == "class" && req.TargetClassID != "" {
+	if scope == "per_class" && req.TargetClassID != "" {
 		classIDs := strings.Split(req.TargetClassID, ",")
 		for _, classID := range classIDs {
 			if strings.TrimSpace(classID) != "" {
@@ -456,7 +468,7 @@ func UpdateFeeTypeAPI(c *fiber.Ctx, db *sql.DB) error {
 				}
 			}
 		}
-	} else if scope == "student" && req.TargetStudentID != "" {
+	} else if scope == "manual" && req.TargetStudentID != "" {
 		studentIDs := strings.Split(req.TargetStudentID, ",")
 		for _, studentID := range studentIDs {
 			if strings.TrimSpace(studentID) != "" {
