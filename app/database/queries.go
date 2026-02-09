@@ -206,23 +206,29 @@ func CreateTeacher(db *sql.DB, user *models.User, departmentID *string) error {
 
 // GetAllTeachers gets all teachers with their department information
 func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
-	query := `SELECT DISTINCT u.id, u.email, u.first_name, u.last_name, COALESCE(u.phone, ''), u.is_active, u.created_at, u.updated_at,
+	query := `WITH unique_teacher_classes AS (
+				  SELECT teacher_id, id, name, code FROM classes WHERE is_active = true
+				  UNION
+				  SELECT te.teacher_id, c.id, c.name, c.code
+				  FROM timetable_entries te
+				  JOIN classes c ON te.class_id = c.id
+				  WHERE te.is_active = true AND c.is_active = true
+			  ),
+			  teacher_classes_agg AS (
+				  SELECT teacher_id, JSON_AGG(json_build_object('name', name, 'code', code)) as classes_data
+				  FROM unique_teacher_classes
+				  GROUP BY teacher_id
+			  )
+			  SELECT DISTINCT u.id, u.email, u.first_name, u.last_name, COALESCE(u.phone, ''), u.is_active, u.created_at, u.updated_at,
 			  STRING_AGG(DISTINCT r.name, ', ') as roles,
 			  STRING_AGG(DISTINCT d.name, ', ') as department_names,
-			  STRING_AGG(DISTINCT c.name, ', ') as class_names
+			  COALESCE(MAX(tc.classes_data::text), '[]') as classes_data
 			  FROM users u
 			  INNER JOIN user_roles ur ON u.id = ur.user_id
 			  INNER JOIN roles r ON ur.role_id = r.id
 			  LEFT JOIN user_departments ud ON u.id = ud.user_id
 			  LEFT JOIN departments d ON ud.department_id = d.id
-			  LEFT JOIN (
-				  SELECT teacher_id, id, name FROM classes WHERE is_active = true
-				  UNION
-				  SELECT te.teacher_id, c.id, c.name 
-				  FROM timetable_entries te
-				  JOIN classes c ON te.class_id = c.id
-				  WHERE te.is_active = true AND c.is_active = true
-			  ) c ON c.teacher_id = u.id
+			  LEFT JOIN teacher_classes_agg tc ON tc.teacher_id = u.id
 			  WHERE r.name IN ('admin', 'head_teacher', 'class_teacher', 'subject_teacher')
 			  AND u.is_active = true
 			  GROUP BY u.id, u.email, u.first_name, u.last_name, u.phone, u.is_active, u.created_at, u.updated_at
@@ -239,10 +245,10 @@ func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
 		teacher := &models.User{}
 		var roles string
 		var departmentNames *string
-		var classNames *string
+		var classesJSON []byte
 		err := rows.Scan(
 			&teacher.ID, &teacher.Email, &teacher.FirstName, &teacher.LastName, &teacher.Phone,
-			&teacher.IsActive, &teacher.CreatedAt, &teacher.UpdatedAt, &roles, &departmentNames, &classNames,
+			&teacher.IsActive, &teacher.CreatedAt, &teacher.UpdatedAt, &roles, &departmentNames, &classesJSON,
 		)
 		if err != nil {
 			continue
@@ -262,11 +268,8 @@ func GetAllTeachers(db *sql.DB) ([]*models.User, error) {
 			}
 		}
 
-		if classNames != nil && *classNames != "" {
-			names := strings.Split(*classNames, ", ")
-			for _, name := range names {
-				teacher.Classes = append(teacher.Classes, &models.Class{Name: name})
-			}
+		if len(classesJSON) > 0 {
+			json.Unmarshal(classesJSON, &teacher.Classes)
 		}
 
 		teachers = append(teachers, teacher)
