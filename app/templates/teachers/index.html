@@ -1273,7 +1273,7 @@
                                         </div>
                                         <div class="flex flex-col min-w-0">
                                             <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide truncate">
-                                                ${teacher.department ? teacher.department.name : 'Unassigned'}
+                                                ${(teacher.departments && teacher.departments.length > 0) ? teacher.departments[0].name + ((teacher.departments.length > 1) ? ' +' + (teacher.departments.length - 1) : '') : 'Unassigned'}
                                             </span>
                                         </div>
                                     </div>
