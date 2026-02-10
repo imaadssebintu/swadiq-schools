@@ -449,6 +449,82 @@
     </div>
 </div>
 
+<!-- Active Deployments Modal -->
+<div id="classesModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300 p-4"
+    onclick="if(event.target === this) closeClassesModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-auto overflow-hidden shadow-2xl transform transition-all duration-300">
+        <!-- Modal Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div>
+                <h3 id="classesModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-wide">Active
+                    Deployments</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Class Assignments</p>
+            </div>
+            <button onclick="closeClassesModal()" class="text-slate-400 hover:text-slate-900 transition-colors">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-3 overflow-y-auto max-h-[70vh]" id="classesList">
+            <!-- Classes will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Departments Modal -->
+<div id="departmentsModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300 p-4"
+    onclick="if(event.target === this) closeDepartmentsModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-auto overflow-hidden shadow-2xl transform transition-all duration-300">
+        <!-- Modal Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div>
+                <h3 id="departmentsModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-wide">
+                    Department Assignments</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Organizational Units</p>
+            </div>
+            <button onclick="closeDepartmentsModal()" class="text-slate-400 hover:text-slate-900 transition-colors">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-3 overflow-y-auto max-h-[70vh]" id="departmentsList">
+            <!-- Departments will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Additional Intel Modal -->
+<div id="moreInfoModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] hidden place-items-center flex items-center justify-center transition-opacity duration-300 p-4"
+    onclick="if(event.target === this) closeMoreInfoModal()">
+    <div
+        class="bg-white rounded-2xl w-full max-w-md mx-auto overflow-hidden shadow-2xl transform transition-all duration-300">
+        <!-- Modal Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div>
+                <h3 id="moreInfoModalTitle" class="text-sm font-black text-slate-900 uppercase tracking-wide">Additional
+                    Intelligence</h3>
+                <p id="moreInfoModalSubtitle"
+                    class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Asset Attributes</p>
+            </div>
+            <button onclick="closeMoreInfoModal()" class="text-slate-400 hover:text-slate-900 transition-colors">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-3 overflow-y-auto max-h-[70vh]" id="moreInfoModalBody">
+            <!-- Data will be loaded here -->
+        </div>
+    </div>
+</div>
+
 <!-- View Functions moved to main script -->
 
 <!-- Edit Teacher Modal -->
@@ -1065,28 +1141,67 @@
 
         title.innerHTML = '<span class="text-indigo-600">' + teacherName.split(' ')[0] + '\'s</span> Active Deployments';
         list.innerHTML = classes.map(cls =>
-            '<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white transition-all shadow-sm">' +
+            '<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white hover:shadow-sm transition-all">' +
             '<div class="flex items-center gap-3">' +
             '<div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg border border-slate-100/50 text-indigo-600 shadow-sm">' +
             '<i class="fas fa-school text-[10px]"></i>' +
             '</div>' +
-            '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight">' + cls.name + '</span>' +
+            '<div>' +
+            '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight block">' + cls.name + '</span>' +
+            (cls.code ? '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">' + cls.code + '</span>' : '') +
+            '</div>' +
             '</div>' +
             '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase tracking-widest rounded-md border border-emerald-100/50">Live Status</span>' +
             '</div>'
         ).join('');
 
-        // Position modal near button
-        const rect = btn.getBoundingClientRect();
-        modal.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-        modal.style.left = (rect.left + window.scrollX - 100) + 'px';
         modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
 
-        const closeHandler = () => {
+    window.closeClassesModal = function () {
+        const modal = document.getElementById('classesModal');
+        if (modal) {
             modal.classList.add('hidden');
-            document.removeEventListener('click', closeHandler);
-        };
-        setTimeout(() => document.addEventListener('click', closeHandler), 10);
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+    window.showDepartmentsModal = function (btn, teacherName, event) {
+        event.stopPropagation();
+        const departments = JSON.parse(btn.dataset.departments || '[]');
+        const modal = document.getElementById('departmentsModal');
+        const list = document.getElementById('departmentsList');
+        const title = document.getElementById('departmentsModalTitle');
+
+        if (!modal || !list) return;
+
+        title.innerHTML = '<span class="text-indigo-600">' + teacherName.split(' ')[0] + '\'s</span> Department Assignments';
+        list.innerHTML = departments.map(dept =>
+            '<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white hover:shadow-sm transition-all">' +
+            '<div class="flex items-center gap-3">' +
+            '<div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg border border-slate-100/50 text-slate-600 shadow-sm">' +
+            '<i class="fas fa-building text-[10px]"></i>' +
+            '</div>' +
+            '<div>' +
+            '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight block">' + dept.name + '</span>' +
+            (dept.code ? '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">' + dept.code + '</span>' : '') +
+            '</div>' +
+            '</div>' +
+            '<span class="px-2 py-0.5 bg-slate-50 text-slate-600 text-[8px] font-black uppercase tracking-widest rounded-md border border-slate-200">Active</span>' +
+            '</div>'
+        ).join('');
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeDepartmentsModal = function () {
+        const modal = document.getElementById('departmentsModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
     };
 
     window.showMoreModal = function (type, teacherId, event) {
@@ -1098,29 +1213,44 @@
         const modal = document.getElementById('moreInfoModal');
         const list = document.getElementById('moreInfoModalBody');
         const title = document.getElementById('moreInfoModalTitle');
+        const subtitle = document.getElementById('moreInfoModalSubtitle');
 
-        list.innerHTML = '<div class="flex flex-wrap gap-2">' +
-            items.map(item => {
-                return '<span class="inline-flex px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest ' + badgeClass + ' border rounded-lg shadow-sm">' +
-                    item.name +
-                    '</span>';
-            }).join('') +
-            '</div>';
+        if (!modal || !list) return;
 
-        const rect = event.currentTarget.getBoundingClientRect();
-        modal.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-        modal.style.left = (rect.left + window.scrollX - 50) + 'px';
+        title.innerHTML = '<span class="text-indigo-600">' + teacher.first_name + '\'s</span> ' + (type === 'role' ? 'Access Hierarchy' : 'Departmental Wings');
+        subtitle.innerText = type === 'role' ? 'Permission Matrix' : 'Organizational Units';
+
+        const icon = type === 'role' ? 'fa-users-cog' : 'fa-building';
+        const badgeColor = type === 'role' ? 'bg-emerald-50 text-emerald-600 border-emerald-100/50' : 'bg-blue-50 text-blue-600 border-blue-100/50';
+
+        list.innerHTML = items.map(item =>
+            '<div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-xl group hover:bg-white hover:shadow-sm transition-all">' +
+            '<div class="flex items-center gap-3">' +
+            '<div class="w-8 h-8 flex items-center justify-center bg-white rounded-lg border border-slate-100/50 ' + (type === 'role' ? 'text-purple-600' : 'text-blue-600') + ' shadow-sm">' +
+            '<i class="fas ' + icon + ' text-[10px]"></i>' +
+            '</div>' +
+            '<div>' +
+            '<span class="text-[11px] font-black text-slate-700 uppercase tracking-tight block">' + item.name + '</span>' +
+            (item.code ? '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">' + item.code + '</span>' : '') +
+            '</div>' +
+            '</div>' +
+            '<span class="px-2 py-0.5 ' + badgeColor + ' text-[8px] font-black uppercase tracking-widest rounded-md border">Live Status</span>' +
+            '</div>'
+        ).join('');
+
         modal.classList.remove('hidden');
-
-        const closeHandler = () => {
-            modal.classList.add('hidden');
-            document.removeEventListener('click', closeHandler);
-        };
-        setTimeout(() => document.addEventListener('click', closeHandler), 10);
+        document.body.style.overflow = 'hidden';
     };
 
-    window.closeClassesModal = () => document.getElementById('classesModal').classList.add('hidden');
-    window.closeMoreInfoModal = () => document.getElementById('moreInfoModal').classList.add('hidden');
+    window.closeClassesModal = () => {
+        document.getElementById('classesModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    };
+
+    window.closeMoreInfoModal = () => {
+        document.getElementById('moreInfoModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    };
 
     /**
      * API LOADING FUNCTIONS
@@ -1265,20 +1395,42 @@
                                 <!-- Mobile Divider -->
                                 <div class="md:hidden w-full h-px bg-slate-50 my-2.5"></div>
 
-                                <!-- Mobile Details Row (Department/Phone) -->
-                                <div class="md:hidden flex items-center justify-between w-full">
+                                <!-- Mobile Details Row (Department) -->
+                                <div class="md:hidden flex items-center gap-2 overflow-hidden w-full">
+                                    <div class="w-5 h-5 rounded bg-slate-50 flex items-center justify-center border border-slate-100 flex-shrink-0">
+                                        <i class="fas fa-building text-slate-400 text-[9px]"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        ${(teacher.departments && teacher.departments.length > 0) ?
+                            `<button onclick="showDepartmentsModal(this, '${fullName}', event)" data-departments='${JSON.stringify(teacher.departments)}' class="text-left w-full">
+                                                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+                                                    ${teacher.departments[0].name}${teacher.departments.length > 1 ? ' +' + (teacher.departments.length - 1) : ''}
+                                                </span>
+                                            </button>` :
+                            '<span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide italic">Unassigned</span>'
+                        }
+                                    </div>
+                                </div>
+
+                                <!-- Mobile Deployments Row -->
+                                <div class="md:hidden flex items-center justify-between w-full mt-2">
                                     <div class="flex items-center gap-2 overflow-hidden flex-1 mr-2">
-                                        <div class="w-5 h-5 rounded bg-slate-50 flex items-center justify-center border border-slate-100 flex-shrink-0">
-                                            <i class="fas fa-building text-slate-400 text-[9px]"></i>
+                                        <div class="w-5 h-5 rounded bg-emerald-50 flex items-center justify-center border border-emerald-100 flex-shrink-0">
+                                            <i class="fas fa-school text-emerald-500 text-[9px]"></i>
                                         </div>
-                                        <div class="flex flex-col min-w-0">
-                                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide truncate">
-                                                ${(teacher.departments && teacher.departments.length > 0) ? teacher.departments[0].name + ((teacher.departments.length > 1) ? ' +' + (teacher.departments.length - 1) : '') : 'Unassigned'}
-                                            </span>
+                                        <div class="flex-1 min-w-0">
+                                            ${teacher.classes && teacher.classes.length > 0 ?
+                            `<button onclick="showClassesModal(this, '${fullName}', event)" data-classes='${JSON.stringify(teacher.classes)}' class="text-left w-full">
+                                                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wide">
+                                                        ${teacher.classes[0].code || teacher.classes[0].name}${teacher.classes.length > 1 ? ' +' + (teacher.classes.length - 1) : ''}
+                                                    </span>
+                                                </button>` :
+                            '<span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide italic">No Deployments</span>'
+                        }
                                         </div>
                                     </div>
                                     ${teacher.phone ? `
-                                    <a href="tel:${teacher.phone}" class="flex items-center justify-center gap-1.5 text-[9px] font-black text-white bg-indigo-500 hover:bg-indigo-600 transition-colors uppercase tracking-wider px-4 py-1.5 rounded shadow-sm shadow-indigo-200 flex-shrink-0 ml-3" onclick="event.stopPropagation()">
+                                    <a href="tel:${teacher.phone}" class="flex items-center justify-center gap-1.5 text-[9px] font-black text-white bg-indigo-500 hover:bg-indigo-600 transition-colors uppercase tracking-wider px-4 py-1.5 rounded shadow-sm shadow-indigo-200 flex-shrink-0" onclick="event.stopPropagation()">
                                         <i class="fas fa-phone text-[9px]"></i>Call
                                     </a>
                                     ` : ''}
