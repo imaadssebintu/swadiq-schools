@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"swadiq-schools/app/config"
 	"swadiq-schools/app/database"
@@ -118,6 +119,10 @@ func main() {
 
 	// Initialize template engine
 	engine := html.New("./app/templates", ".html")
+	engine.AddFunc("json", func(v interface{}) (string, error) {
+		b, err := json.Marshal(v)
+		return string(b), err
+	})
 	engine.Reload(true) // Enable template reloading for development
 	engine.Debug(false) // Disable debug mode to reduce verbose logs
 

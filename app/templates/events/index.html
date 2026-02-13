@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <button
-                        onclick='openEditModal("{{.ID}}", "{{.Title}}", "{{.Description}}", "{{.StartDate.Format "2006-01-02T15:04"}}", "{{.EndDate.Format "2006-01-02T15:04"}}", "{{.Type}}", "{{.CategoryID}}", "{{.Location}}", "{{.Color}}", "{{.TermID}}")'
+                        onclick='openEditModal("{{.ID}}", "{{.Title}}", "{{.Description}}", "{{.StartDate.Format "2006-01-02T15:04"}}", "{{.EndDate.Format "2006-01-02T15:04"}}", "{{.Type}}", "{{.CategoryID}}", "{{.Location}}", "{{.Color}}", "{{.TermID}}", "{{.SuspensionType}}", {{if .SuspendedClassIDs}}{{.SuspendedClassIDs | json}}{{else}}[]{{end}})'
                         class="absolute bottom-3 right-3 bg-slate-100 text-slate-600 text-[9px] font-bold px-2 py-1 rounded-md uppercase tracking-wide border border-slate-200 hover:bg-slate-200 hover:border-slate-300 transition-all cursor-pointer flex items-center gap-1">
                         <i class="fas fa-pen text-[8px]"></i>
                         <span>Edit</span>
@@ -162,14 +162,14 @@
     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none"
     onclick="if(event.target === this) toggleModal(false)">
     <div
-        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        class="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl transform transition-all scale-95 duration-300 flex flex-col max-h-[85vh] overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 flex-shrink-0">
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Add New Event</h3>
             <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="addEventForm" class="p-6 space-y-4">
+        <form id="addEventForm" class="p-6 space-y-4 overflow-y-auto">
             <div class="space-y-1">
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Event Title</label>
                 <input type="text" name="title" required
@@ -207,6 +207,47 @@
                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Location</label>
                 <input type="text" name="location"
                     class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
+            </div>
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Timetable Impact</label>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="NONE" checked id="addSuspendNone"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('add')">
+                        <label for="addSuspendNone" class="text-[10px] font-medium text-slate-700">No Effect (Classes
+                            Continue)</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="ALL" id="addSuspendAll"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('add')">
+                        <label for="addSuspendAll" class="text-[10px] font-medium text-slate-700">Suspend ALL
+                            Classes</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="SPECIFIC" id="addSuspendSpecific"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('add')">
+                        <label for="addSuspendSpecific" class="text-[10px] font-medium text-slate-700">Suspend Specific
+                            Classes</label>
+                    </div>
+                </div>
+
+                <div id="addSuspendedClassesContainer" class="hidden mt-2 pl-6">
+                    <div class="bg-slate-50 rounded-lg border border-slate-200 p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide"
+                                id="addSelectedCount">0 classes selected</span>
+                            <button type="button" onclick="openClassSelector('add')"
+                                class="text-[10px] font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                Select Classes
+                            </button>
+                        </div>
+                        <div id="addSelectedClassesList" class="flex flex-wrap gap-1 mb-1"></div>
+                        <div id="addHiddenClassInputs"></div>
+                    </div>
+                </div>
             </div>
             <input type="hidden" name="type" value="v2">
             <div class="pt-2">
@@ -291,14 +332,14 @@
     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none"
     onclick="if(event.target === this) toggleEditModal(false)">
     <div
-        class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        class="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl transform transition-all scale-95 duration-300 flex flex-col max-h-[85vh] overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50 flex-shrink-0">
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Edit Event</h3>
             <button onclick="toggleEditModal(false)" class="text-slate-400 hover:text-slate-600 transition-colors">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <form id="editEventForm" class="p-6 space-y-4">
+        <form id="editEventForm" class="p-6 space-y-4 overflow-y-auto">
             <input type="hidden" name="id">
             <input type="hidden" name="term_id">
             <div class="space-y-1">
@@ -339,6 +380,47 @@
                 <input type="text" name="location"
                     class="w-full text-xs font-semibold px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500">
             </div>
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Timetable Impact</label>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="NONE" id="editSuspendNone"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('edit')">
+                        <label for="editSuspendNone" class="text-[10px] font-medium text-slate-700">No Effect (Classes
+                            Continue)</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="ALL" id="editSuspendAll"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('edit')">
+                        <label for="editSuspendAll" class="text-[10px] font-medium text-slate-700">Suspend ALL
+                            Classes</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="suspension_type" value="SPECIFIC" id="editSuspendSpecific"
+                            class="w-4 h-4 text-slate-900 border-slate-300 focus:ring-slate-900"
+                            onchange="toggleSuspensionOptions('edit')">
+                        <label for="editSuspendSpecific" class="text-[10px] font-medium text-slate-700">Suspend Specific
+                            Classes</label>
+                    </div>
+                </div>
+
+                <div id="editSuspendedClassesContainer" class="hidden mt-2 pl-6">
+                    <div class="bg-slate-50 rounded-lg border border-slate-200 p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wide"
+                                id="editSelectedCount">0 classes selected</span>
+                            <button type="button" onclick="openClassSelector('edit')"
+                                class="text-[10px] font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                Select Classes
+                            </button>
+                        </div>
+                        <div id="editSelectedClassesList" class="flex flex-wrap gap-1 mb-1"></div>
+                        <div id="editHiddenClassInputs"></div>
+                    </div>
+                </div>
+            </div>
             <input type="hidden" name="type" value="v2">
             <div class="pt-2 flex gap-3">
                 <button type="button" onclick="deleteEvent()"
@@ -351,7 +433,58 @@
     </div>
 </div>
 
+<!-- Class Selection Modal -->
+<div id="selectClassesModal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] hidden place-items-center flex items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none">
+    <div
+        class="bg-white rounded-2xl w-full max-w-sm mx-4 shadow-2xl flex flex-col max-h-[70vh] overflow-hidden transition-all transform scale-95">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <h3 class="text-xs font-black text-slate-900 uppercase tracking-wide">Select Classes</h3>
+            <button onclick="toggleClassSelector(false)" class="text-slate-400 hover:text-slate-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-4 overflow-y-auto space-y-2 flex-1">
+            <input type="text" placeholder="Search classes..."
+                class="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg mb-2 focus:outline-none focus:border-slate-400"
+                onkeyup="filterClasses(this.value)">
+            <div id="classSelectionList" class="space-y-1">
+                {{range .Classes}}
+                <label data-class-name="{{.Name}} {{if .Code}}({{.Code}}){{end}}"
+                    class="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-slate-100">
+                    <input type="checkbox" value="{{.ID}}"
+                        class="w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900">
+                    <span class="text-[11px] font-bold text-slate-600">{{.Name}} {{if .Code}}<span
+                            class="text-slate-400 font-medium">({{.Code}})</span>{{end}}</span>
+                </label>
+                {{end}}
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2 shrink-0">
+            <button onclick="toggleClassSelector(false)"
+                class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Cancel</button>
+            <button onclick="confirmClassSelection()"
+                class="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide hover:bg-slate-800 shadow-md shadow-slate-200">Confirm</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    let currentSelectorMode = ''; // 'add' or 'edit'
+
+    // Loading State Utility
+    function setLoading(btn, isLoading, originalText) {
+        if (isLoading) {
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            const icon = btn.querySelector('i') ? `<i class="fas fa-spinner fa-spin mr-2"></i>` : '';
+            btn.innerHTML = `${icon}<span>Processing...</span>`;
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            btn.innerHTML = originalText;
+        }
+    }
 
     function toggleModal(show) {
         const modal = document.getElementById('addEventModal');
@@ -405,6 +538,10 @@
 
     document.getElementById('editCategoryForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
         const id = data.id;
@@ -416,9 +553,13 @@
             });
             const result = await response.json();
             if (result.success) window.location.reload();
-            else alert('Error: ' + result.error);
+            else {
+                alert('Error: ' + result.error);
+                setLoading(submitBtn, false, originalText);
+            }
         } catch (error) {
             console.error('Error:', error);
+            setLoading(submitBtn, false, originalText);
         }
     });
 
@@ -438,6 +579,10 @@
 
     document.getElementById('addCategoryForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
         try {
@@ -448,19 +593,142 @@
             });
             const result = await response.json();
             if (result.success) window.location.reload();
-            else alert('Error: ' + result.error);
+            else {
+                alert('Error: ' + result.error);
+                setLoading(submitBtn, false, originalText);
+            }
         } catch (error) {
             console.error('Error:', error);
+            setLoading(submitBtn, false, originalText);
         }
     });
 
+    function toggleSuspensionOptions(prefix) {
+        const type = document.querySelector(`input[name="suspension_type"][id^="${prefix}Suspend"]:checked`)?.value;
+        const container = document.getElementById(`${prefix}SuspendedClassesContainer`);
+        if (type === 'SPECIFIC') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+
+    // Class Selection Logic
+    function toggleClassSelector(show) {
+        const modal = document.getElementById('selectClassesModal');
+        if (show) {
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-95');
+        } else {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+
+    function openClassSelector(mode) {
+        currentSelectorMode = mode;
+        const hiddenContainer = document.getElementById(`${mode}HiddenClassInputs`);
+        const existingIds = Array.from(hiddenContainer.querySelectorAll('input')).map(input => input.value);
+
+        document.querySelectorAll('#classSelectionList input[type="checkbox"]').forEach(cb => {
+            cb.checked = existingIds.includes(cb.value);
+            cb.closest('label').style.display = 'flex';
+        });
+
+        const filterInput = document.querySelector('#selectClassesModal input[type="text"]');
+        if (filterInput) filterInput.value = '';
+
+        toggleClassSelector(true);
+    }
+
+    function confirmClassSelection() {
+        const selectedCheckboxes = document.querySelectorAll('#classSelectionList input[type="checkbox"]:checked');
+        const hiddenContainer = document.getElementById(`${currentSelectorMode}HiddenClassInputs`);
+        const listContainer = document.getElementById(`${currentSelectorMode}SelectedClassesList`);
+        const countSpan = document.getElementById(`${currentSelectorMode}SelectedCount`);
+
+        hiddenContainer.innerHTML = '';
+        listContainer.innerHTML = '';
+
+        selectedCheckboxes.forEach(cb => {
+            const classId = cb.value;
+            const className = cb.closest('label').getAttribute('data-class-name');
+
+            // Add hidden input
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'suspended_class_ids';
+            input.value = classId;
+            hiddenContainer.appendChild(input);
+
+            // Add observable tag
+            const tag = document.createElement('div');
+            tag.className = 'flex items-center gap-1.5 px-2 py-1 bg-white border border-slate-200 rounded-md shadow-sm animate-in fade-in zoom-in duration-200';
+            tag.innerHTML = `
+                <span class="text-[9px] font-black text-slate-800 uppercase tracking-tight">${className}</span>
+                <button type="button" onclick="removeSelectedClass('${currentSelectorMode}', '${classId}')" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-[8px]"></i>
+                </button>
+            `;
+            listContainer.appendChild(tag);
+        });
+
+        countSpan.textContent = `${selectedCheckboxes.length} classes selected`;
+        toggleClassSelector(false);
+    }
+
+    function removeSelectedClass(mode, classId) {
+        const hiddenContainer = document.getElementById(`${mode}HiddenClassInputs`);
+        const listContainer = document.getElementById(`${mode}SelectedClassesList`);
+        const countSpan = document.getElementById(`${mode}SelectedCount`);
+
+        // Remove hidden input
+        const inputToRemove = hiddenContainer.querySelector(`input[value="${classId}"]`);
+        if (inputToRemove) inputToRemove.remove();
+
+        // Re-calculate count
+        const newCount = hiddenContainer.querySelectorAll('input').length;
+        countSpan.textContent = `${newCount} classes selected`;
+
+        // Re-render list to ensure consistency (or just remove the tag)
+        // For simplicity, let's just re-confirm from the current hidden state
+        // but wait, we need class names. Let's just find the tag and remove it.
+        const tags = listContainer.children;
+        for (let i = 0; i < tags.length; i++) {
+            if (tags[i].querySelector('button').getAttribute('onclick').includes(classId)) {
+                tags[i].remove();
+                break;
+            }
+        }
+    }
+
+    function filterClasses(query) {
+        query = query.toLowerCase();
+        document.querySelectorAll('#classSelectionList label').forEach(label => {
+            const text = label.getAttribute('data-class-name').toLowerCase();
+            label.style.display = text.includes(query) ? 'flex' : 'none';
+        });
+    }
+
     document.getElementById('addEventForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
+        data.suspension_type = formData.get('suspension_type');
+        if (data.suspension_type === 'SPECIFIC') {
+            data.suspended_class_ids = Array.from(formData.getAll('suspended_class_ids'));
+        } else {
+            data.suspended_class_ids = [];
+        }
         data.start_date = new Date(data.start_date).toISOString();
         data.end_date = new Date(data.end_date).toISOString();
-        // data.category_id = parseInt(data.category_id); // Removed for UUID support
         try {
             const response = await fetch('/api/events', {
                 method: 'POST',
@@ -469,9 +737,13 @@
             });
             const result = await response.json();
             if (result.success) window.location.reload();
-            else alert('Error: ' + result.error);
+            else {
+                alert('Error: ' + result.error);
+                setLoading(submitBtn, false, originalText);
+            }
         } catch (error) {
             console.error('Error:', error);
+            setLoading(submitBtn, false, originalText);
         }
     });
 
@@ -489,7 +761,9 @@
         }
     }
 
-    function openEditModal(id, title, description, startDate, endDate, type, categoryId, location, color, termId) {
+    function openEditModal(id, title, description, startDate, endDate, type, categoryId, location, color, termId, suspensionType, suspendedClassIDs) {
+        console.log('Opening Edit Modal:', { id, suspensionType, suspendedClassIDs });
+
         const form = document.getElementById('editEventForm');
         form.id.value = id;
         form.title.value = title;
@@ -500,14 +774,75 @@
         form.category_id.value = categoryId;
         form.location.value = location;
         form.term_id.value = termId;
+
+        const typeRadio = form.querySelector(`input[name="suspension_type"][value="${suspensionType || 'NONE'}"]`);
+        if (typeRadio) typeRadio.checked = true;
+
+        // Robust parsing for suspendedClassIDs
+        let ids = [];
+        if (suspensionType === 'SPECIFIC' && suspendedClassIDs) {
+            if (Array.isArray(suspendedClassIDs)) {
+                ids = suspendedClassIDs;
+            } else if (typeof suspendedClassIDs === 'string') {
+                try {
+                    ids = JSON.parse(suspendedClassIDs);
+                } catch (e) {
+                    console.error('Failed to parse suspendedClassIDs string:', suspendedClassIDs, e);
+                    ids = [];
+                }
+            }
+        }
+
+        const container = document.getElementById('editHiddenClassInputs');
+        const listContainer = document.getElementById('editSelectedClassesList');
+        const countSpan = document.getElementById('editSelectedCount');
+
+        container.innerHTML = '';
+        listContainer.innerHTML = '';
+
+        ids.forEach(classId => {
+            // Add hidden input
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'suspended_class_ids';
+            input.value = classId;
+            container.appendChild(input);
+
+            // Find class name from modal list - handle character escaping for selector
+            const cb = document.querySelector(`#classSelectionList input[value="${classId}"]`);
+            const className = cb ? cb.closest('label').getAttribute('data-class-name') : 'Unknown Class';
+
+            const tag = document.createElement('div');
+            tag.className = 'flex items-center gap-1.5 px-2 py-1 bg-white border border-slate-200 rounded-md shadow-sm';
+            tag.innerHTML = `
+                <span class="text-[9px] font-black text-slate-800 uppercase tracking-tight">${className}</span>
+                <button type="button" onclick="removeSelectedClass('edit', '${classId}')" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <i class="fas fa-times text-[8px]"></i>
+                </button>
+             `;
+            listContainer.appendChild(tag);
+        });
+        countSpan.textContent = `${ids.length} classes selected`;
+
+        toggleSuspensionOptions('edit');
         toggleEditModal(true);
     }
 
     document.getElementById('editEventForm').addEventListener('submit', async function (e) {
         e.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        setLoading(submitBtn, true);
+
         const formData = new FormData(this);
         const data = Object.fromEntries(formData.entries());
         const id = data.id;
+        data.suspension_type = formData.get('suspension_type');
+        if (data.suspension_type === 'SPECIFIC') {
+            data.suspended_class_ids = Array.from(formData.getAll('suspended_class_ids'));
+        } else {
+            data.suspended_class_ids = [];
+        }
         data.start_date = new Date(data.start_date).toISOString();
         data.end_date = new Date(data.end_date).toISOString();
         try {
@@ -518,9 +853,13 @@
             });
             const result = await response.json();
             if (result.success) window.location.reload();
-            else alert('Error: ' + result.error);
+            else {
+                alert('Error: ' + result.error);
+                setLoading(submitBtn, false, originalText);
+            }
         } catch (error) {
             console.error('Error:', error);
+            setLoading(submitBtn, false, originalText);
         }
     });
 

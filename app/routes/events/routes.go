@@ -91,6 +91,9 @@ func renderEventsPage(c *fiber.Ctx) error {
 	// Get category counts - show count for upcoming events only to match the list
 	categoryCounts, _ := database.GetEventCategoryCounts(db, true)
 
+	// Get active classes for the dropdown
+	classes, _ := database.GetActiveClassesSimple(db)
+
 	return c.Render("events/index", fiber.Map{
 		"Title":          "Events - Swadiq Schools",
 		"CurrentPage":    "events",
@@ -99,9 +102,10 @@ func renderEventsPage(c *fiber.Ctx) error {
 		"Email":          user.Email,
 		"User":           user,
 		"EventGroups":    eventGroups,
-		"Events":         allEvents, // Pass all events for the calendar
+		"Events":         allEvents, // Pass all events for the calendar make sure to use allEvents not upcomingEvents
 		"HasEvents":      len(upcomingEvents) > 0,
 		"Categories":     categories,
 		"CategoryCounts": categoryCounts,
+		"Classes":        classes,
 	})
 }

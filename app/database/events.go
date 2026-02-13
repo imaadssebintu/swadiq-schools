@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"swadiq-schools/app/models"
 )
@@ -66,6 +67,21 @@ func InitEventDatabase(db *sql.DB) error {
 			-- Add term_id to events table if it doesn't exist
 			IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='term_id') THEN
 				ALTER TABLE events ADD COLUMN term_id UUID REFERENCES terms(id);
+			END IF;
+
+			-- Add suspends_classes to events table if it doesn't exist
+			IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='suspends_classes') THEN
+				ALTER TABLE events ADD COLUMN suspends_classes BOOLEAN DEFAULT FALSE;
+			END IF;
+
+			-- Add suspension_type to events table if it doesn't exist
+			IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='suspension_type') THEN
+				ALTER TABLE events ADD COLUMN suspension_type VARCHAR(20) DEFAULT 'NONE';
+			END IF;
+
+			-- Add suspended_class_ids to events table if it doesn't exist
+			IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='suspended_class_ids') THEN
+				ALTER TABLE events ADD COLUMN suspended_class_ids JSONB DEFAULT '[]'::jsonb;
 			END IF;
 		END $$;
 	`
@@ -132,9 +148,14 @@ func DeleteEventCategory(db *sql.DB, id string) error {
 
 // CreateEvent adds a new event to the database
 func CreateEvent(db *sql.DB, event *models.Event) error {
+	suspendedClassIDsJSON, err := json.Marshal(event.SuspendedClassIDs)
+	if err != nil {
+		return fmt.Errorf("failed to marshal suspended class ids: %w", err)
+	}
+
 	query := `
-		INSERT INTO events (title, description, start_date, end_date, type, category_id, term_id, location, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::UUID, NULLIF($7, '')::UUID, $8, NOW(), NOW())
+		INSERT INTO events (title, description, start_date, end_date, type, category_id, term_id, location, suspension_type, suspended_class_ids, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, NULLIF($6, '')::UUID, NULLIF($7, '')::UUID, $8, $9, $10, NOW(), NOW())
 		RETURNING id, created_at, updated_at
 	`
 	return db.QueryRow(
@@ -147,6 +168,8 @@ func CreateEvent(db *sql.DB, event *models.Event) error {
 		event.CategoryID,
 		event.TermID,
 		event.Location,
+		event.SuspensionType,
+		suspendedClassIDsJSON,
 	).Scan(&event.ID, &event.CreatedAt, &event.UpdatedAt)
 }
 
@@ -161,7 +184,7 @@ func GetEvents(db *sql.DB, upcomingOnly bool) ([]models.Event, error) {
 	query := fmt.Sprintf(`
 		SELECT e.id, e.title, e.description, e.start_date, e.end_date, e.type, e.category_id, 
 		       COALESCE(c.name, e.type) as category_name, e.term_id, COALESCE(t.name, '') as term_name, e.location, 
-		       COALESCE(c.color, '#0f172a') as color, e.created_at, e.updated_at
+		       COALESCE(c.color, '#0f172a') as color, e.suspension_type, e.suspended_class_ids, e.created_at, e.updated_at
 		FROM events e
 		LEFT JOIN event_categories c ON e.category_id = c.id
 		LEFT JOIN terms t ON e.term_id = t.id
@@ -177,11 +200,19 @@ func GetEvents(db *sql.DB, upcomingOnly bool) ([]models.Event, error) {
 	var events []models.Event
 	for rows.Next() {
 		var e models.Event
+		var suspendedClassIDsJSON []byte
 		if err := rows.Scan(
 			&e.ID, &e.Title, &e.Description, &e.StartDate, &e.EndDate,
-			&e.Type, &e.CategoryID, &e.CategoryName, &e.TermID, &e.TermName, &e.Location, &e.Color, &e.CreatedAt, &e.UpdatedAt,
+			&e.Type, &e.CategoryID, &e.CategoryName, &e.TermID, &e.TermName, &e.Location, &e.Color, &e.SuspensionType, &suspendedClassIDsJSON, &e.CreatedAt, &e.UpdatedAt,
 		); err != nil {
 			return nil, err
+		}
+		if len(suspendedClassIDsJSON) > 0 {
+			if err := json.Unmarshal(suspendedClassIDsJSON, &e.SuspendedClassIDs); err != nil {
+				e.SuspendedClassIDs = []string{}
+			}
+		} else {
+			e.SuspendedClassIDs = []string{}
 		}
 		events = append(events, e)
 	}
@@ -238,15 +269,21 @@ func GetEventCategoryCounts(db *sql.DB, upcomingOnly bool) (map[string]int, erro
 
 // UpdateEvent updates an existing event
 func UpdateEvent(db *sql.DB, event *models.Event) error {
+	suspendedClassIDsJSON, err := json.Marshal(event.SuspendedClassIDs)
+	if err != nil {
+		return fmt.Errorf("failed to marshal suspended class ids: %w", err)
+	}
+
 	query := `
 		UPDATE events
 		SET title = $1, description = $2, start_date = $3, end_date = $4,
-			type = $5, category_id = NULLIF($6, '')::UUID, term_id = NULLIF($7, '')::UUID, location = $8, updated_at = NOW()
-		WHERE id = $9
+			type = $5, category_id = NULLIF($6, '')::UUID, term_id = NULLIF($7, '')::UUID, location = $8, 
+			suspension_type = $9, suspended_class_ids = $10, updated_at = NOW()
+		WHERE id = $11
 	`
-	_, err := db.Exec(query,
+	_, err = db.Exec(query,
 		event.Title, event.Description, event.StartDate, event.EndDate,
-		event.Type, event.CategoryID, event.TermID, event.Location, event.ID,
+		event.Type, event.CategoryID, event.TermID, event.Location, event.SuspensionType, suspendedClassIDsJSON, event.ID,
 	)
 	return err
 }
