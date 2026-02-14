@@ -14,23 +14,23 @@ import (
 
 // FeeResponse represents the response structure for fees
 type FeeResponse struct {
-	ID               string     `json:"id"`
-	StudentID        string     `json:"student_id"`
-	FeeTypeID        string     `json:"fee_type_id"`
-	Title            string     `json:"title"`
-	Amount           float64    `json:"amount"`
-	Balance          float64    `json:"balance"`
-	Paid             bool       `json:"paid"`
-	DueDate          time.Time  `json:"due_date"`
-	PaidAt           *time.Time `json:"paid_at,omitempty"`
-	CreatedAt        time.Time  `json:"created_at"`
-	UpdatedAt        time.Time  `json:"updated_at"`
-	StudentName      string     `json:"student_name,omitempty"`
-	StudentCode      string     `json:"student_code,omitempty"`
-	FeeTypeName      string     `json:"fee_type_name,omitempty"`
-	FeeTypeCode      string     `json:"fee_type_code,omitempty"`
-	AcademicYearName string     `json:"academic_year_name,omitempty"`
-	TermName         string     `json:"term_name,omitempty"`
+	ID               string            `json:"id"`
+	StudentID        string            `json:"student_id"`
+	FeeTypeID        string            `json:"fee_type_id"`
+	Title            string            `json:"title"`
+	Amount           float64           `json:"amount"`
+	Balance          float64           `json:"balance"`
+	Paid             bool              `json:"paid"`
+	DueDate          models.CustomTime `json:"due_date"`
+	PaidAt           *time.Time        `json:"paid_at,omitempty"`
+	CreatedAt        time.Time         `json:"created_at"`
+	UpdatedAt        time.Time         `json:"updated_at"`
+	StudentName      string            `json:"student_name,omitempty"`
+	StudentCode      string            `json:"student_code,omitempty"`
+	FeeTypeName      string            `json:"fee_type_name,omitempty"`
+	FeeTypeCode      string            `json:"fee_type_code,omitempty"`
+	AcademicYearName string            `json:"academic_year_name,omitempty"`
+	TermName         string            `json:"term_name,omitempty"`
 }
 
 // FeeStatsResponse represents the response structure for fee statistics
@@ -444,13 +444,14 @@ func GetFeeByIDAPI(c *fiber.Ctx, db *sql.DB) error {
 
 // CreateFeeRequest represents the request structure for creating fees
 type CreateFeeRequest struct {
-	StudentID string    `json:"student_id" validate:"required,uuid"`
-	FeeTypeID string    `json:"fee_type_id" validate:"required,uuid"`
-	TermID    *string   `json:"term_id,omitempty" validate:"omitempty,uuid"`
-	Title     string    `json:"title" validate:"required"`
-	Amount    float64   `json:"amount" validate:"required,gt=0"`
-	DueDate   time.Time `json:"due_date" validate:"required"`
-	Currency  string    `json:"currency,omitempty"`
+	StudentID      string            `json:"student_id" validate:"required,uuid"`
+	FeeTypeID      string            `json:"fee_type_id" validate:"required,uuid"`
+	AcademicYearID string            `json:"academic_year_id" validate:"required,uuid"`
+	TermID         *string           `json:"term_id,omitempty" validate:"omitempty,uuid"`
+	Title          string            `json:"title" validate:"required"`
+	Amount         float64           `json:"amount" validate:"required,gt=0"`
+	DueDate        models.CustomTime `json:"due_date" validate:"required"`
+	Currency       string            `json:"currency,omitempty"`
 }
 
 // CreateFeeAPI creates a new fee
@@ -461,7 +462,7 @@ func CreateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Validate required fields
-	if req.StudentID == "" || req.FeeTypeID == "" || req.Title == "" || req.Amount <= 0 || req.DueDate.IsZero() {
+	if req.StudentID == "" || req.FeeTypeID == "" || req.Title == "" || req.Amount <= 0 || req.DueDate.Time.IsZero() {
 		return c.Status(400).JSON(fiber.Map{"success": false, "error": "Missing required fields"})
 	}
 
@@ -471,11 +472,11 @@ func CreateFeeAPI(c *fiber.Ctx, db *sql.DB) error {
 	}
 
 	// Insert fee into database
-	query := `INSERT INTO fees (student_id, fee_type_id, term_id, title, amount, balance, currency, paid, due_date, created_at, updated_at)
-			  VALUES ($1, $2, $3, $4, $5, $5, $6, false, $7, NOW(), NOW()) RETURNING id, created_at, updated_at`
+	query := `INSERT INTO fees (student_id, fee_type_id, academic_year_id, term_id, title, amount, balance, currency, paid, due_date, created_at, updated_at)
+			  VALUES ($1, $2, $3, $4, $5, $6, $6, $7, false, $8, NOW(), NOW()) RETURNING id, created_at, updated_at`
 
 	var fee models.Fee
-	err := db.QueryRow(query, req.StudentID, req.FeeTypeID, req.TermID, req.Title, req.Amount, req.Currency, req.DueDate).Scan(
+	err := db.QueryRow(query, req.StudentID, req.FeeTypeID, req.AcademicYearID, req.TermID, req.Title, req.Amount, req.Currency, req.DueDate).Scan(
 		&fee.ID, &fee.CreatedAt, &fee.UpdatedAt,
 	)
 	if err != nil {
@@ -688,23 +689,23 @@ func GetStudentFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 	defer rows.Close()
 
 	type StudentFeeResponse struct {
-		ID          string     `json:"id"`
-		StudentID   string     `json:"student_id"`
-		FeeTypeID   string     `json:"fee_type_id"`
-		TermID      *string    `json:"term_id"`
-		Title       string     `json:"title"`
-		Amount      float64    `json:"amount"`
-		Balance     float64    `json:"balance"`
-		TotalPaid   float64    `json:"total_paid"`
-		Currency    string     `json:"currency"`
-		Paid        bool       `json:"paid"`
-		DueDate     time.Time  `json:"due_date"`
-		PaidAt      *time.Time `json:"paid_at"`
-		CreatedAt   time.Time  `json:"created_at"`
-		UpdatedAt   time.Time  `json:"updated_at"`
-		FeeTypeName string     `json:"fee_type_name"`
-		FeeTypeCode string     `json:"fee_type_code"`
-		TermName    *string    `json:"term_name"`
+		ID          string            `json:"id"`
+		StudentID   string            `json:"student_id"`
+		FeeTypeID   string            `json:"fee_type_id"`
+		TermID      *string           `json:"term_id"`
+		Title       string            `json:"title"`
+		Amount      float64           `json:"amount"`
+		Balance     float64           `json:"balance"`
+		TotalPaid   float64           `json:"total_paid"`
+		Currency    string            `json:"currency"`
+		Paid        bool              `json:"paid"`
+		DueDate     models.CustomTime `json:"due_date"`
+		PaidAt      *time.Time        `json:"paid_at"`
+		CreatedAt   time.Time         `json:"created_at"`
+		UpdatedAt   time.Time         `json:"updated_at"`
+		FeeTypeName string            `json:"fee_type_name"`
+		FeeTypeCode string            `json:"fee_type_code"`
+		TermName    *string           `json:"term_name"`
 	}
 
 	var fees []StudentFeeResponse
@@ -843,13 +844,13 @@ func GetStudentPaymentsAPI(c *fiber.Ctx, db *sql.DB) error {
 	defer rows.Close()
 
 	type PaymentResponse struct {
-		ID            string        `json:"id"`
-		TotalAmount   float64       `json:"total_amount"`
-		PaymentDate   time.Time     `json:"payment_date"`
-		PaymentMethod string        `json:"payment_method"`
-		TransactionID *string       `json:"transaction_id"`
-		Status        string        `json:"status"`
-		Allocations   []interface{} `json:"allocations"`
+		ID            string            `json:"id"`
+		TotalAmount   float64           `json:"total_amount"`
+		PaymentDate   models.CustomTime `json:"payment_date"`
+		PaymentMethod string            `json:"payment_method"`
+		TransactionID *string           `json:"transaction_id"`
+		Status        string            `json:"status"`
+		Allocations   []interface{}     `json:"allocations"`
 	}
 
 	var payments []PaymentResponse

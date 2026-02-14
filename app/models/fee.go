@@ -14,7 +14,7 @@ type Fee struct {
 	Balance        float64    `json:"balance" gorm:"type:numeric;default:0"`
 	Currency       string     `json:"currency" gorm:"not null;default:'USD'"`
 	Paid           bool       `json:"paid" gorm:"default:false"`
-	DueDate        time.Time  `json:"due_date" gorm:"not null;type:date"`
+	DueDate        CustomTime `json:"due_date" gorm:"not null;type:date"`
 	PaidAt         *time.Time `json:"paid_at,omitempty"`
 	CreatedAt      time.Time  `json:"created_at" gorm:"default:now()"`
 	UpdatedAt      time.Time  `json:"updated_at" gorm:"default:now()"`

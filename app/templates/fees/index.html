@@ -200,7 +200,7 @@
 
                 <!-- Add Fee Modal -->
                 <div id="addFeeModal"
-                    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+                    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
                     onclick="if(event.target === this) closeModal('addFeeModal')">
                     <div
                         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
@@ -221,10 +221,18 @@
                                 </select>
                             </div>
                             <div class="space-y-1">
-                                <label
-                                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Title</label>
-                                <input type="text" id="feeTitle" required
-                                    class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Fee
+                                    Classification</label>
+                                <button type="button" onclick="openFeeTypeSelectionModal('single')"
+                                    id="categorySelectBtn"
+                                    class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 bg-white text-left flex items-center justify-between group">
+                                    <span id="selectedCategoryName" class="text-slate-400 italic">Determine
+                                        category...</span>
+                                    <i
+                                        class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-indigo-500 transition-colors"></i>
+                                </button>
+                                <input type="hidden" id="feeTypeId" required>
+                                <input type="hidden" id="feeTitle" required>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1">
@@ -252,7 +260,7 @@
 
                 <!-- Edit Fee Modal -->
                 <div id="editFeeModal"
-                    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+                    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
                     onclick="if(event.target === this) closeModal('editFeeModal')">
                     <div
                         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
@@ -296,8 +304,8 @@
                 </div>
 
                 <!-- Record Payment Modal -->
-                <div id="paymentModal" style="margin: 0 !important; padding: 0 !important;"
-                    class="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+                <div id="paymentModal"
+                    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
                     onclick="if(event.target === this) closeModal('paymentModal')">
                     <div
                         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
@@ -376,7 +384,7 @@
 
                 <!-- Apply Fees Modal -->
                 <div id="applyFeesModal"
-                    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+                    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
                     onclick="if(event.target === this) closeModal('applyFeesModal')">
                     <div
                         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
@@ -390,11 +398,16 @@
                         <form id="applyFeesForm" class="p-6 space-y-4">
                             <div class="space-y-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Fee
-                                    Type</label>
-                                <select id="applyFeeTypeId" required
-                                    class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900">
-                                    <option value="">Select Fee Type</option>
-                                </select>
+                                    Classification</label>
+                                <button type="button" onclick="openFeeTypeSelectionModal('bulk')"
+                                    id="applyCategorySelectBtn"
+                                    class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 bg-white text-left flex items-center justify-between group">
+                                    <span id="applySelectedCategoryName" class="text-slate-400 italic">Select Fee
+                                        Type...</span>
+                                    <i
+                                        class="fas fa-chevron-right text-[10px] text-slate-300 group-hover:text-slate-900 transition-colors"></i>
+                                </button>
+                                <input type="hidden" id="applyFeeTypeId" required>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
@@ -441,6 +454,41 @@
                     </div>
                 </div>
 
+                <!-- Category Library Selection Modal -->
+                <div id="feeTypeSelectionModal"
+                    class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none">
+                    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all scale-95 duration-300"
+                        id="feeTypeSelectionModalContent">
+                        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                            <h3 class="text-xs font-black text-slate-900 uppercase tracking-wide">Select Fee Type</h3>
+                            <button onclick="closeFeeTypeSelectionModal()"
+                                class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-rose-500 transition-all flex items-center justify-center shadow-sm">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-4 bg-slate-50/50 border-b border-slate-100">
+                            <div class="relative">
+                                <i
+                                    class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-[10px]"></i>
+                                <input type="text" id="feeTypeSearch" oninput="filterFeeTypes(this.value)"
+                                    placeholder="Search classifications..."
+                                    class="w-full bg-white border-none text-xs font-bold py-2.5 pl-9 pr-4 rounded-xl focus:ring-2 focus:ring-slate-900/5 placeholder:text-slate-300 shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="p-4 max-h-[400px] overflow-y-auto" id="feeTypeList">
+                            <!-- Loaded via JS -->
+                            <div id="feeTypesGrid" class="space-y-2"></div>
+                            <div id="feeTypesEmptyState" class="hidden py-12 text-center">
+                                <i class="fas fa-search text-slate-200 text-3xl mb-3"></i>
+                                <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest">No categories
+                                    found</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <script>
                     // Global variables
                     let currentFilters = {
@@ -449,6 +497,9 @@
                         academic_year_id: '',
                         term_id: ''
                     };
+
+                    let allFeeTypes = [];
+                    let feeSelectionMode = 'single'; // 'single' or 'bulk'
 
                     // Pagination state
                     let currentPage = 1;
@@ -502,9 +553,19 @@
                         document.getElementById('addFeeForm').addEventListener('submit', saveFee);
                         document.getElementById('editFeeForm').addEventListener('submit', updateFee);
                         document.getElementById('paymentForm').addEventListener('submit', submitPayment);
-                        document.getElementById('applyFeesForm').addEventListener('submit', submitApplyFees);
+                        document.getElementById('applyFeesForm').addEventListener('submit', function (e) {
+                            e.preventDefault();
+                            submitApplyFees();
+                        });
 
-                        // Auto-fill amount when Fee Type changes
+                        // Auto-update due date when bulk term changes
+                        document.getElementById('applyTermId').addEventListener('change', function () {
+                            const selectedOption = this.options[this.selectedIndex];
+                            const endDate = selectedOption.dataset.endDate;
+                            if (endDate) {
+                                document.getElementById('applyDueDate').value = endDate;
+                            }
+                        });
                         document.getElementById('applyFeeTypeId').addEventListener('change', function () {
                             const selectedOption = this.options[this.selectedIndex];
                             const amount = selectedOption.getAttribute('data-amount');
@@ -842,12 +903,22 @@
                                     const option = document.createElement('option');
                                     option.value = term.id;
                                     option.textContent = term.name;
+                                    option.dataset.endDate = term.end_date;
                                     termSelect.appendChild(option);
 
                                     // Apply select
                                     const applyOption = option.cloneNode(true);
                                     applyTermSelect.appendChild(applyOption);
                                 });
+
+                                // Initial due date for Bulk Modal based on selected term
+                                if (data.length > 0) {
+                                    const initialTerm = data.find(t => t.is_current) || data[0];
+                                    if (initialTerm && initialTerm.end_date) {
+                                        const dueDateInput = document.getElementById('applyDueDate');
+                                        if (dueDateInput) dueDateInput.value = initialTerm.end_date;
+                                    }
+                                }
                             })
                             .catch(console.error);
                     }
@@ -856,18 +927,94 @@
                         fetch('/api/fee-types')
                             .then(res => res.json())
                             .then(data => {
-                                const select = document.getElementById('applyFeeTypeId');
-                                if (data.data) {
-                                    data.data.forEach(type => {
-                                        const option = document.createElement('option');
-                                        option.value = type.id;
-                                        option.textContent = `${type.name} (${type.code})`;
-                                        option.setAttribute('data-amount', type.default_amount);
-                                        select.appendChild(option);
-                                    });
-                                }
+                                allFeeTypes = data.data || [];
+                                renderFeeTypeSelection(allFeeTypes);
                             })
                             .catch(console.error);
+                    }
+
+                    function renderFeeTypeSelection(types) {
+                        const grid = document.getElementById('feeTypesGrid');
+                        const emptyState = document.getElementById('feeTypesEmptyState');
+
+                        if (types.length === 0) {
+                            grid.innerHTML = '';
+                            emptyState.classList.remove('hidden');
+                            return;
+                        }
+
+                        emptyState.classList.add('hidden');
+                        grid.innerHTML = types.map(t => `
+                            <button type="button" onclick="selectFeeType('${t.id}', '${t.name}', ${t.default_amount})"
+                                class="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-lg text-left hover:border-indigo-600 hover:bg-indigo-50/10 transition-all group w-full">
+                                <div class="flex-1">
+                                    <div class="text-[10px] font-black text-slate-900 uppercase tracking-wide group-hover:text-indigo-600 transition-colors">${t.name}</div>
+                                    <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest opacity-70">${t.code}</div>
+                                </div>
+                                <div class="text-right flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] font-black text-slate-900 group-hover:text-indigo-600 transition-colors">UGX ${new Intl.NumberFormat().format(t.default_amount)}</span>
+                                        <span class="text-[8px] text-slate-400 font-black uppercase tracking-tighter">Standard Rate</span>
+                                    </div>
+                                    <i class="fas fa-plus-circle text-slate-200 group-hover:text-indigo-500 transition-colors"></i>
+                                </div>
+                            </button>
+                        `).join('');
+                    }
+
+                    function filterFeeTypes(query) {
+                        const filtered = allFeeTypes.filter(t =>
+                            t.name.toLowerCase().includes(query.toLowerCase()) ||
+                            t.code.toLowerCase().includes(query.toLowerCase())
+                        );
+                        renderFeeTypeSelection(filtered);
+                    }
+
+                    function selectFeeType(id, name, amount) {
+                        const typeInput = document.getElementById('applyFeeTypeId') || document.getElementById('feeTypeId');
+                        const titleInput = document.getElementById('applyFeeTitle') || document.getElementById('feeTitle');
+                        const amountInput = document.getElementById('applyAmount') || document.getElementById('feeAmount');
+                        const categoryName = document.getElementById('applySelectedCategoryName') || document.getElementById('selectedCategoryName');
+
+                        if (typeInput) typeInput.value = id;
+                        if (titleInput) titleInput.value = name;
+                        if (amountInput) amountInput.value = amount;
+                        if (categoryName) {
+                            categoryName.textContent = name;
+                            categoryName.classList.remove('text-slate-400', 'italic');
+                            categoryName.classList.add('text-slate-900');
+                        }
+                        closeFeeTypeSelectionModal();
+                    }
+
+                    function openFeeTypeSelectionModal(mode) {
+                        feeSelectionMode = mode;
+                        const modal = document.getElementById('feeTypeSelectionModal');
+                        const content = document.getElementById('feeTypeSelectionModalContent');
+
+                        // Clear search
+                        document.getElementById('feeTypeSearch').value = '';
+                        renderFeeTypeSelection(allFeeTypes);
+
+                        modal.classList.remove('hidden');
+                        setTimeout(() => {
+                            modal.classList.remove('opacity-0', 'pointer-events-none');
+                            content.classList.remove('scale-95');
+                            content.classList.add('scale-100');
+                        }, 10);
+                    }
+
+                    function closeFeeTypeSelectionModal() {
+                        const modal = document.getElementById('feeTypeSelectionModal');
+                        const content = document.getElementById('feeTypeSelectionModalContent');
+
+                        modal.classList.add('opacity-0', 'pointer-events-none');
+                        content.classList.remove('scale-100');
+                        content.classList.add('scale-95');
+
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                        }, 300);
                     }
 
                     function loadStudents() {
@@ -1094,8 +1241,7 @@
                             title: document.getElementById('feeTitle').value,
                             amount: parseFloat(document.getElementById('feeAmount').value),
                             due_date: document.getElementById('feeDueDate').value,
-                            // Default category for now or random
-                            fee_type_id: 1 // Assuming 1 exists or is optional, backend might require it carefully
+                            fee_type_id: parseInt(document.getElementById('feeTypeId').value)
                         };
 
                         // Add Fee endpoint check? Existing API says `POST /api/fees`.

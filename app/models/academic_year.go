@@ -13,8 +13,14 @@ type CustomTime struct {
 
 // UnmarshalJSON parses dates in YYYY-MM-DD format
 func (ct *CustomTime) UnmarshalJSON(data []byte) error {
-	// Remove quotes
+	// Handle null or empty
 	s := string(data)
+	if s == "null" || s == "" || s == `""` {
+		ct.Time = time.Time{}
+		return nil
+	}
+
+	// Remove quotes
 	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
 		s = s[1 : len(s)-1]
 	}
@@ -68,12 +74,8 @@ type AcademicYear struct {
 	Terms     []*Term    `json:"terms" gorm:"foreignKey:AcademicYearID;references:ID"`
 }
 
-
-
 // IsCurrent checks if the academic year is current based on today's date
 func (ay *AcademicYear) IsCurrentByDate() bool {
 	now := time.Now()
 	return now.After(ay.StartDate.Time) && now.Before(ay.EndDate.Time)
 }
-
-

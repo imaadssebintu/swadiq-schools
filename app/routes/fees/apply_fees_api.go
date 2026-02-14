@@ -3,17 +3,17 @@ package fees
 import (
 	"database/sql"
 	"log"
-	"time"
+	"swadiq-schools/app/models"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type ApplyFeeRequest struct {
-	FeeTypeID      string    `json:"fee_type_id"`
-	Amount         float64   `json:"amount"`
-	DueDate        time.Time `json:"due_date"`
-	AcademicYearID string    `json:"academic_year_id"`
-	TermID         string    `json:"term_id"`
+	FeeTypeID      string            `json:"fee_type_id"`
+	Amount         float64           `json:"amount"`
+	DueDate        models.CustomTime `json:"due_date"`
+	AcademicYearID string            `json:"academic_year_id"`
+	TermID         string            `json:"term_id"`
 }
 
 // ApplyFeesAPI applies fees based on fee type scope
