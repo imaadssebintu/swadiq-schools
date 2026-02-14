@@ -137,6 +137,8 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Scroll Sentinel for Infinite Scroll -->
+                <div id="scrollSentinel" class="h-4 w-full opacity-0"></div>
             </div>
         </div>
 
@@ -294,8 +296,8 @@
                 </div>
 
                 <!-- Record Payment Modal -->
-                <div id="paymentModal"
-                    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden place-items-center flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+                <div id="paymentModal" style="margin: 0 !important; padding: 0 !important;"
+                    class="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/40 backdrop-blur-sm z-[9999] hidden flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
                     onclick="if(event.target === this) closeModal('paymentModal')">
                     <div
                         class="bg-white rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl transform transition-all scale-95 duration-300">
@@ -307,7 +309,29 @@
                             </button>
                         </div>
                         <form id="paymentForm" class="p-6 space-y-4">
-                            <input type="hidden" id="paymentFeeId">
+                            <input type="hidden" id="paymentStudentId">
+
+                            <!-- Student Info Display -->
+                            <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Student</span>
+                                    <span id="paymentStudentName" class="text-xs font-bold text-slate-700"></span>
+                                </div>
+                            </div>
+
+                            <!-- All Fees List -->
+                            <div id="allFeesList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+
+                            <!-- Fee Selection -->
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Select Fee
+                                    to Pay</label>
+                                <select id="selectedFeeDropdown" required
+                                    class="w-full text-xs font-semibold px-3 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500">
+                                    <option value="">Choose a fee...</option>
+                                </select>
+                            </div>
 
                             <div class="space-y-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Amount to
@@ -535,151 +559,204 @@
                         }
                         return html;
                     }
-                    // Load fees
-                    function loadFees(isAppend = false) {
-                        if (isLoadingFees && isAppend) return;
 
-                        if (!isAppend) {
-                            currentPage = 1;
-                            hasMore = true;
-                            isLoadingFees = false;
+                    function getModalSkeletons(count = 3) {
+                        let html = '';
+                        for (let i = 0; i < count; i++) {
+                            html += `
+                        <div class="flex items-center justify-between p-2 bg-white border border-slate-50 rounded-lg animate-pulse">
+                            <div class="flex-1 space-y-2">
+                                <div class="h-2 w-20 bg-slate-100 rounded"></div>
+                                <div class="h-1.5 w-12 bg-slate-100 rounded"></div>
+                            </div>
+                            <div class="text-right space-y-2">
+                                <div class="h-2 w-16 bg-slate-100 rounded ml-auto"></div>
+                                <div class="h-1.5 w-10 bg-slate-100 rounded ml-auto"></div>
+                            </div>
+                        </div>
+                    `;
                         }
+                        return html;
+                    }
+                    // Load fees using grouped API
+                    async function loadFees() {
+                        if (isLoadingFees || !hasMore) return;
 
-                        if (!hasMore && isAppend) return;
-                        isLoadingFees = true;
+                        try {
+                            isLoadingFees = true;
+                            const params = new URLSearchParams();
+                            if (currentFilters.status) params.append('status', currentFilters.status);
+                            if (currentFilters.student) params.append('student', currentFilters.student);
+                            if (currentFilters.academic_year_id) params.append('academic_year_id', currentFilters.academic_year_id);
+                            if (currentFilters.term_id) params.append('term_id', currentFilters.term_id);
 
-                        let url = `/api/fees?limit=${limit}&page=${currentPage}`;
-                        const params = new URLSearchParams();
+                            params.append('page', currentPage);
+                            params.append('limit', limit);
 
-                        if (currentFilters.status) params.append('status', currentFilters.status);
-                        if (currentFilters.student) params.append('student', currentFilters.student);
-                        if (currentFilters.academic_year_id) params.append('academic_year_id', currentFilters.academic_year_id);
-                        if (currentFilters.term_id) params.append('term_id', currentFilters.term_id);
+                            const tableBody = document.getElementById('feesTableBody');
 
-                        const queryString = params.toString();
-                        if (queryString) {
-                            url += '&' + queryString;
-                        }
+                            // Show skeletons
+                            if (currentPage === 1) {
+                                tableBody.innerHTML = getSkeletonRows(6);
+                            } else {
+                                // Append skeletons for subsequent pages
+                                tableBody.insertAdjacentHTML('beforeend', getSkeletonRows(3));
+                            }
 
-                        const tableBody = document.getElementById('feesTableBody');
-                        if (!isAppend) {
-                            tableBody.innerHTML = getSkeletonRows(6);
-                        } else {
-                            // For appending, we don't strictly need a skeleton since proper infinite scroll hides it, but useful for slow connections
-                            // Skipping for visual cleanliness unless desired
-                        }
+                            const response = await fetch('/api/fees/grouped-by-student?' + params.toString());
+                            const data = await response.json();
 
-                        fetch(url)
-                            .then(response => response.json())
-                            .then(data => {
-                                isLoadingFees = false;
+                            // Remove skeletons after fetch
+                            const skeletons = tableBody.querySelectorAll('.skeleton-row');
+                            skeletons.forEach(s => s.remove());
 
-                                // Clear skeleton rows
-                                const skeletons = tableBody.querySelectorAll('.skeleton-row');
-                                skeletons.forEach(s => s.remove());
+                            if (data.success) {
+                                if (currentPage === 1) {
+                                    tableBody.innerHTML = '';
+                                }
 
-                                if (data.success && data.data && data.data.length > 0) {
-                                    if (isAppend) {
-                                        appendFeesToTable(data.data);
-                                    } else {
-                                        renderFeesTable(data.data);
-                                    }
+                                if (data.data.length > 0) {
+                                    renderFeesTable(data.data);
+
+                                    // If we got fewer items than the limit, there's no more data
                                     if (data.data.length < limit) {
                                         hasMore = false;
                                     } else {
                                         currentPage++;
                                     }
                                 } else {
-                                    if (!isAppend) {
+                                    hasMore = false;
+                                    if (currentPage === 1) {
                                         showEmptyState();
                                     }
-                                    hasMore = false;
                                 }
-                            })
-                            .catch(error => {
-                                isLoadingFees = false;
-                                console.error('Error loading fees:', error);
-                                if (!isAppend) {
-                                    tableBody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-[10px] font-bold text-rose-400 uppercase tracking-widest">Error loading data</td></tr>`;
-                                }
-                            });
-                    }
-
-                    function setupSentinelObserver() {
-                        const tableBody = document.getElementById('feesTableBody');
-                        const sentinelRow = document.createElement('tr');
-                        sentinelRow.id = 'loadMoreSentinel';
-                        sentinelRow.innerHTML = `<td colspan="6" style="height: 1px; padding: 0; border: none;"></td>`;
-                        tableBody.parentNode.appendChild(sentinelRow);
-
-                        sentinelObserver = new IntersectionObserver((entries) => {
-                            if (entries[0].isIntersecting && !isLoadingFees && hasMore) {
-                                console.log('Sentinel visible, loading more fees...');
-                                loadFees(true);
+                            } else {
+                                if (currentPage === 1) showEmptyState();
                             }
-                        }, {
-                            rootMargin: '200px',
-                            threshold: 0.1
-                        });
-
-                        sentinelObserver.observe(sentinelRow);
+                        } catch (error) {
+                            console.error('Error loading fees:', error);
+                            // Cleanup skeletons on error
+                            const tableBody = document.getElementById('feesTableBody');
+                            const skeletons = tableBody.querySelectorAll('.skeleton-row');
+                            skeletons.forEach(s => s.remove());
+                            if (currentPage === 1) showEmptyState();
+                        } finally {
+                            isLoadingFees = false;
+                        }
                     }
 
-                    function renderFeesTable(fees) {
+                    function renderFeesTable(studentGroups) {
                         const tbody = document.getElementById('feesTableBody');
-                        tbody.innerHTML = '';
-                        appendFeesToTable(fees);
-                    }
 
-                    function showEmptyState() {
-                        const tbody = document.getElementById('feesTableBody');
-                        tbody.innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">No fees found</td></tr>`;
-                    }
-
-                    function appendFeesToTable(fees) {
-                        const tbody = document.getElementById('feesTableBody');
-                        fees.forEach(fee => {
-                            const row = createFeeRow(fee);
+                        studentGroups.forEach(studentGroup => {
+                            const row = createStudentFeeRow(studentGroup);
                             tbody.appendChild(row);
                         });
                     }
 
-                    function createFeeRow(fee) {
-                        const balance = parseFloat(fee.balance || 0);
-                        const amount = parseFloat(fee.amount);
-                        const isFullyPaid = fee.paid || balance === 0;
+                    function setupSentinelObserver() {
+                        const sentinel = document.getElementById('scrollSentinel');
+                        if (!sentinel) return;
+
+                        if (sentinelObserver) {
+                            sentinelObserver.disconnect();
+                        }
+
+                        sentinelObserver = new IntersectionObserver((entries) => {
+                            if (entries[0].isIntersecting && !isLoadingFees && hasMore) {
+                                loadFees();
+                            }
+                        }, {
+                            rootMargin: '100px'
+                        });
+
+                        sentinelObserver.observe(sentinel);
+                    }
+
+                    async function refreshStudentRow(studentId) {
+                        try {
+                            const response = await fetch(`/api/fees/grouped-by-student?student_id=${studentId}&limit=1`);
+                            const data = await response.json();
+
+                            if (data.success && data.data.length > 0) {
+                                const newRow = createStudentFeeRow(data.data[0]);
+                                const oldRow = document.getElementById(`student-row-${studentId}`);
+                                if (oldRow) {
+                                    oldRow.replaceWith(newRow);
+                                    // Highlight the updated row
+                                    newRow.classList.add('bg-indigo-50/50');
+                                    setTimeout(() => newRow.classList.remove('bg-indigo-50/50'), 2000);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error refreshing student row:', error);
+                        }
+                    }
+
+                    function showEmptyState() {
+                        const tbody = document.getElementById('feesTableBody');
+                        tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-12 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">No fees found</td></tr>`;
+                    }
+
+                    function appendFeesToTable(fees) {
+                        renderFeesTable(fees);
+                    }
+
+                    function createStudentFeeRow(studentGroup) {
+                        // Calculate totals
+                        let totalAmount = 0;
+                        let totalBalance = 0;
+                        studentGroup.fees.forEach(fee => {
+                            totalAmount += parseFloat(fee.amount || 0);
+                            totalBalance += parseFloat(fee.balance || 0);
+                        });
+
+                        const isFullyPaid = totalBalance === 0;
+                        const isPartiallyPaid = totalBalance > 0 && totalBalance < totalAmount;
 
                         // Status Badge Logic
                         let statusBadge = '';
                         if (isFullyPaid) {
                             statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 uppercase tracking-wider"><span class="w-1 h-1 rounded-full bg-emerald-500 mr-1.5"></span>Paid</span>`;
-                        } else if (balance < amount) {
+                        } else if (isPartiallyPaid) {
                             statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-100 uppercase tracking-wider"><span class="w-1 h-1 rounded-full bg-amber-500 mr-1.5"></span>Partial</span>`;
                         } else {
                             statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100 uppercase tracking-wider"><span class="w-1 h-1 rounded-full bg-rose-500 mr-1.5"></span>Unpaid</span>`;
                         }
 
+                        // Build fee types HTML
+                        let feeTypesHTML = '';
+                        studentGroup.fees.forEach(fee => {
+                            const balance = parseFloat(fee.balance || 0);
+                            const isPaid = balance === 0;
+                            const badgeClass = isPaid ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200';
+                            feeTypesHTML += `<span class="text-[10px] font-bold uppercase tracking-wide ${badgeClass} px-1.5 py-0.5 rounded border">${fee.fee_type_code || 'MISC'}</span>`;
+                        });
+
                         const tr = document.createElement('tr');
+                        tr.id = `student-row-${studentGroup.student_id}`;
                         tr.className = 'border-b border-slate-50 hover:bg-slate-50 transition-colors group';
                         tr.innerHTML = `
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs uppercase shadow-sm">
-                                    ${fee.student_name ? fee.student_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?'}
+                                    ${studentGroup.student_name ? studentGroup.student_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : '?'}
                                 </div>
                                 <div>
-                                    <a href="/students/${fee.student_id}" class="text-[11px] font-black text-slate-800 uppercase tracking-wide group-hover:text-indigo-600 transition-colors whitespace-nowrap block">${fee.student_name || 'N/A'}</a>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${fee.student_code || 'N/A'}</span>
+                                    <a href="/students/${studentGroup.student_id}" class="text-[11px] font-black text-slate-800 uppercase tracking-wide group-hover:text-indigo-600 transition-colors whitespace-nowrap block">${studentGroup.student_name || 'N/A'}</a>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${studentGroup.student_code || 'N/A'}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-3 whitespace-nowrap">
-                            <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide bg-slate-100 px-1.5 py-0.5 rounded">${fee.fee_type_code || 'MISC'}</span>
+                        <td class="px-5 py-3">
+                            <div class="flex flex-wrap gap-1.5">
+                                ${feeTypesHTML}
+                            </div>
                         </td>
                         <td class="px-5 py-3 text-right whitespace-nowrap">
                             <div class="flex flex-col items-end gap-0.5">
-                                <span class="text-[11px] font-black text-slate-700">UGX ${new Intl.NumberFormat().format(amount)}</span>
-                                ${balance > 0 ? `<span class="text-[9px] font-bold text-rose-500 uppercase tracking-wide">Bal: ${new Intl.NumberFormat().format(balance)}</span>` : '<span class="text-[9px] font-bold text-emerald-500 uppercase tracking-wide">Settled</span>'}
+                                <span class="text-[11px] font-black text-slate-700">UGX ${new Intl.NumberFormat().format(totalAmount)}</span>
+                                ${totalBalance > 0 ? `<span class="text-[9px] font-bold text-rose-500 uppercase tracking-wide">Bal: ${new Intl.NumberFormat().format(totalBalance)}</span>` : '<span class="text-[9px] font-bold text-emerald-500 uppercase tracking-wide">Settled</span>'}
                             </div>
                         </td>
                         <td class="px-5 py-3 text-center">
@@ -687,17 +764,9 @@
                         </td>
                         <td class="px-5 py-3 text-right">
                              <div class="flex items-center justify-end gap-2">
-                                <button onclick="openPaymentModal('${fee.id}', '${fee.student_id}', '${fee.student_name}', '${fee.title}', ${balance})" 
+                                <button onclick="openPaymentModal('${studentGroup.student_id}', '${studentGroup.student_name}')" 
                                     class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors border border-emerald-100" title="Record Payment">
                                     <i class="fas fa-hand-holding-dollar text-[10px]"></i>
-                                </button>
-                                <button onclick="openEditFeeModal('${fee.id}', '${fee.title}', ${fee.amount}, '${fee.due_date}')" 
-                                    class="w-6 h-6 rounded-lg bg-slate-50 text-slate-500 flex items-center justify-center hover:bg-slate-100 transition-colors border border-slate-100" title="Edit">
-                                    <i class="fas fa-pen text-[10px]"></i>
-                                </button>
-                                <button onclick="deleteFee('${fee.id}')" 
-                                    class="w-6 h-6 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center hover:bg-rose-100 transition-colors border border-rose-100" title="Delete">
-                                    <i class="fas fa-trash-alt text-[10px]"></i>
                                 </button>
                             </div>
                         </td>
@@ -705,11 +774,16 @@
                         return tr;
                     }
 
+
                     function applyFilters() {
                         currentFilters.status = document.getElementById('statusFilter').value;
                         currentFilters.student = document.getElementById('studentFilter').value;
                         currentFilters.academic_year_id = document.getElementById('yearFilter').value;
                         currentFilters.term_id = document.getElementById('termFilter').value;
+
+                        // Reset pagination
+                        currentPage = 1;
+                        hasMore = true;
                         loadFees();
                     }
 
@@ -718,7 +792,18 @@
                         document.getElementById('studentFilter').value = '';
                         document.getElementById('yearFilter').value = '';
                         document.getElementById('termFilter').value = '';
-                        applyFilters();
+
+                        currentFilters = {
+                            status: '',
+                            student: '',
+                            academic_year_id: '',
+                            term_id: ''
+                        };
+
+                        // Reset pagination
+                        currentPage = 1;
+                        hasMore = true;
+                        loadFees();
                     }
 
                     // --- Loading Selects ---
@@ -806,15 +891,93 @@
 
                     // --- Actions ---
 
-                    function openPaymentModal(feeId, studentId, studentName, feeTitle, balance) {
-                        document.getElementById('paymentFeeId').value = feeId;
+
+                    let currentStudentFees = []; // Store fetched fees
+
+                    async function openPaymentModal(studentId, studentName) {
                         document.getElementById('paymentStudentId').value = studentId;
                         document.getElementById('paymentStudentName').textContent = studentName || 'N/A';
-                        document.getElementById('paymentFeeTitle').textContent = feeTitle || 'School Fee';
-                        document.getElementById('paymentCurrentBalance').textContent = `UGX ${new Intl.NumberFormat().format(balance)} `;
-                        document.getElementById('paymentAmount').value = balance > 0 ? balance : '';
+
+                        // Clear previous data
+                        const feesList = document.getElementById('allFeesList');
+                        const dropdown = document.getElementById('selectedFeeDropdown');
+                        feesList.innerHTML = getModalSkeletons(3);
+                        dropdown.innerHTML = '<option value="">Loading fees...</option>';
+
                         animateModal('paymentModal', true);
+
+                        try {
+                            // Fetch all fees for this student (increase limit to get all)
+                            const response = await fetch(`/api/fees?student_id=${studentId}&status=unpaid&limit=1000`);
+                            const data = await response.json();
+
+                            if (data.success && data.data && data.data.length > 0) {
+                                currentStudentFees = data.data;
+
+                                // Populate fees list (read-only display)
+                                feesList.innerHTML = '';
+                                data.data.forEach(fee => {
+                                    const balance = parseFloat(fee.balance || 0);
+                                    if (balance <= 0) return; // Only show fees with balance
+
+                                    const statusClass = 'text-rose-600';
+                                    const statusText = `Bal: ${new Intl.NumberFormat().format(balance)}`;
+
+                                    const feeCard = document.createElement('div');
+                                    feeCard.className = 'flex items-center justify-between p-2 bg-white border border-slate-100 rounded-lg';
+                                    feeCard.innerHTML = `
+                                        <div class="flex-1">
+                                            <div class="text-[10px] font-bold text-slate-700 uppercase">${fee.title}</div>
+                                            <div class="text-[9px] text-slate-400 font-medium">${fee.fee_type_code || 'N/A'}</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-[10px] font-black text-slate-700">UGX ${new Intl.NumberFormat().format(fee.amount)}</div>
+                                            <div class="text-[9px] font-bold ${statusClass}">${statusText}</div>
+                                        </div>
+                                    `;
+                                    feesList.appendChild(feeCard);
+                                });
+
+                                // Populate dropdown for selection
+                                dropdown.innerHTML = '<option value="">Choose a fee to pay...</option>';
+                                data.data.forEach(fee => {
+                                    const balance = parseFloat(fee.balance || 0);
+                                    if (balance > 0) { // Only show unpaid/partial fees in dropdown
+                                        const option = document.createElement('option');
+                                        option.value = fee.id;
+                                        option.textContent = `${fee.title} - Bal: UGX ${new Intl.NumberFormat().format(balance)}`;
+                                        option.setAttribute('data-balance', balance);
+                                        dropdown.appendChild(option);
+                                    }
+                                });
+
+                                // Check if we actually have any fees with balance after filtering
+                                if (dropdown.options.length <= 1) {
+                                    feesList.innerHTML = '<div class="text-center text-xs text-slate-400 py-6">No outstanding fees found</div>';
+                                    dropdown.innerHTML = '<option value="">No fees available</option>';
+                                }
+                            } else {
+                                feesList.innerHTML = '<div class="text-center text-xs text-slate-400 py-6">No outstanding fees found</div>';
+                                dropdown.innerHTML = '<option value="">No fees available</option>';
+                            }
+                        } catch (error) {
+                            console.error('Error loading student fees:', error);
+                            feesList.innerHTML = '<div class="text-center text-xs text-rose-400 py-6">Error loading fees</div>';
+                            dropdown.innerHTML = '<option value="">Error loading fees</option>';
+                        }
+
+                        // Handle dropdown change to auto-fill amount
+                        dropdown.onchange = function () {
+                            const selectedOption = this.options[this.selectedIndex];
+                            const balance = selectedOption ? selectedOption.getAttribute('data-balance') : null;
+                            if (balance) {
+                                document.getElementById('paymentAmount').value = balance;
+                            } else {
+                                document.getElementById('paymentAmount').value = '';
+                            }
+                        };
                     }
+
 
                     function openEditFeeModal(id, title, amount, dueDate) {
                         document.getElementById('editFeeId').value = id;
@@ -828,27 +991,43 @@
                         e.preventDefault();
                         const btn = document.getElementById('submitPaymentBtn');
                         const originalText = btn.innerHTML;
-                        const feeId = document.getElementById('paymentFeeId').value;
+                        const feeId = document.getElementById('selectedFeeDropdown').value;
+                        const studentId = document.getElementById('paymentStudentId').value;
                         const amount = parseFloat(document.getElementById('paymentAmount').value);
                         const method = document.getElementById('paymentMethod').value;
-                        const txId = document.getElementById('paymentTxId').value;
+                        const txId = document.getElementById('paymentTxId').value || null;
 
+                        if (!feeId) return alert('Please select a fee to pay');
                         if (!amount || amount <= 0) return alert('Please enter a valid amount');
 
                         try {
                             btn.innerHTML = '<span>Processing...</span>';
                             btn.disabled = true;
 
-                            const res = await fetch(`/ api / fees / ${feeId}/pay`, {
+                            // Use the RecordPaymentAPI endpoint with proper structure
+                            const payload = {
+                                student_id: studentId,
+                                total_amount: amount,
+                                payment_method: method,
+                                transaction_id: txId,
+                                fee_allocations: [
+                                    {
+                                        fee_id: feeId,
+                                        amount: amount
+                                    }
+                                ]
+                            };
+
+                            const res = await fetch('/api/fees/record-payment', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ amount: amount, method: method, transaction_id: txId })
+                                body: JSON.stringify(payload)
                             });
 
                             const data = await res.json();
                             if (res.ok) {
                                 closeModal('paymentModal');
-                                loadFees();
+                                refreshStudentRow(studentId);
                                 loadFeeStats();
                                 // success msg could use a toast
                             } else {

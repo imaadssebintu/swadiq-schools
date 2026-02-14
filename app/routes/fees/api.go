@@ -2,6 +2,7 @@ package fees
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -41,6 +42,163 @@ type FeeStatsResponse struct {
 	TotalPaid        float64 `json:"total_paid"`
 	TotalBalance     float64 `json:"total_balance"`
 	StudentsWithFees int     `json:"students_with_fees"`
+}
+
+// StudentFeeGroup represents fees grouped by student
+type StudentFeeGroup struct {
+	StudentID    string        `json:"student_id"`
+	StudentName  string        `json:"student_name"`
+	StudentCode  string        `json:"student_code"`
+	TotalAmount  float64       `json:"total_amount"`
+	TotalBalance float64       `json:"total_balance"`
+	Fees         []FeeItemInfo `json:"fees"`
+}
+
+// FeeItemInfo represents individual fee info within a group
+type FeeItemInfo struct {
+	ID          string  `json:"id"`
+	Title       string  `json:"title"`
+	FeeTypeCode string  `json:"fee_type_code"`
+	Amount      float64 `json:"amount"`
+	Balance     float64 `json:"balance"`
+	Paid        bool    `json:"paid"`
+}
+
+// GetFeesGroupedByStudentAPI returns fees grouped by student with aggregated totals
+func GetFeesGroupedByStudentAPI(c *fiber.Ctx, db *sql.DB) error {
+	// Get query parameters for filtering
+	studentSearch := c.Query("student")
+	yearID := c.Query("academic_year_id")
+	termID := c.Query("term_id")
+	status := c.Query("status") // "paid", "unpaid", "all"
+	limit := c.QueryInt("limit", 10)
+	page := c.QueryInt("page", 1)
+
+	if limit <= 0 {
+		limit = 10
+	}
+	if page <= 0 {
+		page = 1
+	}
+	offset := (page - 1) * limit
+
+	// Build base query
+	baseQuery := `
+		SELECT 
+			s.id as student_id,
+			COALESCE(s.first_name || ' ' || s.last_name, 'Unknown') as student_name,
+			COALESCE(s.student_id, '') as student_code,
+			SUM(f.amount) as total_amount,
+			SUM(f.balance) as total_balance,
+			json_agg(
+				json_build_object(
+					'id', f.id,
+					'title', f.title,
+					'fee_type_code', COALESCE(ft.code, 'MISC'),
+					'amount', f.amount,
+					'balance', f.balance,
+					'paid', f.paid
+				) ORDER BY f.created_at
+			) as fees
+		FROM students s
+		INNER JOIN fees f ON s.id = f.student_id
+		LEFT JOIN fee_types ft ON f.fee_type_id = ft.id
+		WHERE f.deleted_at IS NULL
+	`
+
+	var conditions []string
+	var args []interface{}
+	argIndex := 1
+
+	// Add student search filter
+	if studentSearch != "" {
+		conditions = append(conditions, fmt.Sprintf("(s.first_name ILIKE $%d OR s.last_name ILIKE $%d OR s.student_id ILIKE $%d)", argIndex, argIndex+1, argIndex+2))
+		searchPattern := "%" + studentSearch + "%"
+		args = append(args, searchPattern, searchPattern, searchPattern)
+		argIndex += 3
+	}
+
+	// Add academic year filter
+	if yearID != "" {
+		conditions = append(conditions, fmt.Sprintf("f.academic_year_id = $%d", argIndex))
+		args = append(args, yearID)
+		argIndex++
+	}
+
+	// Add term filter
+	if termID != "" {
+		conditions = append(conditions, fmt.Sprintf("f.term_id = $%d", argIndex))
+		args = append(args, termID)
+		argIndex++
+	}
+
+	// Add conditions to query
+	if len(conditions) > 0 {
+		baseQuery += " AND " + strings.Join(conditions, " AND ")
+	}
+
+	// Add GROUP BY
+	baseQuery += `
+		GROUP BY s.id, student_name, student_code
+	`
+
+	// Add HAVING for status filter
+	if status == "paid" {
+		baseQuery += " HAVING SUM(f.balance) = 0"
+	} else if status == "unpaid" {
+		baseQuery += " HAVING SUM(f.balance) > 0"
+	}
+
+	// Add ORDER BY and Pagination
+	baseQuery += fmt.Sprintf(" ORDER BY student_name LIMIT $%d OFFSET $%d", argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
+	// Execute query
+	rows, err := db.Query(baseQuery, args...)
+	if err != nil {
+		log.Printf("Error querying grouped fees: %v", err)
+		return c.JSON(fiber.Map{
+			"success": true,
+			"data":    []StudentFeeGroup{},
+		})
+	}
+	defer rows.Close()
+
+	var studentGroups []StudentFeeGroup
+	for rows.Next() {
+		var group StudentFeeGroup
+		var feesJSON []byte
+
+		err := rows.Scan(
+			&group.StudentID,
+			&group.StudentName,
+			&group.StudentCode,
+			&group.TotalAmount,
+			&group.TotalBalance,
+			&feesJSON,
+		)
+		if err != nil {
+			log.Printf("Error scanning grouped fee row: %v", err)
+			continue
+		}
+
+		// Unmarshal fees JSON
+		if err := json.Unmarshal(feesJSON, &group.Fees); err != nil {
+			log.Printf("Error unmarshaling fees JSON: %v", err)
+			group.Fees = []FeeItemInfo{}
+		}
+
+		studentGroups = append(studentGroups, group)
+	}
+
+	if studentGroups == nil {
+		studentGroups = []StudentFeeGroup{}
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    studentGroups,
+	})
 }
 
 // GetFeeStatsAPI returns fee statistics (unfiltered summary)
@@ -150,9 +308,7 @@ func GetFeesAPI(c *fiber.Ctx, db *sql.DB) error {
 		args = append(args, true)
 		argIndex++
 	} else if status == "unpaid" {
-		conditions = append(conditions, fmt.Sprintf("f.paid = $%d", argIndex))
-		args = append(args, false)
-		argIndex++
+		conditions = append(conditions, "(f.paid = false OR f.paid IS NULL)")
 	}
 
 	// Add conditions to query
@@ -440,7 +596,7 @@ func RecordPaymentAPI(c *fiber.Ctx, db *sql.DB) error {
 
 	// Insert payment record
 	paymentQuery := `INSERT INTO payments (student_id, total_amount, payment_date, payment_method, paid_by, transaction_id, status, paid_at, created_at, updated_at)
-					 VALUES ($1, $2, NOW(), $3, $4, $5, 'completed', NOW(), NOW(), NOW()) RETURNING id`
+					 VALUES ($1, $2, NOW(), $3, $4, $5, 'completed', NOW(), NOW(),NOW()) RETURNING id`
 
 	var paymentID string
 	err = tx.QueryRow(paymentQuery, req.StudentID, req.TotalAmount, req.PaymentMethod, userID, req.TransactionID).Scan(&paymentID)
@@ -711,12 +867,12 @@ func GetStudentPaymentsAPI(c *fiber.Ctx, db *sql.DB) error {
 	// Fetch allocations for each payment
 	for i := range payments {
 		allocationQuery := `SELECT pa.amount, pa.balance, pa.is_fully_paid, 
-						   COALESCE(ft.name, 'Unknown Fee') as fee_type_name, 
-						   COALESCE(f.amount, 0) as total_fee_amount
-						   FROM payment_allocations pa
-						   LEFT JOIN fee_types ft ON pa.fee_type_id = ft.id
-						   LEFT JOIN fees f ON pa.fee_id = f.id
-						   WHERE pa.payment_id = $1`
+							   COALESCE(ft.name, 'Unknown Fee') as fee_type_name, 
+							   COALESCE(f.amount, 0) as total_fee_amount
+							   FROM payment_allocations pa
+							   LEFT JOIN fee_types ft ON pa.fee_type_id = ft.id
+							   LEFT JOIN fees f ON pa.fee_id = f.id
+							   WHERE pa.payment_id = $1`
 
 		allocRows, err := db.Query(allocationQuery, payments[i].ID)
 		if err != nil {

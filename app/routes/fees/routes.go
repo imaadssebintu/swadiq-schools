@@ -41,6 +41,10 @@ func SetupFeesRoutes(app *fiber.App) {
 		return GetFeesAPI(c, config.GetDB())
 	})
 
+	feesAPI.Get("/grouped-by-student", func(c *fiber.Ctx) error {
+		return GetFeesGroupedByStudentAPI(c, config.GetDB())
+	})
+
 	feesAPI.Get("/stats", func(c *fiber.Ctx) error {
 		return GetFeeStatsAPI(c, config.GetDB())
 	})
